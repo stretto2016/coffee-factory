@@ -93,19 +93,59 @@
         }
         .btn-primary:hover { transform: scale(1.05); background-color: #1e7fd8; }
 
-        /* === 4. 섹션 공통 스타일 & 브랜드 스토리 === */
+        /* === 4. 브랜드 스토리 (New Design) === */
         section { padding: var(--section-spacing) 0; }
-        .section-header { text-align: center; margin-bottom: 80px; }
-        .section-subtitle { color: var(--accent-blue); font-weight: 600; font-size: 0.9rem; letter-spacing: 0.1em; display: block; margin-bottom: 10px;}
-        .section-title { font-size: 2.5rem; font-weight: 700; }
-
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-subtitle { color: var(--accent-blue); font-weight: 600; font-size: 0.9rem; letter-spacing: 0.15em; display: block; margin-bottom: 10px; text-transform: uppercase;}
+        .section-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 20px; }
+        
         #story { background-color: var(--bg-secondary); }
-        .story-content { display: flex; align-items: center; gap: 60px; }
-        .story-image { flex: 1; height: 500px; border-radius: 10px; overflow: hidden; }
-        .story-image img { width: 100%; height: 100%; object-fit: cover; }
-        .story-text { flex: 1; }
-        .story-text h3 { font-size: 1.8rem; margin-bottom: 20px; line-height: 1.3; }
-        .story-text p { margin-bottom: 20px; font-size: 1.05rem; }
+
+        /* 1. Spirit (3단 그리드) */
+        .spirit-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-bottom: 100px;
+        }
+        .spirit-card {
+            background: #1a1a1a; padding: 40px 30px; border-radius: 8px; border: 1px solid #333;
+            transition: transform 0.3s;
+        }
+        .spirit-card:hover { transform: translateY(-5px); border-color: var(--accent-blue); }
+        .spirit-title { font-family: 'Ciutadella', sans-serif; font-size: 1.4rem; color: var(--accent-blue); margin-bottom: 15px; }
+        .spirit-desc { font-size: 0.95rem; color: #ccc; line-height: 1.7; word-break: keep-all; }
+
+        /* 2. Naming & History (좌우 배치) */
+        .story-split {
+            display: flex; gap: 60px; margin-bottom: 100px; align-items: flex-start;
+        }
+        .story-left { flex: 1; }
+        .story-right { flex: 1; }
+        
+        .history-list {
+            border-left: 2px solid #333; padding-left: 30px; margin-top: 20px;
+        }
+        .history-item { position: relative; margin-bottom: 40px; }
+        .history-item::before {
+            content: ''; position: absolute; left: -36px; top: 5px; width: 10px; height: 10px;
+            background: var(--accent-blue); border-radius: 50%;
+        }
+        .year { font-family: 'Ciutadella', sans-serif; font-size: 1.1rem; font-weight: bold; color: white; display: block; margin-bottom: 5px; }
+        .history-title { font-size: 1.1rem; color: #ddd; margin-bottom: 5px; font-weight: 600; }
+        .history-desc { font-size: 0.9rem; color: #888; }
+
+        /* 3. Vision (강조 박스) */
+        .vision-box {
+            background: linear-gradient(135deg, #1a1a1a 0%, #111 100%);
+            padding: 60px; border-radius: 20px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .vision-text { max-width: 700px; margin: 0 auto; }
+        
+        /* 모바일 반응형 */
+        @media (max-width: 768px) {
+            .spirit-grid { grid-template-columns: 1fr; gap: 20px; }
+            .story-split { flex-direction: column; gap: 40px; }
+            .vision-box { padding: 30px; }
+        }
 
         /* === 5. 쇼핑몰(Shop) 섹션 === */
         #shop { background-color: var(--bg-color); }
@@ -176,20 +216,90 @@
 
     <section id="story">
         <div class="container">
+            
             <div class="section-header">
-                <span class="section-subtitle">FROM GONGDEOK TO PAJU</span>
-                <h2 class="section-title">커피의 본질에<br>집중하는 공간.</h2>
+                <span class="section-subtitle">STRETTO SPIRIT</span>
+                <h2 class="section-title">Carefully Crafted Coffee.</h2>
+                <p>스트레토는 커피 원두가 한 잔의 커피가 되기까지<br>모든 과정에서 작은 디테일까지 세심하게 관리합니다.</p>
             </div>
-            <div class="story-content">
-                <div class="story-image">
-                    <img src="https://images.unsplash.com/photo-1565608087341-0d42021ae374?auto=format&fit=crop&w=1000&q=80" alt="로스팅 팩토리">
+
+            <div class="spirit-grid">
+                <div class="spirit-card">
+                    <h3 class="spirit-title">Consistency</h3>
+                    <p class="spirit-desc">
+                        <strong>"언제 어디서나 일관된 맛"</strong><br><br>
+                        한결같은 커피 한 잔을 완성하기 위해, 우리는 매일 로스팅 데이터를 기록하고 분석합니다. 어제와 오늘의 맛이 다르지 않도록 변수를 통제하는 것이 프로페셔널의 기본이라 믿습니다.
+                    </p>
                 </div>
-                <div class="story-text">
-                    <h3>"하이엔드 로스팅 팩토리,<br>스트레토."</h3>
-                    <p>공덕동의 작은 카페에서 시작해, 이제는 파주의 전문 로스팅 팩토리로 거듭났습니다. 우리는 카페 사장님들이 겪는 '맛의 편차'에 대한 고민을 누구보다 잘 이해합니다.</p>
-                    <p>독일 명품 <strong>PROBAT P5</strong>와 최첨단 스마트 로스터 <strong>Stronghold S7X</strong>, <strong>Ikawa V3</strong>를 활용하여 계절과 환경에 흔들리지 않는 완벽한 밸런스를 구현합니다.</p>
+                <div class="spirit-card">
+                    <h3 class="spirit-title">Intensity</h3>
+                    <p class="spirit-desc">
+                        <strong>"강렬한 첫인상과 깊은 여운"</strong><br><br>
+                        '커피' 하면 '스트레토'가 떠오를 수 있도록 짙고 진한 잔향을 선사합니다. 제품뿐만 아니라 서비스에서도 고객의 마음속에 오래도록 진한 기억을 남기는 브랜드가 되겠습니다.
+                    </p>
+                </div>
+                <div class="spirit-card">
+                    <h3 class="spirit-title">Responsibility</h3>
+                    <p class="spirit-desc">
+                        <strong>"진심을 담은 책임감"</strong><br><br>
+                        고객의 목소리에 귀 기울이며 세심하게 케어합니다. 스트레토를 선택해주신 파트너분들이 오직 추출과 서비스에만 집중하실 수 있도록, 커피가 만들어지는 모든 과정에 늘 함께하겠습니다.
+                    </p>
                 </div>
             </div>
+
+            <hr style="border: 0; border-top: 1px solid #222; margin: 80px 0;">
+
+            <div class="story-split">
+                <div class="story-left">
+                    <span class="section-subtitle">NAMING STORY</span>
+                    <h3 style="font-size: 2rem; margin-bottom: 20px;">Why 'Stretto'?</h3>
+                    <p style="margin-bottom: 20px;">
+                        스트레토는 에스프레소의 한 종류인 <strong>'Ristretto(리스트레토)'</strong>에서 영감을 받았습니다.
+                    </p>
+                    <p style="color: #ccc; font-weight: 400;">
+                        짧은 시간에 추출하여 강렬한 맛과 향을 담은 리스트레토처럼,<br>
+                        강렬한 첫인상과 오래 남는 깊은 여운을 전하고자 합니다.<br><br>
+                        짙고 깊은 잔향의 고품질 커피로<br>
+                        여러분의 마음속에 오래 기억되는 이름이 되겠습니다.
+                    </p>
+                </div>
+
+                <div class="story-right">
+                    <span class="section-subtitle">OUR HISTORY</span>
+                    <div class="history-list">
+                        <div class="history-item">
+                            <span class="year">2016.11 - 2018.10</span>
+                            <div class="history-title">Stretto Roastery (Gongdeok)</div>
+                            <div class="history-desc">서울 공덕동 서부지방법원 옆 작은 공간에서 프로밧 로스터기와 함께 시작했습니다.</div>
+                        </div>
+                        <div class="history-item">
+                            <span class="year">2018.06 - 2025.06</span>
+                            <div class="history-title">Stretto Roastery & Cafe</div>
+                            <div class="history-desc">공덕동 소담길 3층 규모 카페 운영. 고객과 직접 소통하며 풍부한 경험과 노하우를 축적했습니다.</div>
+                        </div>
+                        <div class="history-item">
+                            <span class="year">2023.09 - Present</span>
+                            <div class="history-title">Stretto Coffee Factory (Paju)</div>
+                            <div class="history-desc">식품제조가공업 인허가를 갖춘 파주 팩토리 설립. B2B 원두 납품 및 기업 클래스 등 전문적인 커피 솔루션을 제공하고 있습니다.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vision-box">
+                <span class="section-subtitle">OUR VISION</span>
+                <h3 style="font-size: 2rem; margin-bottom: 30px;">Coffee for Water.</h3>
+                <div class="vision-text">
+                    <p style="margin-bottom: 20px;">
+                        우리가 마시는 커피의 99%는 물입니다. 하지만 아이러니하게도 커피를 생산하는 많은 나라의 아이들은 깨끗한 물을 마시기 위해 매일 6km를 걸어야 합니다.
+                    </p>
+                    <p>
+                        스트레토 커피 팩토리는 커피를 마실 때마다 그 아이들을 기억합니다.<br>
+                        정성껏 로스팅한 커피로 얻은 수익을, 커피나무가 자라는 땅에 다시 깨끗한 물로 돌려주기 위해 노력합니다.
+                    </p>
+                </div>
+            </div>
+
         </div>
     </section>
 
