@@ -3,31 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROAST LAB - 프리미엄 원두 납품 파트너</title>
+    <title>STRETTO COFFEE FACTORY - 파주 원두 납품 & 로스팅 랩</title>
     <style>
+        /* === 0. 폰트 파일 등록 === */
+        @font-face {
+            font-family: 'Ciutadella';
+            src: url('Ciutadella-Regular.otf') format('opentype'); 
+            font-weight: normal;
+            font-style: normal;
+        }
+
         /* === 1. 공통 CSS 및 디자인 테마 === */
-        /* === 0. 폰트 파일 등록 (가장 윗부분에 넣어주세요) === */
-@font-face {
-    font-family: 'Ciutadella';
-    /* 아래 파일명을 실제 가지고 계신 파일명과 똑같이(대소문자 포함) 맞춰주세요 */
-    src: url('Ciutadella-Regular.otf') format('opentype'); 
-    font-weight: normal;
-    font-style: normal;
-}
-	:root {
+        :root {
             --bg-color: #000000;
-            --bg-secondary: #111111; /* 약간 더 밝은 배경 */
+            --bg-secondary: #111111;
             --text-primary: #f5f5f7;
-            --text-secondary: #a1a1a6; /* 보조 텍스트 색상 */
-            --accent-blue: #2997ff; /* 포인트 버튼 색상 */
-            --section-spacing: 120px; /* 섹션 간 간격 */
+            --text-secondary: #a1a1a6;
+            --accent-blue: #2997ff;
+            --section-spacing: 120px;
         }
-        html {
-            scroll-behavior: smooth; /* 메뉴 클릭 시 부드럽게 이동 */
-        }
+        html { scroll-behavior: smooth; }
         body {
             margin: 0; padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-primary);
             line-height: 1.6;
@@ -36,76 +34,60 @@
         h1, h2, h3 { margin-top: 0; letter-spacing: -0.02em; }
         p { color: var(--text-secondary); font-size: 1.1rem; font-weight: 300; }
         a { text-decoration: none; }
-        .container {
-            max-width: 1080px;
-            margin: 0 auto;
-            padding: 0 20px;
+        .container { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+        /* === 2. 네비게이션 바 === */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            padding: 10px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            z-index: 1000;
         }
-
-        /* === 2. 네비게이션 바 (유리 효과) === */
-nav {
-    position: fixed; top: 0; left: 0; right: 0;
-    padding: 10px 40px; /* 상하 여백을 살짝 줄여 밸런스 조정 */
-    display: flex; justify-content: space-between; align-items: center;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    z-index: 1000;
-}
-
-/* 로고와 서브 텍스트를 감싸는 컨테이너 */
-.logo-group {
-    display: flex;
-    flex-direction: column; /* 위아래로 배치 */
-    justify-content: center;
-    align-items: flex-start; /* 왼쪽 정렬 */
-}
-
-.logo { 
-    font-family: 'Ciutadella', sans-serif; /* 등록한 폰트 이름 적용 */
-    font-weight: normal; /* Regular 폰트이므로 normal로 설정 */
-    font-size: 1.6rem; /* 폰트가 깔끔해서 크기를 조금 키워 존재감을 줌 */
-    color: white; 
-    line-height: 1;
-    margin-bottom: 5px;
-    letter-spacing: +0.01em; /* 살짝 좁혀서 단단한 느낌 */
-}
-
-/* 새로 추가된 서브 텍스트 스타일 */
-.logo-sub {
-    font-family: 'Ciutadella', sans-serif; /* 메인 로고와 동일한 폰트 적용 */
-    font-size: 0.8rem; /* 가독성을 위해 살짝 키움 */
-    color: gray; 
-    font-weight: normal;
-    letter-spacing: +0.1em; /* 자간을 넓혀서 시원하게 */
-    text-transform: lowercase; /* 대문자로 통일 */
-    margin-top: 2px;
-}
-
-.nav-links a {
-    color: var(--text-secondary);
-    margin-left: 30px; font-size: 0.95rem; font-weight: 500; transition: color 0.3s;
-}
-.nav-links a:hover, .nav-links a.active { color: white; }
+        .logo-group { display: flex; flex-direction: column; align-items: flex-start; }
+        .logo { 
+            font-family: 'Ciutadella', sans-serif;
+            font-weight: normal;
+            font-size: 1.6rem;
+            color: white; 
+            line-height: 1;
+            margin-bottom: 5px;
+            letter-spacing: +0.01em;
+        }
+        .logo-sub {
+            font-family: 'Ciutadella', sans-serif;
+            font-size: 0.65rem;
+            color: #888; 
+            font-weight: normal;
+            letter-spacing: +0.15em;
+            text-transform: uppercase;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            margin-left: 30px; font-size: 0.95rem; font-weight: 500; transition: color 0.3s;
+        }
+        .nav-links a:hover { color: white; }
 
         /* === 3. 메인 히어로 섹션 === */
         #hero {
-            height: 95vh; /* 화면에 꽉 차게 */
+            height: 95vh;
             display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1581787488274-7a4233f90370?auto=format&fit=crop&w=2000&q=80');
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1581787488274-7a4233f90370?auto=format&fit=crop&w=2000&q=80');
             background-size: cover; background-position: center;
         }
         .hero-title {
-            font-size: 4.5rem; font-weight: 700; line-height: 1.1; margin-bottom: 20px;
-            opacity: 0; transform: translateY(30px); animation: fadeUp 1s ease-out 0.5s forwards;
+            font-size: 4rem; font-weight: 700; line-height: 1.1; margin-bottom: 20px;
+            opacity: 0; animation: fadeUp 1s ease-out 0.5s forwards;
         }
         .hero-desc {
-            font-size: 1.6rem; margin-bottom: 40px; max-width: 700px;
-            opacity: 0; transform: translateY(30px); animation: fadeUp 1s ease-out 1s forwards;
+            font-size: 1.4rem; margin-bottom: 40px; max-width: 700px;
+            opacity: 0; animation: fadeUp 1s ease-out 1s forwards;
         }
         .btn-primary {
             display: inline-block; padding: 18px 40px;
-            background-color: var(--accent-blue); color: white; border-radius: 30px; font-size: 1.1rem; font-weight: 600;
+            background-color: var(--accent-blue); color: white; border-radius: 30px; font-size: 1rem; font-weight: 600;
             transition: transform 0.2s, background-color 0.2s;
             opacity: 0; animation: fadeUp 1s ease-out 1.5s forwards;
         }
@@ -114,264 +96,121 @@ nav {
         /* === 4. 섹션 공통 스타일 & 브랜드 스토리 === */
         section { padding: var(--section-spacing) 0; }
         .section-header { text-align: center; margin-bottom: 80px; }
-        .section-subtitle { color: var(--accent-blue); font-weight: 600; margin-bottom: 10px; display: block;}
-        .section-title { font-size: 3rem; font-weight: 700; }
+        .section-subtitle { color: var(--accent-blue); font-weight: 600; font-size: 0.9rem; letter-spacing: 0.1em; display: block; margin-bottom: 10px;}
+        .section-title { font-size: 2.5rem; font-weight: 700; }
 
         #story { background-color: var(--bg-secondary); }
-        .story-content {
-            display: flex; align-items: center; gap: 60px;
-        }
-        .story-image { flex: 1; height: 500px; border-radius: 20px; overflow: hidden; }
+        .story-content { display: flex; align-items: center; gap: 60px; }
+        .story-image { flex: 1; height: 500px; border-radius: 10px; overflow: hidden; }
         .story-image img { width: 100%; height: 100%; object-fit: cover; }
         .story-text { flex: 1; }
-        .story-text h3 { font-size: 2rem; margin-bottom: 30px; }
-        .story-text p { margin-bottom: 25px; }
+        .story-text h3 { font-size: 1.8rem; margin-bottom: 20px; line-height: 1.3; }
+        .story-text p { margin-bottom: 20px; font-size: 1.05rem; }
 
-        /* === 5. 납품 안내 섹션 === */
-        .grid-3 {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px;
+        /* === 5. 쇼핑몰(Shop) 섹션 === */
+        #shop { background-color: var(--bg-color); }
+        .shop-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 40px; margin-top: 50px;
         }
-        .feature-card {
-            background: var(--bg-secondary); padding: 40px; border-radius: 20px;
-            text-align: center; transition: transform 0.3s;
+        .product-card { cursor: pointer; transition: transform 0.3s; }
+        .product-card:hover { transform: translateY(-5px); }
+        .product-thumb {
+            width: 100%; aspect-ratio: 1 / 1; background-color: #222; border-radius: 4px; overflow: hidden; position: relative; margin-bottom: 20px;
         }
-        .feature-card:hover { transform: translateY(-10px); background: #1a1a1a; }
-        .feature-icon { font-size: 3rem; margin-bottom: 20px; display: block; }
-        .feature-card h3 { font-size: 1.3rem; margin-bottom: 15px; color: white;}
+        .product-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .product-card:hover .product-thumb img { transform: scale(1.05); }
+        .badge {
+            position: absolute; top: 15px; left: 15px; background: var(--accent-blue); color: white;
+            font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 2px;
+        }
+        .product-info h3 { font-size: 1.2rem; margin-bottom: 5px; color: white; }
+        .product-desc { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-meta {
+            display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;
+        }
+        .price { font-size: 1.1rem; font-weight: 700; color: white; }
+        .btn-shop-link { font-size: 0.9rem; color: var(--accent-blue); font-weight: 600; }
 
-        /* 납품 프로세스 바 */
-        .process-steps {
-            display: flex; justify-content: space-between; margin-top: 100px; text-align: center;
-        }
-        .step { position: relative; flex: 1; }
-        .step::after { /* 연결선 */
-            content: ''; position: absolute; top: 25px; right: -50%; width: 100%; height: 2px; background: #333; z-index: -1;
-        }
-        .step:last-child::after { display: none; }
-        .step-number {
-            display: inline-block; width: 50px; height: 50px; line-height: 50px;
-            background: var(--accent-blue); color: white; border-radius: 50%; font-weight: bold; margin-bottom: 15px;
-        }
-        .step strong { display: block; color: white; font-size: 1.2rem; margin-bottom: 10px; }
-
-        /* === 6. 푸터 & 기타 === */
-        footer {
-            background: var(--bg-secondary); padding: 80px 0; text-align: center; border-top: 1px solid rgba(255,255,255,0.05);
-        }
-        .footer-call { font-size: 2.5rem; font-weight: 700; color: white; margin: 20px 0; display: block;}
+        /* === 6. 납품 안내 섹션 === */
+        #wholesale { background-color: var(--bg-secondary); }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .feature-card { background: #1a1a1a; padding: 40px; border-radius: 10px; text-align: center; }
+        .feature-icon { font-size: 2.5rem; margin-bottom: 20px; display: block; }
+        .feature-card h3 { font-size: 1.2rem; margin-bottom: 15px; color: white; }
+        
+        /* === 7. 푸터 === */
+        footer { background: #000; padding: 80px 0; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); }
+        .footer-call { font-size: 2rem; font-weight: 700; color: white; margin: 20px 0; display: block; }
 
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
-	/* === 7. 쇼핑몰(Shop) 섹션 스타일 === */
-        #shop {
-            background-color: var(--bg-secondary); /* 스토리 섹션과 같은 톤으로 배경 통일 */
-        }
-        
-        /* 상품 그리드 (반응형: 화면 줄어들면 자동 줄바꿈) */
-        .shop-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 40px;
-            margin-top: 50px;
-        }
-
-        .product-card {
-            group; /* 호버 효과를 위해 그룹 지정 */
-            cursor: pointer;
-        }
-
-        /* 상품 이미지 영역 */
-        .product-thumb {
-            width: 100%;
-            aspect-ratio: 1 / 1; /* 인스타그램처럼 1:1 정방형 */
-            background-color: #222;
-            border-radius: 4px; /* 살짝 둥글게 */
-            overflow: hidden;
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .product-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease; /* 부드러운 줌 효과 */
-        }
-
-        .product-card:hover .product-thumb img {
-            transform: scale(1.05); /* 마우스 올리면 살짝 확대 */
-        }
-
-        /* 상품 뱃지 (BEST, NEW 등) */
-        .badge {
-            position: absolute;
-            top: 15px; left: 15px;
-            background: var(--accent-blue);
-            color: white;
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 2px;
-            text-transform: uppercase;
-        }
-
-        /* 상품 정보 텍스트 */
-        .product-info h3 {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-            color: white;
-        }
-        
-        .product-desc {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
-            display: -webkit-box;
-            -webkit-line-clamp: 1; /* 한 줄 넘어가면 ... 처리 */
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .product-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 15px;
-        }
-
-        .price {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        /* 구매 버튼 (심플한 텍스트 링크 스타일) */
-        .btn-shop-link {
-            font-size: 0.9rem;
-            color: var(--accent-blue);
-            font-weight: 600;
-            transition: opacity 0.2s;
-        }
-        .btn-shop-link:hover { opacity: 0.8; }
-
-        /* 모바일 반응형 */
         @media (max-width: 768px) {
-            .hero-title { font-size: 2.8rem; }
-            .hero-desc { font-size: 1.2rem; }
-            .nav-links { display: none; } /* 모바일 메뉴 숨김 (약식) */
+            .hero-title { font-size: 2.5rem; }
+            .nav-links { display: none; }
             .story-content { flex-direction: column; }
             .story-image { width: 100%; height: 300px; }
             .grid-3 { grid-template-columns: 1fr; }
-            .process-steps { flex-direction: column; gap: 30px;}
-            .step::after { display: none; }
-            .section-title { font-size: 2.2rem; }
         }
     </style>
 </head>
 <body>
 
     <nav>
-    <div class="logo-group">
-        <div class="logo">stretto coffee factory.</div>
-        <div class="logo-sub">carefully crafted coffee</div>
-    </div>
-    <div class="nav-links">
-        <a href="#hero">홈</a>
-        <a href="#story">브랜드 스토리</a>
-        <a href="#shop">Shop</a> <a href="#wholesale">납품 안내</a>
-        <a href="#contact">문의하기</a>
-    </div>
-</nav>
+        <div class="logo-group">
+            <div class="logo">stretto coffee factory.</div>
+            <div class="logo-sub">carefully crafted coffee</div>
+        </div>
+        <div class="nav-links">
+            <a href="#hero">홈</a>
+            <a href="#story">브랜드 스토리</a>
+            <a href="#shop">Shop</a>
+            <a href="#wholesale">납품 안내</a>
+            <a href="#contact">문의하기</a>
+        </div>
+    </nav>
 
     <section id="hero">
-        <h1 class="hero-title">커피의 본질을<br>설계합니다.</h1>
-        <p class="hero-desc">데이터 기반의 정밀한 로스팅으로 완성하는<br>당신만의 완벽한 커피 솔루션.</p>
-        <a href="#wholesale" class="btn-primary">비즈니스 납품 문의 ></a>
+        <h1 class="hero-title">원두만 납품하지<br>않습니다.</h1>
+        <p class="hero-desc">스트레토는 '맛있는 커피 한 잔'을 납품합니다.<br>파주 팩토리의 데이터 로스팅 솔루션.</p>
+        <a href="#wholesale" class="btn-primary">파트너십 문의 ></a>
     </section>
 
     <section id="story">
         <div class="container">
             <div class="section-header">
-                <span class="section-subtitle">OUR PHILOSOPHY</span>
-                <h2 class="section-title">일관성(Consistency)을<br>향한 집착.</h2>
+                <span class="section-subtitle">FROM GONGDEOK TO PAJU</span>
+                <h2 class="section-title">커피의 본질에<br>집중하는 공간.</h2>
             </div>
             <div class="story-content">
                 <div class="story-image">
-                    <img src="https://images.unsplash.com/photo-1565608087341-0d42021ae374?auto=format&fit=crop&w=1000&q=80" alt="로스팅 과정">
+                    <img src="https://images.unsplash.com/photo-1565608087341-0d42021ae374?auto=format&fit=crop&w=1000&q=80" alt="로스팅 팩토리">
                 </div>
                 <div class="story-text">
-                    <h3>"맛있는 커피는 우연이 아닙니다."</h3>
-                    <p>우리는 감에 의존하지 않습니다. 매 배치(Batch)마다 온도, 시간, 공기 흐름을 데이터로 기록하고 분석합니다. 이것이 어제 마신 커피와 오늘 마시는 커피의 맛이 같은 이유입니다.</p>
-                    <p>최고급 설비와 숙련된 로스터의 노하우로, 생두가 가진 잠재력을 가장 안정적인 형태로 카페에 전달합니다. 사장님은 오직 추출과 서비스에만 집중하세요.</p>
+                    <h3>"하이엔드 로스팅 팩토리,<br>스트레토."</h3>
+                    <p>공덕동의 작은 카페에서 시작해, 이제는 파주의 전문 로스팅 팩토리로 거듭났습니다. 우리는 카페 사장님들이 겪는 '맛의 편차'에 대한 고민을 누구보다 잘 이해합니다.</p>
+                    <p>독일 명품 <strong>PROBAT P5</strong>와 최첨단 스마트 로스터 <strong>Stronghold S7X</strong>, <strong>Ikawa V3</strong>를 활용하여 계절과 환경에 흔들리지 않는 완벽한 밸런스를 구현합니다.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="wholesale">
+    <section id="shop">
         <div class="container">
             <div class="section-header">
-                <span class="section-subtitle">WHOLESALE PARTNERSHIP</span>
-                <h2 class="section-title">성공적인 카페를 위한<br>체계적인 지원.</h2>
-            </div>
-            
-            <div class="grid-3">
-                <div class="feature-card">
-                    <span class="feature-icon">⚙️</span>
-                    <h3>하이엔드 설비 & QC</h3>
-                    <p>프로밧(Probat) 로스터기 보유. 국가대표 선발 심사위원이 매일 커핑을 통해 품질을 엄격하게 관리합니다.</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">🧪</span>
-                    <h3>맞춤형 커스텀 블렌딩</h3>
-                    <p>매장의 상권과 타겟 고객에 맞춰 산미 톤, 바디감을 조절한 우리 매장만의 시그니처 블렌드를 개발해 드립니다.</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">🚚</span>
-                    <h3>합리적 가격 & 신선 배송</h3>
-                    <p>생두 다이렉트 소싱을 통한 원가 절감으로 합리적인 납품가를 제안하며, 발주 후 로스팅 원칙을 고수합니다.</p>
-                </div>
-            </div>
-
-            <div class="process-steps">
-                <div class="step">
-                    <span class="step-number">1</span>
-                    <strong>상담 및 샘플 신청</strong>
-                    <p>매장 현황 파악 후<br>최적의 샘플 발송</p>
-                </div>
-                <div class="step">
-                    <span class="step-number">2</span>
-                    <strong>테스팅 및 세팅</strong>
-                    <p>샘플 테이스팅 및<br>추출 가이드 제공</p>
-                </div>
-                <div class="step">
-                    <span class="step-number">3</span>
-                    <strong>계약 및 정기 발주</strong>
-                    <p>사업자 전용 단가 적용 및<br>안정적인 물량 공급</p>
-                </div>
-            </div>
-
-        </div>
-    </section>
-	<section id="shop">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-subtitle">ONLINE STORE</span>
-                <h2 class="section-title">Signature Lineup</h2>
-                <p style="margin-top: 10px;">로스트랩의 스페셜티 원두를 집에서도 즐겨보세요.</p>
+                <span class="section-subtitle">SIGNATURE LINEUP</span>
+                <h2 class="section-title">Our Blends</h2>
+                <p>스트레토가 자신 있게 선보이는 대표 블렌드를 만나보세요.</p>
             </div>
 
             <div class="shop-grid">
-                
                 <div class="product-card">
-                    <a href="https://smartstore.naver.com/주소입력" target="_blank"> <div class="product-thumb">
-                            <span class="badge">BEST</span>
-                            <img src="https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&w=800&q=80" alt="블랙 수트 블렌드">
+                    <a href="https://smartstore.naver.com/본인스토어주소" target="_blank">
+                        <div class="product-thumb">
+                            <span class="badge">SIGNATURE</span>
+                            <img src="https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&w=800&q=80" alt="스트레토 블렌드">
                         </div>
                         <div class="product-info">
-                            <h3>블랙 수트 (Black Suit)</h3>
-                            <p class="product-desc">다크 초콜릿의 묵직함과 견과류의 고소함이 어우러진 시그니처 블렌드</p>
+                            <h3>스트레토 블렌드 (Stretto)</h3>
+                            <p class="product-desc">복합적인 향미와 부드러운 단맛의 조화. 밸런스가 뛰어나 호불호 없는 데일리 블렌드.</p>
                             <div class="product-meta">
                                 <span class="price">15,000원</span>
                                 <span class="btn-shop-link">구매하기 ↗</span>
@@ -381,16 +220,16 @@ nav {
                 </div>
 
                 <div class="product-card">
-                    <a href="https://smartstore.naver.com/주소입력" target="_blank">
+                    <a href="https://smartstore.naver.com/본인스토어주소" target="_blank">
                         <div class="product-thumb">
-                            <span class="badge" style="background: #e04a4a;">NEW</span>
-                            <img src="https://images.unsplash.com/photo-1611854779393-1b2ae9d4d1d6?auto=format&fit=crop&w=800&q=80" alt="에티오피아 예가체프">
+                            <span class="badge" style="background: #333;">DARK</span>
+                            <img src="https://images.unsplash.com/photo-1611854779393-1b2ae9d4d1d6?auto=format&fit=crop&w=800&q=80" alt="알토 블렌드">
                         </div>
                         <div class="product-info">
-                            <h3>에티오피아 예가체프 G1</h3>
-                            <p class="product-desc">화사한 꽃향기와 베리류의 산뜻한 산미가 특징인 싱글 오리진</p>
+                            <h3>알토 블렌드 (Alto)</h3>
+                            <p class="product-desc">스모키한 다크 초콜릿과 구운 아몬드의 묵직한 바디감. 라떼와 최고의 궁합.</p>
                             <div class="product-meta">
-                                <span class="price">18,000원</span>
+                                <span class="price">15,000원</span>
                                 <span class="btn-shop-link">구매하기 ↗</span>
                             </div>
                         </div>
@@ -398,44 +237,60 @@ nav {
                 </div>
 
                 <div class="product-card">
-                    <a href="https://smartstore.naver.com/주소입력" target="_blank">
+                    <a href="https://smartstore.naver.com/본인스토어주소" target="_blank">
                         <div class="product-thumb">
-                            <img src="https://images.unsplash.com/photo-1621996963428-1f5921867e90?auto=format&fit=crop&w=800&q=80" alt="데일리 드립백 세트">
+                            <span class="badge" style="background: #e04a4a;">NEW</span>
+                            <img src="https://images.unsplash.com/photo-1621996963428-1f5921867e90?auto=format&fit=crop&w=800&q=80" alt="에티오피아 싱글">
                         </div>
                         <div class="product-info">
-                            <h3>데일리 드립백 세트 (10ea)</h3>
-                            <p class="product-desc">언제 어디서나 간편하게 즐기는 고품질 드립커피</p>
+                            <h3>에티오피아 예가체프</h3>
+                            <p class="product-desc">화사한 꽃향기와 베리류의 산뜻한 산미. 기분 전환이 필요할 때 추천합니다.</p>
                             <div class="product-meta">
-                                <span class="price">13,000원</span>
+                                <span class="price">18,000원</span>
                                 <span class="btn-shop-link">구매하기 ↗</span>
                             </div>
                         </div>
                     </a>
                 </div>
-
             </div>
-            
-            <div style="text-align: center; margin-top: 60px;">
-                <a href="https://smartstore.naver.com/본인스토어주소" target="_blank" class="btn-primary" style="background: transparent; border: 1px solid var(--accent-blue); padding: 15px 40px;">
-                    스토어 전체보기
-                </a>
-            </div>
+        </div>
+    </section>
 
+    <section id="wholesale">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">WHOLESALE PARTNERSHIP</span>
+                <h2 class="section-title">성공적인 파트너십</h2>
+            </div>
+            <div class="grid-3">
+                <div class="feature-card">
+                    <span class="feature-icon">⚙️</span>
+                    <h3>High-End Equipment</h3>
+                    <p>PROBAT P5 및 Stronghold S7X 로스터기로 데이터 기반의 정밀 로스팅을 구현합니다.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">📝</span>
+                    <h3>Consulting</h3>
+                    <p>단순 납품을 넘어 추출 세팅, 장비 관리, 메뉴 레시피까지 토탈 솔루션을 제공합니다.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🚚</span>
+                    <h3>Fresh Delivery</h3>
+                    <p>철저한 생두 선별과 QC를 거친 원두를 가장 신선한 상태로 배송합니다.</p>
+                </div>
+            </div>
         </div>
     </section>
 
     <footer id="contact">
         <div class="container">
-            <h2 style="font-size: 2rem; margin-bottom: 10px;">파트너십 문의</h2>
-            <p>지금 바로 샘플과 견적을 받아보세요.</p>
-            <a href="tel:010-1234-5678" class="footer-call">010-1234-5678</a>
-            <div style="margin-top: 30px;">
-                <a href="#" class="btn-primary" style="padding: 12px 30px; font-size: 1rem;">카카오톡 상담하기</a>
+            <h2 style="font-size: 1.8rem; margin-bottom: 10px;">납품 및 샘플 문의</h2>
+            <p>카카오톡 채널에서 '스트레토 커피팩토리'를 검색하세요.</p>
+            <a href="http://pf.kakao.com/_xxxx" class="footer-call" style="font-size: 1.5rem;">Kakao Talk 문의하기</a>
+            <div style="margin-top: 50px; font-size: 0.8rem; opacity: 0.5;">
+                © 2025 STRETTO COFFEE FACTORY. All rights reserved.<br>
+                경기도 파주시 (상세 주소 입력) | 사업자등록번호: 000-00-00000
             </div>
-            <p style="margin-top: 60px; font-size: 0.8rem; opacity: 0.5;">
-                © 2025 ROAST LAB Inc. All rights reserved.<br>
-                경기도 파주시 OO로 123번길 | 사업자등록번호: 000-00-00000
-            </p>
         </div>
     </footer>
 
