@@ -47,8 +47,8 @@
             <h2>PARTNER LOGIN</h2>
             <p style="color:#666; font-size: 0.9rem; margin-bottom: 30px;">발급받은 아이디와 비밀번호로 로그인하세요.</p>
             <div class="input-group">
-                <input type="email" id="email" placeholder="이메일 (ID)">
-            </div>
+    <input type="text" id="loginId" placeholder="아이디">
+</div>
             <div class="input-group">
                 <input type="password" id="password" placeholder="비밀번호">
             </div>
@@ -150,18 +150,22 @@
 
         // 3. 로그인 처리
         loginBtn.addEventListener('click', async () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const errorMsg = document.getElementById('login-error');
-            
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                errorMsg.style.display = 'none';
-            } catch (error) {
-                errorMsg.innerText = "로그인 실패: 아이디 또는 비밀번호를 확인하세요.";
-                errorMsg.style.display = 'block';
-            }
-        });
+    const rawId = document.getElementById('loginId').value.trim(); // 입력한 아이디
+    const password = document.getElementById('password').value;
+    const errorMsg = document.getElementById('login-error');
+    
+    // ▼▼▼ 여기가 핵심! (뒤에 가짜 주소를 붙여줍니다) ▼▼▼
+    const virtualEmail = rawId + "@stretto.co.kr"; 
+    
+    try {
+        await signInWithEmailAndPassword(auth, virtualEmail, password);
+        errorMsg.style.display = 'none';
+    } catch (error) {
+        console.error(error); // 에러 확인용
+        errorMsg.innerText = "로그인 실패: 아이디 또는 비밀번호를 확인하세요.";
+        errorMsg.style.display = 'block';
+    }
+});
 
         // 4. 로그아웃 처리
         logoutBtn.addEventListener('click', () => signOut(auth));
