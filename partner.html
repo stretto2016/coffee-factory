@@ -3,115 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>스트레토 파트너 발주 시스템</title>
+    <title>스트레토 간편 발주</title>
     <style>
-        /* 기존 홈페이지 스타일과 동일하게 유지 */
         @font-face { font-family: 'Ciutadella'; src: url('Ciutadella-Regular.otf') format('opentype'); }
-        :root { --accent-blue: #2997ff; }
+        :root { --accent-blue: #2997ff; --bg-dark: #111; --card-bg: #1c1c1e; }
+        
         body {
             margin: 0; padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
             background-color: #000; color: #f5f5f7;
-            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            display: flex; justify-content: center; min-height: 100vh;
         }
-        .container {
-            background: #111; padding: 40px; border-radius: 12px; border: 1px solid #333;
-            width: 100%; max-width: 400px; text-align: center;
-        }
-        h2 { font-family: 'Ciutadella', sans-serif; margin-bottom: 20px; color: white; letter-spacing: 1px; }
-        .input-group { margin-bottom: 15px; text-align: left; }
-        label { display: block; font-size: 0.8rem; color: #888; margin-bottom: 5px; }
-        input, select, textarea {
-            width: 100%; padding: 12px; background: #222; border: 1px solid #444; 
-            color: white; border-radius: 6px; box-sizing: border-box; font-size: 1rem;
-        }
-        input:focus, select:focus, textarea:focus { border-color: var(--accent-blue); outline: none; }
         
-        .btn-primary {
-            width: 100%; padding: 15px; background: var(--accent-blue); color: white; 
-            border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-top: 10px;
+        .container {
+            width: 100%; max-width: 480px; padding: 20px; box-sizing: border-box;
+            background: #000; display: flex; flex-direction: column;
         }
-        .btn-primary:hover { background-color: #1e7fd8; }
-        .btn-secondary {
-            background: transparent; color: #666; border: none; margin-top: 15px; cursor: pointer; font-size: 0.9rem;
+
+        /* 헤더 & 정보 영역 */
+        header { margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 20px; }
+        h2 { font-family: 'Ciutadella', sans-serif; margin: 0 0 5px 0; color: var(--accent-blue); }
+        .client-info-box {
+            background: var(--card-bg); padding: 15px; border-radius: 8px; margin-top: 15px;
+            border: 1px solid #333; font-size: 0.9rem; color: #ccc;
         }
-        .hidden { display: none; }
-        .success-msg { color: #4cd964; margin-top: 15px; font-weight: bold; display: none; }
-        .error-msg { color: #ff3b30; margin-top: 15px; font-size: 0.9rem; display: none; }
+        .client-info-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .info-label { color: #666; }
+        .info-value { font-weight: bold; color: white; text-align: right; }
+
+        /* 제품 그리드 (버튼형) */
+        .grid-title { font-size: 1rem; font-weight: bold; margin: 20px 0 10px; color: #888; }
+        .product-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+        }
+        .product-btn {
+            background: var(--card-bg); border: 1px solid #333; color: white;
+            padding: 15px 10px; border-radius: 8px; cursor: pointer; text-align: left;
+            transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between;
+            height: 80px;
+        }
+        .product-btn:active { transform: scale(0.98); background: #333; }
+        .p-name { font-weight: bold; font-size: 1rem; }
+        .p-sub { font-size: 0.8rem; color: #666; margin-top: 5px; }
+
+        /* 장바구니 영역 */
+        .cart-section {
+            margin-top: 30px; background: #1a1a1a; border-radius: 12px; padding: 20px;
+            border: 1px solid #333;
+        }
+        .cart-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 0; border-bottom: 1px solid #333;
+        }
+        .cart-item:last-child { border-bottom: none; }
+        .cart-name { font-weight: bold; }
+        .qty-control { display: flex; align-items: center; gap: 10px; }
+        .qty-btn {
+            width: 30px; height: 30px; border-radius: 50%; border: none;
+            background: #333; color: white; font-weight: bold; cursor: pointer;
+        }
+        .qty-val { width: 40px; text-align: center; font-weight: bold; }
+        .del-btn { color: #ff453a; background: none; border: none; margin-left: 10px; cursor: pointer; }
+
+        /* 하단 고정 버튼 */
+        .bottom-action {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(0,0,0,0.9); padding: 20px;
+            border-top: 1px solid #333; text-align: center;
+            display: flex; justify-content: center;
+        }
+        .submit-btn {
+            width: 100%; max-width: 440px; padding: 18px; 
+            background: var(--accent-blue); color: white; border: none; 
+            border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer;
+        }
+        .submit-btn:disabled { background: #444; color: #888; }
+
+        /* 로그인 화면 */
+        #login-section { text-align: center; margin-top: 100px; }
+        .login-input {
+            width: 100%; padding: 15px; margin-bottom: 10px; background: #222;
+            border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box;
+        }
+        .login-btn {
+            width: 100%; padding: 15px; background: white; color: black; font-weight: bold;
+            border: none; border-radius: 8px; cursor: pointer;
+        }
+        .hidden { display: none !important; }
+        .date-picker {
+            width: 100%; padding: 10px; background: #222; color: white; border: 1px solid #333;
+            border-radius: 8px; margin-top: 5px; font-family: inherit;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div id="login-section">
-            <h2>PARTNER LOGIN</h2>
-            <p style="color:#666; font-size: 0.9rem; margin-bottom: 30px;">발급받은 아이디와 비밀번호로 로그인하세요.</p>
-            <div class="input-group">
-    <input type="text" id="loginId" placeholder="아이디">
-</div>
-            <div class="input-group">
-                <input type="password" id="password" placeholder="비밀번호">
-            </div>
-            <button class="btn-primary" id="loginBtn">로그인</button>
-            <p class="error-msg" id="login-error"></p>
-            <a href="index.html" class="btn-secondary" style="display:block; text-decoration:none; margin-top:20px;">← 홈페이지로 돌아가기</a>
+            <h1 style="font-family: 'Ciutadella'; margin-bottom: 30px;">PARTNER LOGIN</h1>
+            <input type="text" id="loginId" class="login-input" placeholder="아이디 (예: gongdeok)">
+            <input type="password" id="password" class="login-input" placeholder="비밀번호">
+            <button id="loginBtn" class="login-btn">로그인</button>
+            <p id="login-msg" style="color: #ff453a; margin-top: 15px; font-size: 0.9rem;"></p>
         </div>
 
         <div id="order-section" class="hidden">
-            <h2 style="color: var(--accent-blue);">NEW ORDER</h2>
-            <p id="welcome-msg" style="color:#888; font-size: 0.9rem; margin-bottom: 20px;"></p>
+            <header>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h2>NEW ORDER</h2>
+                    <button id="logoutBtn" style="background:none; border:none; color:#666; cursor:pointer;">로그아웃</button>
+                </div>
+                
+                <div class="client-info-box">
+                    <div class="client-info-row">
+                        <span class="info-label">업체명</span>
+                        <span class="info-value" id="disp-name">로딩 중...</span>
+                    </div>
+                    <div class="client-info-row">
+                        <span class="info-label">주소</span>
+                        <span class="info-value" id="disp-address" style="font-weight:normal; font-size:0.8rem;">-</span>
+                    </div>
+                    <div style="margin-top: 10px; border-top: 1px solid #444; padding-top: 10px;">
+                        <span class="info-label">주문 날짜</span>
+                        <input type="date" id="orderDate" class="date-picker">
+                    </div>
+                </div>
+            </header>
+
+            <div class="grid-title">제품 선택 (터치하여 추가)</div>
+            <div class="product-grid" id="productGrid">
+                </div>
+
+            <div class="cart-section" id="cartSection" style="display:none;">
+                <div style="font-weight:bold; margin-bottom:15px; color:var(--accent-blue);">담긴 품목</div>
+                <div id="cartList"></div>
+                <input type="text" id="orderNote" placeholder="요청사항 (선택)" style="width:100%; padding:10px; background:#222; border:1px solid #333; color:white; margin-top:15px; border-radius:6px;">
+            </div>
             
-            <form id="orderForm">
-                <div class="input-group">
-                    <label>주문 날짜</label>
-                    <input type="date" id="orderDate" required>
-                </div>
-
-                <div class="input-group">
-                    <label>업체명 (확인용)</label>
-                    <input type="text" id="clientName" placeholder="예: 스트레토 공덕점" required>
-                </div>
-
-                <div class="input-group">
-                    <label>주문 품목</label>
-                    <select id="productType" required>
-                        <option value="">원두를 선택하세요</option>
-                        <option value="알토 블렌드 (Alto)">알토 블렌드 (Alto)</option>
-                        <option value="스트레토 블렌드 (Stretto)">스트레토 블렌드 (Stretto)</option>
-                        <option value="구스토 블렌드 (Gusto)">구스토 블렌드 (Gusto)</option>
-                        <option value="디카페인 (Decaffeine)">디카페인 (Decaffeine)</option>
-                        <option value="케냐 응고라노 AA">케냐 응고라노 AA</option>
-                        <option value="과테말라 엘 템픽스케">과테말라 엘 템픽스케</option>
-                        <option value="르완다 부산제">르완다 부산제</option>
-                        <option value="파푸아뉴기니 쿠아마운틴">파푸아뉴기니 쿠아마운틴</option>
-                    </select>
-                </div>
-
-                <div class="input-group">
-                    <label>주문 수량 (kg)</label>
-                    <input type="number" id="amountKg" step="0.1" placeholder="숫자만 입력 (예: 10)" required>
-                </div>
-
-                <div class="input-group">
-                    <label>요청사항 (선택)</label>
-                    <input type="text" id="note" placeholder="배송 메모 등">
-                </div>
-
-                <button type="submit" class="btn-primary" id="submitBtn">발주 넣기</button>
-            </form>
-
-            <p class="success-msg" id="success-msg">✅ 주문이 정상 접수되었습니다.</p>
-            <p class="error-msg" id="order-error"></p>
-            <button class="btn-secondary" id="logoutBtn">로그아웃</button>
+            <div style="height: 100px;"></div> <div class="bottom-action">
+                <button id="submitBtn" class="submit-btn" disabled>주문할 품목을 선택하세요</button>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // ▼▼▼▼▼ [중요] 아까 만든 React 앱의 firebase.ts 파일에 있는 키를 복사해서 덮어쓰세요! ▼▼▼▼▼
+        // ▼▼▼ [중요] 사장님 Firebase 키값 복사해서 여기에 넣으세요! ▼▼▼
         const firebaseConfig = {
             apiKey: "AIzaSyAUjfrQ-HVivBLggiOl8vvRZynala1qqyM",
   authDomain: "roastery-f3e2e.firebaseapp.com",
@@ -120,97 +160,189 @@
   messagingSenderId: "79814680110",
   appId: "1:79814680110:web:86aa08fe0e273fed6649bf"
 };
-        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // UI 요소
-        const loginSection = document.getElementById('login-section');
-        const orderSection = document.getElementById('order-section');
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const orderForm = document.getElementById('orderForm');
-        
-        // 1. 날짜 기본값 오늘로 설정
-        document.getElementById('orderDate').valueAsDate = new Date();
+        // --- 데이터 (관리자 앱과 이름이 똑같아야 함) ---
+        const products = [
+            { name: "알토 블렌드", short: "Alto", type: "Blend" },
+            { name: "스트레토 블렌드", short: "Stretto", type: "Blend" },
+            { name: "구스토 블렌드", short: "Gusto", type: "Blend" },
+            { name: "디카페인", short: "Decaf", type: "Single" },
+            { name: "에티오피아", short: "Ethiopia", type: "Single" },
+            { name: "케냐", short: "Kenya", type: "Single" },
+            { name: "과테말라", short: "Guatemala", type: "Single" },
+            { name: "콜롬비아", short: "Colombia", type: "Single" }
+        ];
 
-        // 2. 로그인 상태 감지
-        onAuthStateChanged(auth, (user) => {
+        let cart = []; // 장바구니 배열
+        let currentClient = null; // 로그인한 거래처 정보
+
+        // --- 초기화 ---
+        document.getElementById('orderDate').valueAsDate = new Date();
+        renderProductGrid();
+
+        // --- 로그인 로직 ---
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                loginSection.classList.add('hidden');
-                orderSection.classList.remove('hidden');
-                document.getElementById('welcome-msg').innerText = `${user.email}님, 안녕하세요.`;
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('order-section').classList.remove('hidden');
+                
+                // DB에서 거래처 정보 가져오기 (이메일로 매칭)
+                try {
+                    const q = query(collection(db, "clients"), where("email", "==", user.email));
+                    const querySnapshot = await getDocs(q);
+                    
+                    if (!querySnapshot.empty) {
+                        const docData = querySnapshot.docs[0].data();
+                        currentClient = { id: querySnapshot.docs[0].id, ...docData };
+                        
+                        // 화면에 뿌리기
+                        document.getElementById('disp-name').innerText = currentClient.name;
+                        document.getElementById('disp-address').innerText = currentClient.address || "주소 정보 없음";
+                    } else {
+                        document.getElementById('disp-name').innerText = "등록되지 않은 거래처";
+                        alert("관리자에게 문의하세요. (거래처 정보 미등록)");
+                    }
+                } catch (e) {
+                    console.error("Error fetching client:", e);
+                }
+
             } else {
-                loginSection.classList.remove('hidden');
-                orderSection.classList.add('hidden');
+                document.getElementById('login-section').classList.remove('hidden');
+                document.getElementById('order-section').classList.add('hidden');
+                currentClient = null;
             }
         });
 
-        // 3. 로그인 처리
-        loginBtn.addEventListener('click', async () => {
-    const rawId = document.getElementById('loginId').value.trim(); // 입력한 아이디
-    const password = document.getElementById('password').value;
-    const errorMsg = document.getElementById('login-error');
-    
-    // ▼▼▼ 여기가 핵심! (뒤에 가짜 주소를 붙여줍니다) ▼▼▼
-    const virtualEmail = rawId + "@stretto.co.kr"; 
-    
-    try {
-        await signInWithEmailAndPassword(auth, virtualEmail, password);
-        errorMsg.style.display = 'none';
-    } catch (error) {
-        console.error(error); // 에러 확인용
-        errorMsg.innerText = "로그인 실패: 아이디 또는 비밀번호를 확인하세요.";
-        errorMsg.style.display = 'block';
-    }
-});
-
-        // 4. 로그아웃 처리
-        logoutBtn.addEventListener('click', () => signOut(auth));
-
-        // 5. 주문 전송 (React 관리앱과 연동되는 핵심!)
-        orderForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitBtn = document.getElementById('submitBtn');
-            const successMsg = document.getElementById('success-msg');
-            const errorMsg = document.getElementById('order-error');
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const id = document.getElementById('loginId').value.trim();
+            const pw = document.getElementById('password').value;
+            // 가짜 이메일 생성
+            const email = id.includes('@') ? id : id + "@stretto.com";
             
-            submitBtn.disabled = true;
-            submitBtn.innerText = "전송 중...";
+            signInWithEmailAndPassword(auth, email, pw).catch(err => {
+                document.getElementById('login-msg').innerText = "아이디 또는 비밀번호를 확인하세요.";
+            });
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+
+        // --- UI 렌더링 ---
+        function renderProductGrid() {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = products.map(p => `
+                <div class="product-btn" onclick="addToCart('${p.name}')">
+                    <span class="p-name">${p.name}</span>
+                    <span class="p-sub">${p.type}</span>
+                </div>
+            `).join('');
+        }
+
+        window.addToCart = (productName) => {
+            const existing = cart.find(item => item.name === productName);
+            if (existing) {
+                existing.qty += 1; // 이미 있으면 1kg 추가
+            } else {
+                cart.push({ name: productName, qty: 10 }); // 기본 10kg 시작 (편의상)
+            }
+            renderCart();
+        };
+
+        function renderCart() {
+            const section = document.getElementById('cartSection');
+            const list = document.getElementById('cartList');
+            const btn = document.getElementById('submitBtn');
+
+            if (cart.length === 0) {
+                section.style.display = 'none';
+                btn.disabled = true;
+                btn.innerText = "주문할 품목을 선택하세요";
+                btn.style.background = "#444";
+                return;
+            }
+
+            section.style.display = 'block';
+            btn.disabled = false;
+            btn.innerText = `${cart.length}개 품목 주문 전송`;
+            btn.style.background = "var(--accent-blue)";
+
+            list.innerHTML = cart.map((item, idx) => `
+                <div class="cart-item">
+                    <div class="cart-name">${item.name}</div>
+                    <div class="qty-control">
+                        <button class="qty-btn" onclick="updateQty(${idx}, -1)">-</button>
+                        <input type="number" class="qty-val" value="${item.qty}" onchange="updateQtyManual(${idx}, this.value)" style="background:transparent; border:none; color:white;">
+                        <span style="font-size:0.8rem">kg</span>
+                        <button class="qty-btn" onclick="updateQty(${idx}, 1)">+</button>
+                        <button class="del-btn" onclick="removeItem(${idx})">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.updateQty = (idx, delta) => {
+            cart[idx].qty += delta;
+            if (cart[idx].qty <= 0) cart[idx].qty = 1; // 최소 1kg
+            renderCart();
+        };
+        
+        window.updateQtyManual = (idx, val) => {
+            cart[idx].qty = parseFloat(val);
+            renderCart();
+        };
+
+        window.removeItem = (idx) => {
+            cart.splice(idx, 1);
+            renderCart();
+        };
+
+        // --- 주문 전송 (핵심: Loop & Send) ---
+        document.getElementById('submitBtn').addEventListener('click', async () => {
+            if (!currentClient) return alert("거래처 정보가 로드되지 않았습니다.");
+            if (!confirm("주문을 전송하시겠습니까?")) return;
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "전송 중...";
+
+            const date = document.getElementById('orderDate').value;
+            const note = document.getElementById('orderNote').value;
 
             try {
-                // React 앱의 OrderLog 타입과 일치하게 데이터 구성
-                await addDoc(collection(db, "orders"), {
-                    date: document.getElementById('orderDate').value,
-                    clientId: auth.currentUser.uid, // 회원가입한 파트너의 고유 ID
-                    clientName: document.getElementById('clientName').value,
-                    productType: document.getElementById('productType').value,
-                    amountKg: parseFloat(document.getElementById('amountKg').value),
-                    unitPrice: 0, // 단가는 관리자가 확인 후 확정 (일단 0으로 전송)
-                    note: document.getElementById('note').value,
-                    createdAt: serverTimestamp()
+                // 장바구니에 있는 품목 하나하나를 개별 주문서로 변환하여 전송
+                // (관리자 프로그램 테이블 구조 호환을 위함)
+                const promises = cart.map(item => {
+                    return addDoc(collection(db, "orders"), {
+                        date: date,
+                        clientId: currentClient.id,
+                        clientName: currentClient.name, // 관리자 화면에 바로 표시됨!
+                        productType: item.name,
+                        amountKg: parseFloat(item.qty),
+                        unitPrice: 0, // 단가는 관리자가 확인 후 확정
+                        note: note,   // 모든 품목에 동일 요청사항 첨부
+                        createdAt: serverTimestamp()
+                    });
                 });
 
-                successMsg.style.display = "block";
-                orderForm.reset();
-                // 날짜 다시 오늘로
-                document.getElementById('orderDate').valueAsDate = new Date();
-                
-                setTimeout(() => {
-                    successMsg.style.display = "none";
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = "발주 넣기";
-                }, 2000);
+                await Promise.all(promises);
 
-            } catch (error) {
-                console.error(error);
-                errorMsg.innerText = "오류 발생: 잠시 후 다시 시도해주세요.";
-                errorMsg.style.display = "block";
-                submitBtn.disabled = false;
+                alert("✅ 주문이 정상적으로 접수되었습니다!");
+                cart = [];
+                renderCart();
+                document.getElementById('orderNote').value = '';
+
+            } catch (err) {
+                console.error(err);
+                alert("전송 중 오류가 발생했습니다.");
+                btn.disabled = false;
+                btn.innerText = "다시 전송";
             }
         });
+
     </script>
 </body>
 </html>
