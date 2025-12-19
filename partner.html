@@ -8,104 +8,54 @@
         @font-face { font-family: 'Ciutadella'; src: url('Ciutadella-Regular.otf') format('opentype'); }
         :root { --accent-blue: #2997ff; --bg-dark: #111; --card-bg: #1c1c1e; }
         
-        body {
-            margin: 0; padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
-            background-color: #000; color: #f5f5f7;
-            display: flex; justify-content: center; min-height: 100vh;
-        }
-        
-        .container {
-            width: 100%; max-width: 480px; padding: 20px; box-sizing: border-box;
-            background: #000; display: flex; flex-direction: column;
-        }
+        body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif; background-color: #000; color: #f5f5f7; display: flex; justify-content: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 480px; padding: 20px; box-sizing: border-box; background: #000; display: flex; flex-direction: column; }
 
-        /* 헤더 & 정보 영역 */
+        /* 기존 스타일 유지 */
         header { margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 20px; }
         h2 { font-family: 'Ciutadella', sans-serif; margin: 0 0 5px 0; color: var(--accent-blue); }
-        .client-info-box {
-            background: var(--card-bg); padding: 15px; border-radius: 8px; margin-top: 15px;
-            border: 1px solid #333; font-size: 0.9rem; color: #ccc;
-        }
+        .client-info-box { background: var(--card-bg); padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #333; font-size: 0.9rem; color: #ccc; }
         .client-info-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
         .info-label { color: #666; }
         .info-value { font-weight: bold; color: white; text-align: right; }
-
-        /* 제품 그리드 (섹션 구분) */
         .grid-section { margin-bottom: 30px; }
         .grid-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 10px; color: #f5f5f7; border-left: 3px solid var(--accent-blue); padding-left: 10px; display: flex; align-items: center; justify-content: space-between; }
         .grid-desc { font-size: 0.75rem; color: #888; font-weight: normal; }
-        
-        .product-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
-        }
-        .product-btn {
-            background: var(--card-bg); border: 1px solid #333; color: white;
-            padding: 15px 10px; border-radius: 8px; cursor: pointer; text-align: left;
-            transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between;
-            height: 90px;
-        }
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .product-btn { background: var(--card-bg); border: 1px solid #333; color: white; padding: 15px 10px; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; height: 90px; }
         .product-btn:active { transform: scale(0.98); background: #333; }
         .p-name { font-weight: bold; font-size: 1rem; }
         .p-sub { font-size: 0.8rem; color: #666; margin-top: 5px; }
-        
-        /* 싱글 오리진 버튼 스타일 (약간 다르게) */
         .product-btn.single { border-color: #444; background: #222; }
-
-        /* 장바구니 영역 */
-        .cart-section {
-            margin-top: 20px; background: #1a1a1a; border-radius: 12px; padding: 20px;
-            border: 1px solid #333;
-        }
-        .cart-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 0; border-bottom: 1px solid #333;
-        }
+        .cart-section { margin-top: 20px; background: #1a1a1a; border-radius: 12px; padding: 20px; border: 1px solid #333; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #333; }
         .cart-item:last-child { border-bottom: none; }
         .cart-info { display: flex; flex-direction: column; }
         .cart-name { font-weight: bold; font-size: 0.95rem; }
         .cart-type { font-size: 0.75rem; color: #888; }
-        
         .qty-control { display: flex; align-items: center; gap: 8px; }
-        .qty-btn {
-            width: 32px; height: 32px; border-radius: 50%; border: none;
-            background: #333; color: white; font-weight: bold; cursor: pointer; font-size: 1.1rem;
-        }
+        .qty-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: #333; color: white; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
         .qty-val-box { width: 50px; text-align: center; }
         .qty-val { width: 100%; text-align: center; font-weight: bold; background: transparent; border: none; color: white; font-size: 1rem; }
         .qty-unit { font-size: 0.7rem; color: #888; display: block; text-align: center;}
-        
         .del-btn { color: #ff453a; background: none; border: none; margin-left: 5px; cursor: pointer; padding: 5px; }
-
-        /* 하단 고정 버튼 */
-        .bottom-action {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(0,0,0,0.9); padding: 20px;
-            border-top: 1px solid #333; text-align: center;
-            display: flex; justify-content: center; z-index: 100;
-        }
-        .submit-btn {
-            width: 100%; max-width: 440px; padding: 18px; 
-            background: var(--accent-blue); color: white; border: none; 
-            border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer;
-        }
+        .bottom-action { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.9); padding: 20px; border-top: 1px solid #333; text-align: center; display: flex; justify-content: center; z-index: 100; }
+        .submit-btn { width: 100%; max-width: 440px; padding: 18px; background: var(--accent-blue); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
         .submit-btn:disabled { background: #444; color: #888; }
-
-        /* 로그인 화면 */
         #login-section { text-align: center; margin-top: 100px; }
-        .login-input {
-            width: 100%; padding: 15px; margin-bottom: 10px; background: #222;
-            border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box;
-        }
-        .login-btn {
-            width: 100%; padding: 15px; background: white; color: black; font-weight: bold;
-            border: none; border-radius: 8px; cursor: pointer;
-        }
+        .login-input { width: 100%; padding: 15px; margin-bottom: 10px; background: #222; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
+        .login-btn { width: 100%; padding: 15px; background: white; color: black; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
         .hidden { display: none !important; }
-        .date-picker {
-            width: 100%; padding: 10px; background: #222; color: white; border: 1px solid #333;
-            border-radius: 8px; margin-top: 5px; font-family: inherit;
-        }
+        .date-picker { width: 100%; padding: 10px; background: #222; color: white; border: 1px solid #333; border-radius: 8px; margin-top: 5px; font-family: inherit; }
+
+        /* ▼▼▼ [NEW] 주문 내역 스타일 추가 ▼▼▼ */
+        .history-section { margin-top: 40px; margin-bottom: 100px; border-top: 1px solid #333; padding-top: 30px; }
+        .history-card { background: #151515; border-radius: 8px; padding: 15px; margin-bottom: 10px; border: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        .h-date { font-size: 0.8rem; color: var(--accent-blue); font-weight: bold; margin-bottom: 2px;}
+        .h-name { font-weight: bold; font-size: 1rem; }
+        .h-detail { font-size: 0.85rem; color: #888; }
+        .h-amount { font-weight: bold; font-size: 1.1rem; color: white; }
+        .cancel-btn { background: #330000; border: 1px solid #660000; color: #ff453a; font-size: 0.8rem; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 10px;}
     </style>
 </head>
 <body>
@@ -143,21 +93,12 @@
             </header>
 
             <div class="grid-section">
-                <div class="grid-title">
-                    블렌드 (Blend)
-                    <span class="grid-desc">1kg 단위</span>
-                </div>
-                <div class="product-grid" id="grid-blend">
-                    </div>
+                <div class="grid-title">블렌드 (Blend) <span class="grid-desc">1kg 단위</span></div>
+                <div class="product-grid" id="grid-blend"></div>
             </div>
-
             <div class="grid-section">
-                <div class="grid-title">
-                    싱글 오리진 (Single)
-                    <span class="grid-desc">최소 200g / 100g 단위</span>
-                </div>
-                <div class="product-grid" id="grid-single">
-                    </div>
+                <div class="grid-title">싱글 오리진 (Single) <span class="grid-desc">최소 200g / 100g 단위</span></div>
+                <div class="product-grid" id="grid-single"></div>
             </div>
 
             <div class="cart-section" id="cartSection" style="display:none;">
@@ -166,10 +107,22 @@
                     <span id="total-weight" style="color:#888; font-weight:normal; font-size:0.9rem;">0kg</span>
                 </div>
                 <div id="cartList"></div>
-                <input type="text" id="orderNote" placeholder="요청사항 (선택)" style="width:100%; padding:10px; background:#222; border:1px solid #333; color:white; margin-top:15px; border-radius:6px; box-sizing:border-box;">
+                <input type="text" id="orderNote" placeholder="요청사항 (예: 굵게 갈아주세요)" style="width:100%; padding:10px; background:#222; border:1px solid #333; color:white; margin-top:15px; border-radius:6px; box-sizing:border-box;">
+            </div>
+
+            <div class="history-section">
+                <div class="grid-title" style="border-left-color: #666; color: #ccc;">
+                    최근 주문 내역
+                    <span class="grid-desc">실수 시 [취소] 후 재주문</span>
+                </div>
+                <div id="historyList">
+                    <div style="text-align:center; padding: 20px; color:#444;">내역을 불러오는 중...</div>
+                </div>
             </div>
             
-            <div style="height: 100px;"></div> <div class="bottom-action">
+            <div style="height: 100px;"></div>
+
+            <div class="bottom-action">
                 <button id="submitBtn" class="submit-btn" disabled>주문할 품목을 선택하세요</button>
             </div>
         </div>
@@ -178,7 +131,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, where, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // ▼▼▼ [중요] 사장님 Firebase 키값 복사해서 여기에 넣으세요! ▼▼▼
         const firebaseConfig = {
@@ -188,19 +141,19 @@
   storageBucket: "roastery-f3e2e.firebasestorage.app",
   messagingSenderId: "79814680110",
   appId: "1:79814680110:web:86aa08fe0e273fed6649bf"
-};
+};;
         // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- 데이터 정의 (타입 구분: Blend / Single) ---
+        // --- 데이터 정의 ---
         const products = [
             { name: "알토 블렌드 (Alto)", type: "Blend" },
             { name: "스트레토 블렌드 (Stretto)", type: "Blend" },
             { name: "구스토 블렌드 (Gusto)", type: "Blend" },
-            { name: "디카페인 (Decaffeine)", type: "Single" }, // 디카페인은 보통 싱글로 취급
+            { name: "디카페인 (Decaffeine)", type: "Single" },
             { name: "에티오피아", type: "Single" },
             { name: "케냐", type: "Single" },
             { name: "과테말라", type: "Single" },
@@ -211,6 +164,7 @@
 
         let cart = []; 
         let currentClient = null;
+        let historyUnsubscribe = null; // 실시간 리스너 관리용
 
         // --- 초기화 ---
         document.getElementById('orderDate').valueAsDate = new Date();
@@ -223,6 +177,7 @@
                 document.getElementById('order-section').classList.remove('hidden');
                 
                 try {
+                    // 1. 거래처 정보 가져오기
                     const q = query(collection(db, "clients"), where("email", "==", user.email));
                     const querySnapshot = await getDocs(q);
                     
@@ -231,6 +186,10 @@
                         currentClient = { id: querySnapshot.docs[0].id, ...docData };
                         document.getElementById('disp-name').innerText = currentClient.name;
                         document.getElementById('disp-address').innerText = currentClient.address || "-";
+                        
+                        // 2. [NEW] 내 주문 내역 실시간 감시 시작
+                        loadOrderHistory(currentClient.id);
+
                     } else {
                         document.getElementById('disp-name').innerText = "등록되지 않은 거래처";
                         alert("관리자에게 문의하세요. (정보 미등록)");
@@ -241,9 +200,63 @@
                 document.getElementById('login-section').classList.remove('hidden');
                 document.getElementById('order-section').classList.add('hidden');
                 currentClient = null;
+                if(historyUnsubscribe) historyUnsubscribe(); // 로그아웃 시 리스너 해제
             }
         });
 
+        // --- [NEW] 주문 내역 실시간 로드 함수 ---
+        function loadOrderHistory(clientId) {
+            const historyList = document.getElementById('historyList');
+            // 내 아이디로 된 주문만 찾기
+            const q = query(
+                collection(db, "orders"), 
+                where("clientId", "==", clientId)
+                // orderBy("date", "desc") // 인덱스 에러 방지를 위해 일단 제외 (클라이언트에서 정렬)
+            );
+
+            historyUnsubscribe = onSnapshot(q, (snapshot) => {
+                const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // 날짜 최신순 정렬 (JS로 처리)
+                orders.sort((a, b) => {
+                    if (a.date === b.date) return b.createdAt - a.createdAt; // 같은 날짜면 등록시간순
+                    return b.date.localeCompare(a.date);
+                });
+
+                if (orders.length === 0) {
+                    historyList.innerHTML = '<div style="text-align:center; padding:20px; color:#444;">아직 주문 내역이 없습니다.</div>';
+                    return;
+                }
+
+                historyList.innerHTML = orders.map(order => `
+                    <div class="history-card">
+                        <div>
+                            <div class="h-date">${order.date}</div>
+                            <div class="h-name">${order.productType}</div>
+                            ${order.note ? `<div class="h-detail">📝 ${order.note}</div>` : ''}
+                        </div>
+                        <div style="display:flex; align-items:center;">
+                            <div class="h-amount">${order.amountKg}kg</div>
+                            <button class="cancel-btn" onclick="cancelOrder('${order.id}')">취소</button>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        // --- [NEW] 주문 취소 함수 (전역 window 객체에 등록) ---
+        window.cancelOrder = async (orderId) => {
+            if(!confirm("이 주문을 정말 취소하시겠습니까?\n(관리자 화면에서도 사라집니다)")) return;
+            try {
+                await deleteDoc(doc(db, "orders", orderId));
+                alert("주문이 취소되었습니다.");
+            } catch(e) {
+                console.error(e);
+                alert("취소 실패: 이미 처리된 주문이거나 오류가 발생했습니다.");
+            }
+        };
+
+        // --- 로그인 버튼 ---
         document.getElementById('loginBtn').addEventListener('click', () => {
             const id = document.getElementById('loginId').value.trim();
             const pw = document.getElementById('password').value;
@@ -256,7 +269,7 @@
 
         document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
 
-        // --- UI 렌더링 (구분해서 그리기) ---
+        // --- UI 렌더링 ---
         function renderProductGrids() {
             const blendGrid = document.getElementById('grid-blend');
             const singleGrid = document.getElementById('grid-single');
@@ -276,20 +289,13 @@
             `).join('');
         }
 
-        // --- 장바구니 로직 (핵심 변경점) ---
+        // --- 장바구니 로직 ---
         window.addToCart = (productName, type) => {
             const existing = cart.find(item => item.name === productName);
-            
             if (existing) {
-                // 이미 있으면 단위만큼 추가
-                if (type === 'Single') {
-                    // 소수점 연산 오류 방지 (0.2 + 0.1)
-                    existing.qty = parseFloat((existing.qty + 0.1).toFixed(1));
-                } else {
-                    existing.qty += 1;
-                }
+                if (type === 'Single') existing.qty = parseFloat((existing.qty + 0.1).toFixed(1));
+                else existing.qty += 1;
             } else {
-                // 없으면 신규 추가 (싱글은 0.2부터, 블렌드는 1부터)
                 const initialQty = type === 'Single' ? 0.2 : 1;
                 cart.push({ name: productName, qty: initialQty, type: type });
             }
@@ -298,18 +304,10 @@
 
         window.updateQty = (idx, direction) => {
             const item = cart[idx];
-            // 단위 설정 (싱글: 0.1kg, 블렌드: 1kg)
             const step = item.type === 'Single' ? 0.1 : 1;
-            // 최소값 설정 (싱글: 0.2kg, 블렌드: 1kg)
             const min = item.type === 'Single' ? 0.2 : 1;
-
-            let newQty = item.qty + (step * direction);
-            
-            // 소수점 깔끔하게 처리
-            newQty = parseFloat(newQty.toFixed(1));
-
-            if (newQty < min) return; // 최소값 밑으로 안 내려감
-
+            let newQty = parseFloat((item.qty + (step * direction)).toFixed(1));
+            if (newQty < min) return;
             item.qty = newQty;
             renderCart();
         };
@@ -334,11 +332,8 @@
             }
 
             section.style.display = 'block';
-            
-            // 총 무게 계산
             const totalKg = cart.reduce((acc, item) => acc + item.qty, 0).toFixed(1);
             totalWeightEl.innerText = `총 ${totalKg}kg`;
-            
             btn.disabled = false;
             btn.innerText = "주문 전송하기";
             btn.style.background = "var(--accent-blue)";
@@ -389,19 +384,16 @@
                 });
 
                 await Promise.all(promises);
-
-                // 여기에 EmailJS나 텔레그램 알림 코드 추가 가능
-
-                alert("✅ 주문이 완료되었습니다!");
+                alert("✅ 주문이 완료되었습니다!\n아래 [최근 주문 내역]에서 확인하세요.");
                 cart = [];
                 renderCart();
                 document.getElementById('orderNote').value = '';
+                btn.disabled = false;
 
             } catch (err) {
                 console.error(err);
                 alert("전송 실패. 관리자에게 문의하세요.");
                 btn.disabled = false;
-                btn.innerText = "다시 전송";
             }
         });
     </script>
