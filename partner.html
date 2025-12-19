@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>스트레토 간편 발주</title>
     <style>
-        /* === 스타일 (기존과 동일) === */
+        /* === 기존 스타일 유지 === */
         @font-face { font-family: 'Ciutadella'; src: url('Ciutadella-Regular.otf') format('opentype'); }
         :root { --accent-blue: #2997ff; --bg-dark: #111; --card-bg: #1c1c1e; }
         
@@ -149,7 +149,6 @@
 };
         // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-       
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -204,6 +203,25 @@
             }
         });
 
+        // --- 텔레그램 전송 함수 (Vercel API 호출) ---
+        async function sendTelegramNotification(message) {
+            try {
+                // Vercel Serverless Function 호출
+                const response = await fetch('/api/send-telegram', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: message })
+                });
+                
+                if (!response.ok) {
+                    console.warn("텔레그램 전송 실패 (서버 오류)");
+                }
+            } catch (err) {
+                console.warn("텔레그램 전송 실패 (네트워크 오류)", err);
+                // 텔레그램 전송 실패해도 주문 자체는 성공 처리하기 위해 에러를 던지지 않음
+            }
+        }
+
         // --- 마감 시간 계산 (11시 로직) ---
         function calculateDeadline(createdDate) {
             let deadline = new Date(createdDate);
@@ -249,7 +267,6 @@
                     const days = ['일','월','화','수','목','금','토'];
                     const deadlineStr = `${days[deadline.getDay()]}요일 11:00`;
                     
-                    // 취소 알림에 보낼 정보 미리 세팅
                     const productDetails = `${order.productType} ${order.amountKg}kg`;
 
                     return `
@@ -271,7 +288,7 @@
             });
         }
 
-        // --- [NEW] 취소 실행 및 알림 전송 ---
+        // --- [NEW] 취소 로직 ---
         window.tryCancel = async (orderId, deadlineISO, productDetails) => {
             const now = new Date();
             const deadline = new Date(deadlineISO);
@@ -284,18 +301,13 @@
             if(!confirm("주문을 정말 취소하시겠습니까?")) return;
 
             try {
-                // 1. 주문 삭제 (Firestore)
+                // 1. 주문 삭제
                 await deleteDoc(doc(db, "orders", orderId));
 
-                // 2. 텔레그램 취소 알림 전송
+                // 2. 알림 전송
                 const message = `🚫 [주문 취소 알림]\n\n👤 거래처: ${currentClient.name}\n📦 취소품목: ${productDetails}\n⏰ 취소시간: ${now.toLocaleString()}`;
-
-                // ▲▲▲ 지운 자리에 이거를 붙여넣으세요 ▲▲▲
-await fetch('/api/send-telegram', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text: message })
-});
+                
+                sendTelegramNotification(message); // API 호출 함수 사용
 
                 alert("주문이 취소되었습니다.");
 
@@ -417,7 +429,7 @@ await fetch('/api/send-telegram', {
             const note = document.getElementById('orderNote').value;
 
             try {
-                // 1. Firebase에 저장
+                // 1. Firebase 저장
                 const promises = cart.map(item => {
                     return addDoc(collection(db, "orders"), {
                         date: date,
@@ -433,16 +445,11 @@ await fetch('/api/send-telegram', {
 
                 await Promise.all(promises);
 
-                // 2. 텔레그램 알림 전송 (주문 접수)
+                // 2. 알림 전송
                 const orderDetails = cart.map(item => `- ${item.name}: ${item.qty}kg`).join('\n');
                 const message = `🔔 [신규 주문 알림]\n\n👤 거래처: ${currentClient.name}\n📅 날짜: ${date}\n📝 요청: ${note || '없음'}\n\n📦 주문내역:\n${orderDetails}`;
 
-                
-await fetch('/api/send-telegram', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text: message })
-});;
+                sendTelegramNotification(message); // API 호출
 
                 alert("✅ 주문 완료! [취소]는 마감 시간 전까지만 가능합니다.");
                 cart = [];
