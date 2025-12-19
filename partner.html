@@ -149,6 +149,11 @@
 };
         // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
+        // ▼▼▼ [중요] 텔레그램 봇 정보 (여기서 한 번만 입력하면 됩니다) ▼▼▼
+        const TELEGRAM_BOT_TOKEN = "8456992319:AAFHE6BXHIfhWn1S6QDcWmS4ZwSmffy0q-U"; // 사장님 봇 토큰 입력!
+        const TELEGRAM_CHAT_ID = "7870191508"; // 사장님 ID
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -287,16 +292,12 @@
                 await deleteDoc(doc(db, "orders", orderId));
 
                 // 2. 텔레그램 취소 알림 전송
-                // ▼▼▼ 여기에 봇 토큰과 Chat ID를 넣으세요! ▼▼▼
-                const botToken = "762...:AAH..."; // <--- 사장님 봇 토큰
-                const chatId = "7870191508"; // 사장님 Chat ID
-
                 const message = `🚫 [주문 취소 알림]\n\n👤 거래처: ${currentClient.name}\n📦 취소품목: ${productDetails}\n⏰ 취소시간: ${now.toLocaleString()}`;
 
-                fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: chatId, text: message })
+                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message })
                 });
 
                 alert("주문이 취소되었습니다.");
@@ -419,6 +420,7 @@
             const note = document.getElementById('orderNote').value;
 
             try {
+                // 1. Firebase에 저장
                 const promises = cart.map(item => {
                     return addDoc(collection(db, "orders"), {
                         date: date,
@@ -434,18 +436,14 @@
 
                 await Promise.all(promises);
 
-                // 주문 접수 알림 전송
-                // ▼▼▼ 여기에 봇 토큰과 Chat ID를 넣으세요! ▼▼▼
-                const botToken = "8456992319:AAFHE6BXHIfhWn1S6QDcWmS4ZwSmffy0q-U"; // <--- 사장님 봇 토큰
-                const chatId = "7870191508"; // 사장님 Chat ID
-
+                // 2. 텔레그램 알림 전송 (주문 접수)
                 const orderDetails = cart.map(item => `- ${item.name}: ${item.qty}kg`).join('\n');
                 const message = `🔔 [신규 주문 알림]\n\n👤 거래처: ${currentClient.name}\n📅 날짜: ${date}\n📝 요청: ${note || '없음'}\n\n📦 주문내역:\n${orderDetails}`;
 
-                fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: chatId, text: message })
+                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message })
                 });
 
                 alert("✅ 주문 완료! [취소]는 마감 시간 전까지만 가능합니다.");
