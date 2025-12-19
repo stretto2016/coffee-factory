@@ -31,8 +31,11 @@
         .info-label { color: #666; }
         .info-value { font-weight: bold; color: white; text-align: right; }
 
-        /* 제품 그리드 (버튼형) */
-        .grid-title { font-size: 1rem; font-weight: bold; margin: 20px 0 10px; color: #888; }
+        /* 제품 그리드 (섹션 구분) */
+        .grid-section { margin-bottom: 30px; }
+        .grid-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 10px; color: #f5f5f7; border-left: 3px solid var(--accent-blue); padding-left: 10px; display: flex; align-items: center; justify-content: space-between; }
+        .grid-desc { font-size: 0.75rem; color: #888; font-weight: normal; }
+        
         .product-grid {
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
         }
@@ -40,15 +43,18 @@
             background: var(--card-bg); border: 1px solid #333; color: white;
             padding: 15px 10px; border-radius: 8px; cursor: pointer; text-align: left;
             transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between;
-            height: 80px;
+            height: 90px;
         }
         .product-btn:active { transform: scale(0.98); background: #333; }
         .p-name { font-weight: bold; font-size: 1rem; }
         .p-sub { font-size: 0.8rem; color: #666; margin-top: 5px; }
+        
+        /* 싱글 오리진 버튼 스타일 (약간 다르게) */
+        .product-btn.single { border-color: #444; background: #222; }
 
         /* 장바구니 영역 */
         .cart-section {
-            margin-top: 30px; background: #1a1a1a; border-radius: 12px; padding: 20px;
+            margin-top: 20px; background: #1a1a1a; border-radius: 12px; padding: 20px;
             border: 1px solid #333;
         }
         .cart-item {
@@ -56,21 +62,27 @@
             padding: 12px 0; border-bottom: 1px solid #333;
         }
         .cart-item:last-child { border-bottom: none; }
-        .cart-name { font-weight: bold; }
-        .qty-control { display: flex; align-items: center; gap: 10px; }
+        .cart-info { display: flex; flex-direction: column; }
+        .cart-name { font-weight: bold; font-size: 0.95rem; }
+        .cart-type { font-size: 0.75rem; color: #888; }
+        
+        .qty-control { display: flex; align-items: center; gap: 8px; }
         .qty-btn {
-            width: 30px; height: 30px; border-radius: 50%; border: none;
-            background: #333; color: white; font-weight: bold; cursor: pointer;
+            width: 32px; height: 32px; border-radius: 50%; border: none;
+            background: #333; color: white; font-weight: bold; cursor: pointer; font-size: 1.1rem;
         }
-        .qty-val { width: 40px; text-align: center; font-weight: bold; }
-        .del-btn { color: #ff453a; background: none; border: none; margin-left: 10px; cursor: pointer; }
+        .qty-val-box { width: 50px; text-align: center; }
+        .qty-val { width: 100%; text-align: center; font-weight: bold; background: transparent; border: none; color: white; font-size: 1rem; }
+        .qty-unit { font-size: 0.7rem; color: #888; display: block; text-align: center;}
+        
+        .del-btn { color: #ff453a; background: none; border: none; margin-left: 5px; cursor: pointer; padding: 5px; }
 
         /* 하단 고정 버튼 */
         .bottom-action {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: rgba(0,0,0,0.9); padding: 20px;
             border-top: 1px solid #333; text-align: center;
-            display: flex; justify-content: center;
+            display: flex; justify-content: center; z-index: 100;
         }
         .submit-btn {
             width: 100%; max-width: 440px; padding: 18px; 
@@ -130,14 +142,31 @@
                 </div>
             </header>
 
-            <div class="grid-title">제품 선택 (터치하여 추가)</div>
-            <div class="product-grid" id="productGrid">
+            <div class="grid-section">
+                <div class="grid-title">
+                    블렌드 (Blend)
+                    <span class="grid-desc">1kg 단위</span>
                 </div>
+                <div class="product-grid" id="grid-blend">
+                    </div>
+            </div>
+
+            <div class="grid-section">
+                <div class="grid-title">
+                    싱글 오리진 (Single)
+                    <span class="grid-desc">최소 200g / 100g 단위</span>
+                </div>
+                <div class="product-grid" id="grid-single">
+                    </div>
+            </div>
 
             <div class="cart-section" id="cartSection" style="display:none;">
-                <div style="font-weight:bold; margin-bottom:15px; color:var(--accent-blue);">담긴 품목</div>
+                <div style="font-weight:bold; margin-bottom:15px; color:var(--accent-blue); display:flex; justify-content:space-between;">
+                    <span>주문 목록</span>
+                    <span id="total-weight" style="color:#888; font-weight:normal; font-size:0.9rem;">0kg</span>
+                </div>
                 <div id="cartList"></div>
-                <input type="text" id="orderNote" placeholder="요청사항 (선택)" style="width:100%; padding:10px; background:#222; border:1px solid #333; color:white; margin-top:15px; border-radius:6px;">
+                <input type="text" id="orderNote" placeholder="요청사항 (선택)" style="width:100%; padding:10px; background:#222; border:1px solid #333; color:white; margin-top:15px; border-radius:6px; box-sizing:border-box;">
             </div>
             
             <div style="height: 100px;"></div> <div class="bottom-action">
@@ -166,24 +195,26 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- 데이터 (관리자 앱과 이름이 똑같아야 함) ---
+        // --- 데이터 정의 (타입 구분: Blend / Single) ---
         const products = [
-            { name: "알토 블렌드", short: "Alto", type: "Blend" },
-            { name: "스트레토 블렌드", short: "Stretto", type: "Blend" },
-            { name: "구스토 블렌드", short: "Gusto", type: "Blend" },
-            { name: "디카페인", short: "Decaf", type: "Single" },
-            { name: "에티오피아", short: "Ethiopia", type: "Single" },
-            { name: "케냐", short: "Kenya", type: "Single" },
-            { name: "과테말라", short: "Guatemala", type: "Single" },
-            { name: "콜롬비아", short: "Colombia", type: "Single" }
+            { name: "알토 블렌드 (Alto)", type: "Blend" },
+            { name: "스트레토 블렌드 (Stretto)", type: "Blend" },
+            { name: "구스토 블렌드 (Gusto)", type: "Blend" },
+            { name: "디카페인 (Decaffeine)", type: "Single" }, // 디카페인은 보통 싱글로 취급
+            { name: "에티오피아", type: "Single" },
+            { name: "케냐", type: "Single" },
+            { name: "과테말라", type: "Single" },
+            { name: "콜롬비아", type: "Single" },
+            { name: "르완다", type: "Single" },
+            { name: "파푸아뉴기니", type: "Single" }
         ];
 
-        let cart = []; // 장바구니 배열
-        let currentClient = null; // 로그인한 거래처 정보
+        let cart = []; 
+        let currentClient = null;
 
         // --- 초기화 ---
         document.getElementById('orderDate').valueAsDate = new Date();
-        renderProductGrid();
+        renderProductGrids();
 
         // --- 로그인 로직 ---
         onAuthStateChanged(auth, async (user) => {
@@ -191,7 +222,6 @@
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('order-section').classList.remove('hidden');
                 
-                // DB에서 거래처 정보 가져오기 (이메일로 매칭)
                 try {
                     const q = query(collection(db, "clients"), where("email", "==", user.email));
                     const querySnapshot = await getDocs(q);
@@ -199,17 +229,13 @@
                     if (!querySnapshot.empty) {
                         const docData = querySnapshot.docs[0].data();
                         currentClient = { id: querySnapshot.docs[0].id, ...docData };
-                        
-                        // 화면에 뿌리기
                         document.getElementById('disp-name').innerText = currentClient.name;
-                        document.getElementById('disp-address').innerText = currentClient.address || "주소 정보 없음";
+                        document.getElementById('disp-address').innerText = currentClient.address || "-";
                     } else {
                         document.getElementById('disp-name').innerText = "등록되지 않은 거래처";
-                        alert("관리자에게 문의하세요. (거래처 정보 미등록)");
+                        alert("관리자에게 문의하세요. (정보 미등록)");
                     }
-                } catch (e) {
-                    console.error("Error fetching client:", e);
-                }
+                } catch (e) { console.error(e); }
 
             } else {
                 document.getElementById('login-section').classList.remove('hidden');
@@ -221,7 +247,6 @@
         document.getElementById('loginBtn').addEventListener('click', () => {
             const id = document.getElementById('loginId').value.trim();
             const pw = document.getElementById('password').value;
-            // 가짜 이메일 생성
             const email = id.includes('@') ? id : id + "@stretto.com";
             
             signInWithEmailAndPassword(auth, email, pw).catch(err => {
@@ -231,24 +256,66 @@
 
         document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
 
-        // --- UI 렌더링 ---
-        function renderProductGrid() {
-            const grid = document.getElementById('productGrid');
-            grid.innerHTML = products.map(p => `
-                <div class="product-btn" onclick="addToCart('${p.name}')">
+        // --- UI 렌더링 (구분해서 그리기) ---
+        function renderProductGrids() {
+            const blendGrid = document.getElementById('grid-blend');
+            const singleGrid = document.getElementById('grid-single');
+
+            blendGrid.innerHTML = products.filter(p => p.type === 'Blend').map(p => `
+                <div class="product-btn" onclick="addToCart('${p.name}', 'Blend')">
                     <span class="p-name">${p.name}</span>
-                    <span class="p-sub">${p.type}</span>
+                    <span class="p-sub" style="color:var(--accent-blue)">블렌드</span>
+                </div>
+            `).join('');
+
+            singleGrid.innerHTML = products.filter(p => p.type === 'Single').map(p => `
+                <div class="product-btn single" onclick="addToCart('${p.name}', 'Single')">
+                    <span class="p-name">${p.name}</span>
+                    <span class="p-sub" style="color:#d97706">싱글 오리진</span>
                 </div>
             `).join('');
         }
 
-        window.addToCart = (productName) => {
+        // --- 장바구니 로직 (핵심 변경점) ---
+        window.addToCart = (productName, type) => {
             const existing = cart.find(item => item.name === productName);
+            
             if (existing) {
-                existing.qty += 1; // 이미 있으면 1kg 추가
+                // 이미 있으면 단위만큼 추가
+                if (type === 'Single') {
+                    // 소수점 연산 오류 방지 (0.2 + 0.1)
+                    existing.qty = parseFloat((existing.qty + 0.1).toFixed(1));
+                } else {
+                    existing.qty += 1;
+                }
             } else {
-                cart.push({ name: productName, qty: 10 }); // 기본 10kg 시작 (편의상)
+                // 없으면 신규 추가 (싱글은 0.2부터, 블렌드는 1부터)
+                const initialQty = type === 'Single' ? 0.2 : 1;
+                cart.push({ name: productName, qty: initialQty, type: type });
             }
+            renderCart();
+        };
+
+        window.updateQty = (idx, direction) => {
+            const item = cart[idx];
+            // 단위 설정 (싱글: 0.1kg, 블렌드: 1kg)
+            const step = item.type === 'Single' ? 0.1 : 1;
+            // 최소값 설정 (싱글: 0.2kg, 블렌드: 1kg)
+            const min = item.type === 'Single' ? 0.2 : 1;
+
+            let newQty = item.qty + (step * direction);
+            
+            // 소수점 깔끔하게 처리
+            newQty = parseFloat(newQty.toFixed(1));
+
+            if (newQty < min) return; // 최소값 밑으로 안 내려감
+
+            item.qty = newQty;
+            renderCart();
+        };
+
+        window.removeItem = (idx) => {
+            cart.splice(idx, 1);
             renderCart();
         };
 
@@ -256,6 +323,7 @@
             const section = document.getElementById('cartSection');
             const list = document.getElementById('cartList');
             const btn = document.getElementById('submitBtn');
+            const totalWeightEl = document.getElementById('total-weight');
 
             if (cart.length === 0) {
                 section.style.display = 'none';
@@ -266,17 +334,27 @@
             }
 
             section.style.display = 'block';
+            
+            // 총 무게 계산
+            const totalKg = cart.reduce((acc, item) => acc + item.qty, 0).toFixed(1);
+            totalWeightEl.innerText = `총 ${totalKg}kg`;
+            
             btn.disabled = false;
-            btn.innerText = `${cart.length}개 품목 주문 전송`;
+            btn.innerText = "주문 전송하기";
             btn.style.background = "var(--accent-blue)";
 
             list.innerHTML = cart.map((item, idx) => `
                 <div class="cart-item">
-                    <div class="cart-name">${item.name}</div>
+                    <div class="cart-info">
+                        <span class="cart-name">${item.name}</span>
+                        <span class="cart-type">${item.type === 'Single' ? '싱글 (최소 200g)' : '블렌드 (1kg 단위)'}</span>
+                    </div>
                     <div class="qty-control">
                         <button class="qty-btn" onclick="updateQty(${idx}, -1)">-</button>
-                        <input type="number" class="qty-val" value="${item.qty}" onchange="updateQtyManual(${idx}, this.value)" style="background:transparent; border:none; color:white;">
-                        <span style="font-size:0.8rem">kg</span>
+                        <div class="qty-val-box">
+                            <input type="text" class="qty-val" value="${item.qty}" readonly>
+                            <span class="qty-unit">kg</span>
+                        </div>
                         <button class="qty-btn" onclick="updateQty(${idx}, 1)">+</button>
                         <button class="del-btn" onclick="removeItem(${idx})">✕</button>
                     </div>
@@ -284,25 +362,9 @@
             `).join('');
         }
 
-        window.updateQty = (idx, delta) => {
-            cart[idx].qty += delta;
-            if (cart[idx].qty <= 0) cart[idx].qty = 1; // 최소 1kg
-            renderCart();
-        };
-        
-        window.updateQtyManual = (idx, val) => {
-            cart[idx].qty = parseFloat(val);
-            renderCart();
-        };
-
-        window.removeItem = (idx) => {
-            cart.splice(idx, 1);
-            renderCart();
-        };
-
-        // --- 주문 전송 (핵심: Loop & Send) ---
+        // --- 주문 전송 ---
         document.getElementById('submitBtn').addEventListener('click', async () => {
-            if (!currentClient) return alert("거래처 정보가 로드되지 않았습니다.");
+            if (!currentClient) return alert("거래처 정보가 없습니다. 다시 로그인해주세요.");
             if (!confirm("주문을 전송하시겠습니까?")) return;
 
             const btn = document.getElementById('submitBtn');
@@ -313,36 +375,35 @@
             const note = document.getElementById('orderNote').value;
 
             try {
-                // 장바구니에 있는 품목 하나하나를 개별 주문서로 변환하여 전송
-                // (관리자 프로그램 테이블 구조 호환을 위함)
                 const promises = cart.map(item => {
                     return addDoc(collection(db, "orders"), {
                         date: date,
                         clientId: currentClient.id,
-                        clientName: currentClient.name, // 관리자 화면에 바로 표시됨!
+                        clientName: currentClient.name,
                         productType: item.name,
-                        amountKg: parseFloat(item.qty),
-                        unitPrice: 0, // 단가는 관리자가 확인 후 확정
-                        note: note,   // 모든 품목에 동일 요청사항 첨부
+                        amountKg: item.qty,
+                        unitPrice: 0, 
+                        note: note,
                         createdAt: serverTimestamp()
                     });
                 });
 
                 await Promise.all(promises);
 
-                alert("✅ 주문이 정상적으로 접수되었습니다!");
+                // 여기에 EmailJS나 텔레그램 알림 코드 추가 가능
+
+                alert("✅ 주문이 완료되었습니다!");
                 cart = [];
                 renderCart();
                 document.getElementById('orderNote').value = '';
 
             } catch (err) {
                 console.error(err);
-                alert("전송 중 오류가 발생했습니다.");
+                alert("전송 실패. 관리자에게 문의하세요.");
                 btn.disabled = false;
                 btn.innerText = "다시 전송";
             }
         });
-
     </script>
 </body>
 </html>
