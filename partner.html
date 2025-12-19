@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>스트레토 간편 발주</title>
     <style>
+        /* === 기존 스타일 동일 === */
         @font-face { font-family: 'Ciutadella'; src: url('Ciutadella-Regular.otf') format('opentype'); }
         :root { --accent-blue: #2997ff; --bg-dark: #111; --card-bg: #1c1c1e; }
         
         body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif; background-color: #000; color: #f5f5f7; display: flex; justify-content: center; min-height: 100vh; }
         .container { width: 100%; max-width: 480px; padding: 20px; box-sizing: border-box; background: #000; display: flex; flex-direction: column; }
 
-        /* 기존 스타일 유지 */
         header { margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 20px; }
         h2 { font-family: 'Ciutadella', sans-serif; margin: 0 0 5px 0; color: var(--accent-blue); }
         .client-info-box { background: var(--card-bg); padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #333; font-size: 0.9rem; color: #ccc; }
@@ -47,8 +47,6 @@
         .login-btn { width: 100%; padding: 15px; background: white; color: black; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
         .hidden { display: none !important; }
         .date-picker { width: 100%; padding: 10px; background: #222; color: white; border: 1px solid #333; border-radius: 8px; margin-top: 5px; font-family: inherit; }
-
-        /* ▼▼▼ [NEW] 주문 내역 스타일 추가 ▼▼▼ */
         .history-section { margin-top: 40px; margin-bottom: 100px; border-top: 1px solid #333; padding-top: 30px; }
         .history-card { background: #151515; border-radius: 8px; padding: 15px; margin-bottom: 10px; border: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
         .h-date { font-size: 0.8rem; color: var(--accent-blue); font-weight: bold; margin-bottom: 2px;}
@@ -113,7 +111,7 @@
             <div class="history-section">
                 <div class="grid-title" style="border-left-color: #666; color: #ccc;">
                     최근 주문 내역
-                    <span class="grid-desc">실수 시 [취소] 후 재주문</span>
+                    <span class="grid-desc">11:00 마감 전까지 취소 가능</span>
                 </div>
                 <div id="historyList">
                     <div style="text-align:center; padding: 20px; color:#444;">내역을 불러오는 중...</div>
@@ -135,20 +133,20 @@
 
         // ▼▼▼ [중요] 사장님 Firebase 키값 복사해서 여기에 넣으세요! ▼▼▼
         const firebaseConfig = {
-            apiKey: "AIzaSyAUjfrQ-HVivBLggiOl8vvRZynala1qqyM",
+  apiKey: "AIzaSyAUjfrQ-HVivBLggiOl8vvRZynala1qqyM",
   authDomain: "roastery-f3e2e.firebaseapp.com",
   projectId: "roastery-f3e2e",
   storageBucket: "roastery-f3e2e.firebasestorage.app",
   messagingSenderId: "79814680110",
   appId: "1:79814680110:web:86aa08fe0e273fed6649bf"
-};;
+};
         // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- 데이터 정의 ---
+        // --- 데이터 ---
         const products = [
             { name: "알토 블렌드 (Alto)", type: "Blend" },
             { name: "스트레토 블렌드 (Stretto)", type: "Blend" },
@@ -164,20 +162,19 @@
 
         let cart = []; 
         let currentClient = null;
-        let historyUnsubscribe = null; // 실시간 리스너 관리용
+        let historyUnsubscribe = null;
 
         // --- 초기화 ---
         document.getElementById('orderDate').valueAsDate = new Date();
         renderProductGrids();
 
-        // --- 로그인 로직 ---
+        // --- 로그인 ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('order-section').classList.remove('hidden');
                 
                 try {
-                    // 1. 거래처 정보 가져오기
                     const q = query(collection(db, "clients"), where("email", "==", user.email));
                     const querySnapshot = await getDocs(q);
                     
@@ -187,9 +184,7 @@
                         document.getElementById('disp-name').innerText = currentClient.name;
                         document.getElementById('disp-address').innerText = currentClient.address || "-";
                         
-                        // 2. [NEW] 내 주문 내역 실시간 감시 시작
                         loadOrderHistory(currentClient.id);
-
                     } else {
                         document.getElementById('disp-name').innerText = "등록되지 않은 거래처";
                         alert("관리자에게 문의하세요. (정보 미등록)");
@@ -200,26 +195,19 @@
                 document.getElementById('login-section').classList.remove('hidden');
                 document.getElementById('order-section').classList.add('hidden');
                 currentClient = null;
-                if(historyUnsubscribe) historyUnsubscribe(); // 로그아웃 시 리스너 해제
+                if(historyUnsubscribe) historyUnsubscribe();
             }
         });
 
-        // --- [NEW] 주문 내역 실시간 로드 함수 ---
+        // --- 주문 내역 실시간 ---
         function loadOrderHistory(clientId) {
             const historyList = document.getElementById('historyList');
-            // 내 아이디로 된 주문만 찾기
-            const q = query(
-                collection(db, "orders"), 
-                where("clientId", "==", clientId)
-                // orderBy("date", "desc") // 인덱스 에러 방지를 위해 일단 제외 (클라이언트에서 정렬)
-            );
+            const q = query(collection(db, "orders"), where("clientId", "==", clientId));
 
             historyUnsubscribe = onSnapshot(q, (snapshot) => {
                 const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                
-                // 날짜 최신순 정렬 (JS로 처리)
                 orders.sort((a, b) => {
-                    if (a.date === b.date) return b.createdAt - a.createdAt; // 같은 날짜면 등록시간순
+                    if (a.date === b.date) return b.createdAt - a.createdAt;
                     return b.date.localeCompare(a.date);
                 });
 
@@ -244,19 +232,28 @@
             });
         }
 
-        // --- [NEW] 주문 취소 함수 (전역 window 객체에 등록) ---
+        // --- [NEW] 시간 제한 적용된 주문 취소 함수 ---
         window.cancelOrder = async (orderId) => {
+            const now = new Date();
+            const currentHour = now.getHours();
+
+            // 11시 이후(11:00:00 ~ 23:59:59)라면 차단
+            if (currentHour >= 11) {
+                alert("🚫 [취소 불가 안내]\n\n매일 오전 11시에 주문이 마감되어\n시스템에서 바로 취소할 수 없습니다.\n\n변경이 필요하시면 아래로 연락주세요.\n📞 전화: 010-8679-0553\n💬 카카오톡: 스트레토 커피팩토리");
+                return;
+            }
+
             if(!confirm("이 주문을 정말 취소하시겠습니까?\n(관리자 화면에서도 사라집니다)")) return;
             try {
                 await deleteDoc(doc(db, "orders", orderId));
                 alert("주문이 취소되었습니다.");
             } catch(e) {
                 console.error(e);
-                alert("취소 실패: 이미 처리된 주문이거나 오류가 발생했습니다.");
+                alert("취소 실패: 오류가 발생했습니다.");
             }
         };
 
-        // --- 로그인 버튼 ---
+        // --- 버튼 이벤트 ---
         document.getElementById('loginBtn').addEventListener('click', () => {
             const id = document.getElementById('loginId').value.trim();
             const pw = document.getElementById('password').value;
