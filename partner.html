@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>스트레토 간편 발주</title>
     <style>
-        /* === 기존 스타일 동일 === */
+        /* === 스타일 (기존과 동일) === */
         @font-face { font-family: 'Ciutadella'; src: url('Ciutadella-Regular.otf') format('opentype'); }
         :root { --accent-blue: #2997ff; --bg-dark: #111; --card-bg: #1c1c1e; }
         
@@ -18,15 +18,18 @@
         .client-info-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
         .info-label { color: #666; }
         .info-value { font-weight: bold; color: white; text-align: right; }
+        
         .grid-section { margin-bottom: 30px; }
         .grid-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 10px; color: #f5f5f7; border-left: 3px solid var(--accent-blue); padding-left: 10px; display: flex; align-items: center; justify-content: space-between; }
         .grid-desc { font-size: 0.75rem; color: #888; font-weight: normal; }
+        
         .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .product-btn { background: var(--card-bg); border: 1px solid #333; color: white; padding: 15px 10px; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; height: 90px; }
         .product-btn:active { transform: scale(0.98); background: #333; }
         .p-name { font-weight: bold; font-size: 1rem; }
         .p-sub { font-size: 0.8rem; color: #666; margin-top: 5px; }
         .product-btn.single { border-color: #444; background: #222; }
+        
         .cart-section { margin-top: 20px; background: #1a1a1a; border-radius: 12px; padding: 20px; border: 1px solid #333; }
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #333; }
         .cart-item:last-child { border-bottom: none; }
@@ -39,14 +42,17 @@
         .qty-val { width: 100%; text-align: center; font-weight: bold; background: transparent; border: none; color: white; font-size: 1rem; }
         .qty-unit { font-size: 0.7rem; color: #888; display: block; text-align: center;}
         .del-btn { color: #ff453a; background: none; border: none; margin-left: 5px; cursor: pointer; padding: 5px; }
+        
         .bottom-action { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.9); padding: 20px; border-top: 1px solid #333; text-align: center; display: flex; justify-content: center; z-index: 100; }
         .submit-btn { width: 100%; max-width: 440px; padding: 18px; background: var(--accent-blue); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
         .submit-btn:disabled { background: #444; color: #888; }
+        
         #login-section { text-align: center; margin-top: 100px; }
         .login-input { width: 100%; padding: 15px; margin-bottom: 10px; background: #222; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
         .login-btn { width: 100%; padding: 15px; background: white; color: black; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
         .hidden { display: none !important; }
         .date-picker { width: 100%; padding: 10px; background: #222; color: white; border: 1px solid #333; border-radius: 8px; margin-top: 5px; font-family: inherit; }
+        
         .history-section { margin-top: 40px; margin-bottom: 100px; border-top: 1px solid #333; padding-top: 30px; }
         .history-card { background: #151515; border-radius: 8px; padding: 15px; margin-bottom: 10px; border: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
         .h-date { font-size: 0.8rem; color: var(--accent-blue); font-weight: bold; margin-bottom: 2px;}
@@ -54,6 +60,7 @@
         .h-detail { font-size: 0.85rem; color: #888; }
         .h-amount { font-weight: bold; font-size: 1.1rem; color: white; }
         .cancel-btn { background: #330000; border: 1px solid #660000; color: #ff453a; font-size: 0.8rem; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 10px;}
+        .cancel-btn.disabled { background: #222; border-color: #333; color: #666; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -111,7 +118,7 @@
             <div class="history-section">
                 <div class="grid-title" style="border-left-color: #666; color: #ccc;">
                     최근 주문 내역
-                    <span class="grid-desc">11:00 마감 전까지 취소 가능</span>
+                    <span class="grid-desc">로스팅 전(오전 11시)까지 취소 가능</span>
                 </div>
                 <div id="historyList">
                     <div style="text-align:center; padding: 20px; color:#444;">내역을 불러오는 중...</div>
@@ -139,14 +146,14 @@
   storageBucket: "roastery-f3e2e.firebasestorage.app",
   messagingSenderId: "79814680110",
   appId: "1:79814680110:web:86aa08fe0e273fed6649bf"
-};
+};;
         // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- 데이터 ---
+        // --- 데이터 정의 ---
         const products = [
             { name: "알토 블렌드 (Alto)", type: "Blend" },
             { name: "스트레토 블렌드 (Stretto)", type: "Blend" },
@@ -177,20 +184,17 @@
                 try {
                     const q = query(collection(db, "clients"), where("email", "==", user.email));
                     const querySnapshot = await getDocs(q);
-                    
                     if (!querySnapshot.empty) {
                         const docData = querySnapshot.docs[0].data();
                         currentClient = { id: querySnapshot.docs[0].id, ...docData };
                         document.getElementById('disp-name').innerText = currentClient.name;
                         document.getElementById('disp-address').innerText = currentClient.address || "-";
-                        
                         loadOrderHistory(currentClient.id);
                     } else {
                         document.getElementById('disp-name').innerText = "등록되지 않은 거래처";
                         alert("관리자에게 문의하세요. (정보 미등록)");
                     }
                 } catch (e) { console.error(e); }
-
             } else {
                 document.getElementById('login-section').classList.remove('hidden');
                 document.getElementById('order-section').classList.add('hidden');
@@ -199,51 +203,93 @@
             }
         });
 
-        // --- 주문 내역 실시간 ---
+        // --- 주문 마감 시간 계산 로직 (핵심!) ---
+        function calculateDeadline(createdDate) {
+            let deadline = new Date(createdDate);
+            deadline.setHours(11, 0, 0, 0); // 기본 마감: 주문한 날 오전 11시
+
+            // 만약 11시가 넘어서 주문했다면 -> 마감은 '다음 로스팅 날짜 11시'
+            if (createdDate >= deadline) {
+                deadline.setDate(deadline.getDate() + 1);
+                deadline.setHours(11, 0, 0, 0);
+            }
+
+            // 로스팅 요일(월~목) 체크
+            // 0=일, 1=월, 2=화, 3=수, 4=목, 5=금, 6=토
+            while (true) {
+                const day = deadline.getDay();
+                // 월(1), 화(2), 수(3), 목(4) 이면 로스팅 하는 날임 -> 마감일 확정
+                if (day >= 1 && day <= 4) {
+                    break;
+                }
+                // 금(5), 토(6), 일(0) 이면 로스팅 안 함 -> 다음 날로 미룸
+                deadline.setDate(deadline.getDate() + 1);
+            }
+            return deadline;
+        }
+
+        // --- 주문 내역 로드 및 상태 표시 ---
         function loadOrderHistory(clientId) {
             const historyList = document.getElementById('historyList');
             const q = query(collection(db, "orders"), where("clientId", "==", clientId));
 
             historyUnsubscribe = onSnapshot(q, (snapshot) => {
-                const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                orders.sort((a, b) => {
-                    if (a.date === b.date) return b.createdAt - a.createdAt;
-                    return b.date.localeCompare(a.date);
+                const orders = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    // createdTimestamp가 없으면(오류 방지) 현재 시간 사용
+                    const created = data.createdAt ? data.createdAt.toDate() : new Date(); 
+                    return { id: doc.id, ...data, created };
                 });
+
+                orders.sort((a, b) => b.created - a.created); // 최신순
 
                 if (orders.length === 0) {
                     historyList.innerHTML = '<div style="text-align:center; padding:20px; color:#444;">아직 주문 내역이 없습니다.</div>';
                     return;
                 }
 
-                historyList.innerHTML = orders.map(order => `
+                const now = new Date();
+
+                historyList.innerHTML = orders.map(order => {
+                    // 마감 시간 계산
+                    const deadline = calculateDeadline(order.created);
+                    const isCancelable = now < deadline;
+                    
+                    // 마감 요일/시간 표시용
+                    const days = ['일','월','화','수','목','금','토'];
+                    const deadlineStr = `${days[deadline.getDay()]}요일 11:00`;
+
+                    return `
                     <div class="history-card">
                         <div>
                             <div class="h-date">${order.date}</div>
                             <div class="h-name">${order.productType}</div>
                             ${order.note ? `<div class="h-detail">📝 ${order.note}</div>` : ''}
                         </div>
-                        <div style="display:flex; align-items:center;">
-                            <div class="h-amount">${order.amountKg}kg</div>
-                            <button class="cancel-btn" onclick="cancelOrder('${order.id}')">취소</button>
+                        <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                            <div class="h-amount" style="margin-bottom:5px;">${order.amountKg}kg</div>
+                            ${isCancelable 
+                                ? `<button class="cancel-btn" onclick="tryCancel('${order.id}', '${deadline.toISOString()}')">취소 가능</button>`
+                                : `<button class="cancel-btn disabled" onclick="showContactInfo('${deadlineStr}')">취소 불가</button>`
+                            }
                         </div>
                     </div>
-                `).join('');
+                `}).join('');
             });
         }
 
-        // --- [NEW] 시간 제한 적용된 주문 취소 함수 ---
-        window.cancelOrder = async (orderId) => {
+        // --- 취소 시도 (한 번 더 시간 체크) ---
+        window.tryCancel = async (orderId, deadlineISO) => {
             const now = new Date();
-            const currentHour = now.getHours();
+            const deadline = new Date(deadlineISO);
 
-            // 11시 이후(11:00:00 ~ 23:59:59)라면 차단
-            if (currentHour >= 11) {
-                alert("🚫 [취소 불가 안내]\n\n매일 오전 11시에 주문이 마감되어\n시스템에서 바로 취소할 수 없습니다.\n\n변경이 필요하시면 아래로 연락주세요.\n📞 전화: 010-8679-0553\n💬 카카오톡: 스트레토 커피팩토리");
+            if (now >= deadline) {
+                alert("⏰ 취소 가능 시간이 막 지났습니다.\n새로고침 후 다시 확인해주세요.");
                 return;
             }
 
-            if(!confirm("이 주문을 정말 취소하시겠습니까?\n(관리자 화면에서도 사라집니다)")) return;
+            if(!confirm("주문을 취소하시겠습니까?")) return;
+
             try {
                 await deleteDoc(doc(db, "orders", orderId));
                 alert("주문이 취소되었습니다.");
@@ -251,6 +297,11 @@
                 console.error(e);
                 alert("취소 실패: 오류가 발생했습니다.");
             }
+        };
+
+        // --- 취소 불가 시 안내 ---
+        window.showContactInfo = (deadlineStr) => {
+            alert(`🚫 [취소/수정 불가]\n\n로스팅 및 배송 준비가 시작되어 시스템에서 취소할 수 없습니다.\n(마감 기준: ${deadlineStr})\n\n변경이 필요하시면 연락주세요.\n📞 010-8679-0553\n💬 카카오톡: 스트레토 커피팩토리`);
         };
 
         // --- 버튼 이벤트 ---
@@ -266,7 +317,7 @@
 
         document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
 
-        // --- UI 렌더링 ---
+        // --- UI 및 장바구니 (기존 동일) ---
         function renderProductGrids() {
             const blendGrid = document.getElementById('grid-blend');
             const singleGrid = document.getElementById('grid-single');
@@ -286,7 +337,6 @@
             `).join('');
         }
 
-        // --- 장바구니 로직 ---
         window.addToCart = (productName, type) => {
             const existing = cart.find(item => item.name === productName);
             if (existing) {
@@ -354,9 +404,8 @@
             `).join('');
         }
 
-        // --- 주문 전송 ---
         document.getElementById('submitBtn').addEventListener('click', async () => {
-            if (!currentClient) return alert("거래처 정보가 없습니다. 다시 로그인해주세요.");
+            if (!currentClient) return alert("거래처 정보 오류");
             if (!confirm("주문을 전송하시겠습니까?")) return;
 
             const btn = document.getElementById('submitBtn');
@@ -376,12 +425,12 @@
                         amountKg: item.qty,
                         unitPrice: 0, 
                         note: note,
-                        createdAt: serverTimestamp()
+                        createdAt: serverTimestamp() // 여기서 생성 시간 기록
                     });
                 });
 
                 await Promise.all(promises);
-                alert("✅ 주문이 완료되었습니다!\n아래 [최근 주문 내역]에서 확인하세요.");
+                alert("✅ 주문 완료! [취소]는 마감 시간 전까지만 가능합니다.");
                 cart = [];
                 renderCart();
                 document.getElementById('orderNote').value = '';
