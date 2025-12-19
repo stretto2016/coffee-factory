@@ -213,7 +213,6 @@
                 deadline.setHours(11, 0, 0, 0);
             }
 
-            // 로스팅 요일(월~목) 체크
             while (true) {
                 const day = deadline.getDay();
                 if (day >= 1 && day <= 4) break;
@@ -248,6 +247,9 @@
                     const isCancelable = now < deadline;
                     const days = ['일','월','화','수','목','금','토'];
                     const deadlineStr = `${days[deadline.getDay()]}요일 11:00`;
+                    
+                    // 취소 알림에 보낼 정보 미리 세팅
+                    const productDetails = `${order.productType} ${order.amountKg}kg`;
 
                     return `
                     <div class="history-card">
@@ -259,7 +261,7 @@
                         <div style="display:flex; flex-direction:column; align-items:flex-end;">
                             <div class="h-amount" style="margin-bottom:5px;">${order.amountKg}kg</div>
                             ${isCancelable 
-                                ? `<button class="cancel-btn" onclick="tryCancel('${order.id}', '${deadline.toISOString()}')">취소 가능</button>`
+                                ? `<button class="cancel-btn" onclick="tryCancel('${order.id}', '${deadline.toISOString()}', '${productDetails}')">취소 가능</button>`
                                 : `<button class="cancel-btn disabled" onclick="showContactInfo('${deadlineStr}')">취소 불가</button>`
                             }
                         </div>
@@ -268,16 +270,41 @@
             });
         }
 
-        window.tryCancel = async (orderId, deadlineISO) => {
+        // --- [NEW] 취소 실행 및 알림 전송 ---
+        window.tryCancel = async (orderId, deadlineISO, productDetails) => {
             const now = new Date();
             const deadline = new Date(deadlineISO);
+
             if (now >= deadline) {
                 alert("⏰ 취소 가능 시간이 막 지났습니다.");
                 return;
             }
-            if(!confirm("주문을 취소하시겠습니까?")) return;
-            try { await deleteDoc(doc(db, "orders", orderId)); alert("주문이 취소되었습니다."); } 
-            catch(e) { console.error(e); alert("취소 실패"); }
+
+            if(!confirm("주문을 정말 취소하시겠습니까?")) return;
+
+            try {
+                // 1. 주문 삭제 (Firestore)
+                await deleteDoc(doc(db, "orders", orderId));
+
+                // 2. 텔레그램 취소 알림 전송
+                // ▼▼▼ 여기에 봇 토큰과 Chat ID를 넣으세요! ▼▼▼
+                const botToken = "762...:AAH..."; // <--- 사장님 봇 토큰
+                const chatId = "7870191508"; // 사장님 Chat ID
+
+                const message = `🚫 [주문 취소 알림]\n\n👤 거래처: ${currentClient.name}\n📦 취소품목: ${productDetails}\n⏰ 취소시간: ${now.toLocaleString()}`;
+
+                fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: chatId, text: message })
+                });
+
+                alert("주문이 취소되었습니다.");
+
+            } catch(e) {
+                console.error(e);
+                alert("취소 실패: 오류가 발생했습니다.");
+            }
         };
 
         window.showContactInfo = (deadlineStr) => {
@@ -379,7 +406,7 @@
             `).join('');
         }
 
-        // --- 주문 전송 & 텔레그램 알림 ---
+        // --- 주문 전송 ---
         document.getElementById('submitBtn').addEventListener('click', async () => {
             if (!currentClient) return alert("거래처 정보 오류");
             if (!confirm("주문을 전송하시겠습니까?")) return;
@@ -392,7 +419,6 @@
             const note = document.getElementById('orderNote').value;
 
             try {
-                // 1. Firebase에 저장
                 const promises = cart.map(item => {
                     return addDoc(collection(db, "orders"), {
                         date: date,
@@ -408,15 +434,15 @@
 
                 await Promise.all(promises);
 
-                // 2. 텔레그램 전송 (여기서 발송!)
-                // ▼▼▼ 여기에 BotFather가 준 토큰을 넣으세요! ▼▼▼
-                const botToken = "8456992319:AAFHE6BXHIfhWn1S6QDcWmS4ZwSmffy0q-U"; // <--- 이 부분 수정 필수!
+                // 주문 접수 알림 전송
+                // ▼▼▼ 여기에 봇 토큰과 Chat ID를 넣으세요! ▼▼▼
+                const botToken = "8456992319:AAFHE6BXHIfhWn1S6QDcWmS4ZwSmffy0q-U"; // <--- 사장님 봇 토큰
                 const chatId = "7870191508"; // 사장님 Chat ID
 
                 const orderDetails = cart.map(item => `- ${item.name}: ${item.qty}kg`).join('\n');
                 const message = `🔔 [신규 주문 알림]\n\n👤 거래처: ${currentClient.name}\n📅 날짜: ${date}\n📝 요청: ${note || '없음'}\n\n📦 주문내역:\n${orderDetails}`;
 
-                await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ chat_id: chatId, text: message })
