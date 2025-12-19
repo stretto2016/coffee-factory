@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STRETTO ADMIN - 관리자 페이지</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; padding: 20px; font-family: 'Noto Sans KR', sans-serif; background-color: #f5f5f7; color: #1d1d1f; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        h1 { margin-top: 0; color: #111; border-bottom: 2px solid #2997ff; padding-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* 테이블 스타일 */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; }
+        th { text-align: left; padding: 12px; background: #f0f0f0; border-bottom: 2px solid #ddd; color: #555; }
+        td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        tr:hover { background-color: #f9f9f9; }
+        
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+        .status-new { background: #e3f2fd; color: #2196f3; } /* 신규 */
+        .status-done { background: #e8f5e9; color: #4caf50; } /* 완료 */
+
+        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-right: 5px; transition: 0.2s; }
+        .btn-done { background: #2997ff; color: white; }
+        .btn-done:hover { background: #0077ed; }
+        .btn-del { background: #ff453a; color: white; }
+        .btn-del:hover { background: #d63a30; }
+
+        /* 로그인 화면 */
+        #login-section { text-align: center; margin-top: 100px; max-width: 400px; margin-left: auto; margin-right: auto; }
+        input { padding: 10px; width: 100%; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;}
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="login-section">
+        <h2>ADMIN LOGIN</h2>
+        <input type="text" id="adminId" placeholder="관리자 이메일 (예: master@stretto.com)">
+        <input type="password" id="adminPw" placeholder="비밀번호">
+        <button onclick="adminLogin()" class="btn btn-done" style="width:100%; padding:15px; font-size:1rem;">로그인</button>
+    </div>
+
+    <div id="dashboard-section" class="container hidden">
+        <h1>
+            주문 관리 대시보드
+            <button onclick="logout()" class="btn" style="background:#ddd; color:#333;">로그아웃</button>
+        </h1>
+        
+        <div style="margin-bottom: 20px; color: #666; font-size: 0.9rem;">
+            * 최근 주문 순서대로 정렬됩니다. '완료'를 누르면 목록에서 회색 처리됩니다.
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 100px;">날짜</th>
+                    <th style="width: 150px;">거래처</th>
+                    <th>품목 (수량)</th>
+                    <th>요청사항</th>
+                    <th style="width: 120px;">상태/관리</th>
+                </tr>
+            </thead>
+            <tbody id="orderList">
+                </tbody>
+        </table>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // ▼▼▼ Firebase Config (파트너 페이지랑 똑같이 넣으세요) ▼▼▼
+        const firebaseConfig = {
+          apiKey: "AIzaSyAUjfrQ-HVivBLggiOl8vvRZynala1qqyM",
+          authDomain: "roastery-f3e2e.firebaseapp.com",
+          projectId: "roastery-f3e2e",
+          storageBucket: "roastery-f3e2e.firebasestorage.app",
+          messagingSenderId: "79814680110",
+          appId: "1:79814680110:web:86aa08fe0e273fed6649bf"
+        };
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+        // ▼▼▼ [설정] 관리자 이메일 (이 사람만 로그인 가능) ▼▼▼
+        const ADMIN_EMAIL = "shpark0905@stretto.com"; // 사장님 실제 로그인 이메일로 바꾸세요!
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // 1. 로그인 체크
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email === ADMIN_EMAIL) {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('dashboard-section').classList.remove('hidden');
+                loadAllOrders();
+            } else if (user) {
+                alert("관리자 계정이 아닙니다.");
+                signOut(auth);
+            } else {
+                document.getElementById('login-section').classList.remove('hidden');
+                document.getElementById('dashboard-section').classList.add('hidden');
+            }
+        });
+
+        window.adminLogin = () => {
+            const id = document.getElementById('adminId').value;
+            const pw = document.getElementById('adminPw').value;
+            signInWithEmailAndPassword(auth, id, pw).catch(alert);
+        };
+
+        window.logout = () => signOut(auth);
+
+        // 2. 전체 주문 불러오기 (실시간)
+        function loadAllOrders() {
+            const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+            
+            onSnapshot(q, (snapshot) => {
+                const list = document.getElementById('orderList');
+                if (snapshot.empty) {
+                    list.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px;">주문 내역이 없습니다.</td></tr>';
+                    return;
+                }
+
+                list.innerHTML = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    const isDone = data.status === 'done'; // 완료 상태 체크
+                    
+                    return `
+                    <tr style="${isDone ? 'opacity: 0.5; background:#f9f9f9;' : ''}">
+                        <td>${data.date}</td>
+                        <td style="font-weight:bold;">${data.clientName}</td>
+                        <td>${data.productType} <span style="color:#2997ff; font-weight:bold;">${data.amountKg}kg</span></td>
+                        <td style="color:#666; font-size:0.85rem;">${data.note || '-'}</td>
+                        <td>
+                            ${!isDone ? 
+                                `<button class="btn btn-done" onclick="updateStatus('${doc.id}', 'done')">완료</button>` : 
+                                `<button class="btn" style="background:#bbb; color:white;" onclick="updateStatus('${doc.id}', 'new')">복구</button>`
+                            }
+                            <button class="btn btn-del" onclick="deleteOrder('${doc.id}')">삭제</button>
+                        </td>
+                    </tr>
+                `}).join('');
+            });
+        }
+
+        // 3. 상태 변경 (완료 처리)
+        window.updateStatus = async (id, status) => {
+            if(!confirm(status === 'done' ? "발송 완료 처리하시겠습니까?" : "상태를 복구하시겠습니까?")) return;
+            await updateDoc(doc(db, "orders", id), { status: status });
+        };
+
+        // 4. 주문 삭제
+        window.deleteOrder = async (id) => {
+            if(confirm("정말 이 주문을 삭제하시겠습니까? (되돌릴 수 없습니다)")) {
+                await deleteDoc(doc(db, "orders", id));
+            }
+        };
+
+    </script>
+</body>
+</html>
