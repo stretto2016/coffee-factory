@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스트레토 파트너 발주 시스템</title>
+    <style>
+        /* 기존 홈페이지 스타일과 동일하게 유지 */
+        @font-face { font-family: 'Ciutadella'; src: url('Ciutadella-Regular.otf') format('opentype'); }
+        :root { --accent-blue: #2997ff; }
+        body {
+            margin: 0; padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
+            background-color: #000; color: #f5f5f7;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+        }
+        .container {
+            background: #111; padding: 40px; border-radius: 12px; border: 1px solid #333;
+            width: 100%; max-width: 400px; text-align: center;
+        }
+        h2 { font-family: 'Ciutadella', sans-serif; margin-bottom: 20px; color: white; letter-spacing: 1px; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        label { display: block; font-size: 0.8rem; color: #888; margin-bottom: 5px; }
+        input, select, textarea {
+            width: 100%; padding: 12px; background: #222; border: 1px solid #444; 
+            color: white; border-radius: 6px; box-sizing: border-box; font-size: 1rem;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent-blue); outline: none; }
+        
+        .btn-primary {
+            width: 100%; padding: 15px; background: var(--accent-blue); color: white; 
+            border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-top: 10px;
+        }
+        .btn-primary:hover { background-color: #1e7fd8; }
+        .btn-secondary {
+            background: transparent; color: #666; border: none; margin-top: 15px; cursor: pointer; font-size: 0.9rem;
+        }
+        .hidden { display: none; }
+        .success-msg { color: #4cd964; margin-top: 15px; font-weight: bold; display: none; }
+        .error-msg { color: #ff3b30; margin-top: 15px; font-size: 0.9rem; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="login-section">
+            <h2>PARTNER LOGIN</h2>
+            <p style="color:#666; font-size: 0.9rem; margin-bottom: 30px;">발급받은 아이디와 비밀번호로 로그인하세요.</p>
+            <div class="input-group">
+                <input type="email" id="email" placeholder="이메일 (ID)">
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="비밀번호">
+            </div>
+            <button class="btn-primary" id="loginBtn">로그인</button>
+            <p class="error-msg" id="login-error"></p>
+            <a href="index.html" class="btn-secondary" style="display:block; text-decoration:none; margin-top:20px;">← 홈페이지로 돌아가기</a>
+        </div>
+
+        <div id="order-section" class="hidden">
+            <h2 style="color: var(--accent-blue);">NEW ORDER</h2>
+            <p id="welcome-msg" style="color:#888; font-size: 0.9rem; margin-bottom: 20px;"></p>
+            
+            <form id="orderForm">
+                <div class="input-group">
+                    <label>주문 날짜</label>
+                    <input type="date" id="orderDate" required>
+                </div>
+
+                <div class="input-group">
+                    <label>업체명 (확인용)</label>
+                    <input type="text" id="clientName" placeholder="예: 스트레토 공덕점" required>
+                </div>
+
+                <div class="input-group">
+                    <label>주문 품목</label>
+                    <select id="productType" required>
+                        <option value="">원두를 선택하세요</option>
+                        <option value="알토 블렌드 (Alto)">알토 블렌드 (Alto)</option>
+                        <option value="스트레토 블렌드 (Stretto)">스트레토 블렌드 (Stretto)</option>
+                        <option value="구스토 블렌드 (Gusto)">구스토 블렌드 (Gusto)</option>
+                        <option value="디카페인 (Decaffeine)">디카페인 (Decaffeine)</option>
+                        <option value="케냐 응고라노 AA">케냐 응고라노 AA</option>
+                        <option value="과테말라 엘 템픽스케">과테말라 엘 템픽스케</option>
+                        <option value="르완다 부산제">르완다 부산제</option>
+                        <option value="파푸아뉴기니 쿠아마운틴">파푸아뉴기니 쿠아마운틴</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>주문 수량 (kg)</label>
+                    <input type="number" id="amountKg" step="0.1" placeholder="숫자만 입력 (예: 10)" required>
+                </div>
+
+                <div class="input-group">
+                    <label>요청사항 (선택)</label>
+                    <input type="text" id="note" placeholder="배송 메모 등">
+                </div>
+
+                <button type="submit" class="btn-primary" id="submitBtn">발주 넣기</button>
+            </form>
+
+            <p class="success-msg" id="success-msg">✅ 주문이 정상 접수되었습니다.</p>
+            <p class="error-msg" id="order-error"></p>
+            <button class="btn-secondary" id="logoutBtn">로그아웃</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // ▼▼▼▼▼ [중요] 아까 만든 React 앱의 firebase.ts 파일에 있는 키를 복사해서 덮어쓰세요! ▼▼▼▼▼
+        const firebaseConfig = {
+            apiKey: "AIzaSyAUjfrQ-HVivBLggiOl8vvRZynala1qqyM",
+  authDomain: "roastery-f3e2e.firebaseapp.com",
+  projectId: "roastery-f3e2e",
+  storageBucket: "roastery-f3e2e.firebasestorage.app",
+  messagingSenderId: "79814680110",
+  appId: "1:79814680110:web:86aa08fe0e273fed6649bf"
+};
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // UI 요소
+        const loginSection = document.getElementById('login-section');
+        const orderSection = document.getElementById('order-section');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const orderForm = document.getElementById('orderForm');
+        
+        // 1. 날짜 기본값 오늘로 설정
+        document.getElementById('orderDate').valueAsDate = new Date();
+
+        // 2. 로그인 상태 감지
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loginSection.classList.add('hidden');
+                orderSection.classList.remove('hidden');
+                document.getElementById('welcome-msg').innerText = `${user.email}님, 안녕하세요.`;
+            } else {
+                loginSection.classList.remove('hidden');
+                orderSection.classList.add('hidden');
+            }
+        });
+
+        // 3. 로그인 처리
+        loginBtn.addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('login-error');
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                errorMsg.style.display = 'none';
+            } catch (error) {
+                errorMsg.innerText = "로그인 실패: 아이디 또는 비밀번호를 확인하세요.";
+                errorMsg.style.display = 'block';
+            }
+        });
+
+        // 4. 로그아웃 처리
+        logoutBtn.addEventListener('click', () => signOut(auth));
+
+        // 5. 주문 전송 (React 관리앱과 연동되는 핵심!)
+        orderForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const successMsg = document.getElementById('success-msg');
+            const errorMsg = document.getElementById('order-error');
+            
+            submitBtn.disabled = true;
+            submitBtn.innerText = "전송 중...";
+
+            try {
+                // React 앱의 OrderLog 타입과 일치하게 데이터 구성
+                await addDoc(collection(db, "orders"), {
+                    date: document.getElementById('orderDate').value,
+                    clientId: auth.currentUser.uid, // 회원가입한 파트너의 고유 ID
+                    clientName: document.getElementById('clientName').value,
+                    productType: document.getElementById('productType').value,
+                    amountKg: parseFloat(document.getElementById('amountKg').value),
+                    unitPrice: 0, // 단가는 관리자가 확인 후 확정 (일단 0으로 전송)
+                    note: document.getElementById('note').value,
+                    createdAt: serverTimestamp()
+                });
+
+                successMsg.style.display = "block";
+                orderForm.reset();
+                // 날짜 다시 오늘로
+                document.getElementById('orderDate').valueAsDate = new Date();
+                
+                setTimeout(() => {
+                    successMsg.style.display = "none";
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "발주 넣기";
+                }, 2000);
+
+            } catch (error) {
+                console.error(error);
+                errorMsg.innerText = "오류 발생: 잠시 후 다시 시도해주세요.";
+                errorMsg.style.display = "block";
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
