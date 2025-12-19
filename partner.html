@@ -146,7 +146,7 @@
   storageBucket: "roastery-f3e2e.firebasestorage.app",
   messagingSenderId: "79814680110",
   appId: "1:79814680110:web:86aa08fe0e273fed6649bf"
-};;
+};
         // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
         const app = initializeApp(firebaseConfig);
@@ -203,32 +203,26 @@
             }
         });
 
-        // --- 주문 마감 시간 계산 로직 (핵심!) ---
+        // --- 마감 시간 계산 (11시 로직) ---
         function calculateDeadline(createdDate) {
             let deadline = new Date(createdDate);
-            deadline.setHours(11, 0, 0, 0); // 기본 마감: 주문한 날 오전 11시
+            deadline.setHours(11, 0, 0, 0); 
 
-            // 만약 11시가 넘어서 주문했다면 -> 마감은 '다음 로스팅 날짜 11시'
             if (createdDate >= deadline) {
                 deadline.setDate(deadline.getDate() + 1);
                 deadline.setHours(11, 0, 0, 0);
             }
 
             // 로스팅 요일(월~목) 체크
-            // 0=일, 1=월, 2=화, 3=수, 4=목, 5=금, 6=토
             while (true) {
                 const day = deadline.getDay();
-                // 월(1), 화(2), 수(3), 목(4) 이면 로스팅 하는 날임 -> 마감일 확정
-                if (day >= 1 && day <= 4) {
-                    break;
-                }
-                // 금(5), 토(6), 일(0) 이면 로스팅 안 함 -> 다음 날로 미룸
+                if (day >= 1 && day <= 4) break;
                 deadline.setDate(deadline.getDate() + 1);
             }
             return deadline;
         }
 
-        // --- 주문 내역 로드 및 상태 표시 ---
+        // --- 주문 내역 ---
         function loadOrderHistory(clientId) {
             const historyList = document.getElementById('historyList');
             const q = query(collection(db, "orders"), where("clientId", "==", clientId));
@@ -236,12 +230,11 @@
             historyUnsubscribe = onSnapshot(q, (snapshot) => {
                 const orders = snapshot.docs.map(doc => {
                     const data = doc.data();
-                    // createdTimestamp가 없으면(오류 방지) 현재 시간 사용
                     const created = data.createdAt ? data.createdAt.toDate() : new Date(); 
                     return { id: doc.id, ...data, created };
                 });
 
-                orders.sort((a, b) => b.created - a.created); // 최신순
+                orders.sort((a, b) => b.created - a.created);
 
                 if (orders.length === 0) {
                     historyList.innerHTML = '<div style="text-align:center; padding:20px; color:#444;">아직 주문 내역이 없습니다.</div>';
@@ -251,11 +244,8 @@
                 const now = new Date();
 
                 historyList.innerHTML = orders.map(order => {
-                    // 마감 시간 계산
                     const deadline = calculateDeadline(order.created);
                     const isCancelable = now < deadline;
-                    
-                    // 마감 요일/시간 표시용
                     const days = ['일','월','화','수','목','금','토'];
                     const deadlineStr = `${days[deadline.getDay()]}요일 11:00`;
 
@@ -278,38 +268,26 @@
             });
         }
 
-        // --- 취소 시도 (한 번 더 시간 체크) ---
         window.tryCancel = async (orderId, deadlineISO) => {
             const now = new Date();
             const deadline = new Date(deadlineISO);
-
             if (now >= deadline) {
-                alert("⏰ 취소 가능 시간이 막 지났습니다.\n새로고침 후 다시 확인해주세요.");
+                alert("⏰ 취소 가능 시간이 막 지났습니다.");
                 return;
             }
-
             if(!confirm("주문을 취소하시겠습니까?")) return;
-
-            try {
-                await deleteDoc(doc(db, "orders", orderId));
-                alert("주문이 취소되었습니다.");
-            } catch(e) {
-                console.error(e);
-                alert("취소 실패: 오류가 발생했습니다.");
-            }
+            try { await deleteDoc(doc(db, "orders", orderId)); alert("주문이 취소되었습니다."); } 
+            catch(e) { console.error(e); alert("취소 실패"); }
         };
 
-        // --- 취소 불가 시 안내 ---
         window.showContactInfo = (deadlineStr) => {
-            alert(`🚫 [취소/수정 불가]\n\n로스팅 및 배송 준비가 시작되어 시스템에서 취소할 수 없습니다.\n(마감 기준: ${deadlineStr})\n\n변경이 필요하시면 연락주세요.\n📞 010-8679-0553\n💬 카카오톡: 스트레토 커피팩토리`);
+            alert(`🚫 [취소/수정 불가]\n\n로스팅/배송 준비 중입니다.\n(마감 기준: ${deadlineStr})\n\n변경문의: 010-8679-0553`);
         };
 
-        // --- 버튼 이벤트 ---
         document.getElementById('loginBtn').addEventListener('click', () => {
             const id = document.getElementById('loginId').value.trim();
             const pw = document.getElementById('password').value;
             const email = id.includes('@') ? id : id + "@stretto.com";
-            
             signInWithEmailAndPassword(auth, email, pw).catch(err => {
                 document.getElementById('login-msg').innerText = "아이디 또는 비밀번호를 확인하세요.";
             });
@@ -317,7 +295,7 @@
 
         document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
 
-        // --- UI 및 장바구니 (기존 동일) ---
+        // --- UI ---
         function renderProductGrids() {
             const blendGrid = document.getElementById('grid-blend');
             const singleGrid = document.getElementById('grid-single');
@@ -359,10 +337,7 @@
             renderCart();
         };
 
-        window.removeItem = (idx) => {
-            cart.splice(idx, 1);
-            renderCart();
-        };
+        window.removeItem = (idx) => { cart.splice(idx, 1); renderCart(); };
 
         function renderCart() {
             const section = document.getElementById('cartSection');
@@ -404,6 +379,7 @@
             `).join('');
         }
 
+        // --- 주문 전송 & 텔레그램 알림 ---
         document.getElementById('submitBtn').addEventListener('click', async () => {
             if (!currentClient) return alert("거래처 정보 오류");
             if (!confirm("주문을 전송하시겠습니까?")) return;
@@ -416,6 +392,7 @@
             const note = document.getElementById('orderNote').value;
 
             try {
+                // 1. Firebase에 저장
                 const promises = cart.map(item => {
                     return addDoc(collection(db, "orders"), {
                         date: date,
@@ -425,11 +402,26 @@
                         amountKg: item.qty,
                         unitPrice: 0, 
                         note: note,
-                        createdAt: serverTimestamp() // 여기서 생성 시간 기록
+                        createdAt: serverTimestamp()
                     });
                 });
 
                 await Promise.all(promises);
+
+                // 2. 텔레그램 전송 (여기서 발송!)
+                // ▼▼▼ 여기에 BotFather가 준 토큰을 넣으세요! ▼▼▼
+                const botToken = "8456992319:AAFHE6BXHIfhWn1S6QDcWmS4ZwSmffy0q-U"; // <--- 이 부분 수정 필수!
+                const chatId = "7870191508"; // 사장님 Chat ID
+
+                const orderDetails = cart.map(item => `- ${item.name}: ${item.qty}kg`).join('\n');
+                const message = `🔔 [신규 주문 알림]\n\n👤 거래처: ${currentClient.name}\n📅 날짜: ${date}\n📝 요청: ${note || '없음'}\n\n📦 주문내역:\n${orderDetails}`;
+
+                await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: chatId, text: message })
+                });
+
                 alert("✅ 주문 완료! [취소]는 마감 시간 전까지만 가능합니다.");
                 cart = [];
                 renderCart();
