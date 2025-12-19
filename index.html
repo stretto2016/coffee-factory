@@ -178,6 +178,51 @@
         .feature-icon { font-size: 2.5rem; margin-bottom: 20px; display: block; }
         .feature-card h3 { font-size: 1.2rem; margin-bottom: 15px; color: white; }
         
+	/* === Wholesale Section Styles (New) === */
+        .wholesale-intro { text-align: center; max-width: 800px; margin: 0 auto 80px; }
+        .wholesale-intro p { font-size: 1.1rem; color: #ccc; }
+
+        /* 1. 경쟁력 (Why Stretto) */
+        .why-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; margin-bottom: 100px; }
+        .why-card { display: flex; gap: 20px; align-items: flex-start; }
+        .why-icon { font-size: 2.5rem; color: var(--accent-blue); line-height: 1; flex-shrink: 0; }
+        .why-text h3 { font-size: 1.3rem; margin-bottom: 10px; color: white; }
+        .why-text p { font-size: 0.95rem; color: #aaa; margin: 0; }
+
+        /* 2. 파트너십 약속 (6 Promises) */
+        .promises-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 100px; }
+        .promise-card { 
+            background: #1a1a1a; padding: 30px; border-radius: 8px; border: 1px solid #333; 
+            text-align: center; transition: 0.3s;
+        }
+        .promise-card:hover { border-color: var(--accent-blue); background: #222; }
+        .promise-card h4 { color: white; margin-bottom: 10px; font-size: 1.1rem; }
+        .promise-card p { font-size: 0.9rem; color: #888; line-height: 1.5; margin: 0; }
+
+        /* 3. 납품 절차 (Process Step) */
+        .process-wrap { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 80px; position: relative; }
+        .process-step { flex: 1; text-align: center; padding: 0 10px; position: relative; }
+        .step-num { 
+            width: 50px; height: 50px; background: var(--accent-blue); color: white; 
+            border-radius: 50%; line-height: 50px; font-weight: bold; font-size: 1.2rem; margin: 0 auto 20px; 
+        }
+        .step-title { color: white; font-weight: 700; margin-bottom: 10px; display: block; }
+        .step-desc { font-size: 0.85rem; color: #aaa; word-break: keep-all; }
+        
+        /* 4. 조건 박스 */
+        .condition-box {
+            background: rgba(255,255,255,0.05); padding: 40px; border-radius: 10px;
+            text-align: center; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .condition-list { list-style: none; padding: 0; margin: 20px 0 0; display: inline-block; text-align: left; }
+        .condition-list li { margin-bottom: 10px; color: #ddd; display: flex; align-items: center; gap: 10px; }
+        .check-icon { color: var(--accent-blue); }
+
+        @media (max-width: 768px) {
+            .why-grid, .promises-grid { grid-template-columns: 1fr; }
+            .process-wrap { flex-direction: column; gap: 40px; }
+            .process-step::after { display: none; }
+        }
         /* === 7. 푸터 === */
         footer { background: #000; padding: 80px 0; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); }
         .footer-call { font-size: 2rem; font-weight: 700; color: white; margin: 20px 0; display: block; }
@@ -483,6 +528,134 @@
         </div>
     </section>
 
+	<section id="wholesale">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">WHOLESALE PARTNERSHIP</span>
+                <h2 class="section-title">성공적인 카페를 위한<br>완벽한 파트너.</h2>
+                <div class="wholesale-intro">
+                    <p>스트레토는 맛있는 [커피 원두]만 판매하지 않습니다.<br>맛있는 [커피 한 잔]을 판매합니다.</p>
+                </div>
+            </div>
+
+            <div class="why-grid">
+                <div class="why-card">
+                    <div class="why-icon">🏭</div>
+                    <div class="why-text">
+                        <h3>식품제조·가공업 정식 인허가</h3>
+                        <p>스트레토의 원두를 구매하신 후 재가공하여 판매하실 수 있습니다. (식품소분업 허가 필요)</p>
+                    </div>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon">🛡️</div>
+                    <div class="why-text">
+                        <h3>3개월 주기 자가품질검사</h3>
+                        <p>정기적인 품질 검사를 통해 안전성을 검증받습니다. 믿고 구매할 수 있는 스트레토 원두입니다.</p>
+                    </div>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon">🔥</div>
+                    <div class="why-text">
+                        <h3>High-End Roasting</h3>
+                        <p>재현성과 안정성이 뛰어난 PROBAT 및 Stronghold 머신을 사용하여 일관성 있는 고품질 원두를 생산합니다.</p>
+                    </div>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon">☕</div>
+                    <div class="why-text">
+                        <h3>QC & Cupping</h3>
+                        <p>매일 원두 발송 전 커핑을 통해 맛과 향을 확인하며, 언제나 동일한 품질을 약속합니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #222; margin: 80px 0;">
+
+            <div class="section-header">
+                <h2 class="section-title" style="font-size: 2rem;">6가지 파트너십 약속</h2>
+                <p>단순 납품을 넘어 카페 운영의 든든한 조력자가 되겠습니다.</p>
+            </div>
+
+            <div class="promises-grid">
+                <div class="promise-card">
+                    <h4>⚙️ 초기 세팅 방문 지원</h4>
+                    <p>1:1 에스프레소 추출 교육을 무료로 제공해 드립니다. (완벽한 한 잔을 위한 가이드 제공)</p>
+                </div>
+                <div class="promise-card">
+                    <h4>💰 1kg 원두 할인가</h4>
+                    <p>매월 30kg 이상 주문 시, 할인된 가격으로 제공되어 원가 부담을 덜어드립니다.</p>
+                </div>
+                <div class="promise-card">
+                    <h4>🤝 매장 방문 컨설팅</h4>
+                    <p>요청 시 운영하시는 매장에 방문하여 커피 품질 논의 및 운영 상담을 진행합니다.</p>
+                </div>
+                <div class="promise-card">
+                    <h4>💬 상시 1:1 상담</h4>
+                    <p>카카오톡을 통해 추출, 레시피, 운영 노하우 등 궁금한 점을 언제든 해결해 드립니다.</p>
+                </div>
+                <div class="promise-card">
+                    <h4>🧪 커스텀 블렌드 개발</h4>
+                    <p>매장 컨셉에 어울리는 독자적인 블렌딩 개발이 가능합니다. (비용/단가 별도 협의)</p>
+                </div>
+                <div class="promise-card">
+                    <h4>💎 싱글오리진 소량 구매</h4>
+                    <p>에스프레소 원두 주문 시, 싱글오리진을 200g부터 납품가로 구매하실 수 있습니다.</p>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h2 class="section-title" style="font-size: 2rem;">파트너십 진행 절차</h2>
+            </div>
+
+            <div class="process-wrap">
+                <div class="process-step">
+                    <div class="step-num">01</div>
+                    <span class="step-title">상담 신청</span>
+                    <div class="step-desc">
+                        카카오톡 '스트레토' 검색 후 채팅 상담.<br>
+                        (사업자등록증 사진 첨부 필수)
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-num">02</div>
+                    <span class="step-title">샘플 신청</span>
+                    <div class="step-desc">
+                        상담 완료 후 스마트스토어에서 샘플 신청.<br>
+                        (사업자별 1회, 파트너십 확정 시 비용 차감)
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-num">03</div>
+                    <span class="step-title">테스트 및 계약</span>
+                    <div class="step-desc">
+                        샘플 테스트 후 파트너십 결정.<br>
+                        초기 세팅 및 추출 가이드 제공.
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-num">04</div>
+                    <span class="step-title">발주 및 배송</span>
+                    <div class="step-desc">
+                        <strong>오전 11시 이전 주문 시 당일 발송.</strong><br>
+                        납품 원두는 주문 당일 로스팅 원칙.
+                    </div>
+                </div>
+            </div>
+
+            <div class="condition-box">
+                <h3 style="color: white; margin-bottom: 20px;">📌 파트너십 유지 조건</h3>
+                <ul class="condition-list">
+                    <li><span class="check-icon">✔</span> <strong>첫 주문:</strong> 10kg 이상</li>
+                    <li><span class="check-icon">✔</span> <strong>매월 사용량:</strong> 30kg 이상 (유지 시 할인가 적용)</li>
+                    <li><span class="check-icon">✔</span> <strong>최소 주문:</strong> 1kg 단위</li>
+                </ul>
+                <p style="margin-top: 20px; font-size: 0.9rem; color: #888;">
+                    * 소량 주문(1kg 미만)은 전일 로스팅 잔여분이 있을 경우 당일 발송될 수 있습니다.
+                </p>
+            </div>
+
+        </div>
+    </section>
     <footer id="contact">
         <div class="container">
             <h2 style="font-size: 1.8rem; margin-bottom: 10px;">납품 및 샘플 문의</h2>
