@@ -246,6 +246,7 @@
 
         /* === 반응형 (모바일) CSS === */
         /* === 반응형 (모바일) CSS === */
+        /* === 반응형 (모바일) CSS === */
         @media (max-width: 768px) {
             /* 1. 네비게이션 메뉴 해결 */
             .hamburger { display: block; }
@@ -272,7 +273,7 @@
             .story-split { flex-direction: column; gap: 40px; }
             .vision-box { padding: 30px; }
             
-            /* 4. 납품 절차 (중앙 정렬 완벽 해결) */
+            /* 4. 납품 절차 */
             .process-wrap { 
                 flex-direction: column; 
                 align-items: center; 
@@ -287,27 +288,28 @@
                 text-align: center; 
                 padding: 0;
             }
-            .step-desc { 
-                margin: 0 auto; 
-                max-width: 300px; 
-                word-break: keep-all; 
-            }
+            .step-desc { margin: 0 auto; max-width: 300px; word-break: keep-all; }
             
              /* 푸터 버튼 너비 조정 */
             .btn-primary, .btn-kakao, .btn-instagram, .btn-blog { width: 100%; max-width: 300px; box-sizing: border-box; }
 
-            /* [수정됨] 머신 케어 섹션 모바일 정렬 */
+            /* [수정됨] 머신 케어 섹션 모바일 정렬 (완벽한 중앙 정렬) */
             .engineer-banner {
                 flex-direction: column !important;
-                text-align: center !important;
+                align-items: center !important; /* 아이템 자체를 중앙으로 */
+                text-align: center !important; /* 텍스트 중앙 정렬 */
+                padding: 30px 20px !important; /* 내부 여백 조정 */
                 gap: 20px !important;
-            }
-            .engineer-banner h3, .engineer-banner p {
-                text-align: center !important;
             }
             .engineer-text {
                 min-width: 0 !important;
                 width: 100% !important;
+                text-align: center !important; /* 내부 텍스트 강제 중앙 */
+            }
+            .engineer-text h3, .engineer-text p {
+                text-align: center !important;
+                margin-left: auto;
+                margin-right: auto;
             }
         }
     </style>
