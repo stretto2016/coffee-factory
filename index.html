@@ -245,6 +245,7 @@
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
         /* === 반응형 (모바일) CSS === */
+        /* === 반응형 (모바일) CSS === */
         @media (max-width: 768px) {
             /* 1. 네비게이션 메뉴 해결 */
             .hamburger { display: block; }
@@ -294,6 +295,20 @@
             
              /* 푸터 버튼 너비 조정 */
             .btn-primary, .btn-kakao, .btn-instagram, .btn-blog { width: 100%; max-width: 300px; box-sizing: border-box; }
+
+            /* [수정됨] 머신 케어 섹션 모바일 정렬 */
+            .engineer-banner {
+                flex-direction: column !important;
+                text-align: center !important;
+                gap: 20px !important;
+            }
+            .engineer-banner h3, .engineer-banner p {
+                text-align: center !important;
+            }
+            .engineer-text {
+                min-width: 0 !important;
+                width: 100% !important;
+            }
         }
     </style>
 </head>
@@ -445,7 +460,9 @@
             <div class="section-header">
                 <span class="section-subtitle">ONLINE STORE</span>
                 <h2 class="section-title">Signature Blends</h2>
-                <p>스트레토가 추구하는 맛의 지향점을 담은 블렌딩 라인업</p>
+                <p style="word-break: keep-all;">
+                    스트레토가 추구하는 맛의 지향점을 담은 <span style="display: inline-block; white-space: nowrap;">블렌딩 라인업</span>
+                </p>
             </div>
 
             <div class="shop-grid" style="margin-bottom: 100px;">
@@ -810,7 +827,7 @@
                     <div class="step-num">04</div>
                     <span class="step-title">발주 및 배송</span>
                     <div class="step-desc">
-                        <strong>오전 11시 이전 주문 시 당일 발송.</strong><br>
+                        <strong>오전 11시 이전 주문 시 당일 로스팅.</strong><br>
                         납품 원두는 주문 당일 로스팅 원칙.
                     </div>
                 </div>
