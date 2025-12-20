@@ -261,13 +261,26 @@
             .story-split { flex-direction: column; gap: 40px; }
             .vision-box { padding: 30px; }
             
-            /* 4. 납품 절차 (삐뚤빼뚤 해결) */
-            .process-wrap { flex-direction: column; gap: 50px; }
-            .process-step { 
-                display: flex; flex-direction: column; align-items: center; 
-                text-align: center; padding: 0;
+            /* 4. 납품 절차 (중앙 정렬 완벽 해결) */
+            .process-wrap { 
+                flex-direction: column; 
+                align-items: center; /* 부모 컨테이너 중앙 정렬 */
+                gap: 50px; 
             }
-            .step-desc { max-width: 80%; }
+            .process-step { 
+                width: 100%; /* 전체 폭 차지 */
+                display: flex; 
+                flex-direction: column; 
+                align-items: center; /* 내부 요소 중앙 정렬 */
+                justify-content: center;
+                text-align: center; 
+                padding: 0;
+            }
+            .step-desc { 
+                margin: 0 auto; /* 텍스트 블록 자체 중앙 정렬 */
+                max-width: 300px; /* 너무 좁지 않게 설정 */
+                word-break: keep-all; 
+            }
             
              /* 푸터 버튼 너비 조정 */
             .btn-primary, .btn-kakao, .btn-instagram { width: 100%; max-width: 300px; box-sizing: border-box; }
