@@ -203,13 +203,18 @@
         .step-title { color: white; font-weight: 700; margin-bottom: 10px; display: block; font-size: 1.1rem; }
         .step-desc { font-size: 0.9rem; color: #aaa; word-break: keep-all; line-height: 1.5; }
         
+        /* 파트너십 유지 조건 박스 */
         .condition-box {
             background: rgba(255,255,255,0.05); padding: 40px; border-radius: 10px;
             text-align: center; border: 1px solid rgba(255,255,255,0.1);
         }
         .condition-list { list-style: none; padding: 0; margin: 20px 0 0; display: inline-block; text-align: left; }
-        .condition-list li { margin-bottom: 10px; color: #ddd; display: flex; align-items: center; gap: 10px; }
-        .check-icon { color: var(--accent-blue); }
+        .condition-list li { 
+            margin-bottom: 10px; color: #ddd; display: flex; align-items: flex-start; /* 상단 정렬 */ 
+            gap: 10px; 
+            word-break: keep-all; /* 단어 단위 줄바꿈 (사용/량 분리 방지) */
+        }
+        .check-icon { color: var(--accent-blue); flex-shrink: 0; margin-top: 3px;}
 
         /* === 7. 푸터 === */
         footer { background: #000; padding: 80px 0; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); }
@@ -224,7 +229,7 @@
         }
         .btn-kakao:hover { background-color: #E6CF00; } 
 
-        /* 인스타그램, 블로그 공통 스타일 (투명 배경 + 테두리) */
+        /* 인스타그램, 블로그 공통 스타일 (투명 배경 + 테두리 + 동일 규격) */
         .btn-instagram, .btn-blog {
             font-size: 1.1rem; font-weight: 700; color: white !important;
             background-color: transparent; 
@@ -716,8 +721,9 @@
                 </a>
                 
                 <a href="https://blog.naver.com/coffee_stretto" target="_blank" class="btn-blog">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#03C75A" style="margin-right: 8px;">
-                        <path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727v12.845z"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" style="margin-right: 8px;">
+                        <rect width="24" height="24" rx="4" fill="#03C75A"/>
+                        <path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727v12.845z" fill="white" transform="scale(0.6) translate(8, 8)"/> 
                     </svg>
                     Stretto Blog
                 </a>
