@@ -24,11 +24,60 @@
         .grid-desc { font-size: 0.75rem; color: #888; font-weight: normal; }
         
         .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .product-btn { background: var(--card-bg); border: 1px solid #333; color: white; padding: 15px 10px; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; height: 90px; }
+        
+        /* === [수정됨] 상품 버튼 및 뱃지 스타일 === */
+        .product-btn { 
+            position: relative; /* 뱃지 위치 기준 */
+            background: var(--card-bg); 
+            border: 1px solid #333; 
+            color: white; 
+            padding: 15px 10px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            text-align: left; 
+            transition: 0.2s; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            height: 90px; 
+        }
         .product-btn:active { transform: scale(0.98); background: #333; }
+        
+        /* 장바구니에 담기면 파란 테두리 */
+        .product-btn.active {
+            border: 2px solid var(--accent-blue);
+            background: #222;
+        }
+
+        /* 수량 표시 뱃지 */
+        .count-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--accent-blue);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            z-index: 10;
+            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+        
         .p-name { font-weight: bold; font-size: 1rem; }
         .p-sub { font-size: 0.8rem; color: #666; margin-top: 5px; }
         .product-btn.single { border-color: #444; background: #222; }
+        .product-btn.single.active { border-color: var(--accent-blue); } /* 싱글도 선택되면 파란색 */
         
         .cart-section { margin-top: 20px; background: #1a1a1a; border-radius: 12px; padding: 20px; border: 1px solid #333; }
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #333; }
@@ -138,16 +187,16 @@
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, where, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // ▼▼▼ [중요] 사장님 Firebase 키값 복사해서 여기에 넣으세요! ▼▼▼
+        // ▼▼▼ Firebase Config ▼▼▼
         const firebaseConfig = {
-  apiKey: "AIzaSyAUjfrQ-HVivBLggiOl8vvRZynala1qqyM",
-  authDomain: "roastery-f3e2e.firebaseapp.com",
-  projectId: "roastery-f3e2e",
-  storageBucket: "roastery-f3e2e.firebasestorage.app",
-  messagingSenderId: "79814680110",
-  appId: "1:79814680110:web:86aa08fe0e273fed6649bf"
-};
-        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+            apiKey: "AIzaSyAUjfrQ-HVivBLggiOl8vvRZynala1qqyM",
+            authDomain: "roastery-f3e2e.firebaseapp.com",
+            projectId: "roastery-f3e2e",
+            storageBucket: "roastery-f3e2e.firebasestorage.app",
+            messagingSenderId: "79814680110",
+            appId: "1:79814680110:web:86aa08fe0e273fed6649bf"
+        };
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -288,7 +337,6 @@
             });
         }
 
-        // --- [NEW] 취소 로직 ---
         window.tryCancel = async (orderId, deadlineISO, productDetails) => {
             const now = new Date();
             const deadline = new Date(deadlineISO);
@@ -301,16 +349,10 @@
             if(!confirm("주문을 정말 취소하시겠습니까?")) return;
 
             try {
-                // 1. 주문 삭제
                 await deleteDoc(doc(db, "orders", orderId));
-
-                // 2. 알림 전송
                 const message = `🚫 [주문 취소 알림]\n\n👤 거래처: ${currentClient.name}\n📦 취소품목: ${productDetails}\n⏰ 취소시간: ${now.toLocaleString()}`;
-                
-                sendTelegramNotification(message); // API 호출 함수 사용
-
+                sendTelegramNotification(message); 
                 alert("주문이 취소되었습니다.");
-
             } catch(e) {
                 console.error(e);
                 alert("취소 실패: 오류가 발생했습니다.");
@@ -332,24 +374,39 @@
 
         document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
 
-        // --- UI ---
+        // --- [수정됨] UI 및 장바구니 로직 ---
+        
         function renderProductGrids() {
             const blendGrid = document.getElementById('grid-blend');
             const singleGrid = document.getElementById('grid-single');
 
-            blendGrid.innerHTML = products.filter(p => p.type === 'Blend').map(p => `
-                <div class="product-btn" onclick="addToCart('${p.name}', 'Blend')">
+            blendGrid.innerHTML = products.filter(p => p.type === 'Blend').map(p => {
+                const item = cart.find(c => c.name === p.name);
+                const isActive = item ? 'active' : '';
+                const badge = item ? `<div class="count-badge">${item.qty}</div>` : '';
+
+                return `
+                <div class="product-btn ${isActive}" onclick="addToCart('${p.name}', 'Blend')">
+                    ${badge}
                     <span class="p-name">${p.name}</span>
                     <span class="p-sub" style="color:var(--accent-blue)">블렌드</span>
                 </div>
-            `).join('');
+                `;
+            }).join('');
 
-            singleGrid.innerHTML = products.filter(p => p.type === 'Single').map(p => `
-                <div class="product-btn single" onclick="addToCart('${p.name}', 'Single')">
+            singleGrid.innerHTML = products.filter(p => p.type === 'Single').map(p => {
+                const item = cart.find(c => c.name === p.name);
+                const isActive = item ? 'active' : '';
+                const badge = item ? `<div class="count-badge">${item.qty}</div>` : '';
+
+                return `
+                <div class="product-btn single ${isActive}" onclick="addToCart('${p.name}', 'Single')">
+                    ${badge}
                     <span class="p-name">${p.name}</span>
                     <span class="p-sub" style="color:#d97706">싱글 오리진</span>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         window.addToCart = (productName, type) => {
@@ -362,6 +419,7 @@
                 cart.push({ name: productName, qty: initialQty, type: type });
             }
             renderCart();
+            renderProductGrids(); // 화면 갱신
         };
 
         window.updateQty = (idx, direction) => {
@@ -372,9 +430,14 @@
             if (newQty < min) return;
             item.qty = newQty;
             renderCart();
+            renderProductGrids(); // 화면 갱신
         };
 
-        window.removeItem = (idx) => { cart.splice(idx, 1); renderCart(); };
+        window.removeItem = (idx) => { 
+            cart.splice(idx, 1); 
+            renderCart(); 
+            renderProductGrids(); // 화면 갱신
+        };
 
         function renderCart() {
             const section = document.getElementById('cartSection');
@@ -454,6 +517,7 @@
                 alert("✅ 주문 완료! [취소]는 마감 시간 전까지만 가능합니다.");
                 cart = [];
                 renderCart();
+                renderProductGrids(); // 화면 갱신
                 document.getElementById('orderNote').value = '';
                 btn.disabled = false;
 
