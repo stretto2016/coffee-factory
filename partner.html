@@ -49,7 +49,6 @@
             box-shadow: 0 0 15px rgba(41, 151, 255, 0.1);
         }
 
-        /* 뱃지 스타일 */
         .count-badge {
             position: absolute;
             top: 10px; right: 10px;
@@ -78,40 +77,62 @@
         .product-btn.single.active .p-name { color: #fbbf24; }
         .single-badge { background: #d97706 !important; }
 
-        /* === [NEW] 플로팅 장바구니 스타일 === */
+        /* === [개선됨] 플로팅 장바구니 스타일 === */
         .cart-section { 
-            display: none; /* 기본 숨김 */
+            display: none;
             position: fixed;
-            bottom: 90px; /* 버튼 높이만큼 띄움 */
+            bottom: 90px; /* 버튼 위 */
             left: 50%;
             transform: translateX(-50%);
-            width: 95%; /* 모바일에서 꽉 차지 않게 여백 */
+            width: 95%;
             max-width: 460px;
             
-            background: rgba(28, 28, 30, 0.95); /* 반투명 배경 */
-            backdrop-filter: blur(10px); /* 블러 효과 */
+            background: rgba(28, 28, 30, 0.98); /* 배경 조금 더 진하게 */
+            backdrop-filter: blur(10px);
             
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 16px;
-            padding: 20px;
+            padding: 0 20px; /* 패딩 조정 */
             box-sizing: border-box;
             box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
             z-index: 99;
             
-            max-height: 50vh; /* 화면 절반 넘지 않게 */
-            overflow-y: auto; /* 내용 많으면 스크롤 */
-            animation: slideUp 0.3s ease-out;
+            /* 높이 애니메이션 */
+            transition: all 0.3s ease;
+            max-height: 50vh; /* 펼쳐졌을 때 최대 높이 */
+            overflow: hidden; /* 접힐 때 내용 숨김 */
         }
-
-        @keyframes slideUp {
-            from { transform: translate(-50%, 20px); opacity: 0; }
-            to { transform: translate(-50%, 0); opacity: 1; }
+        
+        /* 접힌 상태 클래스 */
+        .cart-section.folded {
+            max-height: 56px; /* 헤더 높이만큼만 남김 */
+            overflow: hidden;
+            padding-bottom: 0;
         }
 
         .cart-header {
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px;
-            position: sticky; top: 0;
+            border-bottom: 1px solid #333; 
+            padding: 15px 0; /* 터치 영역 확보 */
+            position: sticky; top: 0; background: transparent;
+            cursor: pointer; /* 클릭 가능 표시 */
+        }
+        
+        .cart-toggle-icon {
+            transition: transform 0.3s;
+            font-size: 0.8rem;
+            color: #888;
+            margin-left: 8px;
+        }
+        
+        /* 접혔을 때 아이콘 회전 */
+        .cart-section.folded .cart-toggle-icon { transform: rotate(180deg); }
+        .cart-section.folded .cart-header { border-bottom: none; } /* 접히면 구분선 제거 */
+
+        .cart-body {
+            padding-bottom: 20px;
+            overflow-y: auto;
+            max-height: calc(50vh - 60px); /* 헤더 제외 높이 */
         }
 
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #333; }
@@ -136,7 +157,7 @@
         .hidden { display: none !important; }
         .date-picker { width: 100%; padding: 10px; background: #222; color: white; border: 1px solid #333; border-radius: 8px; margin-top: 5px; font-family: inherit; }
         
-        .history-section { margin-top: 40px; margin-bottom: 200px; border-top: 1px solid #333; padding-top: 30px; } /* 하단 여백 추가 */
+        .history-section { margin-top: 40px; border-top: 1px solid #333; padding-top: 30px; }
         .history-card { background: #151515; border-radius: 8px; padding: 15px; margin-bottom: 10px; border: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
         .h-date { font-size: 0.8rem; color: var(--accent-blue); font-weight: bold; margin-bottom: 2px;}
         .h-name { font-weight: bold; font-size: 1rem; }
@@ -199,13 +220,21 @@
                 </div>
             </div>
 
+            <div style="height: 400px;"></div>
+
             <div class="cart-section" id="cartSection">
-                <div class="cart-header">
-                    <span style="font-weight:bold; color:var(--accent-blue);">현재 담은 목록</span>
+                <div class="cart-header" onclick="toggleCart()">
+                    <div style="display:flex; align-items:center;">
+                        <span style="font-weight:bold; color:var(--accent-blue);">현재 담은 목록</span>
+                        <span class="cart-toggle-icon">▼</span>
+                    </div>
                     <span id="total-weight" style="color:#fff; font-weight:bold;">0kg</span>
                 </div>
-                <div id="cartList"></div>
-                <input type="text" id="orderNote" placeholder="요청사항 (예: 굵게 갈아주세요)" style="width:100%; padding:12px; background:#333; border:1px solid #444; color:white; margin-top:15px; border-radius:8px; box-sizing:border-box;">
+                
+                <div class="cart-body">
+                    <div id="cartList"></div>
+                    <input type="text" id="orderNote" placeholder="요청사항 (예: 굵게 갈아주세요)" style="width:100%; padding:12px; background:#333; border:1px solid #444; color:white; margin-top:15px; border-radius:8px; box-sizing:border-box;">
+                </div>
             </div>
 
             <div class="bottom-action">
@@ -396,8 +425,13 @@
 
         document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
 
+        // --- [기능 추가] 장바구니 접기/펴기 토글 ---
+        window.toggleCart = () => {
+            const cartSection = document.getElementById('cartSection');
+            cartSection.classList.toggle('folded');
+        }
+
         // --- 화면 렌더링 로직 ---
-        
         function renderProductGrids() {
             const blendGrid = document.getElementById('grid-blend');
             const singleGrid = document.getElementById('grid-single');
@@ -468,14 +502,14 @@
             const totalWeightEl = document.getElementById('total-weight');
 
             if (cart.length === 0) {
-                section.style.display = 'none'; // 비었을 땐 아예 숨김
+                section.style.display = 'none';
                 btn.disabled = true;
                 btn.innerText = "주문할 품목을 선택하세요";
                 btn.style.background = "#333";
                 return;
             }
 
-            section.style.display = 'block'; // 아이템이 있으면 플로팅 박스 등장
+            section.style.display = 'block'; 
             const totalKg = cart.reduce((acc, item) => acc + item.qty, 0).toFixed(1);
             totalWeightEl.innerText = `총 ${totalKg}kg`;
             btn.disabled = false;
@@ -542,6 +576,9 @@
                 renderProductGrids(); 
                 document.getElementById('orderNote').value = '';
                 btn.disabled = false;
+
+                // 주문 완료 후 장바구니 숨김 (선택사항)
+                // document.getElementById('cartSection').style.display = 'none';
 
             } catch (err) {
                 console.error(err);
