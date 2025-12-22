@@ -153,7 +153,6 @@
         .login-btn { width: 100%; padding: 15px; background: white; color: black; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
         .hidden { display: none !important; }
 
-        /* [수정됨] box-sizing 추가하여 삐져나옴 해결 */
         .date-picker { width: 100%; padding: 10px; background: #222; color: white; border: 1px solid #333; border-radius: 8px; margin-top: 5px; font-family: inherit; box-sizing: border-box; }
         
         .history-section { margin-top: 40px; border-top: 1px solid #333; padding-top: 30px; }
@@ -262,7 +261,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- 데이터 정의 ---
+        // --- 데이터 정의 (르완다 삭제됨) ---
         const products = [
             { name: "알토 블렌드 (Alto)", type: "Blend" },
             { name: "스트레토 블렌드 (Stretto)", type: "Blend" },
@@ -272,7 +271,6 @@
             { name: "케냐", type: "Single" },
             { name: "과테말라", type: "Single" },
             { name: "콜롬비아", type: "Single" },
-            { name: "르완다", type: "Single" },
             { name: "파푸아뉴기니", type: "Single" }
         ];
 
