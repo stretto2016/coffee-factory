@@ -245,8 +245,6 @@
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
         /* === 반응형 (모바일) CSS === */
-        /* === 반응형 (모바일) CSS === */
-        /* === 반응형 (모바일) CSS === */
         @media (max-width: 768px) {
             /* 1. 네비게이션 메뉴 해결 */
             .hamburger { display: block; }
@@ -292,25 +290,6 @@
             
              /* 푸터 버튼 너비 조정 */
             .btn-primary, .btn-kakao, .btn-instagram, .btn-blog { width: 100%; max-width: 300px; box-sizing: border-box; }
-
-            /* [수정됨] 머신 케어 섹션 모바일 정렬 (완벽한 중앙 정렬) */
-            .engineer-banner {
-                flex-direction: column !important;
-                align-items: center !important; /* 아이템 자체를 중앙으로 */
-                text-align: center !important; /* 텍스트 중앙 정렬 */
-                padding: 30px 20px !important; /* 내부 여백 조정 */
-                gap: 20px !important;
-            }
-            .engineer-text {
-                min-width: 0 !important;
-                width: 100% !important;
-                text-align: center !important; /* 내부 텍스트 강제 중앙 */
-            }
-            .engineer-text h3, .engineer-text p {
-                text-align: center !important;
-                margin-left: auto;
-                margin-right: auto;
-            }
         }
     </style>
 </head>
@@ -318,9 +297,9 @@
 
     <nav>
         <a href="#hero" class="logo-group">
-    <div class="logo">stretto coffee factory</div>
-    <div class="logo-sub">carefully crafted coffee</div>
-</a>
+            <div class="logo">stretto coffee factory</div>
+            <div class="logo-sub">carefully crafted coffee</div>
+        </a>
         
         <div class="hamburger" onclick="toggleMenu()">
             <span></span>
@@ -661,24 +640,6 @@
                             <p class="product-desc">섬세한 꽃향기와 핵과류의 단맛. 깨끗한 산미와 부드러운 바디가 어우러진 매력적인 커피.</p>
                             <div class="product-meta">
                                 <span class="price">15,000원/200g</span>
-                                <span class="btn-shop-link">구매하기 ↗</span>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="product-card">
-                    <a href="https://smartstore.naver.com/stretto_coffeefactory/products/7805158072">
-                        <div class="product-thumb">
-                            <span class="badge" style="background: #d97706;">NEW</span>
-                            <img src="rwanda_busanze.jpg" alt="르완다 부산제">
-                        </div>
-                        <div class="product-info">
-                            <h3>르완다 부산제</h3>
-                            <div class="cup-note" style="color: #d97706; font-size: 0.85rem; margin-bottom: 5px; font-weight: 600;">아카시아 · 꿀 · 복숭아 · 밀크초콜릿</div>
-                            <p class="product-desc">부산제 스테이션의 2,000m 고지대 생산. 아카시아 꽃향기와 꿀 같은 진한 단맛, 핵과류의 우아한 산미.</p>
-                            <div class="product-meta">
-                                <span class="price">13,000원/200g</span>
                                 <span class="btn-shop-link">구매하기 ↗</span>
                             </div>
                         </div>
