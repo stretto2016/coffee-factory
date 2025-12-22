@@ -3,105 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STRETTO ADMIN - 관리자 페이지</title>
+    <title>STRETTO ADMIN - 통합 관리</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         body { margin: 0; padding: 20px; font-family: 'Noto Sans KR', sans-serif; background-color: #f5f5f7; color: #1d1d1f; }
         .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
         h1 { margin-top: 0; color: #111; border-bottom: 2px solid #2997ff; padding-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
         
-        /* 테이블 스타일 */
+        .tab-menu { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        .tab-btn { padding: 10px 20px; border: none; background: #eee; border-radius: 8px; cursor: pointer; font-weight: bold; color: #666; }
+        .tab-btn.active { background: #2997ff; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
         table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; }
         th { text-align: left; padding: 12px; background: #f0f0f0; border-bottom: 2px solid #ddd; color: #555; }
         td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
-        tr:hover { background-color: #f9f9f9; }
-        
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
-        .status-new { background: #e3f2fd; color: #2196f3; } /* 신규 */
-        .status-done { background: #e8f5e9; color: #4caf50; } /* 완료 */
-
-        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-right: 5px; transition: 0.2s; }
+        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-right: 5px; }
         .btn-done { background: #2997ff; color: white; }
-        .btn-done:hover { background: #0077ed; }
         .btn-del { background: #ff453a; color: white; }
-        .btn-del:hover { background: #d63a30; }
-
-        /* 로그인 화면 */
-        #login-section { text-align: center; margin-top: 100px; max-width: 400px; margin-left: auto; margin-right: auto; }
-        input { padding: 10px; width: 100%; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;}
+        
+        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .form-input { padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%; box-sizing: border-box; }
+        .full-width { grid-column: span 2; }
+        .form-box { background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 20px; }
+        
+        #login-section { text-align: center; margin: 100px auto; max-width: 400px; }
         .hidden { display: none; }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+        .status-new { background: #e3f2fd; color: #2196f3; }
+        .status-done { background: #e8f5e9; color: #4caf50; }
     </style>
 </head>
 <body>
 
     <div id="login-section">
         <h2>ADMIN LOGIN</h2>
-        <input type="text" id="adminId" placeholder="관리자 이메일 (예: master@stretto.com)">
-        <input type="password" id="adminPw" placeholder="비밀번호">
-        <button onclick="adminLogin()" class="btn btn-done" style="width:100%; padding:15px; font-size:1rem;">로그인</button>
+        <input type="text" id="adminId" class="form-input" placeholder="관리자 이메일">
+        <input type="password" id="adminPw" class="form-input" placeholder="비밀번호" style="margin-top:10px;">
+        <button onclick="adminLogin()" class="btn btn-done" style="width:100%; padding:15px; margin-top:10px;">로그인</button>
     </div>
 
     <div id="dashboard-section" class="container hidden">
         <h1>
-            주문 관리 대시보드
+            STRETTO 통합 관리
             <button onclick="logout()" class="btn" style="background:#ddd; color:#333;">로그아웃</button>
         </h1>
         
-        <div style="margin-bottom: 20px; color: #666; font-size: 0.9rem;">
-            * 최근 주문 순서대로 정렬됩니다. '완료'를 누르면 목록에서 회색 처리됩니다.
+        <div class="tab-menu">
+            <button class="tab-btn active" onclick="switchTab('orders')">주문 관리</button>
+            <button class="tab-btn" onclick="switchTab('products')">상품 관리</button>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 100px;">날짜</th>
-                    <th style="width: 150px;">거래처</th>
-                    <th>품목 (수량)</th>
-                    <th>요청사항</th>
-                    <th style="width: 120px;">상태/관리</th>
-                </tr>
-            </thead>
-            <tbody id="orderList">
-                </tbody>
-        </table>
+        <div id="tab-orders" class="tab-content active">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">날짜</th>
+                        <th style="width: 150px;">거래처</th>
+                        <th>품목 (수량)</th>
+                        <th>요청사항</th>
+                        <th style="width: 120px;">상태</th>
+                    </tr>
+                </thead>
+                <tbody id="orderList"></tbody>
+            </table>
+        </div>
+
+        <div id="tab-products" class="tab-content">
+            <div class="form-box">
+                <h3>📦 새 상품 등록 / 수정</h3>
+                <input type="hidden" id="editDocId">
+                
+                <div class="input-group">
+                    <input type="text" id="pName" class="form-input" placeholder="상품명 (예: 알토 블렌드)">
+                    <select id="pCategory" class="form-input">
+                        <option value="Blend">블렌드 (Blend)</option>
+                        <option value="Single-Nutty">싱글 - 고소함 (Nutty)</option>
+                        <option value="Single-Fruity">싱글 - 산미/꽃 (Fruity)</option>
+                        <option value="Decaf">디카페인</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <input type="text" id="pPrice" class="form-input" placeholder="가격 (숫자만, 예: 10000)">
+                    <input type="text" id="pBadge" class="form-input" placeholder="뱃지 (예: BEST, NEW, GEISHA)">
+                </div>
+
+                <div class="input-group">
+                    <input type="text" id="pNote" class="form-input full-width" placeholder="컵노트 (예: 다크초콜릿 · 아몬드)">
+                    <input type="text" id="pDesc" class="form-input full-width" placeholder="상품 설명 (짧게)">
+                    <input type="text" id="pLink" class="form-input full-width" placeholder="스마트스토어 링크 (http://...)">
+                </div>
+
+                <div class="input-group">
+                    <div class="full-width">
+                        <label style="display:block; margin-bottom:5px; font-size:0.8rem; color:#666;">이미지 경로 (GitHub 파일명 또는 이미지 주소)</label>
+                        <input type="text" id="pImageUrl" class="form-input" placeholder="예: images/coffee.jpg 또는 https://...">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div style="display:flex; align-items:center; gap:10px;" class="full-width">
+                        <label><input type="checkbox" id="showShop" checked> 홈페이지(Shop) 노출</label>
+                        <label><input type="checkbox" id="showPartner" checked> 파트너(발주) 노출</label>
+                    </div>
+                </div>
+
+                <button onclick="saveProduct()" class="btn btn-done" style="width:100%; padding:12px; font-size:1rem;">상품 저장하기</button>
+                <button onclick="resetForm()" class="btn" style="width:100%; padding:12px; margin-top:5px; background:#ddd;">초기화</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">이미지</th>
+                        <th>상품명 / 카테고리</th>
+                        <th>노출 설정</th>
+                        <th style="width: 120px;">관리</th>
+                    </tr>
+                </thead>
+                <tbody id="productList"></tbody>
+            </table>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        // [변경] Storage 관련 import 제거
+        import { getFirestore, collection, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // ▼▼▼ Firebase Config (파트너 페이지랑 똑같이 넣으세요) ▼▼▼
         const firebaseConfig = {
-          apiKey: "AIzaSyAUjfrQ-HVivBLggiOl8vvRZynala1qqyM",
-          authDomain: "roastery-f3e2e.firebaseapp.com",
-          projectId: "roastery-f3e2e",
-          storageBucket: "roastery-f3e2e.firebasestorage.app",
-          messagingSenderId: "79814680110",
-          appId: "1:79814680110:web:86aa08fe0e273fed6649bf"
+             apiKey: "AIzaSyAUjfrQ-HVivBLggiOl8vvRZynala1qqyM",
+             authDomain: "roastery-f3e2e.firebaseapp.com",
+             projectId: "roastery-f3e2e",
+             storageBucket: "roastery-f3e2e.firebasestorage.app",
+             messagingSenderId: "79814680110",
+             appId: "1:79814680110:web:86aa08fe0e273fed6649bf"
         };
-        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-        // ▼▼▼ [설정] 관리자 이메일 (이 사람만 로그인 가능) ▼▼▼
-        const ADMIN_EMAIL = "strettopark@gmail.com"; // 사장님 실제 로그인 이메일로 바꾸세요!
-        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+        const ADMIN_EMAIL = "strettopark@gmail.com"; 
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // 1. 로그인 체크
+        // --- 로그인 및 탭 관리 ---
         onAuthStateChanged(auth, (user) => {
             if (user && user.email === ADMIN_EMAIL) {
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('dashboard-section').classList.remove('hidden');
                 loadAllOrders();
+                loadAllProducts();
             } else if (user) {
-                alert("관리자 계정이 아닙니다.");
+                alert("관리자 권한이 없습니다.");
                 signOut(auth);
-            } else {
-                document.getElementById('login-section').classList.remove('hidden');
-                document.getElementById('dashboard-section').classList.add('hidden');
             }
         });
 
@@ -110,55 +167,129 @@
             const pw = document.getElementById('adminPw').value;
             signInWithEmailAndPassword(auth, id, pw).catch(alert);
         };
-
         window.logout = () => signOut(auth);
+        
+        window.switchTab = (tabName) => {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            event.target.classList.add('active');
+        };
 
-        // 2. 전체 주문 불러오기 (실시간)
+        // --- 1. 주문 관리 로직 ---
         function loadAllOrders() {
             const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
-            
             onSnapshot(q, (snapshot) => {
                 const list = document.getElementById('orderList');
-                if (snapshot.empty) {
-                    list.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px;">주문 내역이 없습니다.</td></tr>';
-                    return;
-                }
-
+                if (snapshot.empty) { list.innerHTML = '<tr><td colspan="5">주문 내역 없음</td></tr>'; return; }
                 list.innerHTML = snapshot.docs.map(doc => {
-                    const data = doc.data();
-                    const isDone = data.status === 'done'; // 완료 상태 체크
-                    
-                    return `
-                    <tr style="${isDone ? 'opacity: 0.5; background:#f9f9f9;' : ''}">
-                        <td>${data.date}</td>
-                        <td style="font-weight:bold;">${data.clientName}</td>
-                        <td>${data.productType} <span style="color:#2997ff; font-weight:bold;">${data.amountKg}kg</span></td>
-                        <td style="color:#666; font-size:0.85rem;">${data.note || '-'}</td>
+                    const d = doc.data();
+                    const isDone = d.status === 'done';
+                    return `<tr style="${isDone ? 'opacity:0.5; background:#f9f9f9;' : ''}">
+                        <td>${d.date}</td>
+                        <td style="font-weight:bold;">${d.clientName}</td>
+                        <td>${d.productType} <span style="color:#2997ff; font-weight:bold;">${d.amountKg}kg</span></td>
+                        <td>${d.note || '-'}</td>
                         <td>
-                            ${!isDone ? 
-                                `<button class="btn btn-done" onclick="updateStatus('${doc.id}', 'done')">완료</button>` : 
-                                `<button class="btn" style="background:#bbb; color:white;" onclick="updateStatus('${doc.id}', 'new')">복구</button>`
-                            }
+                            <button class="btn ${isDone?'':'btn-done'}" onclick="updateOrderStatus('${doc.id}', '${isDone?'new':'done'}')">${isDone?'복구':'완료'}</button>
                             <button class="btn btn-del" onclick="deleteOrder('${doc.id}')">삭제</button>
                         </td>
-                    </tr>
-                `}).join('');
+                    </tr>`;
+                }).join('');
+            });
+        }
+        window.updateOrderStatus = (id, st) => updateDoc(doc(db, "orders", id), { status: st });
+        window.deleteOrder = (id) => confirm("삭제하시겠습니까?") && deleteDoc(doc(db, "orders", id));
+
+        // --- 2. 상품 관리 로직 ---
+        function loadAllProducts() {
+            const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+            onSnapshot(q, (snapshot) => {
+                const list = document.getElementById('productList');
+                list.innerHTML = snapshot.docs.map(doc => {
+                    const p = doc.data();
+                    // 이미지 없을 경우 회색박스 처리
+                    const imgShow = p.imageUrl ? `<img src="${p.imageUrl}" width="50" height="50" style="object-fit:cover; border-radius:4px;">` : `<div style="width:50px;height:50px;background:#eee;">No Img</div>`;
+                    
+                    return `<tr>
+                        <td>${imgShow}</td>
+                        <td>
+                            <div style="font-weight:bold;">${p.name}</div>
+                            <div style="font-size:0.8rem; color:#888;">${p.category} / ${p.price}원</div>
+                        </td>
+                        <td>
+                            ${p.showShop ? '<span class="status-badge status-new">Shop</span>' : ''}
+                            ${p.showPartner ? '<span class="status-badge status-done">B2B</span>' : ''}
+                        </td>
+                        <td>
+                            <button class="btn" style="background:#ddd;" onclick='editProduct(${JSON.stringify({id: doc.id, ...p})})'>수정</button>
+                            <button class="btn btn-del" onclick="deleteProduct('${doc.id}')">삭제</button>
+                        </td>
+                    </tr>`;
+                }).join('');
             });
         }
 
-        // 3. 상태 변경 (완료 처리)
-        window.updateStatus = async (id, status) => {
-            if(!confirm(status === 'done' ? "발송 완료 처리하시겠습니까?" : "상태를 복구하시겠습니까?")) return;
-            await updateDoc(doc(db, "orders", id), { status: status });
+        window.saveProduct = async () => {
+            const name = document.getElementById('pName').value;
+            const category = document.getElementById('pCategory').value;
+            const price = document.getElementById('pPrice').value;
+            const badge = document.getElementById('pBadge').value;
+            const cupNote = document.getElementById('pNote').value;
+            const desc = document.getElementById('pDesc').value;
+            const link = document.getElementById('pLink').value;
+            const imageUrl = document.getElementById('pImageUrl').value; // [변경] URL 텍스트 읽기
+            
+            const showShop = document.getElementById('showShop').checked;
+            const showPartner = document.getElementById('showPartner').checked;
+            const editId = document.getElementById('editDocId').value;
+
+            if (!name || !price) return alert("상품명과 가격은 필수입니다.");
+
+            const data = {
+                name, category, price: Number(price), badge, cupNote, description: desc, shopLink: link,
+                imageUrl: imageUrl, // [변경] 텍스트 그대로 저장
+                showShop, showPartner,
+                createdAt: Date.now()
+            };
+
+            try {
+                if (editId) {
+                    await updateDoc(doc(db, "products", editId), data);
+                    alert("수정 완료");
+                } else {
+                    await addDoc(collection(db, "products"), data);
+                    alert("등록 완료");
+                }
+                resetForm();
+            } catch(e) { console.error(e); alert("저장 실패"); }
         };
 
-        // 4. 주문 삭제
-        window.deleteOrder = async (id) => {
-            if(confirm("정말 이 주문을 삭제하시겠습니까? (되돌릴 수 없습니다)")) {
-                await deleteDoc(doc(db, "orders", id));
-            }
+        window.editProduct = (p) => {
+            document.getElementById('editDocId').value = p.id;
+            document.getElementById('pName').value = p.name;
+            document.getElementById('pCategory').value = p.category;
+            document.getElementById('pPrice').value = p.price;
+            document.getElementById('pBadge').value = p.badge || '';
+            document.getElementById('pNote').value = p.cupNote || '';
+            document.getElementById('pDesc').value = p.description || '';
+            document.getElementById('pLink').value = p.shopLink || '';
+            document.getElementById('pImageUrl').value = p.imageUrl || ''; // [변경]
+            document.getElementById('showShop').checked = p.showShop;
+            document.getElementById('showPartner').checked = p.showPartner;
+            window.scrollTo(0, 0);
         };
 
+        window.deleteProduct = async (id) => {
+            if(confirm("정말 삭제하시겠습니까?")) await deleteDoc(doc(db, "products", id));
+        };
+
+        window.resetForm = () => {
+            document.getElementById('editDocId').value = '';
+            document.querySelectorAll('.form-input').forEach(i => i.value = '');
+            document.getElementById('showShop').checked = true;
+            document.getElementById('showPartner').checked = true;
+        };
     </script>
 </body>
 </html>
