@@ -442,7 +442,6 @@
                 <h2 class="section-title">Signature Blends</h2>
                 <p>스트레토가 추구하는 맛의 지향점을 담은 블렌딩 라인업</p>
             </div>
-            
             <div class="shop-grid" id="shop-blend-grid" style="margin-bottom: 100px;"></div>
 
             <div class="section-header" style="margin-top: 100px;">
@@ -450,7 +449,17 @@
                 <p>각 산지의 떼루아를 온전히 담아낸 스페셜티 라인업</p>
             </div>
 
-            <div class="shop-grid" id="shop-single-grid"></div>
+            <div style="margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; align-items: baseline; gap: 10px;">
+                <h3 style="font-size: 1.5rem; color: white; margin: 0;">Nutty & Heavy</h3>
+                <span style="color: #888; font-size: 0.95rem;">고소함 · 묵직함 · 밸런스</span>
+            </div>
+            <div class="shop-grid" id="shop-nutty-grid" style="margin-bottom: 80px;"></div>
+
+            <div style="margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; align-items: baseline; gap: 10px;">
+                <h3 style="font-size: 1.5rem; color: white; margin: 0;">Fruity & Floral</h3>
+                <span style="color: #888; font-size: 0.95rem;">산뜻함 · 화사함 · 과일향</span>
+            </div>
+            <div class="shop-grid" id="shop-fruity-grid"></div>
 
             <div style="text-align: center; margin-top: 60px;">
                 <a href="https://smartstore.naver.com/stretto_coffeefactory" target="_blank" class="btn-primary" style="background: transparent; border: 1px solid var(--accent-blue); padding: 15px 40px;">
@@ -745,23 +754,21 @@
 
         async function loadShopProducts() {
             try {
-                // Shop 노출 켜진 상품만 가져오기
                 const q = query(collection(db, "products"), where("showShop", "==", true));
                 const snapshot = await getDocs(q);
                 
                 const products = snapshot.docs.map(doc => doc.data());
-                // 최신순 정렬
                 products.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
 
                 const blendGrid = document.getElementById('shop-blend-grid');
-                const singleGrid = document.getElementById('shop-single-grid');
+                const nuttyGrid = document.getElementById('shop-nutty-grid');
+                const fruityGrid = document.getElementById('shop-fruity-grid');
                 
-                // 초기화
                 if(blendGrid) blendGrid.innerHTML = '';
-                if(singleGrid) singleGrid.innerHTML = '';
+                if(nuttyGrid) nuttyGrid.innerHTML = '';
+                if(fruityGrid) fruityGrid.innerHTML = '';
 
                 products.forEach(p => {
-                    // [수정] 뱃지 색상 적용
                     const badgeStyle = p.badgeColor ? `background: ${p.badgeColor};` : `background: var(--accent-blue);`;
                     
                     const html = `
@@ -783,14 +790,23 @@
                         </a>
                     </div>`;
 
-                    // [핵심 수정] 카테고리 매칭 로직 변경 (blend / single)
-                    // Admin에서 저장하는 값은 소문자 'blend', 'single' 입니다.
+                    // [핵심] 카테고리 분류 로직
                     const cat = (p.category || '').toLowerCase();
 
-                    if (cat === 'blend' && blendGrid) {
-                        blendGrid.innerHTML += html;
-                    } else if (cat === 'single' && singleGrid) {
-                        singleGrid.innerHTML += html;
+                    if (cat === 'blend') {
+                        if(blendGrid) blendGrid.innerHTML += html;
+                    } 
+                    // single_nutty 이거나, decaf 이거나, 그냥 single 인데 Nutty 그리드에 넣고 싶을 때
+                    else if (cat === 'single_nutty' || cat === 'decaf') {
+                        if(nuttyGrid) nuttyGrid.innerHTML += html;
+                    }
+                    // single_fruity 일 때
+                    else if (cat === 'single_fruity') {
+                        if(fruityGrid) fruityGrid.innerHTML += html;
+                    }
+                    // 예전 데이터(single)가 남아서 분류가 안 된 경우 -> 일단 Nutty로 보냄 (안전장치)
+                    else if (cat === 'single') {
+                        if(nuttyGrid) nuttyGrid.innerHTML += html;
                     }
                 });
 
