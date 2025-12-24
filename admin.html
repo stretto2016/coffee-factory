@@ -23,7 +23,6 @@
         .btn-done { background: #2997ff; color: white; }
         .btn-del { background: #ff453a; color: white; }
         
-        /* [수정] 라벨 스타일 추가 */
         .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         .form-label { display: block; font-size: 0.8rem; font-weight: 700; color: #555; margin-bottom: 5px; }
         .form-input { padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%; box-sizing: border-box; font-size: 0.95rem; }
@@ -31,14 +30,16 @@
         .full-width { grid-column: span 2; }
         .form-box { background: #f9f9f9; padding: 25px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 20px; }
         
+        /* 배합 비율 리스트 스타일 */
+        .ingredient-row { display: flex; gap: 10px; margin-bottom: 5px; align-items: center; }
+        .ingredient-row select { flex: 2; }
+        .ingredient-row input { flex: 1; text-align: right; }
+        .remove-btn { color: #ff453a; cursor: pointer; font-weight: bold; padding: 5px; }
+
         #login-section { text-align: center; margin: 100px auto; max-width: 400px; }
         .hidden { display: none; }
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
-        .status-new { background: #e3f2fd; color: #2196f3; }
-        .status-done { background: #e8f5e9; color: #4caf50; }
-
-        /* 뱃지 미리보기용 */
         .preview-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; color: white; font-size: 0.7rem; font-weight: bold; margin-bottom: 5px; }
+        .section-title { font-size: 0.9rem; font-weight: bold; color: #2997ff; border-bottom: 2px solid #e5e5e5; padding-bottom: 5px; margin: 20px 0 10px 0; }
     </style>
 </head>
 <body>
@@ -58,7 +59,7 @@
         
         <div class="tab-menu">
             <button class="tab-btn active" onclick="switchTab('orders')">주문 관리</button>
-            <button class="tab-btn" onclick="switchTab('products')">상품 관리</button>
+            <button class="tab-btn" onclick="switchTab('products')">상품 관리 (앱 연동)</button>
         </div>
 
         <div id="tab-orders" class="tab-content active">
@@ -81,75 +82,112 @@
                 <h3 style="margin-top:0; margin-bottom:20px; border-bottom:1px solid #ddd; padding-bottom:10px;">📦 상품 등록 / 수정</h3>
                 <input type="hidden" id="editDocId">
                 
+                <div class="section-title">1. 기본 정보 & 이름</div>
                 <div class="input-group">
                     <div>
-                        <label class="form-label">상품명 (필수)</label>
-                        <input type="text" id="pName" class="form-input" placeholder="예: 알토 블렌드">
+                        <label class="form-label">카테고리</label>
+                        <select id="pCategory" class="form-input" onchange="toggleDetailName()">
+                            <option value="single">싱글 오리진 (Single)</option>
+                            <option value="blend">블렌드 (Blend)</option>
+                        </select>
                     </div>
                     <div>
-                        <label class="form-label">카테고리</label>
-                        <select id="pCategory" class="form-input">
-                            <option value="Blend">블렌드 (Blend)</option>
-                            <option value="Single-Nutty">싱글 - 고소함 (Nutty)</option>
-                            <option value="Single-Fruity">싱글 - 산미/꽃 (Fruity)</option>
-                            <option value="Decaf">디카페인</option>
-                        </select>
+                        <label class="form-label">로스팅 손실률 (0.15 = 15%)</label>
+                        <input type="number" step="0.01" id="pShrinkage" class="form-input" value="0.15">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div>
+                        <label class="form-label" id="labelGroupName">제품명 (예: 에티오피아)</label>
+                        <input type="text" id="pGroupName" class="form-input" placeholder="메인 이름">
+                    </div>
+                    <div id="divDetailName" style="display:none;">
+                        <label class="form-label">상세 구분 (예: G1, 버전)</label>
+                        <input type="text" id="pDetailName" class="form-input" placeholder="블렌드 상세명">
+                    </div>
+                </div>
+
+                <div class="section-title">2. 판매 가격</div>
+                <div class="input-group">
+                    <div>
+                        <label class="form-label">홈페이지(Shop) 판매가 (B2C)</label>
+                        <input type="text" id="pPriceShop" class="form-input" placeholder="숫자만 입력">
+                    </div>
+                    <div>
+                        <label class="form-label">파트너(B2B) 납품가</label>
+                        <input type="text" id="pPriceB2B" class="form-input" placeholder="숫자만 입력">
+                    </div>
+                </div>
+
+                <div class="section-title">3. 포장/부자재 비용 (건당)</div>
+                <div class="input-group" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+                    <div>
+                        <label class="form-label">봉투</label>
+                        <input type="number" id="costBag" class="form-input" value="300">
+                    </div>
+                    <div>
+                        <label class="form-label">라벨</label>
+                        <input type="number" id="costLabel" class="form-input" value="50">
+                    </div>
+                    <div>
+                        <label class="form-label">속지/박스</label>
+                        <input type="number" id="costBox" class="form-input" value="100">
+                    </div>
+                    <div>
+                        <label class="form-label">기타</label>
+                        <input type="number" id="extraCost" class="form-input" value="0">
+                    </div>
+                </div>
+
+                <div class="section-title">4. 생두 배합 (Recipe)</div>
+                <div style="background: white; padding: 15px; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 15px;">
+                    <div id="ingredientList"></div>
+                    <button onclick="addIngredientRow()" class="btn" style="background:#eee; margin-top:10px; width:100%;">+ 생두 추가하기</button>
+                </div>
+
+                <div class="section-title">5. 상세 정보 (홈페이지용)</div>
+                <div class="input-group">
+                    <div style="display: flex; gap: 10px;" class="full-width">
+                        <div style="flex: 2;">
+                            <label class="form-label">뱃지 텍스트</label>
+                            <input type="text" id="pBadge" class="form-input" placeholder="BEST, NEW">
+                        </div>
+                        <div style="flex: 1;">
+                            <label class="form-label">뱃지 색상</label>
+                            <select id="pBadgeColor" class="form-input">
+                                <option value="#333333">⚫ 검정</option>
+                                <option value="#dc2626">🔴 빨강</option>
+                                <option value="#2563eb">🔵 파랑</option>
+                                <option value="#d97706">🟠 오렌지</option>
+                                <option value="#7c3aed">🟣 보라</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 
                 <div class="input-group">
-                    <div>
-                        <label class="form-label">홈페이지(Shop) 판매가</label>
-                        <input type="text" id="pPriceShop" class="form-input" placeholder="숫자만 입력 (예: 12000)">
-                    </div>
-                    <div>
-                        <label class="form-label">파트너(B2B) 납품가</label>
-                        <input type="text" id="pPriceB2B" class="form-input" placeholder="숫자만 입력 (예: 9000)">
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <div style="display: flex; gap: 10px;">
-                        <div style="flex: 2;">
-                            <label class="form-label">뱃지 텍스트 (선택)</label>
-                            <input type="text" id="pBadge" class="form-input" placeholder="BEST, NEW, GEISHA">
-                        </div>
-                        <div style="flex: 1;">
-                            <label class="form-label">뱃지 색상</label>
-                            <select id="pBadgeColor" class="form-input" style="font-weight:bold;">
-                                <option value="#333333" style="background:#333; color:white;">⚫ 검정 (기본)</option>
-                                <option value="#dc2626" style="background:#dc2626; color:white;">🔴 빨강 (NEW)</option>
-                                <option value="#2563eb" style="background:#2563eb; color:white;">🔵 파랑 (BEST)</option>
-                                <option value="#d97706" style="background:#d97706; color:white;">🟠 오렌지</option>
-                                <option value="#7c3aed" style="background:#7c3aed; color:white;">🟣 보라 (GEISHA)</option>
-                                <option value="#059669" style="background:#059669; color:white;">🟢 초록</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="form-label">컵노트 (향미 설명)</label>
+                    <div class="full-width">
+                        <label class="form-label">컵노트</label>
                         <input type="text" id="pNote" class="form-input" placeholder="예: 다크초콜릿 · 아몬드">
                     </div>
                 </div>
-
                 <div class="input-group">
                     <div class="full-width">
-                        <label class="form-label">상품 설명 (짧게)</label>
-                        <input type="text" id="pDesc" class="form-input" placeholder="예: 묵직한 바디감과 고소함이 특징입니다.">
+                        <label class="form-label">상품 설명</label>
+                        <input type="text" id="pDesc" class="form-input" placeholder="설명 입력">
                     </div>
                 </div>
-
+                <div class="input-group">
+                    <div class="full-width">
+                        <label class="form-label">이미지 경로</label>
+                        <input type="text" id="pImageUrl" class="form-input" placeholder="images/coffee.jpg">
+                    </div>
+                </div>
                 <div class="input-group">
                     <div class="full-width">
                         <label class="form-label">스마트스토어 링크</label>
-                        <input type="text" id="pLink" class="form-input" placeholder="https://smartstore.naver.com/...">
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <div class="full-width">
-                        <label class="form-label">이미지 경로 (GitHub 파일명 or URL)</label>
-                        <input type="text" id="pImageUrl" class="form-input" placeholder="예: images/coffee.jpg">
+                        <input type="text" id="pLink" class="form-input" placeholder="http://...">
                     </div>
                 </div>
 
@@ -186,7 +224,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
              apiKey: "AIzaSyAUjfrQ-HVivBLggiOl8vvRZynala1qqyM",
@@ -203,11 +241,14 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- 로그인 및 탭 관리 ---
+        let beanList = []; // 생두 리스트
+
+        // --- 로그인 및 초기화 ---
         onAuthStateChanged(auth, (user) => {
             if (user && user.email === ADMIN_EMAIL) {
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('dashboard-section').classList.remove('hidden');
+                loadBeans(); // 생두 먼저 불러오기
                 loadAllOrders();
                 loadAllProducts();
             } else if (user) {
@@ -215,6 +256,13 @@
                 signOut(auth);
             }
         });
+
+        // 생두 목록 불러오기 (레시피 선택용)
+        async function loadBeans() {
+            const q = query(collection(db, "beans"), orderBy("name"));
+            const snapshot = await getDocs(q);
+            beanList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        }
 
         window.adminLogin = () => {
             const id = document.getElementById('adminId').value;
@@ -230,7 +278,41 @@
             event.target.classList.add('active');
         };
 
-        // --- 1. 주문 관리 로직 ---
+        // --- UI 로직 ---
+        window.toggleDetailName = () => {
+            const cat = document.getElementById('pCategory').value;
+            const detailDiv = document.getElementById('divDetailName');
+            const groupLabel = document.getElementById('labelGroupName');
+            
+            if (cat === 'blend') {
+                detailDiv.style.display = 'block';
+                groupLabel.innerText = "블렌드명 (예: 스트레토 블렌드)";
+            } else {
+                detailDiv.style.display = 'none';
+                groupLabel.innerText = "제품명 (예: 에티오피아)";
+            }
+        };
+
+        window.addIngredientRow = (beanName = "", ratio = 1.0) => {
+            const container = document.getElementById('ingredientList');
+            const row = document.createElement('div');
+            row.className = 'ingredient-row';
+            
+            let options = `<option value="" disabled selected>생두 선택</option>`;
+            beanList.forEach(b => {
+                const selected = b.name === beanName ? "selected" : "";
+                options += `<option value="${b.name}" ${selected}>${b.name}</option>`;
+            });
+
+            row.innerHTML = `
+                <select class="form-input bean-select">${options}</select>
+                <input type="number" step="0.1" class="form-input bean-ratio" value="${ratio}" placeholder="비율">
+                <span class="remove-btn" onclick="this.parentElement.remove()">✕</span>
+            `;
+            container.appendChild(row);
+        };
+
+        // --- 1. 주문 관리 ---
         function loadAllOrders() {
             const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
             onSnapshot(q, (snapshot) => {
@@ -255,7 +337,7 @@
         window.updateOrderStatus = (id, st) => updateDoc(doc(db, "orders", id), { status: st });
         window.deleteOrder = (id) => confirm("삭제하시겠습니까?") && deleteDoc(doc(db, "orders", id));
 
-        // --- 2. 상품 관리 로직 ---
+        // --- 2. 상품 관리 (앱 연동 완벽 지원) ---
         function loadAllProducts() {
             const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
             onSnapshot(q, (snapshot) => {
@@ -263,9 +345,11 @@
                 list.innerHTML = snapshot.docs.map(doc => {
                     const p = doc.data();
                     const imgShow = p.imageUrl ? `<img src="${p.imageUrl}" width="50" height="50" style="object-fit:cover; border-radius:4px;">` : `<div style="width:50px;height:50px;background:#eee;">No Img</div>`;
+                    
+                    // 따옴표 문제 방지
                     const pString = encodeURIComponent(JSON.stringify({id: doc.id, ...p}));
-
-                    // [수정] 뱃지 미리보기 표시
+                    
+                    // 뱃지
                     let badgeHtml = '';
                     if (p.badge) {
                         badgeHtml = `<span class="preview-badge" style="background-color: ${p.badgeColor || '#333'}">${p.badge}</span>`;
@@ -276,7 +360,7 @@
                         <td>
                             ${badgeHtml}
                             <div style="font-weight:bold;">${p.name}</div>
-                            <div style="font-size:0.75rem; color:#888;">${p.category}</div>
+                            <div style="font-size:0.75rem; color:#888;">${p.groupName || '-'} / ${p.category}</div>
                             <div style="font-size:0.8rem; margin-top:4px;">
                                 샵: <b>${Number(p.price).toLocaleString()}원</b> / 
                                 B2B: <b style="color:#2997ff">${Number(p.priceB2B || p.price).toLocaleString()}원</b>
@@ -296,30 +380,65 @@
         }
 
         window.saveProduct = async () => {
-            const name = document.getElementById('pName').value;
             const category = document.getElementById('pCategory').value;
+            const groupName = document.getElementById('pGroupName').value;
+            const detailName = document.getElementById('pDetailName').value;
+            const shrinkage = document.getElementById('pShrinkage').value;
+            
             const priceShop = document.getElementById('pPriceShop').value;
             const priceB2B = document.getElementById('pPriceB2B').value;
+            
+            const costBag = document.getElementById('costBag').value;
+            const costLabel = document.getElementById('costLabel').value;
+            const costBox = document.getElementById('costBox').value;
+            const extraCost = document.getElementById('extraCost').value;
+
             const badge = document.getElementById('pBadge').value;
-            const badgeColor = document.getElementById('pBadgeColor').value; // [수정] 뱃지 색상 가져오기
+            const badgeColor = document.getElementById('pBadgeColor').value;
             const cupNote = document.getElementById('pNote').value;
             const desc = document.getElementById('pDesc').value;
             const link = document.getElementById('pLink').value;
             const imageUrl = document.getElementById('pImageUrl').value;
-            
             const showShop = document.getElementById('showShop').checked;
             const showPartner = document.getElementById('showPartner').checked;
             const editId = document.getElementById('editDocId').value;
 
-            if (!name || !priceShop) return alert("상품명과 샵 가격은 필수입니다.");
+            if (!groupName || !priceShop) return alert("상품명(그룹명)과 샵 가격은 필수입니다.");
 
+            // 이름 조합 로직 (앱과 동일하게 맞춤)
+            let fullName = groupName;
+            if (category === 'blend' && detailName) {
+                fullName = `${groupName} (${detailName})`;
+            }
+
+            // 배합 정보 수집
+            const composition = {};
+            document.querySelectorAll('.ingredient-row').forEach(row => {
+                const beanName = row.querySelector('.bean-select').value;
+                const ratio = row.querySelector('.bean-ratio').value;
+                if(beanName && ratio) {
+                    composition[beanName] = Number(ratio);
+                }
+            });
+
+            // 데이터 객체 생성
             const data = {
-                name, category, 
-                price: Number(priceShop),
-                priceB2B: Number(priceB2B || priceShop),
-                badge, badgeColor, // [수정] 색상 저장
-                cupNote, description: desc, shopLink: link,
-                imageUrl, 
+                name: fullName,
+                groupName, detailName, category,
+                shrinkage: Number(shrinkage),
+                
+                price: Number(priceShop),        // B2C
+                priceB2B: Number(priceB2B || priceShop), // B2B
+                priceShop: Number(priceShop),    // 앱 호환용 명시
+                
+                costBag: Number(costBag),
+                costLabel: Number(costLabel),
+                costBox: Number(costBox),
+                extraCost: Number(extraCost),
+                
+                composition, // 배합 정보 저장
+                
+                badge, badgeColor, cupNote, description: desc, shopLink: link, imageUrl, 
                 showShop, showPartner,
                 createdAt: Date.now()
             };
@@ -340,15 +459,48 @@
             const p = JSON.parse(decodeURIComponent(pString));
 
             document.getElementById('editDocId').value = p.id;
-            document.getElementById('pName').value = p.name;
-            document.getElementById('pCategory').value = p.category;
             
+            // 1. 기본 정보 채우기
+            document.getElementById('pCategory').value = p.category || 'single';
+            window.toggleDetailName(); // UI 업데이트
+            
+            // 이름 분리 (혹시 데이터에 groupName이 없을 경우 대비)
+            if (p.groupName) {
+                document.getElementById('pGroupName').value = p.groupName;
+                document.getElementById('pDetailName').value = p.detailName || '';
+            } else {
+                // 구버전 데이터 호환
+                const parts = p.name.split(' (');
+                document.getElementById('pGroupName').value = parts[0];
+                document.getElementById('pDetailName').value = parts.length > 1 ? parts[1].replace(')', '') : '';
+            }
+
+            document.getElementById('pShrinkage').value = p.shrinkage || 0.15;
+
+            // 2. 가격 및 비용
             document.getElementById('pPriceShop').value = p.price; 
             document.getElementById('pPriceB2B').value = p.priceB2B || p.price;
+            
+            document.getElementById('costBag').value = p.costBag || 300;
+            document.getElementById('costLabel').value = p.costLabel || 50;
+            document.getElementById('costBox').value = p.costBox || 100;
+            document.getElementById('extraCost').value = p.extraCost || 0;
 
+            // 3. 배합 정보 채우기
+            const container = document.getElementById('ingredientList');
+            container.innerHTML = ''; // 초기화
+            if (p.composition) {
+                Object.entries(p.composition).forEach(([bean, ratio]) => {
+                    addIngredientRow(bean, ratio);
+                });
+            } else {
+                // 배합 정보 없으면 빈 줄 하나 추가
+                addIngredientRow();
+            }
+
+            // 4. 상세 정보
             document.getElementById('pBadge').value = p.badge || '';
-            document.getElementById('pBadgeColor').value = p.badgeColor || '#333333'; // [수정] 색상 불러오기
-
+            document.getElementById('pBadgeColor').value = p.badgeColor || '#333333';
             document.getElementById('pNote').value = p.cupNote || '';
             document.getElementById('pDesc').value = p.description || '';
             document.getElementById('pLink').value = p.shopLink || '';
@@ -366,7 +518,20 @@
         window.resetForm = () => {
             document.getElementById('editDocId').value = '';
             document.querySelectorAll('.form-input').forEach(i => i.value = '');
+            
+            // 기본값 복구
+            document.getElementById('pCategory').value = 'single';
+            toggleDetailName();
+            document.getElementById('pShrinkage').value = 0.15;
+            document.getElementById('costBag').value = 300;
+            document.getElementById('costLabel').value = 50;
+            document.getElementById('costBox').value = 100;
+            document.getElementById('extraCost').value = 0;
             document.getElementById('pBadgeColor').value = '#333333';
+            
+            document.getElementById('ingredientList').innerHTML = '';
+            addIngredientRow(); // 빈 줄 하나 추가
+
             document.getElementById('showShop').checked = true;
             document.getElementById('showPartner').checked = true;
         };
