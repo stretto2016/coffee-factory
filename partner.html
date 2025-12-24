@@ -265,15 +265,18 @@
         let historyUnsubscribe = null;
 
         document.getElementById('orderDate').valueAsDate = new Date();
+        
+        // 시작하자마자 DB에서 상품 불러오기
         init();
 
         async function init() {
             await fetchProducts(); 
         }
 
-        // DB에서 상품 가져오기 (가격 정보 포함)
+        // [1] DB에서 상품 정보(기본 B2B 가격 포함) 가져오기
         async function fetchProducts() {
             try {
+                // 파트너 노출(showPartner) 켜진 것만 가져옴
                 const q = query(collection(db, "products"), where("showPartner", "==", true));
                 const querySnapshot = await getDocs(q);
                 
@@ -284,29 +287,38 @@
                     
                     return {
                         id: doc.id,
-                        name: data.name,
+                        name: data.name, // "디카페인 콜롬비아 엑셀소" 등 (DB와 글자 토씨하나 안틀리고 같아야 함)
                         type: type, 
                         badge: data.badge,
-                        // 기본 B2B 가격 (없으면 기존 price 사용)
-                        basePrice: data.priceB2B || data.price || 0 
+                        // Admin에서 설정한 B2B 가격 (없으면 일반 price)
+                        defaultPrice: data.priceB2B || data.price || 0 
                     };
                 });
+                
+                // 이름순 정렬
                 products.sort((a, b) => a.name.localeCompare(b.name));
-            } catch (e) { console.error("상품 로드 실패", e); }
-        }
-
-        // ★ [핵심] 해당 거래처에 맞는 상품 가격 결정 함수 ★
-        function getClientPrice(product) {
-            if (!currentClient) return product.basePrice;
-
-            // 1. 거래처 특별 단가가 있는지 확인
-            if (currentClient.customPrices && currentClient.customPrices[product.name]) {
-                return currentClient.customPrices[product.name];
+                renderProductGrids(); // 일단 기본 가격으로 렌더링
+            } catch (e) {
+                console.error("상품 불러오기 실패:", e);
             }
-            // 2. 없으면 기본 B2B 가격 리턴
-            return product.basePrice;
         }
 
+        // [★중요★] 거래처별 가격 결정 로직 (priceOverrides 적용)
+        function getClientPrice(product) {
+            // 로그인을 안 했거나 정보가 없으면 0원 혹은 안보이게 처리
+            if (!currentClient) return 0;
+
+            // 1. 이 거래처에 'priceOverrides' 설정이 있고, 해당 제품 가격이 적혀있는지 확인
+            // 사진에 있는 구조: currentClient.priceOverrides["제품명"]
+            if (currentClient.priceOverrides && currentClient.priceOverrides[product.name] !== undefined) {
+                return Number(currentClient.priceOverrides[product.name]);
+            }
+
+            // 2. 특별 단가가 없으면 기본 B2B 가격 리턴
+            return product.defaultPrice;
+        }
+
+        // --- 로그인 상태 변경 ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 document.getElementById('login-section').classList.add('hidden');
@@ -315,40 +327,42 @@
                 try {
                     const q = query(collection(db, "clients"), where("email", "==", user.email));
                     const querySnapshot = await getDocs(q);
+                    
                     if (!querySnapshot.empty) {
                         const docData = querySnapshot.docs[0].data();
+                        // DB의 모든 정보(priceOverrides 포함)를 currentClient에 저장
                         currentClient = { id: querySnapshot.docs[0].id, ...docData };
                         
-                        document.getElementById('disp-name').innerText = currentClient.name;
+                        // 화면에 업체명 표시
+                        let nameHtml = currentClient.name;
                         
-                        // 면세/부가세 별도 여부 표시
-                        let taxText = "";
+                        // [면세/부가세 별도] 체크되어 있으면 표시
                         if (currentClient.isTaxExempt) {
-                            taxText = " (VAT 별도/면세)";
-                            document.getElementById('disp-name').innerHTML += `<span style="font-size:0.8rem; color:#ffcc00;">${taxText}</span>`;
+                            nameHtml += ` <span style="font-size:0.8rem; color:#ffcc00; font-weight:normal;">(VAT 별도)</span>`;
                         }
-
+                        document.getElementById('disp-name').innerHTML = nameHtml;
                         document.getElementById('disp-address').innerText = currentClient.address || "-";
                         
-                        // 로그인 했으니 가격을 반영하여 상품 리스트 다시 그리기
+                        // ★ 로그인 했으니 가격 다시 계산해서 화면 갱신
                         renderProductGrids(); 
                         loadOrderHistory(currentClient.id);
                     } else {
                         document.getElementById('disp-name').innerText = "미등록 거래처";
-                        alert("관리자 문의 필요");
+                        alert("관리자에게 문의하세요. (DB에 정보 없음)");
                     }
                 } catch (e) { console.error(e); }
             } else {
+                // 로그아웃 시
                 document.getElementById('login-section').classList.remove('hidden');
                 document.getElementById('order-section').classList.add('hidden');
                 currentClient = null;
-                cart = []; // 로그아웃 시 장바구니 초기화
+                cart = []; 
                 renderCart();
                 if(historyUnsubscribe) historyUnsubscribe();
             }
         });
 
-        // (텔레그램, 마감시간 계산, 히스토리 로직은 기존과 동일하므로 생략하지 않고 유지)
+        // 텔레그램 알림 등 유틸리티 함수
         async function sendTelegramNotification(message) {
             try {
                 await fetch('/api/send-telegram', {
@@ -358,29 +372,54 @@
                 });
             } catch (err) {}
         }
+
         function calculateDeadline(createdDate) {
             let deadline = new Date(createdDate);
             deadline.setHours(11, 0, 0, 0); 
-            if (createdDate >= deadline) { deadline.setDate(deadline.getDate() + 1); deadline.setHours(11, 0, 0, 0); }
-            while (true) { const day = deadline.getDay(); if (day >= 1 && day <= 4) break; deadline.setDate(deadline.getDate() + 1); }
+            if (createdDate >= deadline) {
+                deadline.setDate(deadline.getDate() + 1);
+                deadline.setHours(11, 0, 0, 0);
+            }
+            while (true) {
+                const day = deadline.getDay();
+                if (day >= 1 && day <= 4) break;
+                deadline.setDate(deadline.getDate() + 1);
+            }
             return deadline;
         }
+
         function loadOrderHistory(clientId) {
             const historyList = document.getElementById('historyList');
             const q = query(collection(db, "orders"), where("clientId", "==", clientId));
+
             historyUnsubscribe = onSnapshot(q, (snapshot) => {
-                const orders = snapshot.docs.map(doc => ({id: doc.id, ...doc.data(), created: doc.data().createdAt ? doc.data().createdAt.toDate() : new Date()}));
+                const orders = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    return { 
+                        id: doc.id, 
+                        ...data, 
+                        created: data.createdAt ? data.createdAt.toDate() : new Date() 
+                    };
+                });
                 orders.sort((a, b) => b.created - a.created);
-                if (orders.length === 0) { historyList.innerHTML = '<div style="text-align:center; padding:20px; color:#444;">주문 내역 없음</div>'; return; }
+
+                if (orders.length === 0) {
+                    historyList.innerHTML = '<div style="text-align:center; padding:20px; color:#444;">주문 내역 없음</div>';
+                    return;
+                }
+                
                 const now = new Date();
                 historyList.innerHTML = orders.map(order => {
                     const deadline = calculateDeadline(order.created);
                     const isCancelable = now < deadline && order.status !== 'done';
-                    const productDetails = `${order.productType} ${order.amountKg}kg`;
                     const days = ['일','월','화','수','목','금','토'];
                     const deadlineStr = `${days[deadline.getDay()]}요일 11:00`;
                     
-                    // 주문 내역에도 금액 정보가 있으면 좋겠지만, 일단 기존 유지
+                    // 총액 정보가 있으면 표시, 없으면 무게만 표시
+                    const priceInfo = order.totalPrice 
+                        ? `<br><span style="font-size:0.85rem; color:#aaa;">(총 ${order.totalPrice.toLocaleString()}원)</span>` 
+                        : '';
+
                     return `
                     <div class="history-card">
                         <div>
@@ -389,9 +428,12 @@
                             ${order.note ? `<div class="h-detail">📝 ${order.note}</div>` : ''}
                         </div>
                         <div style="display:flex; flex-direction:column; align-items:flex-end;">
-                            <div class="h-amount" style="margin-bottom:5px;">${order.amountKg}kg</div>
+                            <div class="h-amount" style="margin-bottom:5px;">
+                                ${order.amountKg}kg
+                                ${priceInfo}
+                            </div>
                             ${isCancelable 
-                                ? `<button class="cancel-btn" onclick="tryCancel('${order.id}', '${deadline.toISOString()}', '${productDetails}')">취소 가능</button>`
+                                ? `<button class="cancel-btn" onclick="tryCancel('${order.id}', '${deadline.toISOString()}', '${order.productType} ${order.amountKg}kg')">취소 가능</button>`
                                 : `<button class="cancel-btn disabled" onclick="showContactInfo('${deadlineStr}')">취소 불가</button>`
                             }
                         </div>
@@ -399,38 +441,43 @@
                 `}).join('');
             });
         }
+
         window.tryCancel = async (id, dl, txt) => {
             if (new Date() >= new Date(dl)) return alert("시간 초과");
-            if(confirm("취소하시겠습니까?")) { await deleteDoc(doc(db, "orders", id)); sendTelegramNotification(`🚫 취소: ${currentClient.name} / ${txt}`); alert("취소됨"); }
+            if(confirm("취소하시겠습니까?")) {
+                await deleteDoc(doc(db, "orders", id));
+                sendTelegramNotification(`🚫 [취소] ${currentClient.name} / ${txt}`);
+                alert("취소되었습니다.");
+            }
         };
         window.showContactInfo = (t) => alert(`마감 기준: ${t}\n문의: 010-8679-0553`);
 
-        // --- 로그인 버튼 등 ---
+        // 버튼 이벤트
         document.getElementById('loginBtn').addEventListener('click', () => {
             const id = document.getElementById('loginId').value.trim();
             const pw = document.getElementById('password').value;
             const email = id.includes('@') ? id : id + "@stretto.com";
-            signInWithEmailAndPassword(auth, email, pw).catch(() => document.getElementById('login-msg').innerText = "로그인 실패");
+            signInWithEmailAndPassword(auth, email, pw).catch(() => document.getElementById('login-msg').innerText = "아이디/비번 확인 필요");
         });
         document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
         window.toggleCart = () => document.getElementById('cartSection').classList.toggle('folded');
 
-        // --- ★ 상품 목록 렌더링 (가격 표시 추가) ★ ---
+        // --- [화면 그리기] 상품 목록 ---
         function renderProductGrids() {
             const blendGrid = document.getElementById('grid-blend');
             const singleGrid = document.getElementById('grid-single');
 
-            // 공통 카드 생성 함수
             const createCard = (p) => {
                 const item = cart.find(c => c.name === p.name);
                 const isActive = item ? 'active' : '';
                 const badge = item ? `<div class="count-badge">✔ ${item.qty}kg</div>` : '';
+                
                 const styleClass = p.type === 'Single' ? 'single' : '';
                 const subColor = p.type === 'Single' ? '#d97706' : 'var(--accent-blue)';
                 
-                // 가격 결정 (로그인 전에는 안보이거나 기본가, 로그인 후엔 할인가)
-                const finalPrice = getClientPrice(p); 
-                const priceText = finalPrice > 0 ? `${finalPrice.toLocaleString()}원` : '가격 문의';
+                // ★ 여기서 가격 계산!
+                const finalPrice = getClientPrice(p);
+                const priceText = currentClient ? `${finalPrice.toLocaleString()}원` : 'Login..';
 
                 return `
                 <div class="product-btn ${styleClass} ${isActive}" onclick="addToCart('${p.name}', '${p.type}')">
@@ -450,15 +497,19 @@
         }
 
         window.addToCart = (productName, type) => {
-            // 가격 찾기
+            if (!currentClient) return alert("로그인이 필요합니다.");
+
+            // 카트에 담을 때의 가격 확정
             const product = products.find(p => p.name === productName);
             const price = getClientPrice(product);
 
             const existing = cart.find(item => item.name === productName);
             if (existing) {
+                // 수량 증가
                 if (type === 'Single') existing.qty = parseFloat((existing.qty + 0.1).toFixed(1));
                 else existing.qty += 1;
             } else {
+                // 신규 추가
                 const initialQty = type === 'Single' ? 0.2 : 1;
                 cart.push({ name: productName, qty: initialQty, type: type, price: price });
             }
@@ -471,6 +522,7 @@
             const step = item.type === 'Single' ? 0.1 : 1;
             const min = item.type === 'Single' ? 0.2 : 1;
             let newQty = parseFloat((item.qty + (step * direction)).toFixed(1));
+            
             if (newQty < min) return;
             item.qty = newQty;
             renderCart();
@@ -479,7 +531,7 @@
 
         window.removeItem = (idx) => { cart.splice(idx, 1); renderCart(); renderProductGrids(); };
 
-        // --- ★ 장바구니 렌더링 (총액 계산 추가) ★ ---
+        // --- [화면 그리기] 장바구니 & 총액 ---
         function renderCart() {
             const section = document.getElementById('cartSection');
             const list = document.getElementById('cartList');
@@ -495,17 +547,15 @@
             }
             section.style.display = 'block'; 
 
-            // 총 무게 계산
             const totalKg = cart.reduce((acc, item) => acc + item.qty, 0).toFixed(1);
             
-            // ★ 총 가격 계산 ★
+            // ★ 총액 계산
             const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
             const totalPriceStr = Math.floor(totalPrice).toLocaleString();
 
-            // 상단 표시 (무게 / 가격)
+            // 상단 표시
             totalWeightEl.innerHTML = `${totalKg}kg <span style="margin-left:8px; color:#ddd;">|</span> <span style="margin-left:8px; color:var(--accent-blue);">${totalPriceStr}원</span>`;
 
-            // 버튼 텍스트
             btn.disabled = false;
             btn.innerHTML = `${totalPriceStr}원 주문 전송하기`;
             btn.style.background = "var(--accent-blue)";
@@ -513,11 +563,11 @@
             // 면세 안내 문구
             let vatInfo = "";
             if (currentClient && currentClient.isTaxExempt) {
-                vatInfo = `<div style="text-align:right; font-size:0.8rem; color:#ffcc00; margin-bottom:10px;">※ 부가세 별도 (면세) 금액입니다.</div>`;
+                vatInfo = `<div style="text-align:right; font-size:0.8rem; color:#ffcc00; margin-bottom:10px;">※ 위 금액은 부가세 별도 금액입니다.</div>`;
             }
 
             list.innerHTML = vatInfo + cart.map((item, idx) => {
-                const itemTotal = (item.price * item.qty).toLocaleString();
+                const itemTotal = Math.floor(item.price * item.qty).toLocaleString();
                 return `
                 <div class="cart-item">
                     <div class="cart-info">
@@ -538,7 +588,6 @@
         document.getElementById('submitBtn').addEventListener('click', async () => {
             if (!currentClient) return alert("오류: 거래처 정보 없음");
             
-            // 총액 다시 계산
             const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
             const totalPriceStr = Math.floor(totalPrice).toLocaleString();
             
@@ -550,6 +599,7 @@
             const note = document.getElementById('orderNote').value;
 
             try {
+                // 주문 저장 (단가, 총액 포함)
                 const promises = cart.map(item => {
                     return addDoc(collection(db, "orders"), {
                         date: date,
@@ -557,15 +607,18 @@
                         clientName: currentClient.name,
                         productType: item.name,
                         amountKg: item.qty,
-                        unitPrice: item.price,    // 단가 저장
+                        unitPrice: item.price,             // 적용된 단가 저장
                         totalPrice: item.price * item.qty, // 합계 저장
-                        note: note, status: 'new', createdAt: serverTimestamp()
+                        note: note, 
+                        status: 'new', 
+                        createdAt: serverTimestamp()
                     });
                 });
                 await Promise.all(promises);
 
-                const orderDetails = cart.map(item => `- ${item.name}: ${item.qty}kg (${(item.price * item.qty).toLocaleString()}원)`).join('\n');
+                const orderDetails = cart.map(item => `- ${item.name}: ${item.qty}kg`).join('\n');
                 const message = `🔔 [신규 주문]\n👤 ${currentClient.name}\n📅 ${date}\n💰 총액: ${totalPriceStr}원\n📝 ${note || '없음'}\n\n📦 내역:\n${orderDetails}`;
+                
                 sendTelegramNotification(message);
 
                 alert("✅ 주문 완료!");
