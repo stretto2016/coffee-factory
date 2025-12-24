@@ -76,14 +76,22 @@
                 <input type="hidden" id="editDocId">
                 
                 <div class="input-group">
-                    <input type="text" id="pName" class="form-input" placeholder="상품명 (예: 알토 블렌드)">
-                    <select id="pCategory" class="form-input">
-                        <option value="Blend">블렌드 (Blend)</option>
-                        <option value="Single-Nutty">싱글 - 고소함 (Nutty)</option>
-                        <option value="Single-Fruity">싱글 - 산미/꽃 (Fruity)</option>
-                        <option value="Decaf">디카페인</option>
-                    </select>
-                </div>
+    <div class="full-width">
+        <label style="font-size:0.8rem; color:#666; font-weight:bold;">💰 가격 설정</label>
+    </div>
+    <input type="text" id="pPriceShop" class="form-input" placeholder="홈페이지(Shop) 판매가 (B2C)">
+    <input type="text" id="pPriceB2B" class="form-input" placeholder="파트너(B2B) 납품가">
+</div>
+
+<div class="input-group">
+    <input type="text" id="pBadge" class="form-input" placeholder="뱃지 (예: BEST, NEW, GEISHA)">
+    <select id="pCategory" class="form-input">
+        <option value="Blend">블렌드 (Blend)</option>
+        <option value="Single-Nutty">싱글 - 고소함 (Nutty)</option>
+        <option value="Single-Fruity">싱글 - 산미/꽃 (Fruity)</option>
+        <option value="Decaf">디카페인</option>
+    </select>
+</div>
                 
                 <div class="input-group">
                     <input type="text" id="pPrice" class="form-input" placeholder="가격 (숫자만, 예: 10000)">
@@ -202,20 +210,25 @@
         window.deleteOrder = (id) => confirm("삭제하시겠습니까?") && deleteDoc(doc(db, "orders", id));
 
         // --- 2. 상품 관리 로직 ---
+        // 1. 상품 목록 불러오기 (loadAllProducts 수정)
         function loadAllProducts() {
             const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
             onSnapshot(q, (snapshot) => {
                 const list = document.getElementById('productList');
                 list.innerHTML = snapshot.docs.map(doc => {
                     const p = doc.data();
-                    // 이미지 없을 경우 회색박스 처리
                     const imgShow = p.imageUrl ? `<img src="${p.imageUrl}" width="50" height="50" style="object-fit:cover; border-radius:4px;">` : `<div style="width:50px;height:50px;background:#eee;">No Img</div>`;
                     
+                    // 가격 2개 표시
                     return `<tr>
                         <td>${imgShow}</td>
                         <td>
                             <div style="font-weight:bold;">${p.name}</div>
-                            <div style="font-size:0.8rem; color:#888;">${p.category} / ${p.price}원</div>
+                            <div style="font-size:0.75rem; color:#888;">${p.category}</div>
+                            <div style="font-size:0.8rem; margin-top:4px;">
+                                샵: <b>${Number(p.price).toLocaleString()}원</b> / 
+                                B2B: <b style="color:#2997ff">${Number(p.priceB2B || p.price).toLocaleString()}원</b>
+                            </div>
                         </td>
                         <td>
                             ${p.showShop ? '<span class="status-badge status-new">Shop</span>' : ''}
@@ -230,25 +243,32 @@
             });
         }
 
+        // 2. 상품 저장 (saveProduct 수정)
         window.saveProduct = async () => {
             const name = document.getElementById('pName').value;
             const category = document.getElementById('pCategory').value;
-            const price = document.getElementById('pPrice').value;
+            // [변경] 가격 2개 읽기
+            const priceShop = document.getElementById('pPriceShop').value;
+            const priceB2B = document.getElementById('pPriceB2B').value;
+
             const badge = document.getElementById('pBadge').value;
             const cupNote = document.getElementById('pNote').value;
             const desc = document.getElementById('pDesc').value;
             const link = document.getElementById('pLink').value;
-            const imageUrl = document.getElementById('pImageUrl').value; // [변경] URL 텍스트 읽기
+            const imageUrl = document.getElementById('pImageUrl').value;
             
             const showShop = document.getElementById('showShop').checked;
             const showPartner = document.getElementById('showPartner').checked;
             const editId = document.getElementById('editDocId').value;
 
-            if (!name || !price) return alert("상품명과 가격은 필수입니다.");
+            if (!name || !priceShop || !priceB2B) return alert("상품명과 가격(Shop, B2B)은 필수입니다.");
 
             const data = {
-                name, category, price: Number(price), badge, cupNote, description: desc, shopLink: link,
-                imageUrl: imageUrl, // [변경] 텍스트 그대로 저장
+                name, category, 
+                price: Number(priceShop),        // index.html에서 쓰는 가격 (B2C)
+                priceB2B: Number(priceB2B),      // partner.html에서 쓸 가격 (B2B)
+                badge, cupNote, description: desc, shopLink: link,
+                imageUrl: imageUrl, 
                 showShop, showPartner,
                 createdAt: Date.now()
             };
@@ -265,16 +285,21 @@
             } catch(e) { console.error(e); alert("저장 실패"); }
         };
 
+        // 3. 수정 모드 (editProduct 수정)
         window.editProduct = (p) => {
             document.getElementById('editDocId').value = p.id;
             document.getElementById('pName').value = p.name;
             document.getElementById('pCategory').value = p.category;
-            document.getElementById('pPrice').value = p.price;
+            
+            // [변경] 가격 2개 세팅
+            document.getElementById('pPriceShop').value = p.price; 
+            document.getElementById('pPriceB2B').value = p.priceB2B || p.price; // 없으면 기존 가격
+
             document.getElementById('pBadge').value = p.badge || '';
             document.getElementById('pNote').value = p.cupNote || '';
             document.getElementById('pDesc').value = p.description || '';
             document.getElementById('pLink').value = p.shopLink || '';
-            document.getElementById('pImageUrl').value = p.imageUrl || ''; // [변경]
+            document.getElementById('pImageUrl').value = p.imageUrl || '';
             document.getElementById('showShop').checked = p.showShop;
             document.getElementById('showPartner').checked = p.showPartner;
             window.scrollTo(0, 0);

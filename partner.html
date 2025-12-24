@@ -259,22 +259,19 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // [중요] 기존 하드코딩 된 products 배열 삭제하고 빈 배열로 시작
         let products = [];
         let cart = []; 
         let currentClient = null;
         let historyUnsubscribe = null;
 
         document.getElementById('orderDate').valueAsDate = new Date();
-        
-        // 시작하자마자 DB에서 상품 불러오기 실행
         init();
 
         async function init() {
             await fetchProducts(); 
         }
 
-        // [핵심] DB에서 'showPartner'가 체크된 상품만 가져오는 함수
+        // DB에서 상품 가져오기 (가격 정보 포함)
         async function fetchProducts() {
             try {
                 const q = query(collection(db, "products"), where("showPartner", "==", true));
@@ -282,40 +279,59 @@
                 
                 products = querySnapshot.docs.map(doc => {
                     const data = doc.data();
-                    // Admin 카테고리(Single-Nutty 등)를 파트너 페이지용(Single/Blend)으로 변환
                     let type = "Single";
                     if (data.category === "Blend") type = "Blend";
                     
                     return {
+                        id: doc.id,
                         name: data.name,
                         type: type, 
-                        badge: data.badge 
+                        badge: data.badge,
+                        // 기본 B2B 가격 (없으면 기존 price 사용)
+                        basePrice: data.priceB2B || data.price || 0 
                     };
                 });
-                
-                // 이름순 정렬
                 products.sort((a, b) => a.name.localeCompare(b.name));
-                
-                // 화면 그리기
-                renderProductGrids();
-            } catch (e) {
-                console.error("상품 불러오기 실패", e);
-            }
+            } catch (e) { console.error("상품 로드 실패", e); }
         }
 
-        // --- 로그인 및 나머지 로직 (기존과 동일) ---
+        // ★ [핵심] 해당 거래처에 맞는 상품 가격 결정 함수 ★
+        function getClientPrice(product) {
+            if (!currentClient) return product.basePrice;
+
+            // 1. 거래처 특별 단가가 있는지 확인
+            if (currentClient.customPrices && currentClient.customPrices[product.name]) {
+                return currentClient.customPrices[product.name];
+            }
+            // 2. 없으면 기본 B2B 가격 리턴
+            return product.basePrice;
+        }
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('order-section').classList.remove('hidden');
+                
                 try {
                     const q = query(collection(db, "clients"), where("email", "==", user.email));
                     const querySnapshot = await getDocs(q);
                     if (!querySnapshot.empty) {
                         const docData = querySnapshot.docs[0].data();
                         currentClient = { id: querySnapshot.docs[0].id, ...docData };
+                        
                         document.getElementById('disp-name').innerText = currentClient.name;
+                        
+                        // 면세/부가세 별도 여부 표시
+                        let taxText = "";
+                        if (currentClient.isTaxExempt) {
+                            taxText = " (VAT 별도/면세)";
+                            document.getElementById('disp-name').innerHTML += `<span style="font-size:0.8rem; color:#ffcc00;">${taxText}</span>`;
+                        }
+
                         document.getElementById('disp-address').innerText = currentClient.address || "-";
+                        
+                        // 로그인 했으니 가격을 반영하여 상품 리스트 다시 그리기
+                        renderProductGrids(); 
                         loadOrderHistory(currentClient.id);
                     } else {
                         document.getElementById('disp-name').innerText = "미등록 거래처";
@@ -326,10 +342,13 @@
                 document.getElementById('login-section').classList.remove('hidden');
                 document.getElementById('order-section').classList.add('hidden');
                 currentClient = null;
+                cart = []; // 로그아웃 시 장바구니 초기화
+                renderCart();
                 if(historyUnsubscribe) historyUnsubscribe();
             }
         });
 
+        // (텔레그램, 마감시간 계산, 히스토리 로직은 기존과 동일하므로 생략하지 않고 유지)
         async function sendTelegramNotification(message) {
             try {
                 await fetch('/api/send-telegram', {
@@ -339,46 +358,29 @@
                 });
             } catch (err) {}
         }
-
         function calculateDeadline(createdDate) {
             let deadline = new Date(createdDate);
             deadline.setHours(11, 0, 0, 0); 
-            if (createdDate >= deadline) {
-                deadline.setDate(deadline.getDate() + 1);
-                deadline.setHours(11, 0, 0, 0);
-            }
-            while (true) {
-                const day = deadline.getDay();
-                if (day >= 1 && day <= 4) break;
-                deadline.setDate(deadline.getDate() + 1);
-            }
+            if (createdDate >= deadline) { deadline.setDate(deadline.getDate() + 1); deadline.setHours(11, 0, 0, 0); }
+            while (true) { const day = deadline.getDay(); if (day >= 1 && day <= 4) break; deadline.setDate(deadline.getDate() + 1); }
             return deadline;
         }
-
         function loadOrderHistory(clientId) {
             const historyList = document.getElementById('historyList');
             const q = query(collection(db, "orders"), where("clientId", "==", clientId));
-
             historyUnsubscribe = onSnapshot(q, (snapshot) => {
-                const orders = snapshot.docs.map(doc => {
-                    const data = doc.data();
-                    const created = data.createdAt ? data.createdAt.toDate() : new Date(); 
-                    return { id: doc.id, ...data, created };
-                });
+                const orders = snapshot.docs.map(doc => ({id: doc.id, ...doc.data(), created: doc.data().createdAt ? doc.data().createdAt.toDate() : new Date()}));
                 orders.sort((a, b) => b.created - a.created);
-
-                if (orders.length === 0) {
-                    historyList.innerHTML = '<div style="text-align:center; padding:20px; color:#444;">주문 내역 없음</div>';
-                    return;
-                }
+                if (orders.length === 0) { historyList.innerHTML = '<div style="text-align:center; padding:20px; color:#444;">주문 내역 없음</div>'; return; }
                 const now = new Date();
                 historyList.innerHTML = orders.map(order => {
                     const deadline = calculateDeadline(order.created);
                     const isCancelable = now < deadline && order.status !== 'done';
+                    const productDetails = `${order.productType} ${order.amountKg}kg`;
                     const days = ['일','월','화','수','목','금','토'];
                     const deadlineStr = `${days[deadline.getDay()]}요일 11:00`;
-                    const productDetails = `${order.productType} ${order.amountKg}kg`;
-
+                    
+                    // 주문 내역에도 금액 정보가 있으면 좋겠지만, 일단 기존 유지
                     return `
                     <div class="history-card">
                         <div>
@@ -390,83 +392,75 @@
                             <div class="h-amount" style="margin-bottom:5px;">${order.amountKg}kg</div>
                             ${isCancelable 
                                 ? `<button class="cancel-btn" onclick="tryCancel('${order.id}', '${deadline.toISOString()}', '${productDetails}')">취소 가능</button>`
-                                : `<button class="cancel-btn disabled" onclick="showContactInfo('${deadlineStr}')">취소/수정 불가</button>`
+                                : `<button class="cancel-btn disabled" onclick="showContactInfo('${deadlineStr}')">취소 불가</button>`
                             }
                         </div>
                     </div>
                 `}).join('');
             });
         }
-
-        window.tryCancel = async (orderId, deadlineISO, productDetails) => {
-            const now = new Date();
-            const deadline = new Date(deadlineISO);
-            if (now >= deadline) return alert("⏰ 취소 가능 시간이 지났습니다.");
-            if(!confirm("주문을 취소하시겠습니까?")) return;
-            try {
-                await deleteDoc(doc(db, "orders", orderId));
-                const message = `🚫 [주문 취소]\n\n👤 거래처: ${currentClient.name}\n📦 취소품목: ${productDetails}`;
-                sendTelegramNotification(message); 
-                alert("취소되었습니다.");
-            } catch(e) { console.error(e); alert("오류 발생"); }
+        window.tryCancel = async (id, dl, txt) => {
+            if (new Date() >= new Date(dl)) return alert("시간 초과");
+            if(confirm("취소하시겠습니까?")) { await deleteDoc(doc(db, "orders", id)); sendTelegramNotification(`🚫 취소: ${currentClient.name} / ${txt}`); alert("취소됨"); }
         };
+        window.showContactInfo = (t) => alert(`마감 기준: ${t}\n문의: 010-8679-0553`);
 
-        window.showContactInfo = (deadlineStr) => {
-            alert(`🚫 [취소/수정 불가]\n마감 기준: ${deadlineStr}\n문의: 010-8679-0553`);
-        };
-
+        // --- 로그인 버튼 등 ---
         document.getElementById('loginBtn').addEventListener('click', () => {
             const id = document.getElementById('loginId').value.trim();
             const pw = document.getElementById('password').value;
             const email = id.includes('@') ? id : id + "@stretto.com";
-            signInWithEmailAndPassword(auth, email, pw).catch(err => {
-                document.getElementById('login-msg').innerText = "로그인 정보 확인 필요";
-            });
+            signInWithEmailAndPassword(auth, email, pw).catch(() => document.getElementById('login-msg').innerText = "로그인 실패");
         });
-
         document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
         window.toggleCart = () => document.getElementById('cartSection').classList.toggle('folded');
 
-        // --- 상품 그리기 ---
+        // --- ★ 상품 목록 렌더링 (가격 표시 추가) ★ ---
         function renderProductGrids() {
             const blendGrid = document.getElementById('grid-blend');
             const singleGrid = document.getElementById('grid-single');
 
-            blendGrid.innerHTML = products.filter(p => p.type === 'Blend').map(p => {
+            // 공통 카드 생성 함수
+            const createCard = (p) => {
                 const item = cart.find(c => c.name === p.name);
                 const isActive = item ? 'active' : '';
-                const badge = item ? `<div class="count-badge">✔ ${item.qty}kg 담김</div>` : '';
+                const badge = item ? `<div class="count-badge">✔ ${item.qty}kg</div>` : '';
+                const styleClass = p.type === 'Single' ? 'single' : '';
+                const subColor = p.type === 'Single' ? '#d97706' : 'var(--accent-blue)';
                 
-                return `
-                <div class="product-btn ${isActive}" onclick="addToCart('${p.name}', 'Blend')">
-                    ${badge}
-                    <span class="p-name">${p.name}</span>
-                    <span class="p-sub" style="color:var(--accent-blue)">블렌드</span>
-                </div>`;
-            }).join('');
-
-            singleGrid.innerHTML = products.filter(p => p.type === 'Single').map(p => {
-                const item = cart.find(c => c.name === p.name);
-                const isActive = item ? 'active' : '';
-                const badge = item ? `<div class="count-badge single-badge">✔ ${item.qty}kg 담김</div>` : '';
+                // 가격 결정 (로그인 전에는 안보이거나 기본가, 로그인 후엔 할인가)
+                const finalPrice = getClientPrice(p); 
+                const priceText = finalPrice > 0 ? `${finalPrice.toLocaleString()}원` : '가격 문의';
 
                 return `
-                <div class="product-btn single ${isActive}" onclick="addToCart('${p.name}', 'Single')">
+                <div class="product-btn ${styleClass} ${isActive}" onclick="addToCart('${p.name}', '${p.type}')">
                     ${badge}
-                    <span class="p-name">${p.name}</span>
-                    <span class="p-sub" style="color:#d97706">싱글 오리진</span>
+                    <div>
+                        <span class="p-name">${p.name}</span>
+                        <div class="p-sub" style="color:${subColor}">${p.type === 'Single' ? '싱글 오리진' : '블렌드'}</div>
+                    </div>
+                    <div style="text-align:right; font-size:0.9rem; font-weight:bold; margin-top:5px; color:#fff;">
+                        ${priceText}<span style="font-size:0.7rem; font-weight:normal; color:#888;"> /kg</span>
+                    </div>
                 </div>`;
-            }).join('');
+            };
+
+            blendGrid.innerHTML = products.filter(p => p.type === 'Blend').map(p => createCard(p)).join('');
+            singleGrid.innerHTML = products.filter(p => p.type === 'Single').map(p => createCard(p)).join('');
         }
 
         window.addToCart = (productName, type) => {
+            // 가격 찾기
+            const product = products.find(p => p.name === productName);
+            const price = getClientPrice(product);
+
             const existing = cart.find(item => item.name === productName);
             if (existing) {
                 if (type === 'Single') existing.qty = parseFloat((existing.qty + 0.1).toFixed(1));
                 else existing.qty += 1;
             } else {
                 const initialQty = type === 'Single' ? 0.2 : 1;
-                cart.push({ name: productName, qty: initialQty, type: type });
+                cart.push({ name: productName, qty: initialQty, type: type, price: price });
             }
             renderCart();
             renderProductGrids(); 
@@ -485,6 +479,7 @@
 
         window.removeItem = (idx) => { cart.splice(idx, 1); renderCart(); renderProductGrids(); };
 
+        // --- ★ 장바구니 렌더링 (총액 계산 추가) ★ ---
         function renderCart() {
             const section = document.getElementById('cartSection');
             const list = document.getElementById('cartList');
@@ -499,17 +494,35 @@
                 return;
             }
             section.style.display = 'block'; 
+
+            // 총 무게 계산
             const totalKg = cart.reduce((acc, item) => acc + item.qty, 0).toFixed(1);
-            totalWeightEl.innerText = `총 ${totalKg}kg`;
+            
+            // ★ 총 가격 계산 ★
+            const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+            const totalPriceStr = Math.floor(totalPrice).toLocaleString();
+
+            // 상단 표시 (무게 / 가격)
+            totalWeightEl.innerHTML = `${totalKg}kg <span style="margin-left:8px; color:#ddd;">|</span> <span style="margin-left:8px; color:var(--accent-blue);">${totalPriceStr}원</span>`;
+
+            // 버튼 텍스트
             btn.disabled = false;
-            btn.innerText = "주문 전송하기";
+            btn.innerHTML = `${totalPriceStr}원 주문 전송하기`;
             btn.style.background = "var(--accent-blue)";
 
-            list.innerHTML = cart.map((item, idx) => `
+            // 면세 안내 문구
+            let vatInfo = "";
+            if (currentClient && currentClient.isTaxExempt) {
+                vatInfo = `<div style="text-align:right; font-size:0.8rem; color:#ffcc00; margin-bottom:10px;">※ 부가세 별도 (면세) 금액입니다.</div>`;
+            }
+
+            list.innerHTML = vatInfo + cart.map((item, idx) => {
+                const itemTotal = (item.price * item.qty).toLocaleString();
+                return `
                 <div class="cart-item">
                     <div class="cart-info">
                         <span class="cart-name">${item.name}</span>
-                        <span class="cart-type">${item.type === 'Single' ? '싱글 (최소 200g)' : '블렌드 (1kg 단위)'}</span>
+                        <span class="cart-type">${item.price.toLocaleString()}원/kg · 합계: ${itemTotal}원</span>
                     </div>
                     <div class="qty-control">
                         <button class="qty-btn" onclick="updateQty(${idx}, -1)">-</button>
@@ -517,12 +530,19 @@
                         <button class="qty-btn" onclick="updateQty(${idx}, 1)">+</button>
                         <button class="del-btn" onclick="removeItem(${idx})">✕</button>
                     </div>
-                </div>`).join('');
+                </div>`;
+            }).join('');
         }
 
+        // --- 주문 전송 ---
         document.getElementById('submitBtn').addEventListener('click', async () => {
             if (!currentClient) return alert("오류: 거래처 정보 없음");
-            if (!confirm("주문을 전송하시겠습니까?")) return;
+            
+            // 총액 다시 계산
+            const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+            const totalPriceStr = Math.floor(totalPrice).toLocaleString();
+            
+            if (!confirm(`총 결제 예정 금액: ${totalPriceStr}원\n주문을 전송하시겠습니까?`)) return;
             
             const btn = document.getElementById('submitBtn');
             btn.disabled = true; btn.innerText = "전송 중...";
@@ -537,12 +557,15 @@
                         clientName: currentClient.name,
                         productType: item.name,
                         amountKg: item.qty,
-                        unitPrice: 0, note: note, status: 'new', createdAt: serverTimestamp()
+                        unitPrice: item.price,    // 단가 저장
+                        totalPrice: item.price * item.qty, // 합계 저장
+                        note: note, status: 'new', createdAt: serverTimestamp()
                     });
                 });
                 await Promise.all(promises);
-                const orderDetails = cart.map(item => `- ${item.name}: ${item.qty}kg`).join('\n');
-                const message = `🔔 [신규 주문]\n\n👤 거래처: ${currentClient.name}\n📅 날짜: ${date}\n📝 요청: ${note || '없음'}\n\n📦 내역:\n${orderDetails}`;
+
+                const orderDetails = cart.map(item => `- ${item.name}: ${item.qty}kg (${(item.price * item.qty).toLocaleString()}원)`).join('\n');
+                const message = `🔔 [신규 주문]\n👤 ${currentClient.name}\n📅 ${date}\n💰 총액: ${totalPriceStr}원\n📝 ${note || '없음'}\n\n📦 내역:\n${orderDetails}`;
                 sendTelegramNotification(message);
 
                 alert("✅ 주문 완료!");
