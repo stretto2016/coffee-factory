@@ -771,7 +771,7 @@
                     <div class="product-card">
                         <a href="${p.shopLink || '#'}" target="_blank">
                             <div class="product-thumb">
-                                ${p.badge ? `<span class="badge" style="background: var(--accent-blue);">${p.badge}</span>` : ''}
+                                ${p.badge ? `<span class="badge" style="background: ${p.badgeColor || 'var(--accent-blue)'};">${p.badge}</span>` : ''}
                                 <img src="${p.imageUrl}" alt="${p.name}">
                             </div>
                             <div class="product-info">

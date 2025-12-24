@@ -23,25 +23,31 @@
         .btn-done { background: #2997ff; color: white; }
         .btn-del { background: #ff453a; color: white; }
         
-        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .form-input { padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%; box-sizing: border-box; }
+        /* [수정] 라벨 스타일 추가 */
+        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.8rem; font-weight: 700; color: #555; margin-bottom: 5px; }
+        .form-input { padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%; box-sizing: border-box; font-size: 0.95rem; }
+        .form-input:focus { border-color: #2997ff; outline: none; }
         .full-width { grid-column: span 2; }
-        .form-box { background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 20px; }
+        .form-box { background: #f9f9f9; padding: 25px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 20px; }
         
         #login-section { text-align: center; margin: 100px auto; max-width: 400px; }
         .hidden { display: none; }
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
         .status-new { background: #e3f2fd; color: #2196f3; }
         .status-done { background: #e8f5e9; color: #4caf50; }
+
+        /* 뱃지 미리보기용 */
+        .preview-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; color: white; font-size: 0.7rem; font-weight: bold; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
     <div id="login-section">
         <h2>ADMIN LOGIN</h2>
-        <input type="text" id="adminId" class="form-input" placeholder="관리자 이메일">
-        <input type="password" id="adminPw" class="form-input" placeholder="비밀번호" style="margin-top:10px;">
-        <button onclick="adminLogin()" class="btn btn-done" style="width:100%; padding:15px; margin-top:10px;">로그인</button>
+        <input type="text" id="adminId" class="form-input" placeholder="관리자 이메일" style="margin-bottom:10px;">
+        <input type="password" id="adminPw" class="form-input" placeholder="비밀번호" style="margin-bottom:20px;">
+        <button onclick="adminLogin()" class="btn btn-done" style="width:100%; padding:15px;">로그인</button>
     </div>
 
     <div id="dashboard-section" class="container hidden">
@@ -72,61 +78,103 @@
 
         <div id="tab-products" class="tab-content">
             <div class="form-box">
-                <h3>📦 새 상품 등록 / 수정</h3>
+                <h3 style="margin-top:0; margin-bottom:20px; border-bottom:1px solid #ddd; padding-bottom:10px;">📦 상품 등록 / 수정</h3>
                 <input type="hidden" id="editDocId">
                 
                 <div class="input-group">
-                    <input type="text" id="pName" class="form-input" placeholder="상품명 (예: 알토 블렌드)">
-                    <select id="pCategory" class="form-input">
-                        <option value="Blend">블렌드 (Blend)</option>
-                        <option value="Single-Nutty">싱글 - 고소함 (Nutty)</option>
-                        <option value="Single-Fruity">싱글 - 산미/꽃 (Fruity)</option>
-                        <option value="Decaf">디카페인</option>
-                    </select>
+                    <div>
+                        <label class="form-label">상품명 (필수)</label>
+                        <input type="text" id="pName" class="form-input" placeholder="예: 알토 블렌드">
+                    </div>
+                    <div>
+                        <label class="form-label">카테고리</label>
+                        <select id="pCategory" class="form-input">
+                            <option value="Blend">블렌드 (Blend)</option>
+                            <option value="Single-Nutty">싱글 - 고소함 (Nutty)</option>
+                            <option value="Single-Fruity">싱글 - 산미/꽃 (Fruity)</option>
+                            <option value="Decaf">디카페인</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <div class="input-group">
+                    <div>
+                        <label class="form-label">홈페이지(Shop) 판매가</label>
+                        <input type="text" id="pPriceShop" class="form-input" placeholder="숫자만 입력 (예: 12000)">
+                    </div>
+                    <div>
+                        <label class="form-label">파트너(B2B) 납품가</label>
+                        <input type="text" id="pPriceB2B" class="form-input" placeholder="숫자만 입력 (예: 9000)">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 2;">
+                            <label class="form-label">뱃지 텍스트 (선택)</label>
+                            <input type="text" id="pBadge" class="form-input" placeholder="BEST, NEW, GEISHA">
+                        </div>
+                        <div style="flex: 1;">
+                            <label class="form-label">뱃지 색상</label>
+                            <select id="pBadgeColor" class="form-input" style="font-weight:bold;">
+                                <option value="#333333" style="background:#333; color:white;">⚫ 검정 (기본)</option>
+                                <option value="#dc2626" style="background:#dc2626; color:white;">🔴 빨강 (NEW)</option>
+                                <option value="#2563eb" style="background:#2563eb; color:white;">🔵 파랑 (BEST)</option>
+                                <option value="#d97706" style="background:#d97706; color:white;">🟠 오렌지</option>
+                                <option value="#7c3aed" style="background:#7c3aed; color:white;">🟣 보라 (GEISHA)</option>
+                                <option value="#059669" style="background:#059669; color:white;">🟢 초록</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">컵노트 (향미 설명)</label>
+                        <input type="text" id="pNote" class="form-input" placeholder="예: 다크초콜릿 · 아몬드">
+                    </div>
+                </div>
+
+                <div class="input-group">
                     <div class="full-width">
-                        <label style="font-size:0.8rem; color:#666; font-weight:bold;">💰 가격 설정</label>
+                        <label class="form-label">상품 설명 (짧게)</label>
+                        <input type="text" id="pDesc" class="form-input" placeholder="예: 묵직한 바디감과 고소함이 특징입니다.">
                     </div>
-                    <input type="text" id="pPriceShop" class="form-input" placeholder="홈페이지(Shop) 판매가 (B2C)">
-                    <input type="text" id="pPriceB2B" class="form-input" placeholder="파트너(B2B) 납품가">
-                </div>
-
-                <div class="input-group">
-                    <input type="text" id="pBadge" class="form-input" placeholder="뱃지 (예: BEST, NEW, GEISHA)">
-                    <input type="text" id="pNote" class="form-input" placeholder="컵노트 (예: 다크초콜릿 · 아몬드)">
-                </div>
-
-                <div class="input-group">
-                    <input type="text" id="pDesc" class="form-input full-width" placeholder="상품 설명 (짧게)">
-                    <input type="text" id="pLink" class="form-input full-width" placeholder="스마트스토어 링크 (http://...)">
                 </div>
 
                 <div class="input-group">
                     <div class="full-width">
-                        <label style="display:block; margin-bottom:5px; font-size:0.8rem; color:#666;">이미지 경로 (GitHub 파일명 또는 이미지 주소)</label>
-                        <input type="text" id="pImageUrl" class="form-input" placeholder="예: images/coffee.jpg 또는 https://...">
+                        <label class="form-label">스마트스토어 링크</label>
+                        <input type="text" id="pLink" class="form-input" placeholder="https://smartstore.naver.com/...">
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <div style="display:flex; align-items:center; gap:10px;" class="full-width">
-                        <label><input type="checkbox" id="showShop" checked> 홈페이지(Shop) 노출</label>
-                        <label><input type="checkbox" id="showPartner" checked> 파트너(발주) 노출</label>
+                    <div class="full-width">
+                        <label class="form-label">이미지 경로 (GitHub 파일명 or URL)</label>
+                        <input type="text" id="pImageUrl" class="form-input" placeholder="예: images/coffee.jpg">
                     </div>
                 </div>
 
-                <button onclick="saveProduct()" class="btn btn-done" style="width:100%; padding:12px; font-size:1rem;">상품 저장하기</button>
-                <button onclick="resetForm()" class="btn" style="width:100%; padding:12px; margin-top:5px; background:#ddd;">초기화</button>
+                <div class="input-group">
+                    <div class="full-width" style="background: white; padding: 15px; border-radius: 6px; border: 1px solid #ddd;">
+                        <label class="form-label" style="margin-bottom: 10px;">노출 설정</label>
+                        <div style="display:flex; gap:20px;">
+                            <label style="cursor:pointer;"><input type="checkbox" id="showShop" checked> 홈페이지(Shop) 노출</label>
+                            <label style="cursor:pointer;"><input type="checkbox" id="showPartner" checked> 파트너(B2B) 노출</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="saveProduct()" class="btn btn-done" style="flex: 2; padding: 12px; font-size: 1rem;">저장하기</button>
+                    <button onclick="resetForm()" class="btn" style="flex: 1; padding: 12px; background: #ddd; color: #333;">초기화</button>
+                </div>
             </div>
 
             <table>
                 <thead>
                     <tr>
                         <th style="width: 60px;">이미지</th>
-                        <th>상품명 / 카테고리</th>
-                        <th>노출 설정</th>
+                        <th>상품 정보</th>
+                        <th>노출</th>
                         <th style="width: 120px;">관리</th>
                     </tr>
                 </thead>
@@ -214,15 +262,19 @@
                 const list = document.getElementById('productList');
                 list.innerHTML = snapshot.docs.map(doc => {
                     const p = doc.data();
-                    // 이미지 표시 처리
                     const imgShow = p.imageUrl ? `<img src="${p.imageUrl}" width="50" height="50" style="object-fit:cover; border-radius:4px;">` : `<div style="width:50px;height:50px;background:#eee;">No Img</div>`;
-                    
-                    // 따옴표 문제 방지를 위해 데이터를 안전하게 문자열로 변환
                     const pString = encodeURIComponent(JSON.stringify({id: doc.id, ...p}));
+
+                    // [수정] 뱃지 미리보기 표시
+                    let badgeHtml = '';
+                    if (p.badge) {
+                        badgeHtml = `<span class="preview-badge" style="background-color: ${p.badgeColor || '#333'}">${p.badge}</span>`;
+                    }
 
                     return `<tr>
                         <td>${imgShow}</td>
                         <td>
+                            ${badgeHtml}
                             <div style="font-weight:bold;">${p.name}</div>
                             <div style="font-size:0.75rem; color:#888;">${p.category}</div>
                             <div style="font-size:0.8rem; margin-top:4px;">
@@ -243,16 +295,13 @@
             });
         }
 
-        // [수정됨] 상품 저장 (B2B 가격 포함)
         window.saveProduct = async () => {
             const name = document.getElementById('pName').value;
             const category = document.getElementById('pCategory').value;
-            
-            // [중요] 가격 2개 가져오기
             const priceShop = document.getElementById('pPriceShop').value;
             const priceB2B = document.getElementById('pPriceB2B').value;
-
             const badge = document.getElementById('pBadge').value;
+            const badgeColor = document.getElementById('pBadgeColor').value; // [수정] 뱃지 색상 가져오기
             const cupNote = document.getElementById('pNote').value;
             const desc = document.getElementById('pDesc').value;
             const link = document.getElementById('pLink').value;
@@ -266,10 +315,11 @@
 
             const data = {
                 name, category, 
-                price: Number(priceShop),        // B2C 가격
-                priceB2B: Number(priceB2B || priceShop), // B2B 가격 (입력 안하면 샵가격과 동일)
-                badge, cupNote, description: desc, shopLink: link,
-                imageUrl: imageUrl, 
+                price: Number(priceShop),
+                priceB2B: Number(priceB2B || priceShop),
+                badge, badgeColor, // [수정] 색상 저장
+                cupNote, description: desc, shopLink: link,
+                imageUrl, 
                 showShop, showPartner,
                 createdAt: Date.now()
             };
@@ -286,20 +336,19 @@
             } catch(e) { console.error(e); alert("저장 실패"); }
         };
 
-        // [수정됨] 수정 버튼 클릭 시 폼 채우기
         window.editProduct = (pString) => {
-            // 안전하게 데이터 복원
             const p = JSON.parse(decodeURIComponent(pString));
 
             document.getElementById('editDocId').value = p.id;
             document.getElementById('pName').value = p.name;
             document.getElementById('pCategory').value = p.category;
             
-            // [중요] 가격 2개 각각 채우기
             document.getElementById('pPriceShop').value = p.price; 
-            document.getElementById('pPriceB2B').value = p.priceB2B || p.price; // 없으면 기본가격
+            document.getElementById('pPriceB2B').value = p.priceB2B || p.price;
 
             document.getElementById('pBadge').value = p.badge || '';
+            document.getElementById('pBadgeColor').value = p.badgeColor || '#333333'; // [수정] 색상 불러오기
+
             document.getElementById('pNote').value = p.cupNote || '';
             document.getElementById('pDesc').value = p.description || '';
             document.getElementById('pLink').value = p.shopLink || '';
@@ -307,7 +356,6 @@
             document.getElementById('showShop').checked = p.showShop;
             document.getElementById('showPartner').checked = p.showPartner;
             
-            // 화면 맨 위로 이동
             window.scrollTo(0, 0);
         };
 
@@ -318,6 +366,7 @@
         window.resetForm = () => {
             document.getElementById('editDocId').value = '';
             document.querySelectorAll('.form-input').forEach(i => i.value = '');
+            document.getElementById('pBadgeColor').value = '#333333';
             document.getElementById('showShop').checked = true;
             document.getElementById('showPartner').checked = true;
         };
