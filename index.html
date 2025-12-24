@@ -435,38 +435,30 @@
         </div>
     </section>
 
-    <section id="shop">
-    <div class="container">
-        <div class="section-header">
-            <span class="section-subtitle">ONLINE STORE</span>
-            <h2 class="section-title">Signature Blends</h2>
-            <p>스트레토가 추구하는 맛의 지향점을 담은 블렌딩 라인업</p>
-        </div>
-        <div class="shop-grid" id="shop-blend-grid" style="margin-bottom: 100px;"></div>
+   <section id="shop">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">ONLINE STORE</span>
+                <h2 class="section-title">Signature Blends</h2>
+                <p>스트레토가 추구하는 맛의 지향점을 담은 블렌딩 라인업</p>
+            </div>
+            
+            <div class="shop-grid" id="shop-blend-grid" style="margin-bottom: 100px;"></div>
 
-        <div class="section-header" style="margin-top: 100px;">
-            <h2 class="section-title">Single Origin</h2>
-            <p>각 산지의 떼루아를 온전히 담아낸 스페셜티 라인업</p>
-        </div>
-        <div style="margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; align-items: baseline; gap: 10px;">
-            <h3 style="font-size: 1.5rem; color: white; margin: 0;">Nutty & Heavy</h3>
-            <span style="color: #888; font-size: 0.95rem;">고소함 · 묵직함 · 밸런스</span>
-        </div>
-        <div class="shop-grid" id="shop-nutty-grid" style="margin-bottom: 80px;"></div>
+            <div class="section-header" style="margin-top: 100px;">
+                <h2 class="section-title">Single Origin</h2>
+                <p>각 산지의 떼루아를 온전히 담아낸 스페셜티 라인업</p>
+            </div>
 
-        <div style="margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; align-items: baseline; gap: 10px;">
-            <h3 style="font-size: 1.5rem; color: white; margin: 0;">Fruity & Floral</h3>
-            <span style="color: #888; font-size: 0.95rem;">산뜻함 · 화사함 · 과일향</span>
-        </div>
-        <div class="shop-grid" id="shop-fruity-grid"></div>
+            <div class="shop-grid" id="shop-single-grid"></div>
 
-        <div style="text-align: center; margin-top: 60px;">
-            <a href="https://smartstore.naver.com/stretto_coffeefactory" target="_blank" class="btn-primary" style="background: transparent; border: 1px solid var(--accent-blue); padding: 15px 40px;">
-                네이버 스토어 전체보기
-            </a>
+            <div style="text-align: center; margin-top: 60px;">
+                <a href="https://smartstore.naver.com/stretto_coffeefactory" target="_blank" class="btn-primary" style="background: transparent; border: 1px solid var(--accent-blue); padding: 15px 40px;">
+                    네이버 스토어 전체보기
+                </a>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
     <section id="wholesale">
         <div class="container">
@@ -762,20 +754,21 @@
                 products.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
 
                 const blendGrid = document.getElementById('shop-blend-grid');
-                const nuttyGrid = document.getElementById('shop-nutty-grid');
-                const fruityGrid = document.getElementById('shop-fruity-grid');
+                const singleGrid = document.getElementById('shop-single-grid');
                 
-                // 일단 비우기
-                blendGrid.innerHTML = '';
-                nuttyGrid.innerHTML = '';
-                fruityGrid.innerHTML = '';
+                // 초기화
+                if(blendGrid) blendGrid.innerHTML = '';
+                if(singleGrid) singleGrid.innerHTML = '';
 
                 products.forEach(p => {
+                    // [수정] 뱃지 색상 적용
+                    const badgeStyle = p.badgeColor ? `background: ${p.badgeColor};` : `background: var(--accent-blue);`;
+                    
                     const html = `
                     <div class="product-card">
                         <a href="${p.shopLink || '#'}" target="_blank">
                             <div class="product-thumb">
-                                ${p.badge ? `<span class="badge" style="background: ${p.badgeColor || 'var(--accent-blue)'};">${p.badge}</span>` : ''}
+                                ${p.badge ? `<span class="badge" style="${badgeStyle}">${p.badge}</span>` : ''}
                                 <img src="${p.imageUrl}" alt="${p.name}">
                             </div>
                             <div class="product-info">
@@ -783,21 +776,29 @@
                                 ${p.cupNote ? `<div class="cup-note" style="color: #a87b50; font-size: 0.85rem; margin-bottom: 5px; font-weight: 600;">${p.cupNote}</div>` : ''}
                                 <p class="product-desc">${p.description || ''}</p>
                                 <div class="product-meta">
-                                    <span class="price">${p.price.toLocaleString()}원/200g</span>
+                                    <span class="price">${Number(p.price || 0).toLocaleString()}원/200g</span>
                                     <span class="btn-shop-link">구매하기 ↗</span>
                                 </div>
                             </div>
                         </a>
                     </div>`;
 
-                    if (p.category === 'Blend') blendGrid.innerHTML += html;
-                    else if (p.category === 'Single-Nutty' || p.category === 'Decaf') nuttyGrid.innerHTML += html;
-                    else if (p.category === 'Single-Fruity') fruityGrid.innerHTML += html;
+                    // [핵심 수정] 카테고리 매칭 로직 변경 (blend / single)
+                    // Admin에서 저장하는 값은 소문자 'blend', 'single' 입니다.
+                    const cat = (p.category || '').toLowerCase();
+
+                    if (cat === 'blend' && blendGrid) {
+                        blendGrid.innerHTML += html;
+                    } else if (cat === 'single' && singleGrid) {
+                        singleGrid.innerHTML += html;
+                    }
                 });
+
             } catch (error) {
                 console.error("Shop Load Error:", error);
             }
         }
+
         loadShopProducts();
     </script>
 </body>
