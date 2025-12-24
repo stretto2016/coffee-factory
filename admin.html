@@ -76,30 +76,29 @@
                 <input type="hidden" id="editDocId">
                 
                 <div class="input-group">
-    <div class="full-width">
-        <label style="font-size:0.8rem; color:#666; font-weight:bold;">💰 가격 설정</label>
-    </div>
-    <input type="text" id="pPriceShop" class="form-input" placeholder="홈페이지(Shop) 판매가 (B2C)">
-    <input type="text" id="pPriceB2B" class="form-input" placeholder="파트너(B2B) 납품가">
-</div>
-
-<div class="input-group">
-    <input type="text" id="pBadge" class="form-input" placeholder="뱃지 (예: BEST, NEW, GEISHA)">
-    <select id="pCategory" class="form-input">
-        <option value="Blend">블렌드 (Blend)</option>
-        <option value="Single-Nutty">싱글 - 고소함 (Nutty)</option>
-        <option value="Single-Fruity">싱글 - 산미/꽃 (Fruity)</option>
-        <option value="Decaf">디카페인</option>
-    </select>
-</div>
+                    <input type="text" id="pName" class="form-input" placeholder="상품명 (예: 알토 블렌드)">
+                    <select id="pCategory" class="form-input">
+                        <option value="Blend">블렌드 (Blend)</option>
+                        <option value="Single-Nutty">싱글 - 고소함 (Nutty)</option>
+                        <option value="Single-Fruity">싱글 - 산미/꽃 (Fruity)</option>
+                        <option value="Decaf">디카페인</option>
+                    </select>
+                </div>
                 
                 <div class="input-group">
-                    <input type="text" id="pPrice" class="form-input" placeholder="가격 (숫자만, 예: 10000)">
-                    <input type="text" id="pBadge" class="form-input" placeholder="뱃지 (예: BEST, NEW, GEISHA)">
+                    <div class="full-width">
+                        <label style="font-size:0.8rem; color:#666; font-weight:bold;">💰 가격 설정</label>
+                    </div>
+                    <input type="text" id="pPriceShop" class="form-input" placeholder="홈페이지(Shop) 판매가 (B2C)">
+                    <input type="text" id="pPriceB2B" class="form-input" placeholder="파트너(B2B) 납품가">
                 </div>
 
                 <div class="input-group">
-                    <input type="text" id="pNote" class="form-input full-width" placeholder="컵노트 (예: 다크초콜릿 · 아몬드)">
+                    <input type="text" id="pBadge" class="form-input" placeholder="뱃지 (예: BEST, NEW, GEISHA)">
+                    <input type="text" id="pNote" class="form-input" placeholder="컵노트 (예: 다크초콜릿 · 아몬드)">
+                </div>
+
+                <div class="input-group">
                     <input type="text" id="pDesc" class="form-input full-width" placeholder="상품 설명 (짧게)">
                     <input type="text" id="pLink" class="form-input full-width" placeholder="스마트스토어 링크 (http://...)">
                 </div>
@@ -139,7 +138,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        // [변경] Storage 관련 import 제거
         import { getFirestore, collection, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -210,16 +208,18 @@
         window.deleteOrder = (id) => confirm("삭제하시겠습니까?") && deleteDoc(doc(db, "orders", id));
 
         // --- 2. 상품 관리 로직 ---
-        // 1. 상품 목록 불러오기 (loadAllProducts 수정)
         function loadAllProducts() {
             const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
             onSnapshot(q, (snapshot) => {
                 const list = document.getElementById('productList');
                 list.innerHTML = snapshot.docs.map(doc => {
                     const p = doc.data();
+                    // 이미지 표시 처리
                     const imgShow = p.imageUrl ? `<img src="${p.imageUrl}" width="50" height="50" style="object-fit:cover; border-radius:4px;">` : `<div style="width:50px;height:50px;background:#eee;">No Img</div>`;
                     
-                    // 가격 2개 표시
+                    // 따옴표 문제 방지를 위해 데이터를 안전하게 문자열로 변환
+                    const pString = encodeURIComponent(JSON.stringify({id: doc.id, ...p}));
+
                     return `<tr>
                         <td>${imgShow}</td>
                         <td>
@@ -235,7 +235,7 @@
                             ${p.showPartner ? '<span class="status-badge status-done">B2B</span>' : ''}
                         </td>
                         <td>
-                            <button class="btn" style="background:#ddd;" onclick='editProduct(${JSON.stringify({id: doc.id, ...p})})'>수정</button>
+                            <button class="btn" style="background:#ddd;" onclick="editProduct('${pString}')">수정</button>
                             <button class="btn btn-del" onclick="deleteProduct('${doc.id}')">삭제</button>
                         </td>
                     </tr>`;
@@ -243,11 +243,12 @@
             });
         }
 
-        // 2. 상품 저장 (saveProduct 수정)
+        // [수정됨] 상품 저장 (B2B 가격 포함)
         window.saveProduct = async () => {
             const name = document.getElementById('pName').value;
             const category = document.getElementById('pCategory').value;
-            // [변경] 가격 2개 읽기
+            
+            // [중요] 가격 2개 가져오기
             const priceShop = document.getElementById('pPriceShop').value;
             const priceB2B = document.getElementById('pPriceB2B').value;
 
@@ -261,12 +262,12 @@
             const showPartner = document.getElementById('showPartner').checked;
             const editId = document.getElementById('editDocId').value;
 
-            if (!name || !priceShop || !priceB2B) return alert("상품명과 가격(Shop, B2B)은 필수입니다.");
+            if (!name || !priceShop) return alert("상품명과 샵 가격은 필수입니다.");
 
             const data = {
                 name, category, 
-                price: Number(priceShop),        // index.html에서 쓰는 가격 (B2C)
-                priceB2B: Number(priceB2B),      // partner.html에서 쓸 가격 (B2B)
+                price: Number(priceShop),        // B2C 가격
+                priceB2B: Number(priceB2B || priceShop), // B2B 가격 (입력 안하면 샵가격과 동일)
                 badge, cupNote, description: desc, shopLink: link,
                 imageUrl: imageUrl, 
                 showShop, showPartner,
@@ -285,15 +286,18 @@
             } catch(e) { console.error(e); alert("저장 실패"); }
         };
 
-        // 3. 수정 모드 (editProduct 수정)
-        window.editProduct = (p) => {
+        // [수정됨] 수정 버튼 클릭 시 폼 채우기
+        window.editProduct = (pString) => {
+            // 안전하게 데이터 복원
+            const p = JSON.parse(decodeURIComponent(pString));
+
             document.getElementById('editDocId').value = p.id;
             document.getElementById('pName').value = p.name;
             document.getElementById('pCategory').value = p.category;
             
-            // [변경] 가격 2개 세팅
+            // [중요] 가격 2개 각각 채우기
             document.getElementById('pPriceShop').value = p.price; 
-            document.getElementById('pPriceB2B').value = p.priceB2B || p.price; // 없으면 기존 가격
+            document.getElementById('pPriceB2B').value = p.priceB2B || p.price; // 없으면 기본가격
 
             document.getElementById('pBadge').value = p.badge || '';
             document.getElementById('pNote').value = p.cupNote || '';
@@ -302,6 +306,8 @@
             document.getElementById('pImageUrl').value = p.imageUrl || '';
             document.getElementById('showShop').checked = p.showShop;
             document.getElementById('showPartner').checked = p.showPartner;
+            
+            // 화면 맨 위로 이동
             window.scrollTo(0, 0);
         };
 
