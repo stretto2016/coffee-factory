@@ -245,15 +245,20 @@
     transform: translateY(-2px);
 }
 /* ▲▲▲ [여기까지] ▲▲▲ */
-        /* 카카오톡 버튼 스타일 */
+        /* 카카오톡 버튼 스타일 수정됨 */
         .btn-kakao {
-            font-size: 1.1rem; font-weight: 700; color: #000000 !important; 
-            background-color: #FEE500; 
+            font-size: 1.1rem; font-weight: 700; 
+            color: #FEE500 !important; /* 글씨색: 카카오 노랑 */
+            background-color: #000000; /* 배경색: 검정 */
+            border: 1px solid #FEE500; /* 테두리: 카카오 노랑 */
             margin: 10px 0; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
             padding: 15px 30px; border-radius: 50px; transition: 0.3s;
-            text-decoration: none; border: none;
+            text-decoration: none;
         }
-        .btn-kakao:hover { background-color: #E6CF00; } 
+        .btn-kakao:hover { 
+            background-color: #FEE500; /* 마우스 올리면 배경이 노랑으로 */
+            color: #000000 !important; /* 마우스 올리면 글씨가 검정으로 */
+        } 
 
         /* 인스타그램, 블로그 공통 스타일 (투명 배경 + 테두리 + 동일 규격) */
         .btn-instagram, .btn-blog {
