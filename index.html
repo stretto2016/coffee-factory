@@ -377,7 +377,13 @@
             .step-desc { margin: 0 auto; max-width: 300px; word-break: keep-all; }
             
              /* 푸터 버튼 너비 조정 */
-            .btn-primary, .btn-kakao, .btn-instagram, .btn-blog { width: 100%; max-width: 300px; box-sizing: border-box; }
+            /* 푸터 버튼 너비 조정 */
+            .btn-primary, .btn-kakao, .btn-instagram, .btn-blog { 
+                width: 280px !important; /* [수정] 강제로 280px로 고정하여 두 버튼 크기 통일 */
+                max-width: 100%;
+                box-sizing: border-box; 
+                margin-left: auto; margin-right: auto; /* 가운데 정렬 보정 */
+            }
         }
     /* ▼▼▼ [추가] STRETTO SPIRIT 핵심 단어 흰색으로 변경 ▼▼▼ */
         #about .spirit-item h3 {
