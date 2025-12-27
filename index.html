@@ -878,7 +878,10 @@
                 if(fruityGrid) fruityGrid.innerHTML = '';
 
                 products.forEach(p => {
-                    const badgeStyle = p.badgeColor ? `background: ${p.badgeColor};` : `background: var(--accent-blue);`;
+                    // [수정] 뱃지 스타일: 배경색과 글씨색 모두 적용
+                    const bg = p.badgeColor || 'var(--accent-blue)';
+                    const txt = p.badgeTextColor || 'white';
+                    const badgeStyle = `background: ${bg}; color: ${txt};`;
                     
                     const html = `
                     <div class="product-card">

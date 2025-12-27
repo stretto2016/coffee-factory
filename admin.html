@@ -150,20 +150,31 @@
 
                 <div class="section-title">5. 상세 정보 (홈페이지용)</div>
                 <div class="input-group">
-                    <div style="display: flex; gap: 10px;" class="full-width">
-                        <div style="flex: 2;">
+                    <div style="display: flex; gap: 15px;" class="full-width">
+                        <div style="flex: 1.5;">
                             <label class="form-label">뱃지 텍스트</label>
                             <input type="text" id="pBadge" class="form-input" placeholder="BEST, NEW">
                         </div>
+                        
                         <div style="flex: 1;">
-                            <label class="form-label">뱃지 색상 (클릭하여 선택)</label>
+                            <label class="form-label">배경 색상</label>
                             <div style="display: flex; gap: 5px;">
                                 <input type="color" id="pBadgeColor" class="form-input" value="#333333" 
-                                       style="height: 42px; padding: 2px; width: 60px; flex:none; cursor: pointer;"
+                                       style="height: 42px; padding: 2px; width: 50px; flex:none; cursor: pointer;"
                                        oninput="document.getElementById('pBadgeColorText').value = this.value">
-                                
-                                <input type="text" id="pBadgeColorText" class="form-input" value="#333333" placeholder="#333333" 
+                                <input type="text" id="pBadgeColorText" class="form-input" value="#333333" 
                                        oninput="document.getElementById('pBadgeColor').value = this.value">
+                            </div>
+                        </div>
+
+                        <div style="flex: 1;">
+                            <label class="form-label">글씨 색상</label>
+                            <div style="display: flex; gap: 5px;">
+                                <input type="color" id="pBadgeTextColor" class="form-input" value="#ffffff" 
+                                       style="height: 42px; padding: 2px; width: 50px; flex:none; cursor: pointer;"
+                                       oninput="document.getElementById('pBadgeTextColorText').value = this.value">
+                                <input type="text" id="pBadgeTextColorText" class="form-input" value="#ffffff" 
+                                       oninput="document.getElementById('pBadgeTextColor').value = this.value">
                             </div>
                         </div>
                     </div>
@@ -352,11 +363,13 @@
                     // 따옴표 문제 방지
                     const pString = encodeURIComponent(JSON.stringify({id: doc.id, ...p}));
                     
-                    // 뱃지
-                    let badgeHtml = '';
-                    if (p.badge) {
-                        badgeHtml = `<span class="preview-badge" style="background-color: ${p.badgeColor || '#333'}">${p.badge}</span>`;
-                    }
+                    // [수정] 리스트에서 뱃지 미리보기 스타일 적용
+let badgeHtml = '';
+if (p.badge) {
+    const bg = p.badgeColor || '#333';
+    const txt = p.badgeTextColor || '#fff';
+    badgeHtml = `<span class="preview-badge" style="background-color: ${bg}; color: ${txt};">${p.badge}</span>`;
+}
 
                     return `<tr>
                         <td>${imgShow}</td>
@@ -398,6 +411,7 @@
 
             const badge = document.getElementById('pBadge').value;
             const badgeColor = document.getElementById('pBadgeColor').value;
+            const badgeTextColor = document.getElementById('pBadgeTextColor').value;
             const cupNote = document.getElementById('pNote').value;
             const desc = document.getElementById('pDesc').value;
             const link = document.getElementById('pLink').value;
@@ -441,7 +455,7 @@
                 
                 composition, // 배합 정보 저장
                 
-                badge, badgeColor, cupNote, description: desc, shopLink: link, imageUrl, 
+                badge, badgeColor, badgeTextColor, cupNote, description: desc, shopLink: link, imageUrl, 
                 showShop, showPartner,
                 createdAt: Date.now()
             };
@@ -505,8 +519,13 @@
             document.getElementById('pBadge').value = p.badge || '';
             // 뱃지 색상 불러오기
             const bColor = p.badgeColor || '#333333';
-            document.getElementById('pBadgeColor').value = bColor;
-            document.getElementById('pBadgeColorText').value = bColor;
+document.getElementById('pBadgeColor').value = bColor;
+document.getElementById('pBadgeColorText').value = bColor;
+
+// [추가] 뱃지 글씨색
+const tColor = p.badgeTextColor || '#ffffff';
+document.getElementById('pBadgeTextColor').value = tColor;
+document.getElementById('pBadgeTextColorText').value = tColor;
             document.getElementById('pNote').value = p.cupNote || '';
             document.getElementById('pDesc').value = p.description || '';
             document.getElementById('pLink').value = p.shopLink || '';
@@ -535,7 +554,10 @@
             document.getElementById('extraCost').value = 0;
             // 뱃지 색상 초기화
             document.getElementById('pBadgeColor').value = '#333333';
-            document.getElementById('pBadgeColorText').value = '#333333';
+document.getElementById('pBadgeColorText').value = '#333333';
+
+document.getElementById('pBadgeTextColor').value = '#ffffff';
+document.getElementById('pBadgeTextColorText').value = '#ffffff';
             
             document.getElementById('ingredientList').innerHTML = '';
             addIngredientRow(); // 빈 줄 하나 추가
