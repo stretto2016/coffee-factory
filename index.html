@@ -256,19 +256,23 @@
     transform: translateY(-2px);
 }
 /* ▲▲▲ [여기까지] ▲▲▲ */
-        /* 카카오톡 버튼 스타일 수정됨 */
+        /* [수정] 카카오톡 버튼: 아이콘 제거 및 상단 버튼과 규격 통일, 차분한 노랑 적용 */
         .btn-kakao {
-            font-size: 1.1rem; font-weight: 700; 
-            color: #FEE500 !important; /* 글씨색: 카카오 노랑 */
-            background-color: #000000; /* 배경색: 검정 */
-            border: 1px solid #FEE500; /* 테두리: 카카오 노랑 */
-            margin: 10px 0; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-            padding: 15px 30px; border-radius: 50px; transition: 0.3s;
+            display: inline-block; 
+            padding: 15px 30px; /* 상단 버튼(인라인 스타일)과 동일한 패딩 */
+            background-color: #FFD54F; /* 눈 안 아픈 차분한 노란색 */
+            color: #000000 !important; /* 검은 글씨 */
+            border-radius: 30px; 
+            font-size: 1rem; font-weight: 600; /* 폰트 크기/두께 통일 */
+            transition: transform 0.2s, background-color 0.2s;
+            border: none; cursor: pointer;
             text-decoration: none;
+            margin: 10px 0;
         }
         .btn-kakao:hover { 
-            background-color: #FEE500; /* 마우스 올리면 배경이 노랑으로 */
-            color: #000000 !important; /* 마우스 올리면 글씨가 검정으로 */
+            background-color: #FFCA28; /* 호버 시 조금 더 진하게 */
+            transform: scale(1.05); 
+            color: #000000 !important;
         } 
 
         /* 인스타그램, 블로그 공통 스타일 (투명 배경 + 테두리 + 동일 규격) */
@@ -784,7 +788,7 @@
                 </a>
 
                 <a href="http://pf.kakao.com/_dCuKC" target="_blank" class="btn-kakao">
-                    💬 Kakao Talk 문의하기
+                    Kakao Talk 문의하기
                 </a>
 
                 <div class="footer-social-group">
