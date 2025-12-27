@@ -156,14 +156,15 @@
                             <input type="text" id="pBadge" class="form-input" placeholder="BEST, NEW">
                         </div>
                         <div style="flex: 1;">
-                            <label class="form-label">뱃지 색상</label>
-                            <select id="pBadgeColor" class="form-input">
-                                <option value="#333333">⚫ 검정</option>
-                                <option value="#dc2626">🔴 빨강</option>
-                                <option value="#2563eb">🔵 파랑</option>
-                                <option value="#d97706">🟠 오렌지</option>
-                                <option value="#7c3aed">🟣 보라</option>
-                            </select>
+                            <label class="form-label">뱃지 색상 (클릭하여 선택)</label>
+                            <div style="display: flex; gap: 5px;">
+                                <input type="color" id="pBadgeColor" class="form-input" value="#333333" 
+                                       style="height: 42px; padding: 2px; width: 60px; flex:none; cursor: pointer;"
+                                       oninput="document.getElementById('pBadgeColorText').value = this.value">
+                                
+                                <input type="text" id="pBadgeColorText" class="form-input" value="#333333" placeholder="#333333" 
+                                       oninput="document.getElementById('pBadgeColor').value = this.value">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -502,7 +503,10 @@
 
             // 4. 상세 정보
             document.getElementById('pBadge').value = p.badge || '';
-            document.getElementById('pBadgeColor').value = p.badgeColor || '#333333';
+            // 뱃지 색상 불러오기
+            const bColor = p.badgeColor || '#333333';
+            document.getElementById('pBadgeColor').value = bColor;
+            document.getElementById('pBadgeColorText').value = bColor;
             document.getElementById('pNote').value = p.cupNote || '';
             document.getElementById('pDesc').value = p.description || '';
             document.getElementById('pLink').value = p.shopLink || '';
@@ -529,7 +533,9 @@
             document.getElementById('costLabel').value = 50;
             document.getElementById('costBox').value = 100;
             document.getElementById('extraCost').value = 0;
+            // 뱃지 색상 초기화
             document.getElementById('pBadgeColor').value = '#333333';
+            document.getElementById('pBadgeColorText').value = '#333333';
             
             document.getElementById('ingredientList').innerHTML = '';
             addIngredientRow(); // 빈 줄 하나 추가
