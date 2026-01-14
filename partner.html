@@ -548,6 +548,7 @@
         // [수정된 함수] renderProductGrids
         // [수정된 함수] renderProductGrids (뱃지 스타일 적용)
         // [수정된 함수] renderProductGrids (부가세 계산 및 라벨 표시 적용)
+        // [수정된 함수] renderProductGrids (면세 변수명 isVatFree로 통일 및 VAT 라벨 표시)
         function renderProductGrids() {
             const blendGrid = document.getElementById('grid-blend');
             const decafGrid = document.getElementById('grid-decaf');
@@ -560,13 +561,17 @@
             const getDisplayInfo = (basePrice, unitDivider = 1) => {
                 if (!currentClient) return { price: 'Login..', vatLabel: '' };
 
-                // 면세 업체가 아니면 1.1배 (부가세 포함), 면세 업체면 그대로
-                const isVatFree = currentClient.isTaxExempt;
+                // [핵심 수정] App.tsx에서 저장하는 변수명은 'isVatFree' 입니다.
+                const isVatFree = currentClient.isVatFree === true; 
+                
+                // 면세 거래처: 기본가(원가) 그대로 표시 / 일반 거래처: 1.1배(부가세) 가산
                 const finalPrice = isVatFree ? basePrice : Math.round(basePrice * 1.1);
                 
                 // 단위 가격 계산 (예: 100g 단가)
                 const displayPrice = Math.round(finalPrice / unitDivider);
-                const vatLabel = isVatFree ? '(VAT 별도)' : '(VAT 포함)';
+                
+                // 라벨 설정
+                const vatLabel = isVatFree ? '(VAT 미적용)' : '(VAT 포함)';
                 
                 return { price: `${displayPrice.toLocaleString()}원`, vatLabel };
             };
@@ -581,13 +586,14 @@
                 let clickAction = '';
                 let unitBadgeHtml = ''; 
                 
+                // getClientPrice는 B2B 원가(부가세 별도)를 가져옵니다.
                 const basePrice = currentClient ? getClientPrice(p) : 0;
                 let displayInfo = { price: 'Login..', vatLabel: '' };
 
                 // 1. 블렌드 (1kg 기준)
                 if (mode === 'std') {
                     styleClass = ''; 
-                    displayInfo = getDisplayInfo(basePrice, 1); // 1kg 그대로
+                    displayInfo = getDisplayInfo(basePrice, 1); 
                     unitText = '/kg';
                     clickAction = `addToCart('${p.name}', '${p.type}', 1.0)`;
                     unitBadgeHtml = `<div class="p-sub" style="color:var(--accent-blue)">블렌드</div>`;
@@ -595,7 +601,7 @@
                 // 2. 싱글/디카페인 (100g 기준)
                 else if (mode === '100g') {
                     styleClass = 'single';
-                    displayInfo = getDisplayInfo(basePrice, 10); // 10으로 나눠서 100g 단가 표시
+                    displayInfo = getDisplayInfo(basePrice, 10); // 100g 단가
                     unitText = '/100g';
                     clickAction = `addToCart('${p.name}', '${p.type}', 0.1)`;
                     unitBadgeHtml = `<span class="unit-badge badge-small">100g 단위</span>`;
@@ -603,7 +609,7 @@
                 // 3. 싱글/디카페인 (1kg 팩 기준)
                 else if (mode === '1kg') {
                     styleClass = 'single pack-1kg';
-                    displayInfo = getDisplayInfo(basePrice, 1); // 1kg 그대로
+                    displayInfo = getDisplayInfo(basePrice, 1); // 1kg 단가
                     unitText = '/kg';
                     clickAction = `addToCart('${p.name}', '${p.type}', 1.0)`;
                     unitBadgeHtml = `<span class="unit-badge badge-bulk">1kg PACK</span>`;
@@ -621,7 +627,7 @@
                         <div style="font-size:0.9rem; font-weight:bold; color:#fff;">
                             ${displayInfo.price}<span style="font-size:0.7rem; font-weight:normal; color:#888;"> ${unitText}</span>
                         </div>
-                        <div style="font-size:0.65rem; color:#666; margin-top:2px;">
+                        <div style="font-size:0.65rem; color:#aaa; margin-top:2px;">
                             ${displayInfo.vatLabel}
                         </div>
                     </div>
@@ -641,28 +647,26 @@
             renderList('Decaf', decafGrid);
             renderList('Single', singleGrid);
         }
-        // [수정된 함수] addToCart (장바구니에 부가세 적용된 최종 가격 저장)
+        // [수정된 함수] addToCart (변수명 isVatFree 로 수정)
         window.addToCart = (productName, type, fixedQty = null) => {
             if (!currentClient) return alert("로그인이 필요합니다.");
 
             const product = products.find(p => p.name === productName);
             const basePrice = getClientPrice(product);
 
-            // ★ 장바구니에 담길 최종 가격 계산 (부가세 적용)
+            // [핵심 수정] isTaxExempt -> isVatFree로 변경
             let finalPrice = basePrice;
-            if (!currentClient.isTaxExempt) {
-                finalPrice = Math.round(basePrice * 1.1); // 과세 사업자면 1.1배
+            if (!currentClient.isVatFree) { 
+                finalPrice = Math.round(basePrice * 1.1); // 과세 사업자만 부가세 추가
             }
 
             const existing = cart.find(item => item.name === productName);
             
-            let qtyToAdd = 0;
-            if (fixedQty) qtyToAdd = fixedQty;
-            else qtyToAdd = (type === 'Single' || type === 'Decaf') ? 0.1 : 1;
+            let qtyToAdd = fixedQty ? fixedQty : ((type === 'Single' || type === 'Decaf') ? 0.1 : 1);
 
             if (existing) {
                 existing.qty = parseFloat((existing.qty + qtyToAdd).toFixed(1));
-                existing.price = finalPrice; // 가격 정보 업데이트 (혹시 변경되었을 수 있으니)
+                existing.price = finalPrice; 
             } else {
                 let initialQty = fixedQty ? fixedQty : ((type === 'Single' || type === 'Decaf') ? 0.2 : 1);
                 cart.push({ name: productName, qty: initialQty, type: type, price: finalPrice });
@@ -671,7 +675,6 @@
             renderCart();
             renderProductGrids(); 
         };
-
         window.removeItem = (idx) => { cart.splice(idx, 1); renderCart(); renderProductGrids(); };
 
         // --- [화면 그리기] 장바구니 & 총액 ---
