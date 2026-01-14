@@ -48,6 +48,35 @@
             background: rgba(41, 151, 255, 0.15); 
             box-shadow: 0 0 15px rgba(41, 151, 255, 0.1);
         }
+        /* [추가] 단위 뱃지 스타일 */
+        .unit-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: 0.05em;
+        }
+
+        /* 100g 단위: 차분한 아웃라인 스타일 */
+        .badge-small {
+            border: 1px solid #555;
+            color: #888;
+            background: transparent;
+        }
+
+        /* 1kg 팩: 눈에 띄는 솔리드 스타일 (강조) */
+        .badge-bulk {
+            background: var(--accent-blue);
+            color: #000;
+            border: 1px solid var(--accent-blue);
+            box-shadow: 0 2px 5px rgba(41, 151, 255, 0.2);
+        }
+        
+        /* 1kg 선택 시 카드 테두리 강조 유지 */
+        .product-btn.pack-1kg { border: 1px dashed #444; }
+        .product-btn.pack-1kg.active { border: 2px solid var(--accent-blue); background: rgba(41, 151, 255, 0.15); }
         /* [추가] 1kg 팩 전용 스타일 구분 */
 .product-btn.pack-1kg {
     border: 1px dashed #666; /* 점선 테두리로 1kg 팩임을 강조 */
@@ -519,6 +548,7 @@
         // --- [화면 그리기] 상품 목록 ---
         // --- [화면 그리기] 상품 목록 ---
         // [수정된 함수] renderProductGrids
+        // [수정된 함수] renderProductGrids (뱃지 스타일 적용)
         function renderProductGrids() {
             const blendGrid = document.getElementById('grid-blend');
             const decafGrid = document.getElementById('grid-decaf');
@@ -527,96 +557,86 @@
             const allowedList = currentClient ? currentClient.visibleProducts : null;
             const isVisible = (p) => !allowedList || allowedList.includes(p.name);
 
-            // 카드 생성 헬퍼 함수 (mode: 'std'=블렌드, '100g'=소분, '1kg'=대용량)
             const createCardHtml = (p, mode) => {
                 const item = cart.find(c => c.name === p.name);
                 const isActive = item ? 'active' : '';
                 
-                // 뱃지는 현재 담긴 총 수량 표시 (어느 카드를 보든 동일하게)
+                // 장바구니에 담긴 총 수량 표시
                 const badge = item ? `<div class="count-badge">✔ 총 ${item.qty}kg</div>` : '';
 
                 let styleClass = '';
-                let subColor = 'var(--accent-blue)';
-                let typeLabel = '';
                 let priceText = 'Login..';
                 let unitText = '';
-                let clickAction = ''; // 클릭 시 실행할 함수
+                let clickAction = '';
                 
+                // ★ 여기가 핵심: 텍스트 대신 뱃지 HTML 생성
+                let unitBadgeHtml = ''; 
+
                 const finalPrice = currentClient ? getClientPrice(p) : 0;
 
-                // 1. 블렌드 (기존 동일)
+                // 1. 블렌드
                 if (mode === 'std') {
-                    styleClass = ''; // 기본값
-                    typeLabel = '블렌드';
+                    // 블렌드는 별도 뱃지 없이 이름만 깔끔하게
+                    styleClass = ''; 
                     if (currentClient) {
                         priceText = `${finalPrice.toLocaleString()}원`;
                         unitText = '/kg';
                     }
-                    clickAction = `addToCart('${p.name}', '${p.type}', 1.0)`; // 1kg씩 추가
+                    clickAction = `addToCart('${p.name}', '${p.type}', 1.0)`;
+                    // 블렌드는 하단 설명으로 대체
+                    unitBadgeHtml = `<div class="p-sub" style="color:var(--accent-blue)">블렌드</div>`;
                 } 
                 // 2. 싱글/디카페인 - 100g 모드
                 else if (mode === '100g') {
                     styleClass = 'single';
-                    subColor = (p.type === 'Decaf') ? '#a3e635' : '#d97706';
-                    typeLabel = (p.type === 'Decaf') ? '디카페인 (100g 단위)' : '싱글 (100g 단위)';
-                    
                     if (currentClient) {
                         priceText = `${(finalPrice / 10).toLocaleString()}원`;
                         unitText = '/100g';
                     }
-                    clickAction = `addToCart('${p.name}', '${p.type}', 0.1)`; // 0.1kg씩 추가
+                    clickAction = `addToCart('${p.name}', '${p.type}', 0.1)`;
+                    
+                    // 100g 뱃지 생성
+                    unitBadgeHtml = `<span class="unit-badge badge-small">100g 단위</span>`;
                 }
                 // 3. 싱글/디카페인 - 1kg 모드
                 else if (mode === '1kg') {
-                    styleClass = 'single';
-                    subColor = (p.type === 'Decaf') ? '#a3e635' : '#d97706';
-                    typeLabel = (p.type === 'Decaf') ? '디카페인 (1kg 팩)' : '싱글 (1kg 팩)';
-                    
-                    // 1kg 모드는 테두리나 배경을 조금 다르게 해서 구분 (선택사항)
-                    styleClass += ' pack-1kg'; 
-
+                    styleClass = 'single pack-1kg'; // 1kg 전용 스타일 클래스
                     if (currentClient) {
                         priceText = `${finalPrice.toLocaleString()}원`;
                         unitText = '/kg';
                     }
-                    clickAction = `addToCart('${p.name}', '${p.type}', 1.0)`; // 1kg씩 추가
+                    clickAction = `addToCart('${p.name}', '${p.type}', 1.0)`;
+                    
+                    // 1kg 뱃지 생성
+                    unitBadgeHtml = `<span class="unit-badge badge-bulk">1kg PACK</span>`;
                 }
-
-                // 1kg 팩 모드일 때 시각적 차이 (뱃지 색상 등)
-                let subStyle = `color:${subColor}`;
-                if (mode === '1kg') subStyle = `color:${subColor}; font-weight:bold;`;
 
                 return `
                 <div class="product-btn ${styleClass} ${isActive}" onclick="${clickAction}">
                     ${badge}
                     <div>
-                        <span class="p-name">${p.name}</span>
-                        <div class="p-sub" style="${subStyle}">${typeLabel}</div>
+                        ${mode !== 'std' ? unitBadgeHtml : ''}
+                        <div class="p-name" style="${mode !== 'std' ? 'margin-top:4px;' : ''}">${p.name}</div>
+                        ${mode === 'std' ? unitBadgeHtml : ''}
                     </div>
-                    <div style="text-align:right; font-size:0.9rem; font-weight:bold; margin-top:5px; color:#fff;">
+                    <div style="text-align:right; font-size:0.9rem; font-weight:bold; margin-top:10px; color:#fff;">
                         ${priceText}<span style="font-size:0.7rem; font-weight:normal; color:#888;"> ${unitText}</span>
                     </div>
                 </div>`;
             };
 
-            // 그리드 렌더링 실행
             const renderList = (type, gridEl) => {
                 const filtered = products.filter(p => p.type === type && isVisible(p));
                 
                 gridEl.innerHTML = filtered.map(p => {
                     if (type === 'Blend') {
-                        // 블렌드는 카드 1개
                         return createCardHtml(p, 'std');
                     } else {
-                        // 싱글, 디카페인은 카드 2개 생성 (100g용, 1kg용)
-                        // 순서는 100g 먼저, 그 옆에 1kg 배치
-                        const card100 = createCardHtml(p, '100g');
-                        const card1kg = createCardHtml(p, '1kg');
-                        return card100 + card1kg;
+                        // 100g 카드와 1kg 카드를 나란히 생성
+                        return createCardHtml(p, '100g') + createCardHtml(p, '1kg');
                     }
                 }).join('');
 
-                // 섹션 숨김 처리
                 gridEl.parentElement.style.display = gridEl.innerHTML === '' ? 'none' : 'block';
             };
 
