@@ -76,6 +76,31 @@
         .product-btn.single.active { border-color: #d97706; background: rgba(217, 119, 6, 0.15); }
         .product-btn.single.active .p-name { color: #fbbf24; }
         .single-badge { background: #d97706 !important; }
+        /* [추가] 1kg 담기 버튼 및 가격줄 정렬 스타일 */
+        .btn-1kg {
+            background: #222;
+            color: var(--accent-blue);
+            border: 1px solid var(--accent-blue);
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-left: auto; /* 우측 정렬 */
+            z-index: 10;
+        }
+        .btn-1kg:hover {
+            background: var(--accent-blue);
+            color: #000;
+        }
+        .price-row {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-end; 
+            margin-top: 10px;
+        }
+        /* [끝] */
 
         /* === 플로팅 장바구니 스타일 === */
         .cart-section { 
@@ -494,12 +519,12 @@
 
         // --- [화면 그리기] 상품 목록 ---
         // --- [화면 그리기] 상품 목록 ---
+        // [수정된 함수] renderProductGrids
         function renderProductGrids() {
             const blendGrid = document.getElementById('grid-blend');
             const decafGrid = document.getElementById('grid-decaf');
             const singleGrid = document.getElementById('grid-single');
 
-            // [NEW] 현재 로그인한 거래처의 노출 허용 목록 확인
             const allowedList = currentClient ? currentClient.visibleProducts : null;
             const isVisible = (p) => !allowedList || allowedList.includes(p.name);
 
@@ -508,34 +533,40 @@
                 const isActive = item ? 'active' : '';
                 const badge = item ? `<div class="count-badge">✔ ${item.qty}kg</div>` : '';
                 
-                // 스타일 설정
                 let styleClass = '';
                 let subColor = 'var(--accent-blue)';
                 let typeLabel = '블렌드';
+                
+                // 가격 및 1kg 버튼 변수
+                let priceText = 'Login..';
+                let unitText = '';
+                let btn1kgHtml = ''; 
+                let priceRowStyle = 'text-align:right; margin-top:5px;'; // 기본 스타일(블렌드용)
 
                 if (p.type === 'Single') {
                     styleClass = 'single';
                     subColor = '#d97706';
                     typeLabel = '싱글 오리진';
                 } else if (p.type === 'Decaf') {
-                    styleClass = 'single'; // 디자인은 싱글과 동일하게 유지
-                    subColor = '#a3e635';  // 연두색 포인트
+                    styleClass = 'single'; 
+                    subColor = '#a3e635';
                     typeLabel = '디카페인';
                 }
 
-                // ★ 가격 표시 로직 개선 (싱글/디카페인은 100g 가격 노출)
-                const finalPrice = getClientPrice(p);
-                let priceText = 'Login..';
-                let unitText = '';
-
                 if (currentClient) {
+                    const finalPrice = getClientPrice(p);
+
                     if (p.type === 'Blend') {
                         priceText = `${finalPrice.toLocaleString()}원`;
                         unitText = '/kg';
                     } else {
-                        // 싱글/디카페인: 100g 가격으로 환산해서 보여줌
+                        // 싱글/디카페인: 100g 가격 표시 및 1kg 버튼 생성
                         priceText = `${(finalPrice / 10).toLocaleString()}원`;
                         unitText = '/100g';
+                        priceRowStyle = ''; // 블렌드가 아니면 class="price-row"의 flex 스타일을 따름
+                        
+                        // [핵심] 1kg 버튼 추가 (event.stopPropagation으로 카드 클릭 방지)
+                        btn1kgHtml = `<button class="btn-1kg" onclick="event.stopPropagation(); addToCart('${p.name}', '${p.type}', 1.0)">+1kg</button>`;
                     }
                 }
 
@@ -546,48 +577,60 @@
                         <span class="p-name">${p.name}</span>
                         <div class="p-sub" style="color:${subColor}">${typeLabel}</div>
                     </div>
-                    <div style="text-align:right; font-size:0.9rem; font-weight:bold; margin-top:5px; color:#fff;">
-                        ${priceText}<span style="font-size:0.7rem; font-weight:normal; color:#888;"> ${unitText}</span>
+                    
+                    <div class="${p.type !== 'Blend' ? 'price-row' : ''}" style="${priceRowStyle}">
+                        <div style="font-size:0.9rem; font-weight:bold; color:#fff; ${p.type !== 'Blend' ? 'margin-bottom:2px;' : ''}">
+                            ${priceText}<span style="font-size:0.7rem; font-weight:normal; color:#888;"> ${unitText}</span>
+                        </div>
+                        ${btn1kgHtml}
                     </div>
                 </div>`;
             };
 
-            // 그리드별 렌더링
             blendGrid.innerHTML = products.filter(p => p.type === 'Blend' && isVisible(p)).map(p => createCard(p)).join('');
             decafGrid.innerHTML = products.filter(p => p.type === 'Decaf' && isVisible(p)).map(p => createCard(p)).join('');
             singleGrid.innerHTML = products.filter(p => p.type === 'Single' && isVisible(p)).map(p => createCard(p)).join('');
             
-            // 빈 섹션 처리
-            if (blendGrid.innerHTML === '') blendGrid.parentElement.style.display = 'none';
-            else blendGrid.parentElement.style.display = 'block';
-
-            if (decafGrid.innerHTML === '') decafGrid.parentElement.style.display = 'none';
-            else decafGrid.parentElement.style.display = 'block';
-
-            if (singleGrid.innerHTML === '') singleGrid.parentElement.style.display = 'none';
-            else singleGrid.parentElement.style.display = 'block';
+            blendGrid.parentElement.style.display = blendGrid.innerHTML === '' ? 'none' : 'block';
+            decafGrid.parentElement.style.display = decafGrid.innerHTML === '' ? 'none' : 'block';
+            singleGrid.parentElement.style.display = singleGrid.innerHTML === '' ? 'none' : 'block';
         }
-        window.addToCart = (productName, type) => {
+        // [수정된 함수] addToCart (fixedQty 파라미터 추가)
+        window.addToCart = (productName, type, fixedQty = null) => {
             if (!currentClient) return alert("로그인이 필요합니다.");
 
-            // 카트에 담을 때의 가격 확정
             const product = products.find(p => p.name === productName);
             const price = getClientPrice(product);
 
             const existing = cart.find(item => item.name === productName);
-            if (existing) {
-                // 수량 증가 (싱글, 디카페인은 0.1단위, 블렌드는 1단위)
-                if (type === 'Single' || type === 'Decaf') existing.qty = parseFloat((existing.qty + 0.1).toFixed(1));
-                else existing.qty += 1;
+            
+            // 수량 계산 로직
+            let qtyToAdd = 0;
+            if (fixedQty) {
+                // 1kg 버튼 클릭 시
+                qtyToAdd = fixedQty;
             } else {
-                // 신규 추가 (싱글, 디카페인은 0.2 시작)
-                const initialQty = (type === 'Single' || type === 'Decaf') ? 0.2 : 1;
+                // 카드 배경 클릭 시 (기존 로직)
+                qtyToAdd = (type === 'Single' || type === 'Decaf') ? 0.1 : 1;
+            }
+
+            if (existing) {
+                // 이미 있으면 수량 추가
+                existing.qty = parseFloat((existing.qty + qtyToAdd).toFixed(1));
+            } else {
+                // 없으면 신규 추가 (1kg 버튼이면 1kg부터, 아니면 0.2kg/1kg 부터 시작)
+                let initialQty = 0;
+                if (fixedQty) {
+                    initialQty = fixedQty;
+                } else {
+                    initialQty = (type === 'Single' || type === 'Decaf') ? 0.2 : 1;
+                }
                 cart.push({ name: productName, qty: initialQty, type: type, price: price });
             }
+            
             renderCart();
             renderProductGrids(); 
         };
-
         window.updateQty = (idx, direction) => {
             const item = cart[idx];
             const step = item.type === 'Single' ? 0.1 : 1;
