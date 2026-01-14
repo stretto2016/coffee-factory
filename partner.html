@@ -282,8 +282,12 @@
                 
                 products = querySnapshot.docs.map(doc => {
                     const data = doc.data();
+                    // [수정] 대소문자 구분 없이, 그리고 이름에 '블렌드'가 있어도 Blend로 분류
                     let type = "Single";
-                    if (data.category === "Blend") type = "Blend";
+                    const cat = (data.category || '').toLowerCase();
+                    if (cat === "blend" || data.name.includes('블렌드') || data.name.includes('Blend')) {
+                        type = "Blend";
+                    }
                     
                     return {
                         id: doc.id,
@@ -492,8 +496,28 @@
                 </div>`;
             };
 
-            blendGrid.innerHTML = products.filter(p => p.type === 'Blend').map(p => createCard(p)).join('');
-            singleGrid.innerHTML = products.filter(p => p.type === 'Single').map(p => createCard(p)).join('');
+            // [NEW] 현재 로그인한 거래처의 노출 허용 목록 확인
+            const allowedList = currentClient ? currentClient.visibleProducts : null;
+
+            // 제품 필터링 함수
+            const isVisible = (p) => {
+                // 1. 거래처에 visibleProducts 설정이 아예 없으면(undefined/null) -> 모두 보여줌 (기본값)
+                if (!allowedList) return true;
+                // 2. 설정이 있다면 -> 목록에 있는 이름만 보여줌
+                return allowedList.includes(p.name);
+            };
+
+            blendGrid.innerHTML = products
+                .filter(p => p.type === 'Blend' && isVisible(p))
+                .map(p => createCard(p)).join('');
+                
+            singleGrid.innerHTML = products
+                .filter(p => p.type === 'Single' && isVisible(p))
+                .map(p => createCard(p)).join('');
+            
+            // 만약 표시할 제품이 하나도 없다면 안내 문구
+            if (blendGrid.innerHTML === '') blendGrid.innerHTML = '<div style="grid-column:span 2; color:#444; text-align:center; padding:20px;">표시할 블렌드 제품이 없습니다.</div>';
+            if (singleGrid.innerHTML === '') singleGrid.innerHTML = '<div style="grid-column:span 2; color:#444; text-align:center; padding:20px;">표시할 싱글 제품이 없습니다.</div>';
         }
 
         window.addToCart = (productName, type) => {
