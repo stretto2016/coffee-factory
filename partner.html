@@ -341,46 +341,44 @@
         }
 
         // [1] DB에서 상품 정보(기본 B2B 가격 포함) 가져오기
+        // [partner.html 수정] fetchProducts 함수
         async function fetchProducts() {
             try {
-                // 파트너 노출(showPartner) 켜진 것만 가져옴
-                const q = query(collection(db, "products"), where("showPartner", "==", true));
+                // [수정 전] const q = query(collection(db, "products"), where("showPartner", "==", true));
+                
+                // [수정 후] where 조건 삭제 -> 일단 다 가져옴
+                const q = query(collection(db, "products")); 
                 const querySnapshot = await getDocs(q);
                 
-                products = querySnapshot.docs.map(doc => {
-                    const data = doc.data();
-                    // [수정] 대소문자 구분 없이, 그리고 이름에 '블렌드'가 있어도 Blend로 분류
-                    // [수정] 카테고리 세분화 (Blend, Decaf, Single)
-                    let type = "Single";
-                    const cat = (data.category || '').toLowerCase();
-                    
-                    if (cat === "blend" || data.name.includes('블렌드') || data.name.includes('Blend')) {
-                        type = "Blend";
-                    } else if (cat === "decaf" || data.name.includes('디카페인')) {
-                        type = "Decaf"; // 디카페인 타입 별도 지정
-                    }
-                    
-                    return {
-                        id: doc.id,
-                        name: data.name,
-                        type: type, // Blend, Decaf, Single 중 하나
-                        badge: data.badge,
-                        defaultPrice: data.priceB2B || data.price || 0 
-                    };
-                    
-                    return {
-                        id: doc.id,
-                        name: data.name, // "디카페인 콜롬비아 엑셀소" 등 (DB와 글자 토씨하나 안틀리고 같아야 함)
-                        type: type, 
-                        badge: data.badge,
-                        // Admin에서 설정한 B2B 가격 (없으면 일반 price)
-                        defaultPrice: data.priceB2B || data.price || 0 
-                    };
-                });
-                
+                products = querySnapshot.docs
+                    .map(doc => {
+                        const data = doc.data();
+                        
+                        // [추가] 데이터 필터링: showPartner가 명시적으로 false인 경우만 제외 (undefined는 통과)
+                        if (data.showPartner === false) return null;
+
+                        let type = "Single";
+                        const cat = (data.category || '').toLowerCase();
+                        
+                        if (cat === "blend" || data.name.includes('블렌드') || data.name.includes('Blend')) {
+                            type = "Blend";
+                        } else if (cat === "decaf" || data.name.includes('디카페인')) {
+                            type = "Decaf";
+                        }
+                        
+                        return {
+                            id: doc.id,
+                            name: data.name,
+                            type: type, 
+                            badge: data.badge,
+                            defaultPrice: data.priceB2B || data.price || 0 
+                        };
+                    })
+                    .filter(p => p !== null); // null(숨김처리된 것) 제거
+
                 // 이름순 정렬
                 products.sort((a, b) => a.name.localeCompare(b.name));
-                renderProductGrids(); // 일단 기본 가격으로 렌더링
+                renderProductGrids(); 
             } catch (e) {
                 console.error("상품 불러오기 실패:", e);
             }
