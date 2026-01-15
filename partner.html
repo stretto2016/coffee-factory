@@ -86,45 +86,87 @@
         }
 
         /* === 단위 표시 (뱃지 대신 텍스트 라벨) === */
+        /* === 상품 카드 스타일 (Premium Dashboard Look v2) === */
+        .product-btn { 
+            position: relative;
+            background: #1c1c1e; 
+            /* 테두리를 아주 연하게 */
+            border: 1px solid #2c2c2e; 
+            /* 왼쪽 억양 선(Accent Line) - 기본값 */
+            border-left: 4px solid #333; 
+            color: white; 
+            padding: 16px 18px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            text-align: left; 
+            transition: all 0.2s ease; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            
+            /* 높이 자동 조절 (내용 잘림 방지) */
+            height: auto; 
+            min-height: 115px; 
+        }
+
+        .product-btn:active { transform: scale(0.98); }
+
+        /* [선택됨] 배경색 투명도 유지, 테두리 강조 */
+        .product-btn.active {
+            background: #1c1c1e; 
+            border-color: var(--accent-blue); 
+            border-left-width: 4px; 
+            box-shadow: 0 0 20px rgba(41, 151, 255, 0.1); 
+        }
+
+        /* === 단위 표시 (업그레이드: 세련된 캡슐 스타일) === */
         .unit-badge {
-            display: block;
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 0.1em; /* 자간을 넓혀 고급스러운 느낌 */
+            display: inline-block; /* 텍스트 크기에 딱 맞게 박스 형성 */
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            padding: 4px 10px;      /* 내부 여백을 줘서 캡슐 모양 생성 */
+            border-radius: 4px;     /* 살짝 둥근 모서리 */
+            margin-bottom: 10px;
             text-transform: uppercase;
-            margin-bottom: 8px;
-            opacity: 0.9;
+            line-height: 1;
         }
 
-        /* 100g 단위 (차분함) */
+        /* 100g 단위: 차분한 아웃라인 스타일 (고급스러움) */
         .badge-small {
-            color: #666; /* 회색 텍스트 */
+            border: 1px solid #444;
+            color: #aaa;
+            background: transparent; /* 배경 없음 */
         }
-        /* 100g 카드 전체 스타일 */
+        /* 100g 카드 왼쪽 라인 */
         .product-btn.single {
-            border-left-color: #444; /* 왼쪽 선: 진한 회색 */
+            border-left-color: #555; 
         }
 
-        /* 1kg 팩 (강조됨) */
+        /* 1kg 팩: 은은한 블루 배경으로 강조 (눈에 띔) */
         .badge-bulk {
-            color: var(--accent-blue); /* 파란색 텍스트 */
+            background: rgba(41, 151, 255, 0.15); /* 투명한 파란 배경 */
+            border: 1px solid rgba(41, 151, 255, 0.3); /* 연한 파란 테두리 */
+            color: #6ebbff; /* 밝은 파란 글씨 */
         }
-        /* 1kg 카드 전체 스타일 */
+        /* 1kg 카드 왼쪽 라인 */
         .product-btn.pack-1kg {
-            border-left-color: var(--accent-blue); /* 왼쪽 선: 파란색 */
-            background: linear-gradient(90deg, rgba(41,151,255,0.03) 0%, rgba(0,0,0,0) 100%); /* 아주 미세한 그라데이션 */
+            border-left-color: var(--accent-blue); /* 왼쪽 라인 파란색 */
+            /* 1kg는 배경도 아주 미세하게 푸른빛을 돌게 하여 덩어리감 부여 */
+            background: linear-gradient(90deg, rgba(41,151,255,0.03) 0%, rgba(28,28,30,1) 100%);
         }
 
-        /* 카운트 뱃지 (우측 상단 선택 수량) - 심플하게 변경 */
+
+        /* 카운트 뱃지 (우측 상단) */
         .count-badge {
             position: absolute;
             top: 12px; right: 12px;
             background: var(--accent-blue);
             color: #000;
-            padding: 2px 8px;
-            border-radius: 2px; /* 사각형에 가깝게 */
+            padding: 3px 8px;
+            border-radius: 2px;
             font-size: 0.75rem;
-            font-weight: 700;
+            font-weight: 800;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             z-index: 5;
             animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -139,7 +181,7 @@
             font-size: 1.05rem; 
             line-height: 1.4; 
             color: #f5f5f7;
-            word-break: keep-all; /* 단어 단위 줄바꿈 */
+            word-break: keep-all; 
         }
         .p-sub { font-size: 0.8rem; color: #666; margin-top: 5px; }
         
