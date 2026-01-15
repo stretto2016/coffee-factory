@@ -39,7 +39,9 @@
             display: flex; 
             flex-direction: column; 
             justify-content: space-between; 
-            height: 100px; 
+            /* [수정] 고정 높이 제거 및 최소 높이 확보 (텍스트 오버플로우 방지) */
+            height: auto; 
+            min-height: 115px; 
         }
         .product-btn:active { transform: scale(0.96); }
 
@@ -739,9 +741,26 @@
         }
 
         // --- 주문 전송 ---
+        // --- 주문 전송 ---
         document.getElementById('submitBtn').addEventListener('click', async () => {
             if (!currentClient) return alert("오류: 거래처 정보 없음");
             
+            // [추가] 날짜 검증 로직: 과거 날짜 선택 시 주문 불가
+            const selectedDateVal = document.getElementById('orderDate').value; // YYYY-MM-DD
+            
+            // 한국 시간 기준 오늘 날짜 구하기 (YYYY-MM-DD)
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const todayStr = `${year}-${month}-${day}`;
+
+            if (selectedDateVal < todayStr) {
+                alert("과거 날짜로는 주문을 접수할 수 없습니다.\n날짜를 오늘 이후로 변경해 주세요.");
+                return; // 함수 종료
+            }
+            // [검증 종료]
+
             const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
             const totalPriceStr = Math.floor(totalPrice).toLocaleString();
             
