@@ -51,42 +51,45 @@
             box-shadow: 0 0 15px rgba(41, 151, 255, 0.1);
         }
         /* [추가] 단위 뱃지 스타일 */
+        /* [수정] 디자인 개선: 단위 뱃지 스타일 */
         .unit-badge {
             display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            margin-bottom: 6px;
-            letter-spacing: 0.05em;
+            padding: 4px 8px;
+            border-radius: 6px;     /* 모서리를 조금 더 부드럽게 */
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.03em;
         }
 
-        /* 100g 단위: 차분한 아웃라인 스타일 */
+        /* 100g 단위: 아주 차분한 다크 그레이 배경 */
         .badge-small {
-            border: 1px solid #555;
-            color: #888;
-            background: transparent;
+            background: #2c2c2e;
+            color: #999;
+            border: 1px solid #3a3a3c;
         }
 
-        /* 1kg 팩: 눈에 띄는 솔리드 스타일 (강조) */
+        /* 1kg 팩: 촌스러운 원색 대신, 세련된 반투명 블루(Glass 느낌) */
         .badge-bulk {
-            background: var(--accent-blue);
-            color: #000;
-            border: 1px solid var(--accent-blue);
-            box-shadow: 0 2px 5px rgba(41, 151, 255, 0.2);
+            background: rgba(41, 151, 255, 0.15); /* 배경은 연하게 */
+            color: var(--accent-blue);            /* 글씨는 쨍하게 */
+            border: 1px solid rgba(41, 151, 255, 0.3); /* 테두리도 은은하게 */
+            box-shadow: none;
         }
         
-        /* 1kg 선택 시 카드 테두리 강조 유지 */
-        .product-btn.pack-1kg { border: 1px dashed #444; }
-        .product-btn.pack-1kg.active { border: 2px solid var(--accent-blue); background: rgba(41, 151, 255, 0.15); }
-        /* [추가] 1kg 팩 전용 스타일 구분 */
-.product-btn.pack-1kg {
-    border: 1px dashed #666; /* 점선 테두리로 1kg 팩임을 강조 */
-}
-.product-btn.pack-1kg.active {
-    border: 2px solid var(--accent-blue); /* 선택되면 파란 실선 */
-    background: rgba(41, 151, 255, 0.25); /* 배경을 좀 더 진하게 */
-}
+        /* [수정] 디자인 개선: 1kg 카드 스타일 */
+        /* 점선(dashed)을 제거하고, 배경색 톤 다운으로 무게감 표현 */
+        .product-btn.pack-1kg {
+            border: 1px solid #333; /* 점선 제거 -> 실선으로 변경 */
+            background: #151515;    /* 100g 카드보다 살짝 더 어두운 배경으로 구분 */
+        }
+
+        /* 선택되었을 때 스타일 */
+        .product-btn.pack-1kg.active {
+            border: 1px solid var(--accent-blue);
+            background: rgba(41, 151, 255, 0.1); /* 선택 시 배경색도 은은하게 */
+            box-shadow: 0 0 15px rgba(41, 151, 255, 0.05);
+        }
         .count-badge {
             position: absolute;
             top: 10px; right: 10px;
