@@ -919,17 +919,18 @@
                 // 주문 저장 (단가, 총액 포함)
                 const promises = cart.map(item => {
                     return addDoc(collection(db, "orders"), {
-                        date: date,
-                        clientId: currentClient.id,
-                        clientName: currentClient.name,
-                        productType: item.name,
-                        amountKg: item.qty,
-                        unitPrice: item.price,             // 적용된 단가 저장
-                        totalPrice: item.price * item.qty, // 합계 저장
-                        note: note, 
-                        status: 'new', 
-                        createdAt: serverTimestamp()
-                    });
+    date: date,
+    clientId: currentClient.id,
+    clientName: currentClient.name,
+    productType: item.name,
+    amountKg: item.qty,
+    unitPrice: item.price,             
+    totalPrice: item.price * item.qty, 
+    note: note, 
+    status: 'new', 
+    isRead: false, // [NEW] 앱 우편함 기능을 위해 '읽지 않음' 상태 추가
+    createdAt: serverTimestamp()
+});
                 });
                 await Promise.all(promises);
 
