@@ -24,125 +24,177 @@
         .grid-desc { font-size: 0.75rem; color: #888; font-weight: normal; }
         
         /* === KTX 전광판 스타일 그리드 시스템 === */
-        /* ▼▼▼ [수정] KTX 전광판 스타일 (통합 카드 디자인) ▼▼▼ */
-        .product-grid { 
+        /* ▼▼▼ [개선] KTX 스타일 (깔끔한 버전 & 즐겨찾기 카드화) ▼▼▼ */
+        .product-grid, .fav-grid { 
             display: grid; 
-            /* PC: 2열, 모바일: 1열 또는 화면 크기에 따라 자동 조절 */
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 15px; 
+            /* 화면 너비에 따라 카드 크기 자동 조절 (최소 280px) */
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 16px; 
+            margin-bottom: 30px;
         }
 
+        /* === [메인 상품 카드] === */
         .ktx-card {
             background-color: #1c1c1e;
-            border-radius: 12px;
+            border-radius: 16px; /* 둥근 모서리 강화 */
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            border: 1px solid #333;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            transition: transform 0.2s;
-            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3); /* 부드러운 그림자 */
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #2c2c2e; /* 테두리를 더 은은하게 */
         }
-        .ktx-card:hover { transform: translateY(-2px); }
-        .ktx-card.active { border: 2px solid var(--accent-blue); }
+        .ktx-card:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
 
-        /* [헤더] 열차 번호/시간 영역 -> 로스팅 포인트/상태 */
+        /* [헤더] 로스팅 포인트 */
         .ktx-header {
-            padding: 12px 16px;
-            color: #fff;
+            padding: 14px 18px;
             font-family: 'Ciutadella', sans-serif;
-            font-weight: bold;
-            font-size: 1.1rem;
+            font-weight: 700;
+            font-size: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            letter-spacing: 0.5px;
         }
-        /* KTX 색상 테마 적용 */
-        .bg-green { background-color: #fffb03; color: #000; } /* Light */
-        .bg-orange { background-color: #FF9500; color: #fff; } /* Medium Light - [NEW] 추가됨 */
-        .bg-blue { background-color: #8b4e15; color: #fff; }  /* Medium */
-        .bg-purple { background-color: #4b240e; color: #fff; } /* Medium Dark */
-        .bg-grey { background-color: #130802; color: #fff; }   /* Dark */
+        /* 색상 테마 (가독성 개선) */
+        .bg-green { background: linear-gradient(135deg, #00C73C, #008f2b); color: #000; }
+        .bg-orange { background: linear-gradient(135deg, #FF9500, #d47b00); color: #fff; }
+        .bg-blue { background: linear-gradient(135deg, #006DFF, #0056cc); color: #fff; }
+        .bg-purple { background: linear-gradient(135deg, #AF52DE, #8E44AD); color: #fff; }
+        .bg-grey { background: linear-gradient(135deg, #444, #222); color: #fff; }
         .bg-default { background-color: #333; color: #ccc; }
 
-        /* [본문] 목적지 영역 -> 제품명 및 정보 */
+        /* [본문] 정보 영역 */
         .ktx-body {
-            padding: 20px 16px;
+            padding: 20px 18px;
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            border-bottom: 1px solid #333;
+            gap: 6px;
+            background: #1c1c1e;
         }
         .ktx-dest {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 800;
             color: #fff;
-            line-height: 1.2;
-            word-break: keep-all;
+            line-height: 1.3;
+            margin-bottom: 4px;
+        }
+        /* 컵노트: 한 줄로 잘리지 않고 최대 2줄까지 표시 */
+        .ktx-cupnote {
+            color: #FFD60A;
+            font-size: 0.95rem;
+            font-weight: 500;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* 최대 2줄 */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            opacity: 0.9;
         }
         .ktx-sub {
             font-size: 0.85rem;
-            color: #aaa;
-            margin-top: 4px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4px;
-        }
-        .ktx-cupnote {
-            color: #FFD700; /* 전광판 노란 글씨 */
-            font-size: 0.95rem;
-            font-weight: 500;
+            color: #8E8E93;
             margin-top: 8px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            display: flex; 
+            flex-wrap: wrap; /* 내용이 길면 줄바꿈 */
+            gap: 8px;
+        }
+        .ktx-tag {
+            background: #2c2c2e;
+            padding: 2px 6px;
+            border-radius: 4px;
         }
 
-        /* [하단] 타는 곳 영역 -> 구매 버튼 리스트 */
+        /* [하단] 구매 옵션 리스트 */
         .ktx-tracks {
-            background-color: #111;
-            display: flex;
-            flex-direction: column;
+            background-color: #151516;
+            border-top: 1px solid #2c2c2e;
         }
-        
-        /* 구매 행 (Row) */
         .track-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 16px;
-            border-bottom: 1px solid #222;
+            padding: 14px 18px;
+            border-bottom: 1px solid #252527;
             cursor: pointer;
             transition: background 0.2s;
         }
         .track-row:last-child { border-bottom: none; }
         .track-row:active { background-color: #333; }
-
-        .track-info { display: flex; flex-direction: column; }
-        .track-unit { font-size: 0.9rem; font-weight: bold; color: #fff; display: flex; align-items: center; gap: 6px; }
-        .track-price { font-size: 1.1rem; color: #eee; font-weight: bold; }
-        .track-sub-price { font-size: 0.75rem; color: #666; margin-left: 4px; font-weight: normal; }
+        
+        .track-info { display: flex; flex-direction: column; gap: 2px; }
+        .track-unit { font-size: 0.95rem; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 6px; }
+        .track-price { font-size: 1.05rem; color: #d1d1d6; font-weight: 500; }
+        .track-sub-price { font-size: 0.75rem; color: #636366; }
 
         .track-gate {
-            background-color: #333;
+            width: 36px; height: 36px;
+            border-radius: 50%; /* 원형 버튼으로 변경해 누르기 쉽게 */
+            background-color: #2c2c2e;
             color: var(--accent-blue);
-            width: 40px; height: 40px;
-            border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
+            font-weight: 300;
             transition: all 0.2s;
         }
-        /* 장바구니에 담기면 색상 변경 */
+        /* 장바구니 담김 상태 */
         .track-row.in-cart .track-gate {
             background-color: var(--accent-blue);
             color: #fff;
-            box-shadow: 0 0 10px rgba(41, 151, 255, 0.4);
+            transform: scale(1.1);
         }
         .track-row.in-cart .track-unit { color: var(--accent-blue); }
+        .badge-new { background: #ff453a; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; }
 
-        .badge-new { background: #ff3b30; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.6rem; vertical-align: middle; }
+
+        /* === [자주 주문하는 상품 (즐겨찾기) 카드] === */
+        /* 작고 컴팩트한 버튼형 카드 */
+        .fav-card {
+            background: #252527;
+            border: 1px solid #3a3a3c;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s;
+            position: relative;
+            min-height: 100px;
+        }
+        .fav-card:hover {
+            border-color: var(--accent-blue);
+            background: #2c2c2e;
+            transform: translateY(-2px);
+        }
+        .fav-card:active { transform: scale(0.98); }
+        
+        /* 즐겨찾기 아이콘 데코 */
+        .fav-icon {
+            position: absolute; top: 12px; right: 12px;
+            color: #FFD60A; font-size: 1.2rem;
+        }
+        .fav-name {
+            font-size: 1.1rem; font-weight: 700; color: #fff;
+            margin-bottom: 4px; padding-right: 20px;
+            word-break: keep-all;
+        }
+        .fav-detail { font-size: 0.85rem; color: #aaa; margin-bottom: 12px; }
+        .fav-action {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-top: auto;
+        }
+        .fav-price { font-size: 1.1rem; font-weight: 700; color: var(--accent-blue); }
+        .fav-btn {
+            background: var(--accent-blue); color: #fff;
+            border: none; padding: 6px 12px; border-radius: 20px;
+            font-size: 0.8rem; font-weight: 600;
+        }
 
         /* === 플로팅 장바구니 스타일 === */
         .cart-section { 
@@ -799,67 +851,89 @@
         window.toggleCart = () => document.getElementById('cartSection').classList.toggle('folded');
 
        // ▼▼▼ [수정] renderProductGrids 및 카드 생성 로직 (KTX 통합 디자인) ▼▼▼
+        // ▼▼▼ [추가] 자주 주문하는 상품 렌더링 (카드 형태) ▼▼▼
+        function renderFavorites() {
+            const container = document.getElementById('grid-favorites'); // HTML에 이 ID를 가진 div가 있어야 함
+            if (!container) return; // 영역이 없으면 패스
+
+            // 자주 주문하는 상품 목록 (예시: 상위 3개 혹은 하드코딩된 리스트)
+            // *실제 데이터 연동 시에는 currentClient.favorites 등을 활용하세요.*
+            // 여기서는 예시로 products의 앞 3개를 보여줍니다.
+            const favList = products.slice(0, 3); // 임시 데이터
+
+            if (favList.length === 0) {
+                container.parentElement.style.display = 'none';
+                return;
+            }
+
+            container.innerHTML = favList.map(p => {
+                const basePrice = currentClient ? getClientPrice(p) : 0;
+                // 즐겨찾기는 보통 가장 많이 쓰는 1kg 단위 기준 (필요시 수정)
+                const price = currentClient && currentClient.isVatFree ? basePrice : Math.round(basePrice * 1.1);
+                
+                return `
+                <div class="fav-card" onclick="addToCart('${p.name}', '${p.type}', 1.0)">
+                    <div class="fav-icon">★</div>
+                    <div>
+                        <div class="fav-name">${p.name}</div>
+                        <div class="fav-detail">${p.cupNote || 'Best Choice'}</div>
+                    </div>
+                    <div class="fav-action">
+                        <div class="fav-price">${price.toLocaleString()}원</div>
+                        <div class="fav-btn">담기</div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+            
+            // 컨테이너 클래스 지정 (그리드 적용)
+            container.className = 'fav-grid'; 
+            container.parentElement.style.display = 'block';
+        }
+
+        // ▼▼▼ [수정] 메인 상품 그리드 렌더링 (깔끔한 버전) ▼▼▼
         function renderProductGrids() {
             const blendGrid = document.getElementById('grid-blend');
             const decafGrid = document.getElementById('grid-decaf');
             const singleGrid = document.getElementById('grid-single');
 
             const allowedList = currentClient ? currentClient.visibleProducts : null;
-            // 노출 권한 체크 함수
             const isVisible = (p) => !allowedList || allowedList.includes(p.name);
 
-            // [핵심] KTX 스타일 카드 생성 함수 (옵션이 여러개면 한 카드에 병합)
+            // KTX 카드 생성 함수 (개선됨)
             const createKTXCard = (product, options) => {
-                // options: [{label: '1kg', unit: 1.0, type: 'std'}, {label: '100g', unit: 0.1, type: '100g'}]
-                
-                // 1. 헤더 색상 결정 (로스팅 포인트 기반)
-                // 1. 헤더 색상 결정 (로스팅 포인트 기반)
+                // 1. 헤더 색상
                 const roast = (product.roastingLevel || 'Medium').toLowerCase();
                 let headerClass = 'bg-default';
-                
-                // [수정] 순서 중요: 구체적인 단어를 먼저 체크해야 함
-                if (roast.includes('medium light')) headerClass = 'bg-orange'; // [NEW] 추가됨
+                if (roast.includes('medium light')) headerClass = 'bg-orange';
                 else if (roast.includes('light')) headerClass = 'bg-green';
                 else if (roast.includes('medium dark')) headerClass = 'bg-purple';
                 else if (roast.includes('dark')) headerClass = 'bg-grey';
                 else if (roast.includes('medium')) headerClass = 'bg-blue';
 
-                // 2. 상세 정보 (싱글/디카페인만 표시)
+                // 2. 정보 표시 (싱글/디카페인만 상세 정보)
                 const showSpecs = product.type !== 'Blend';
                 const origin = product.origin || '-';
                 const process = product.process || '-';
                 
-                // 3. 구매 옵션(Tracks) HTML 생성
+                // 3. 옵션 생성
                 let tracksHtml = options.map(opt => {
-                    // 가격 계산
                     const basePrice = currentClient ? getClientPrice(product) : 0;
                     const isVatFree = currentClient && currentClient.isVatFree;
                     let finalPrice = isVatFree ? basePrice : Math.round(basePrice * 1.1);
                     
-                    // 용량별 가격 조정
                     if (opt.unit === 0.1) finalPrice = Math.round(finalPrice / 10);
-                    else if (opt.unit === 0.2) finalPrice = Math.round(finalPrice / 5);
-                    else if (opt.unit === 0.5) finalPrice = Math.round(finalPrice / 2);
-
-                    // 장바구니 확인 (해당 용량으로 담긴게 있는지)
-                    // 주의: cart item의 qty로 정확히 100g인지 1kg인지 구분하기 어려울 수 있으므로, 
-                    // 로직상 type을 '100g' 등으로 구분해서 저장하거나, 단순히 이름 매칭으로 활성화 표시
-                    // 여기서는 심플하게 해당 제품이 장바구니에 있으면 1kg/100g 버튼 모두에 시각적 피드백을 주거나
-                    // 더 정확히 하려면 addToCart시 단위를 구분해야 합니다.
-                    // (기존 addToCart 로직상 type인자를 활용)
                     
-                    // *UI 개선*: 장바구니에 해당 타입(예: '100g'은 type='Single' & qty소수점 등으로 판별 가능하지만 복잡함)
-                    // 여기서는 간단히 클릭 시 애니메이션 효과만 의존하거나, 전체 수량 표시
                     const cartItem = cart.find(c => c.name === product.name);
-                    const isInCart = cartItem && cartItem.qty > 0; // 단순히 담겨있으면 표시 (정교화 가능)
+                    const isInCart = cartItem && cartItem.qty > 0;
                     const activeClass = isInCart ? 'in-cart' : '';
                     
                     return `
-                    <div class="track-row ${activeClass}" onclick="addToCart('${product.name}', '${product.type}', ${opt.unit})">
+                    <div class="track-row ${activeClass}" onclick="addToCart('${product.name}', '${product.type}', ${opt.unit}); event.stopPropagation();">
                         <div class="track-info">
                             <div class="track-unit">
                                 ${opt.label} 
-                                ${opt.unit === 0.1 ? '<span class="badge-new">소분</span>' : ''}
+                                ${opt.unit === 0.1 ? '<span class="badge-new">SAMPLE</span>' : ''}
                             </div>
                             <div class="track-price">
                                 ${finalPrice.toLocaleString()}원
@@ -867,7 +941,7 @@
                             </div>
                         </div>
                         <div class="track-gate">
-                            ${isInCart ? '+' : '+'}
+                            ${isInCart ? '<span style="font-size:1rem">✔</span>' : '+'}
                         </div>
                     </div>
                     `;
@@ -877,15 +951,15 @@
                 <div class="ktx-card">
                     <div class="ktx-header ${headerClass}">
                         <span>${product.roastingLevel || 'Roasting'}</span>
-                        <span style="font-size:0.8rem; opacity:0.8;">${product.type}</span>
+                        <span style="font-size:0.85rem; opacity:0.9; font-weight:400;">${product.type.toUpperCase()}</span>
                     </div>
                     <div class="ktx-body">
                         <div class="ktx-dest">${product.name}</div>
-                        <div class="ktx-cupnote">${product.cupNote ? '♪ ' + product.cupNote : ''}</div>
+                        <div class="ktx-cupnote">${product.cupNote ? product.cupNote : ''}</div>
                         ${showSpecs ? `
                         <div class="ktx-sub">
-                            <div>📍 ${origin}</div>
-                            <div>⚙️ ${process}</div>
+                            <span class="ktx-tag">📍 ${origin}</span>
+                            <span class="ktx-tag">⚙️ ${process}</span>
                         </div>
                         ` : ''}
                     </div>
@@ -896,25 +970,18 @@
                 `;
             };
 
-            // 4. 그리드 렌더링 실행
             const renderList = (type, gridEl) => {
                 const filtered = products.filter(p => p.type === type && isVisible(p));
-                
                 gridEl.innerHTML = filtered.map(p => {
-                    // 블렌드는 1kg 옵션만
                     if (type === 'Blend') {
                         return createKTXCard(p, [{label: '1kg 패키지', unit: 1.0}]);
-                    } 
-                    // 싱글, 디카페인은 100g, 1kg 옵션 둘 다 (순서대로 위아래 배치됨)
-                    else {
+                    } else {
                         return createKTXCard(p, [
-                            {label: '100g 소분 (Sample)', unit: 0.1},
+                            {label: '100g 소분', unit: 0.1},
                             {label: '1kg 대용량', unit: 1.0}
                         ]);
                     }
                 }).join('');
-
-                // 비어있으면 숨김
                 gridEl.parentElement.style.display = gridEl.innerHTML === '' ? 'none' : 'block';
             };
 
@@ -922,7 +989,6 @@
             renderList('Decaf', decafGrid);
             renderList('Single', singleGrid);
         }
-        // ▲▲▲ [수정 끝] ▲▲▲
         // [수정된 함수] addToCart (변수명 isVatFree 로 수정)
         window.addToCart = (productName, type, fixedQty = null) => {
             if (!currentClient) return alert("로그인이 필요합니다.");
