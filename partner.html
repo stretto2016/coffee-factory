@@ -755,7 +755,7 @@
             });
         }
 // ▲▲▲ [수정 끝] ▲▲▲
-        // [추가] 자주 주문한 상품 분석 및 렌더링 함수
+         // [수정됨] 자주 주문한 상품 분석 및 렌더링 함수 (카드 디자인 적용)
         async function loadQuickOrderItems(clientId) {
             if (!products || products.length === 0) return;
 
@@ -783,55 +783,27 @@
 
             if (sortedNames.length === 0) return;
 
-            // 4. 상품 정보 매칭 및 카드 생성 (1kg 팩 위주로 제안)
+            // 4. 카드 디자인(createKTXCard)을 재사용하여 HTML 생성
             const container = document.getElementById('grid-quick');
+            
             container.innerHTML = sortedNames.map(name => {
                 // 전체 상품 리스트에서 정보 찾기
                 const p = products.find(prod => prod.name === name);
                 if (!p) return ''; // 상품이 삭제되었거나 없으면 패스
 
-                // 가격 계산 (기존 로직 재사용)
-                const basePrice = currentClient ? (currentClient.priceOverrides?.[p.name] || p.defaultPrice) : p.defaultPrice;
-                const isVatFree = currentClient && currentClient.isVatFree;
-                const finalPrice = isVatFree ? basePrice : Math.round(basePrice * 1.1);
-                
-                // 자주 주문하는 건 보통 1kg 단위이므로 1kg 기준으로 표시
-                // (블렌드는 원래 1kg, 싱글도 B2B는 1kg가 많음)
-                const displayPrice = finalPrice.toLocaleString();
-                const vatLabel = isVatFree ? '(VAT 미적용)' : '(VAT 포함)';
-                
-                // 장바구니 확인
-                const item = cart.find(c => c.name === p.name);
-                const isActive = item ? 'active' : '';
-                const badge = item ? `<div class="count-badge">✔ 총 ${item.qty}kg</div>` : '';
-                
-                // 1kg 단위로 장바구니 담기
-                const clickAction = `addToCart('${p.name}', '${p.type}', 1.0)`;
+                // 하단 리스트와 동일한 옵션 설정 (블렌드는 1kg, 나머지는 100g/1kg)
+                let options = [];
+                if (p.type === 'Blend') {
+                    options = [{label: '1kg 패키지', unit: 1.0}];
+                } else {
+                    options = [
+                        {label: '100g 소분', unit: 0.1},
+                        {label: '1kg 대용량', unit: 1.0}
+                    ];
+                }
 
-                // 싱글/디카페인이면 1kg Pack 스타일 적용, 블렌드면 기본 스타일
-                const isPackStyle = (p.type === 'Single' || p.type === 'Decaf');
-                const styleClass = isPackStyle ? 'pack-1kg' : '';
-                const leftBorderColor = isPackStyle ? 'var(--accent-blue)' : '#333';
-                const unitBadge = isPackStyle 
-                    ? `<span class="unit-badge badge-bulk">1kg PACK</span>` 
-                    : `<span class="unit-badge" style="color:#ffd700; border:1px solid #ffd700; padding:2px 6px;">FAVORITE</span>`;
-
-                return `
-                <div class="product-btn ${styleClass} ${isActive}" onclick="${clickAction}" style="border-left-color: ${leftBorderColor};">
-                    ${badge}
-                    <div>
-                        ${unitBadge}
-                        <div class="p-name" style="margin-top:4px;">${p.name}</div>
-                    </div>
-                    <div style="text-align:right; margin-top:10px;">
-                        <div style="font-size:0.9rem; font-weight:bold; color:#fff;">
-                            ${displayPrice}원<span style="font-size:0.7rem; font-weight:normal; color:#888;"> /kg</span>
-                        </div>
-                        <div style="font-size:0.65rem; color:#aaa; margin-top:2px;">
-                            ${vatLabel}
-                        </div>
-                    </div>
-                </div>`;
+                // 기존에 정의된 createKTXCard 함수를 재사용하여 디자인 통일
+                return createKTXCard(p, options);
             }).join('');
 
             // 섹션 보이기
