@@ -23,30 +23,18 @@
         .grid-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 10px; color: #f5f5f7; border-left: 3px solid var(--accent-blue); padding-left: 10px; display: flex; align-items: center; justify-content: space-between; }
         .grid-desc { font-size: 0.75rem; color: #888; font-weight: normal; }
         
-        /* === [수정됨] 세로형 2열 카드 디자인 === */
+        /* === 그리드 시스템 (무조건 2열) === */
         .product-grid, .fav-grid { 
             display: grid; 
-            /* 모바일에서도 무조건 2열로 배치하여 세로형 느낌 강조 */
-            grid-template-columns: repeat(2, 1fr); 
+            grid-template-columns: repeat(2, 1fr); /* 모바일 2열 강제 */
             gap: 12px; 
             margin-bottom: 30px;
         }
-
-        /* 데스크탑에서는 4열로 확장 */
-        @media (min-width: 768px) {
-            /* === [재수정] 2열 "좌측 컬러 바" 미니멀 디자인 === */
-        .product-grid, .fav-grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); /* 모바일 2열 */
-            gap: 12px; 
-            margin-bottom: 30px;
-        }
-
         @media (min-width: 768px) {
             .product-grid, .fav-grid { grid-template-columns: repeat(4, 1fr); }
         }
 
-        /* 카드 본체: 상단 헤더바를 없애고 깔끔하게 */
+        /* === 카드 디자인 (좌측 컬러바 스타일) === */
         .ktx-card {
             background-color: #1c1c1e;
             border-radius: 12px;
@@ -57,20 +45,20 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             border: 1px solid #2c2c2e;
             position: relative;
-            /* 로스팅 컬러가 들어갈 왼쪽 테두리 (기본값) */
-            border-left: 5px solid #444; 
+            border-left: 5px solid #444; /* 기본 컬러 */
             transition: transform 0.2s;
+            min-height: 180px; /* 카드 최소 높이 확보 */
         }
         .ktx-card:active { transform: scale(0.98); }
 
-        /* 로스팅 포인트별 왼쪽 테두리 색상 (JS에서 클래스로 제어) */
+        /* 로스팅 포인트별 왼쪽 테두리 색상 */
         .ktx-card.roast-green { border-left-color: #008f2b; }
         .ktx-card.roast-orange { border-left-color: #d47b00; }
         .ktx-card.roast-blue { border-left-color: #0056cc; }
         .ktx-card.roast-purple { border-left-color: #8E44AD; }
         .ktx-card.roast-grey { border-left-color: #444; }
 
-        /* [본문] 정보 영역 */
+        /* 카드 내부 */
         .ktx-body {
             padding: 14px 12px 10px 12px;
             flex: 1;
@@ -79,7 +67,6 @@
             gap: 4px;
         }
 
-        /* 로스팅 라벨 (작은 뱃지 형태) */
         .roast-badge {
             font-size: 0.65rem;
             font-weight: 700;
@@ -99,40 +86,41 @@
         }
         
         .ktx-cupnote {
-            color: #86868b; /* 조금 더 차분하게 */
+            color: #86868b;
             font-size: 0.75rem;
             font-weight: 400;
             line-height: 1.4;
             margin-top: 4px;
             display: -webkit-box;
-            -webkit-line-clamp: 2; /* 최대 2줄 */
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
-        /* [하단] 버튼 영역 - 배경색을 없애서 카드와 일체감 */
+        .ktx-specs { display: none; } /* 상세 스펙 숨김 */
+
+        /* 하단 버튼 영역 */
         .ktx-tracks {
-            padding: 0 8px 12px 8px; /* 위쪽 패딩 제거 */
+            padding: 0 8px 12px 8px;
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
 
         .track-row {
-            background-color: #252527; /* 버튼 자체에 배경 부여 */
+            background-color: #252527;
             border-radius: 8px;
             padding: 8px 10px;
             display: flex;
-            justify-content: space-between; /* 좌우 배치 */
+            justify-content: space-between;
             align-items: center;
             cursor: pointer;
             border: 1px solid transparent;
             transition: all 0.2s;
         }
 
-        /* 장바구니 담김 상태 - 테두리로 강조 */
         .track-row.in-cart {
-            background-color: #1c2c3e; /* 푸른빛 어두운 배경 */
+            background-color: #1c2c3e;
             border-color: var(--accent-blue);
         }
 
@@ -140,8 +128,8 @@
         .track-unit { font-size: 0.75rem; color: #aaa; font-weight: 600; }
         .track-price { font-size: 0.9rem; color: #fff; font-weight: 700; }
         .track-row.in-cart .track-price { color: var(--accent-blue); }
+        .badge-new { background: #ff453a; color: white; padding: 1px 4px; border-radius: 3px; font-size: 0.6rem; margin-left: 4px; vertical-align: middle; }
 
-        /* + 버튼 아이콘 */
         .track-gate {
             width: 28px;
             height: 28px;
@@ -157,125 +145,10 @@
             background-color: var(--accent-blue);
             color: #fff;
             font-weight: bold;
-            font-size: 0.9rem; /* 체크표시 크기 조절 */
+            font-size: 0.9rem;
         }
 
-
-        /* === [자주 주문하는 상품 (즐겨찾기) 카드] === */
-        /* 작고 컴팩트한 버튼형 카드 */
-        .fav-card {
-            background: #252527;
-            border: 1px solid #3a3a3c;
-            border-radius: 12px;
-            padding: 16px;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: all 0.2s;
-            position: relative;
-            min-height: 100px;
-        }
-        .fav-card:hover {
-            border-color: var(--accent-blue);
-            background: #2c2c2e;
-            transform: translateY(-2px);
-        }
-        .fav-card:active { transform: scale(0.98); }
-        
-        /* 즐겨찾기 아이콘 데코 */
-        .fav-icon {
-            position: absolute; top: 12px; right: 12px;
-            color: #FFD60A; font-size: 1.2rem;
-        }
-        .fav-name {
-            font-size: 1.1rem; font-weight: 700; color: #fff;
-            margin-bottom: 4px; padding-right: 20px;
-            word-break: keep-all;
-        }
-        .fav-detail { font-size: 0.85rem; color: #aaa; margin-bottom: 12px; }
-        .fav-action {
-            display: flex; justify-content: space-between; align-items: flex-end;
-            margin-top: auto;
-        }
-        .fav-price { font-size: 1.1rem; font-weight: 700; color: var(--accent-blue); }
-        .fav-btn {
-            background: var(--accent-blue); color: #fff;
-            border: none; padding: 6px 12px; border-radius: 20px;
-            font-size: 0.8rem; font-weight: 600;
-        }
-
-        /* === 플로팅 장바구니 스타일 === */
-        .cart-section { 
-            display: none;
-            position: fixed;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 95%;
-            max-width: 460px;
-            
-            background: rgba(28, 28, 30, 0.98);
-            backdrop-filter: blur(10px);
-            
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            padding: 0 20px;
-            box-sizing: border-box;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
-            z-index: 99;
-            
-            transition: all 0.3s ease;
-            max-height: 50vh;
-            overflow: hidden;
-        }
-        
-        .cart-section.folded {
-            max-height: 56px;
-            overflow: hidden;
-            padding-bottom: 0;
-        }
-
-        .cart-header {
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid #333; 
-            padding: 15px 0;
-            position: sticky; top: 0; background: transparent;
-            cursor: pointer;
-        }
-        
-        .cart-toggle-icon {
-            transition: transform 0.3s;
-            font-size: 0.8rem;
-            color: #888;
-            margin-left: 8px;
-        }
-        
-        .cart-section.folded .cart-toggle-icon { transform: rotate(180deg); }
-        .cart-section.folded .cart-header { border-bottom: none; }
-
-        .cart-body {
-            padding-bottom: 20px;
-            overflow-y: auto;
-            max-height: calc(50vh - 60px);
-        }
-
-        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #333; }
-        .cart-item:last-child { border-bottom: none; }
-        .cart-info { display: flex; flex-direction: column; }
-        .cart-name { font-weight: bold; font-size: 0.95rem; }
-        .cart-type { font-size: 0.75rem; color: #888; }
-        .qty-control { display: flex; align-items: center; gap: 8px; }
-        .qty-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: #444; color: white; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
-        .qty-val-box { width: 50px; text-align: center; }
-        .qty-val { width: 100%; text-align: center; font-weight: bold; background: transparent; border: none; color: white; font-size: 1rem; }
-        .qty-unit { font-size: 0.7rem; color: #888; display: block; text-align: center;}
-        .del-btn { color: #ff453a; background: none; border: none; margin-left: 5px; cursor: pointer; padding: 5px; }
-        
-        .bottom-action { position: fixed; bottom: 0; left: 0; right: 0; background: #000; padding: 15px; border-top: 1px solid #333; text-align: center; display: flex; justify-content: center; z-index: 100; }
-        .submit-btn { width: 100%; max-width: 440px; padding: 18px; background: var(--accent-blue); color: rgb(0, 0, 0); border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(41, 151, 255, 0.3); }
-        .submit-btn:disabled { background: #333; color: #666; box-shadow: none; }
-        
+        /* === 공통 UI 요소 === */
         #login-section { text-align: center; margin-top: 100px; }
         .login-input { width: 100%; padding: 15px; margin-bottom: 10px; background: #222; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
         .login-btn { width: 100%; padding: 15px; background: white; color: black; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
@@ -283,67 +156,37 @@
 
         .date-picker { width: 100%; padding: 10px; background: #222; color: white; border: 1px solid #333; border-radius: 8px; margin-top: 5px; font-family: inherit; box-sizing: border-box; }
         
+        /* 장바구니 & 하단 버튼 */
+        .cart-section { 
+            display: none; position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+            width: 95%; max-width: 460px; background: rgba(28, 28, 30, 0.98); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 16px; padding: 0 20px;
+            box-sizing: border-box; box-shadow: 0 -10px 30px rgba(0,0,0,0.8); z-index: 99;
+            transition: all 0.3s ease; max-height: 50vh; overflow: hidden;
+        }
+        .cart-section.folded { max-height: 56px; overflow: hidden; padding-bottom: 0; }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding: 15px 0; cursor: pointer; }
+        .cart-toggle-icon { transition: transform 0.3s; font-size: 0.8rem; color: #888; margin-left: 8px; }
+        .cart-section.folded .cart-toggle-icon { transform: rotate(180deg); }
+        .cart-body { padding-bottom: 20px; overflow-y: auto; max-height: calc(50vh - 60px); }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #333; }
+        
+        .qty-control { display: flex; align-items: center; gap: 8px; }
+        .qty-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: #444; color: white; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
+        .qty-val { width: 40px; text-align: center; font-weight: bold; background: transparent; border: none; color: white; font-size: 1rem; }
+        .del-btn { color: #ff453a; background: none; border: none; margin-left: 5px; cursor: pointer; padding: 5px; }
+        
+        .bottom-action { position: fixed; bottom: 0; left: 0; right: 0; background: #000; padding: 15px; border-top: 1px solid #333; text-align: center; display: flex; justify-content: center; z-index: 100; }
+        .submit-btn { width: 100%; max-width: 440px; padding: 18px; background: var(--accent-blue); color: rgb(0, 0, 0); border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(41, 151, 255, 0.3); }
+        .submit-btn:disabled { background: #333; color: #666; box-shadow: none; }
+        
         .history-section { margin-top: 40px; border-top: 1px solid #333; padding-top: 30px; }
         .history-card { background: #151515; border-radius: 8px; padding: 15px; margin-bottom: 10px; border: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
-        .h-date { font-size: 0.8rem; color: var(--accent-blue); font-weight: bold; margin-bottom: 2px;}
         .h-name { font-weight: bold; font-size: 1rem; }
         .h-detail { font-size: 0.85rem; color: #888; }
         .h-amount { font-weight: bold; font-size: 1.1rem; color: white; }
         .cancel-btn { background: #330000; border: 1px solid #660000; color: #ff453a; font-size: 0.8rem; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 10px;}
         .cancel-btn.disabled { background: #222; border-color: #333; color: #666; cursor: not-allowed; }
-    /* ▼▼▼ [추가] 싱글/디카페인 전용 2열 그리드 및 세로형 디자인 ▼▼▼ */
-
-        /* 1. 무조건 2열로 보이는 그리드 (PC/모바일 공통) */
-        .product-grid.two-columns {
-            grid-template-columns: 1fr 1fr; /* 강제 2분할 */
-            gap: 10px;
-        }
-
-        /* 2. 세로형 카드 (좁은 폭에 맞춘 디자인) */
-        .schedule-card.vertical {
-            min-height: 260px; /* 세로로 길쭉하게 */
-        }
-        
-        .schedule-card.vertical .card-title {
-            font-size: 1.0rem; /* 제목 크기 약간 축소 */
-            line-height: 1.3;
-            margin-bottom: 8px;
-            word-break: keep-all; /* 단어 단위 줄바꿈 */
-        }
-
-        .schedule-card.vertical .card-cupnote {
-            font-size: 0.8rem;
-            white-space: normal; /* 줄바꿈 허용 */
-            display: -webkit-box;
-            -webkit-line-clamp: 2; /* 두 줄까지만 표시 */
-            -webkit-box-orient: vertical;
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
-
-        /* 3. 100g vs 1kg 구분 뱃지 */
-        .size-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            margin-bottom: 8px;
-            text-align: center;
-        }
-        .badge-1kg { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid #555; }
-        .badge-100g { background: #ffebeb; color: #d32f2f; border: 1px solid #ffcdd2; } /* 100g은 눈에 띄는 붉은/핑크 계열 */
-
-        /* 세로형에서는 스펙 그리드를 1열로 변경하여 공간 확보 */
-        .schedule-card.vertical .spec-grid {
-            grid-template-columns: 1fr; 
-            gap: 4px;
-        }
-        .schedule-card.vertical .spec-item {
-            flex-direction: row;
-            justify-content: space-between;
-        }
-/* ▲▲▲ [여기까지 추가] ▲▲▲ */
     </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
