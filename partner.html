@@ -410,7 +410,17 @@
         let currentClient = null;
         let historyUnsubscribe = null;
 
-        document.getElementById('orderDate').valueAsDate = new Date();
+        const dateInput = document.getElementById('orderDate');
+        
+        // 한국 시간 기준 'YYYY-MM-DD' 포맷 만들기
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${day}`;
+
+        dateInput.value = todayStr; // 기본값을 오늘로
+        dateInput.min = todayStr;   // [중요] 최소 선택 가능 날짜를 오늘로 설정 (과거 클릭 불가)
         
         // 시작하자마자 DB에서 상품 불러오기
         init();
