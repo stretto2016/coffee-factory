@@ -813,9 +813,13 @@
                 // options: [{label: '1kg', unit: 1.0, type: 'std'}, {label: '100g', unit: 0.1, type: '100g'}]
                 
                 // 1. 헤더 색상 결정 (로스팅 포인트 기반)
+                // 1. 헤더 색상 결정 (로스팅 포인트 기반)
                 const roast = (product.roastingLevel || 'Medium').toLowerCase();
                 let headerClass = 'bg-default';
-                if (roast.includes('light')) headerClass = 'bg-green';
+                
+                // [수정] 순서 중요: 구체적인 단어를 먼저 체크해야 함
+                if (roast.includes('medium light')) headerClass = 'bg-orange'; // [NEW] 추가됨
+                else if (roast.includes('light')) headerClass = 'bg-green';
                 else if (roast.includes('medium dark')) headerClass = 'bg-purple';
                 else if (roast.includes('dark')) headerClass = 'bg-grey';
                 else if (roast.includes('medium')) headerClass = 'bg-blue';
