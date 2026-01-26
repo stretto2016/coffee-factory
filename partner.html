@@ -282,6 +282,7 @@
         .cancel-btn { background: #330000; border: 1px solid #660000; color: #ff453a; font-size: 0.8rem; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 10px;}
         .cancel-btn.disabled { background: #222; border-color: #333; color: #666; cursor: not-allowed; }
     </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 
@@ -337,7 +338,68 @@
                 <div class="grid-title">싱글 오리진 (Single) <span class="grid-desc">최소 200g / 100g 단위</span></div>
                 <div class="product-grid" id="grid-single"></div>
             </div>
-            
+            <div class="grid-section" style="margin-top: 40px;">
+    <div class="grid-title" style="border-left-color: #fff; color: #fff;">
+        📅 거래 명세서 발급
+        <span class="grid-desc">기간별 내역 조회</span>
+    </div>
+    
+    <div style="background: #1c1c1e; padding: 15px; border-radius: 8px; border: 1px solid #333;">
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <div style="flex: 1;">
+                <label style="font-size: 0.75rem; color: #888;">시작일</label>
+                <input type="date" id="searchStart" class="date-picker">
+            </div>
+            <div style="flex: 1;">
+                <label style="font-size: 0.75rem; color: #888;">종료일</label>
+                <input type="date" id="searchEnd" class="date-picker">
+            </div>
+        </div>
+        <button id="btnSearch" class="submit-btn" style="width: 100%; padding: 12px; font-size: 0.9rem; background: #333; color: white; box-shadow: none;">
+            내역 조회하기
+        </button>
+    </div>
+
+    <div id="invoice-area" style="display: none; margin-top: 20px; background: white; color: black; padding: 20px; border-radius: 8px;">
+        <h3 style="text-align: center; margin: 0 0 20px 0; border-bottom: 2px solid #000; padding-bottom: 10px;">거 래 명 세 서</h3>
+        
+        <table style="width: 100%; font-size: 0.8rem; border-collapse: collapse; margin-bottom: 10px;">
+            <tr>
+                <td style="padding: 5px;"><strong>공급받는자:</strong> <span id="inv-client"></span></td>
+                <td style="text-align: right; padding: 5px;"><strong>기간:</strong> <span id="inv-period"></span></td>
+            </tr>
+        </table>
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: center;">
+            <thead>
+                <tr style="background: #eee; border-top: 1px solid #000; border-bottom: 1px solid #000;">
+                    <th style="padding: 8px; border-bottom: 1px solid #ccc;">일자</th>
+                    <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ccc;">품목</th>
+                    <th style="padding: 8px; text-align: right; border-bottom: 1px solid #ccc;">수량</th>
+                    <th style="padding: 8px; text-align: right; border-bottom: 1px solid #ccc;">금액</th>
+                </tr>
+            </thead>
+            <tbody id="invoice-tbody">
+                </tbody>
+            <tfoot>
+                <tr style="border-top: 2px solid #000;">
+                    <td colspan="2" style="padding: 10px; text-align: center; font-weight: bold;">합 계</td>
+                    <td id="inv-total-qty" style="padding: 10px; text-align: right; font-weight: bold;"></td>
+                    <td id="inv-total-price" style="padding: 10px; text-align: right; font-weight: bold; color: blue;"></td>
+                </tr>
+            </tfoot>
+        </table>
+        
+        <div style="margin-top: 20px; text-align: center; font-size: 0.7rem; color: #666;">
+            위와 같이 거래하였음을 확인합니다.<br>
+            <strong>스트레토 커피 팩토리</strong>
+        </div>
+    </div>
+
+    <button id="btnDownloadPdf" class="submit-btn" style="display: none; margin-top: 15px; background: var(--accent-blue); color: black;">
+        📄 PDF 다운로드
+    </button>
+</div>
             <div class="history-section">
                 <div class="grid-title" style="border-left-color: #666; color: #ccc;">
                     최근 주문 내역
@@ -948,6 +1010,126 @@ try {
                 document.getElementById('orderNote').value = ''; btn.disabled = false;
             } catch (err) { console.error(err); alert("전송 실패"); btn.disabled = false; }
         });
+    // ▼▼▼ [3단계] 조회 및 PDF 다운로드 로직 추가 (스크립트 맨 마지막에 넣으세요) ▼▼▼
+
+    // 1. 날짜 초기화 (이번 달 1일 ~ 오늘)
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    
+    // toISOString()은 UTC 기준이라 한국 시간과 다를 수 있으므로 로컬 시간 보정
+    const toLocalYMD = (date) => {
+        const offset = date.getTimezoneOffset() * 60000;
+        return new Date(date.getTime() - offset).toISOString().split('T')[0];
+    };
+
+    document.getElementById('searchStart').value = toLocalYMD(firstDay);
+    document.getElementById('searchEnd').value = toLocalYMD(today);
+
+    // 2. 조회 버튼 클릭 이벤트
+    document.getElementById('btnSearch').addEventListener('click', async () => {
+        if (!currentClient) return alert("로그인이 필요합니다.");
+
+        const startStr = document.getElementById('searchStart').value;
+        const endStr = document.getElementById('searchEnd').value;
+
+        if (!startStr || !endStr) return alert("시작일과 종료일을 모두 선택해주세요.");
+        if (startStr > endStr) return alert("시작일이 종료일보다 늦을 수 없습니다.");
+
+        const btn = document.getElementById('btnSearch');
+        btn.disabled = true; 
+        btn.innerText = "조회 중...";
+
+        try {
+            // Firestore 쿼리 (클라이언트 ID로만 필터링 후 메모리에서 날짜 필터)
+            // 인덱스 생성 없이 사용하기 위해 날짜 필터는 JS에서 처리
+            const q = query(collection(db, "orders"), where("clientId", "==", currentClient.id));
+            const snapshot = await getDocs(q);
+            
+            let filteredOrders = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                // 날짜 문자열 비교 (YYYY-MM-DD)
+                if (data.date >= startStr && data.date <= endStr) {
+                    filteredOrders.push(data);
+                }
+            });
+
+            // 날짜 오름차순 정렬
+            filteredOrders.sort((a, b) => a.date.localeCompare(b.date));
+
+            if (filteredOrders.length === 0) {
+                alert("해당 기간의 주문 내역이 없습니다.");
+                document.getElementById('invoice-area').style.display = 'none';
+                document.getElementById('btnDownloadPdf').style.display = 'none';
+                btn.disabled = false;
+                btn.innerText = "내역 조회하기";
+                return;
+            }
+
+            // --- 결과 렌더링 ---
+            const tbody = document.getElementById('invoice-tbody');
+            tbody.innerHTML = '';
+            
+            let totalQty = 0;
+            let totalPrice = 0;
+
+            filteredOrders.forEach(order => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid #eee';
+                
+                // 가격 계산 (저장된 총액이 없으면 단가*수량)
+                const itemTotal = order.totalPrice || (order.unitPrice * order.amountKg);
+                
+                tr.innerHTML = `
+                    <td style="padding: 8px;">${order.date.substring(5)}</td>
+                    <td style="padding: 8px; text-align: left;">${order.productType}</td>
+                    <td style="padding: 8px; text-align: right;">${order.amountKg}kg</td>
+                    <td style="padding: 8px; text-align: right;">${Math.floor(itemTotal).toLocaleString()}</td>
+                `;
+                tbody.appendChild(tr);
+
+                totalQty += Number(order.amountKg);
+                totalPrice += Number(itemTotal);
+            });
+
+            // 헤더 및 합계 채우기
+            document.getElementById('inv-client').innerText = currentClient.name;
+            document.getElementById('inv-period').innerText = `${startStr} ~ ${endStr}`;
+            document.getElementById('inv-total-qty').innerText = totalQty.toFixed(1) + 'kg';
+            document.getElementById('inv-total-price').innerText = Math.floor(totalPrice).toLocaleString() + '원';
+
+            // 화면 표시
+            document.getElementById('invoice-area').style.display = 'block';
+            document.getElementById('btnDownloadPdf').style.display = 'block';
+
+        } catch (e) {
+            console.error(e);
+            alert("조회 중 오류가 발생했습니다.");
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "내역 조회하기";
+        }
+    });
+
+    // 3. PDF 다운로드 버튼 이벤트
+    document.getElementById('btnDownloadPdf').addEventListener('click', () => {
+        const element = document.getElementById('invoice-area');
+        const clientName = currentClient.name;
+        const startStr = document.getElementById('searchStart').value;
+        const endStr = document.getElementById('searchEnd').value;
+        
+        const opt = {
+            margin:       10,
+            filename:     `거래명세서_${clientName}_${startStr}_${endStr}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 }, // 해상도 2배
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        // html2pdf 라이브러리 실행
+        window.html2pdf().set(opt).from(element).save();
+    });
+// ▲▲▲ [3단계 끝] ▲▲▲
     </script>
 </body>
 </html>
