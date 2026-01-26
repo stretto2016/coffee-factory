@@ -23,140 +23,129 @@
         .grid-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 10px; color: #f5f5f7; border-left: 3px solid var(--accent-blue); padding-left: 10px; display: flex; align-items: center; justify-content: space-between; }
         .grid-desc { font-size: 0.75rem; color: #888; font-weight: normal; }
         
-        /* === KTX 전광판 스타일 그리드 시스템 === */
-        /* ▼▼▼ [개선] KTX 스타일 (깔끔한 버전 & 즐겨찾기 카드화) ▼▼▼ */
+        /* === [수정됨] 세로형 2열 카드 디자인 === */
         .product-grid, .fav-grid { 
             display: grid; 
-            /* 화면 너비에 따라 카드 크기 자동 조절 (최소 280px) */
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 16px; 
+            /* 모바일에서도 무조건 2열로 배치하여 세로형 느낌 강조 */
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 12px; 
             margin-bottom: 30px;
         }
 
-        /* === [메인 상품 카드] === */
+        /* 데스크탑에서는 4열로 확장 */
+        @media (min-width: 768px) {
+            .product-grid, .fav-grid { 
+                grid-template-columns: repeat(4, 1fr); 
+            }
+        }
+
+        /* [메인 상품 카드] - 세로형 최적화 */
         .ktx-card {
             background-color: #1c1c1e;
-            border-radius: 16px; /* 둥근 모서리 강화 */
+            border-radius: 12px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3); /* 부드러운 그림자 */
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid #2c2c2e; /* 테두리를 더 은은하게 */
-        }
-        .ktx-card:hover { 
-            transform: translateY(-4px); 
-            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            justify-content: space-between; /* 내용과 버튼 위아래 분리 */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            border: 1px solid #2c2c2e;
+            height: 100%; /* 그리드 높이 꽉 채우기 */
         }
 
         /* [헤더] 로스팅 포인트 */
         .ktx-header {
-            padding: 14px 18px;
+            padding: 10px 12px;
             font-family: 'Ciutadella', sans-serif;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.8rem; /* 폰트 사이즈 축소 */
             display: flex;
             justify-content: space-between;
             align-items: center;
             letter-spacing: 0.5px;
         }
-        /* 색상 테마 (가독성 개선) */
-        .bg-green { background: linear-gradient(135deg, #00C73C, #008f2b); color: #000; }
-        .bg-orange { background: linear-gradient(135deg, #FF9500, #d47b00); color: #fff; }
-        .bg-blue { background: linear-gradient(135deg, #006DFF, #0056cc); color: #fff; }
-        .bg-purple { background: linear-gradient(135deg, #AF52DE, #8E44AD); color: #fff; }
-        .bg-grey { background: linear-gradient(135deg, #444, #222); color: #fff; }
+        
+        /* 로스팅 컬러 (기존 유지) */
+        .bg-green { background: #008f2b; color: #fff; }
+        .bg-orange { background: #d47b00; color: #fff; }
+        .bg-blue { background: #0056cc; color: #fff; }
+        .bg-purple { background: #8E44AD; color: #fff; }
+        .bg-grey { background: #444; color: #fff; }
         .bg-default { background-color: #333; color: #ccc; }
 
-        /* [본문] 정보 영역 */
+        /* [본문] 정보 영역 (지저분한 스펙 제거) */
         .ktx-body {
-            padding: 20px 18px;
+            padding: 12px;
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 10px; /* 간격 조정 */
-            background: #1c1c1e;
+            gap: 6px;
+            text-align: left; /* 왼쪽 정렬로 깔끔하게 */
         }
         .ktx-dest {
-            font-size: 1.5rem;
+            font-size: 1.1rem; /* 이름 크기 조절 */
             font-weight: 800;
             color: #fff;
-            line-height: 1.3;
+            line-height: 1.2;
+            word-break: keep-all; /* 단어 단위 줄바꿈 */
         }
         .ktx-cupnote {
             color: #FFD60A;
-            font-size: 0.95rem;
-            font-weight: 500;
+            font-size: 0.8rem;
+            font-weight: 400;
             line-height: 1.4;
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 3; /* 최대 3줄까지만 표시 */
             -webkit-box-orient: vertical;
             overflow: hidden;
             opacity: 0.9;
-            margin-bottom: 4px;
         }
         
-        /* [수정] 스펙 그리드 (4개 정보 표시용) */
-        .ktx-specs {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* 2열 배치 */
-            gap: 8px 4px; /* 위아래 8px, 좌우 4px 간격 */
-            margin-top: 8px;
-            border-top: 1px solid #333;
-            padding-top: 12px;
-        }
-        .spec-item {
-            font-size: 0.8rem;
-            color: #aaa;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .spec-icon { width: 16px; text-align: center; display: inline-block; opacity: 0.7; }
+        /* [중요] 지저분해 보이는 상세 스펙(지역, 가공 등)은 숨김 처리 */
+        .ktx-specs { display: none; }
 
-        /* [하단] 구매 옵션 리스트 */
+        /* [하단] 구매 버튼 영역 - 세로형에 맞게 변경 */
         .ktx-tracks {
             background-color: #151516;
             border-top: 1px solid #2c2c2e;
+            padding: 4px; /* 여백 축소 */
         }
         .track-row {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 18px;
-            border-bottom: 1px solid #252527;
+            flex-direction: column; /* 버튼 내용을 세로로 배치 */
+            align-items: stretch;
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s;
+            border-bottom: 1px solid #252527;
         }
         .track-row:last-child { border-bottom: none; }
-        .track-row:active { background-color: #333; }
         
-        .track-info { display: flex; flex-direction: column; gap: 2px; }
-        .track-unit { font-size: 0.95rem; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 6px; }
-        .track-price { font-size: 1.05rem; color: #d1d1d6; font-weight: 500; }
-        .track-sub-price { font-size: 0.75rem; color: #636366; }
+        .track-info { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
+        .track-unit { font-size: 0.8rem; font-weight: 600; color: #aaa; justify-content: center; }
+        .track-price { font-size: 1rem; color: #fff; font-weight: 700; }
+        .track-sub-price { font-size: 0.6rem; color: #666; font-weight: normal;}
 
+        /* 구매 버튼 (게이트) - 꽉 차게 변경 */
         .track-gate {
-            width: 36px; height: 36px;
-            border-radius: 50%; /* 원형 버튼으로 변경해 누르기 쉽게 */
-            background-color: #2c2c2e;
-            color: var(--accent-blue);
+            width: 100%;
+            height: 32px;
+            border-radius: 6px;
+            background-color: #333;
+            color: #888;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.4rem;
-            font-weight: 300;
+            font-size: 1rem;
+            font-weight: bold;
             transition: all 0.2s;
         }
         /* 장바구니 담김 상태 */
         .track-row.in-cart .track-gate {
             background-color: var(--accent-blue);
             color: #fff;
-            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(41, 151, 255, 0.4);
         }
-        .track-row.in-cart .track-unit { color: var(--accent-blue); }
-        .badge-new { background: #ff453a; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; }
+        .track-row.in-cart .track-price { color: var(--accent-blue); }
+        .badge-new { background: #ff453a; color: white; padding: 1px 4px; border-radius: 3px; font-size: 0.6rem; margin-left: 4px; vertical-align: middle; }
 
 
         /* === [자주 주문하는 상품 (즐겨찾기) 카드] === */
@@ -833,6 +822,7 @@
         // ▼▼▼ [수정] 카드 생성 및 렌더링 통합 로직 (정보 4개 표시 & 디자인 통일) ▼▼▼
         
         // 1. 공용 카드 생성 함수 (어디서든 이 함수로 카드를 만듭니다)
+        // [수정됨] 카드 생성 로직 (2열 세로형 디자인에 맞게 단순화)
         const createKTXCard = (product, options) => {
             // 헤더 색상 결정
             const roast = (product.roastingLevel || 'Medium').toLowerCase();
@@ -843,13 +833,6 @@
             else if (roast.includes('dark')) headerClass = 'bg-grey';
             else if (roast.includes('medium')) headerClass = 'bg-blue';
 
-            // 상세 정보 4가지 준비 (싱글/디카페인용)
-            const showSpecs = product.type !== 'Blend';
-            const origin = product.origin || '-';
-            const process = product.process || '-';
-            const altitude = product.altitude || '-';
-            const variety = product.variety || '-'; // 품종 데이터가 있다고 가정
-
             // 구매 옵션(Tracks) HTML 생성
             let tracksHtml = options.map(opt => {
                 const basePrice = currentClient ? getClientPrice(product) : 0;
@@ -858,24 +841,26 @@
                 
                 if (opt.unit === 0.1) finalPrice = Math.round(finalPrice / 10);
                 
+                // 장바구니 상태 확인 (단위 무관하게 일단 담겨있으면 표시)
                 const cartItem = cart.find(c => c.name === product.name);
-                const isInCart = cartItem && cartItem.qty > 0; // *정확한 단위 구분은 생략하고 일단 표시*
+                const isInCart = cartItem && cartItem.qty > 0;
                 const activeClass = isInCart ? 'in-cart' : '';
+                
+                // 버튼 텍스트 (담기 전: + / 담은 후: ✔)
+                const btnText = isInCart ? '✔ 담김' : '+ 담기';
                 
                 return `
                 <div class="track-row ${activeClass}" onclick="addToCart('${product.name}', '${product.type}', ${opt.unit}); event.stopPropagation();">
                     <div class="track-info">
                         <div class="track-unit">
-                            ${opt.label} 
-                            ${opt.unit === 0.1 ? '<span class="badge-new">SAMPLE</span>' : ''}
+                            ${opt.label} ${opt.unit === 0.1 ? '<span class="badge-new">SAMPLE</span>' : ''}
                         </div>
                         <div class="track-price">
                             ${finalPrice.toLocaleString()}원
-                            <span class="track-sub-price">${isVatFree ? '(VAT별도)' : ''}</span>
                         </div>
                     </div>
                     <div class="track-gate">
-                        ${isInCart ? '✔' : '+'}
+                        ${btnText}
                     </div>
                 </div>
                 `;
@@ -885,20 +870,11 @@
             <div class="ktx-card">
                 <div class="ktx-header ${headerClass}">
                     <span>${product.roastingLevel || 'Roasting'}</span>
-                    <span style="font-size:0.85rem; opacity:0.9; font-weight:400;">${product.type.toUpperCase()}</span>
+                    <span style="font-size:0.75rem; opacity:0.8;">${product.type.toUpperCase()}</span>
                 </div>
                 <div class="ktx-body">
                     <div class="ktx-dest">${product.name}</div>
                     <div class="ktx-cupnote">${product.cupNote ? product.cupNote : ''}</div>
-                    
-                    ${showSpecs ? `
-                    <div class="ktx-specs">
-                        <div class="spec-item"><span class="spec-icon">📍</span> ${origin}</div>
-                        <div class="spec-item"><span class="spec-icon">⚙️</span> ${process}</div>
-                        <div class="spec-item"><span class="spec-icon">⛰️</span> ${altitude}</div>
-                        <div class="spec-item"><span class="spec-icon">🌱</span> ${variety}</div>
-                    </div>
-                    ` : ''}
                 </div>
                 <div class="ktx-tracks">
                     ${tracksHtml}
@@ -906,7 +882,6 @@
             </div>
             `;
         };
-
         // 2. 자주 주문하는 상품 렌더링
         function renderFavorites() {
             const container = document.getElementById('grid-favorites');
