@@ -665,14 +665,23 @@
         document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
         window.toggleCart = () => document.getElementById('cartSection').classList.toggle('folded');
 
-       // ▼▼▼ [수정] renderProductGrids 및 카드 생성 로직 (KTX 통합 디자인) ▼▼▼
-        // ▼▼▼ [수정] 카드 생성 및 렌더링 통합 로직 (정보 4개 표시 & 디자인 통일) ▼▼▼
-        
-        // 1. 공용 카드 생성 함수 (어디서든 이 함수로 카드를 만듭니다)
-        // [수정됨] 카드 생성 로직 (2열 세로형 디자인에 맞게 단순화)
+       // [신규] 스마트 소분 함수 (처음엔 200g, 있으면 100g씩 추가)
+        window.addSmartCart = (name, type) => {
+            // 현재 장바구니에 이 상품이 있는지 확인
+            const item = cart.find(c => c.name === name);
+            
+            if (item && item.qty > 0) {
+                // 이미 담겨있다면? -> 100g (0.1kg) 추가
+                addToCart(name, type, 0.1);
+            } else {
+                // 안 담겨있다면? -> 200g (0.2kg) 담기 (최소주문량)
+                addToCart(name, type, 0.2);
+            }
+        };
         // [수정됨] 카드 생성 로직 (좌측 컬러바 스타일)
+       // [수정됨] 카드 생성 로직 (스마트 소분 적용)
         const createKTXCard = (product, options) => {
-            // 1. 로스팅 레벨에 따른 클래스명 결정
+            // 1. 로스팅 레벨 컬러
             const roast = (product.roastingLevel || 'Medium').toLowerCase();
             let borderClass = 'roast-grey';
             if (roast.includes('medium light')) borderClass = 'roast-orange';
@@ -683,25 +692,42 @@
 
             const roastLabel = product.roastingLevel || 'Roasting';
 
-            // 2. 구매 버튼(Tracks) HTML 생성
+            // 2. 구매 버튼 생성
             let tracksHtml = options.map(opt => {
                 const basePrice = currentClient ? getClientPrice(product) : 0;
                 const isVatFree = currentClient && currentClient.isVatFree;
                 
-                // [수정] 1kg 기준 가격을 먼저 구하고, 단위(unit)를 곱해서 최종 가격 계산
-                // 예: 0.2kg이면 1kg가격 * 0.2
+                // 가격 계산 (기본적으로 옵션 단위에 맞춰 표시)
                 let price1kg = isVatFree ? basePrice : Math.round(basePrice * 1.1);
                 let finalPrice = Math.round(price1kg * opt.unit);
-                
+
+                // 장바구니 상태 확인
                 const cartItem = cart.find(c => c.name === product.name);
                 const isInCart = cartItem && cartItem.qty > 0;
                 const activeClass = isInCart ? 'in-cart' : '';
                 const btnIcon = isInCart ? '✔' : '+';
+
+                // [핵심 수정] 소분(0.2)인 경우 -> 스마트 로직 사용
+                let clickAction = `addToCart('${product.name}', '${product.type}', ${opt.unit})`;
+                let labelText = opt.label;
+
+                if (opt.unit === 0.2) {
+                    // 스마트 함수 연결
+                    clickAction = `addSmartCart('${product.name}', '${product.type}')`;
+                    
+                    // 문구: 담기 전엔 "200g", 담은 후엔 "+100g" 느낌을 주기 위해
+                    // 여기서는 심플하게 "200g 소분" 유지하거나, UX를 위해 아래처럼 변경 가능
+                    if (isInCart) {
+                        // 이미 담겼을 때: 가격표시는 100g 기준으로 보여줄 수도 있지만, 
+                        // 헷갈리지 않게 200g 기준 가격 유지하되 뱃지로 표시
+                        labelText = "200g (추가 +100g)"; 
+                    }
+                }
                 
                 return `
-                <div class="track-row ${activeClass}" onclick="addToCart('${product.name}', '${product.type}', ${opt.unit}); event.stopPropagation();">
+                <div class="track-row ${activeClass}" onclick="${clickAction}; event.stopPropagation();">
                     <div class="track-info">
-                        <div class="track-unit">${opt.label}</div>
+                        <div class="track-unit">${labelText}</div>
                         <div class="track-price">${finalPrice.toLocaleString()}원</div>
                     </div>
                     <div class="track-gate">${btnIcon}</div>
@@ -709,7 +735,6 @@
                 `;
             }).join('');
 
-            // 3. 최종 HTML 조립
             return `
             <div class="ktx-card ${borderClass}">
                 <div class="ktx-body">
@@ -723,7 +748,7 @@
             </div>
             `;
         };
-        // 2. 자주 주문하는 상품 렌더링
+       // 2. 자주 주문하는 상품 렌더링
         function renderFavorites() {
             const container = document.getElementById('grid-favorites');
             if (!container) return;
