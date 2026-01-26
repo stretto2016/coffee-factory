@@ -25,175 +25,130 @@
         
         .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         
-        /* === 상품 카드 스타일 === */
-        .product-btn { 
+        /* ▼▼▼ [신규] KTX 전광판 스타일 카드 디자인 (붙여넣기) ▼▼▼ */
+        .product-grid { 
+            display: grid; 
+            /* PC: 자동 채움, 모바일: 자동 조절 */
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); 
+            gap: 12px; 
+        }
+
+        .schedule-card {
+            background-color: #2c2c2e; /* 짙은 회색 배경 */
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
             position: relative;
-            background: var(--card-bg); 
-            border: 1px solid #333; 
-            color: white; 
-            padding: 15px; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            text-align: left; 
-            transition: all 0.2s ease; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
-            /* [수정] 고정 높이 제거 및 최소 높이 확보 (텍스트 오버플로우 방지) */
-            height: auto; 
-            min-height: 115px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            border: 1px solid #3a3a3c;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            min-height: 180px;
         }
-        .product-btn:active { transform: scale(0.96); }
-
-        .product-btn.active {
-            border: 2px solid var(--accent-blue);
-            background: rgba(41, 151, 255, 0.15); 
-            box-shadow: 0 0 15px rgba(41, 151, 255, 0.1);
-        }
-        /* [추가] 단위 뱃지 스타일 */
-        /* [수정] 디자인 개선: 단위 뱃지 스타일 */
-        /* === 상품 카드 스타일 (Premium Dashboard Look) === */
-        .product-btn { 
-            position: relative;
-            background: #1c1c1e; 
-            /* 테두리를 아주 연하게 변경 */
-            border: 1px solid #2c2c2e; 
-            /* 왼쪽 억양 선을 위한 패딩 설정 */
-            border-left: 4px solid #333; 
-            color: white; 
-            padding: 16px 18px; 
-            border-radius: 4px; /* 라운드를 줄여서 더 단단하고 전문적인 느낌 */
-            cursor: pointer; 
-            text-align: left; 
-            transition: all 0.2s ease; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
-            
-            /* [높이 문제 해결] 내용에 따라 늘어나되 최소 높이 확보 */
-            height: auto; 
-            min-height: 110px; 
+        .schedule-card:active { transform: scale(0.98); }
+        .schedule-card.active { 
+            border: 2px solid var(--accent-blue); 
+            box-shadow: 0 0 15px rgba(41, 151, 255, 0.2);
         }
 
-        .product-btn:active { transform: scale(0.98); }
+        /* [상단 헤더] 색상띠 (싱글:초록, 블렌드:파랑 등) */
+        .card-header {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-family: 'Ciutadella', sans-serif;
+            font-size: 1.1rem;
+        }
+        /* 타입별 헤더 색상 */
+        .header-single { background: linear-gradient(90deg, #34c759, #30b350); } /* 초록 */
+        .header-blend { background: linear-gradient(90deg, #007aff, #0063cf); }  /* 파랑 */
+        .header-decaf { background: linear-gradient(90deg, #ff9500, #e08300); }  /* 주황 */
 
-        /* [선택됨] 배경색을 거의 투명하게, 테두리로만 강조 */
-        .product-btn.active {
-            background: #1c1c1e; 
-            border-color: var(--accent-blue); /* 전체 테두리 파랗게 */
-            border-left-width: 4px; /* 왼쪽 선 두께 유지 */
-            box-shadow: 0 0 20px rgba(41, 151, 255, 0.1); /* 은은한 발광 효과 */
+        /* [본문] */
+        .card-body {
+            padding: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        /* === 단위 표시 (뱃지 대신 텍스트 라벨) === */
-        /* === 상품 카드 스타일 (Premium Dashboard Look v2) === */
-        .product-btn { 
-            position: relative;
-            background: #1c1c1e; 
-            /* 테두리를 아주 연하게 */
-            border: 1px solid #2c2c2e; 
-            /* 왼쪽 억양 선(Accent Line) - 기본값 */
-            border-left: 4px solid #333; 
-            color: white; 
-            padding: 16px 18px; 
-            border-radius: 4px; 
-            cursor: pointer; 
-            text-align: left; 
-            transition: all 0.2s ease; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
-            
-            /* 높이 자동 조절 (내용 잘림 방지) */
-            height: auto; 
-            min-height: 115px; 
-        }
-
-        .product-btn:active { transform: scale(0.98); }
-
-        /* [선택됨] 배경색 투명도 유지, 테두리 강조 */
-        .product-btn.active {
-            background: #1c1c1e; 
-            border-color: var(--accent-blue); 
-            border-left-width: 4px; 
-            box-shadow: 0 0 20px rgba(41, 151, 255, 0.1); 
-        }
-
-        /* === 단위 표시 (업그레이드: 세련된 캡슐 스타일) === */
-        .unit-badge {
-            display: inline-block; /* 텍스트 크기에 딱 맞게 박스 형성 */
-            font-size: 0.75rem;
+        /* 상품명 */
+        .card-title {
+            font-size: 1.25rem;
             font-weight: 700;
-            letter-spacing: 0.05em;
-            padding: 4px 10px;      /* 내부 여백을 줘서 캡슐 모양 생성 */
-            border-radius: 4px;     /* 살짝 둥근 모서리 */
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            line-height: 1;
+            color: #fff;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+        
+        /* 컵노트 (전광판의 LED 글씨 느낌) */
+        .card-cupnote {
+            font-size: 0.9rem;
+            color: #ffd700; /* 노란색 텍스트 */
+            font-weight: 500;
+            margin-bottom: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* 100g 단위: 차분한 아웃라인 스타일 (고급스러움) */
-        .badge-small {
-            border: 1px solid #444;
-            color: #aaa;
-            background: transparent; /* 배경 없음 */
-        }
-        /* 100g 카드 왼쪽 라인 */
-        .product-btn.single {
-            border-left-color: #555; 
-        }
-
-        /* 1kg 팩: 은은한 블루 배경으로 강조 (눈에 띔) */
-        .badge-bulk {
-            background: rgba(41, 151, 255, 0.15); /* 투명한 파란 배경 */
-            border: 1px solid rgba(41, 151, 255, 0.3); /* 연한 파란 테두리 */
-            color: #6ebbff; /* 밝은 파란 글씨 */
-        }
-        /* 1kg 카드 왼쪽 라인 */
-        .product-btn.pack-1kg {
-            border-left-color: var(--accent-blue); /* 왼쪽 라인 파란색 */
-            /* 1kg는 배경도 아주 미세하게 푸른빛을 돌게 하여 덩어리감 부여 */
-            background: linear-gradient(90deg, rgba(41,151,255,0.03) 0%, rgba(28,28,30,1) 100%);
-        }
-
-
-        /* 카운트 뱃지 (우측 상단) */
-        .count-badge {
-            position: absolute;
-            top: 12px; right: 12px;
-            background: var(--accent-blue);
-            color: #000;
-            padding: 3px 8px;
-            border-radius: 2px;
+        /* 상세 스펙 그리드 (역명 표시 부분처럼) */
+        .spec-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 12px;
             font-size: 0.75rem;
-            font-weight: 800;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            z-index: 5;
-            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: #aaa;
+            border-top: 1px solid #444;
+            padding-top: 10px;
         }
+        .spec-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .spec-label { font-size: 0.65rem; color: #666; margin-bottom: 1px; }
+        .spec-value { color: #eee; font-weight: 500; }
 
-        @keyframes popIn { from { transform: scale(0); opacity:0; } to { transform: scale(1); opacity:1; } }
-        
-        /* 텍스트 스타일 */
-        .p-name { 
-            font-family: 'Pretendard', sans-serif;
-            font-weight: 500; 
-            font-size: 1.05rem; 
-            line-height: 1.4; 
-            color: #f5f5f7;
-            word-break: keep-all; 
+        /* 하단 가격 및 액션 */
+        .card-footer {
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
         }
-        .p-sub { font-size: 0.8rem; color: #666; margin-top: 5px; }
-        
-        .product-btn.active .p-name { color: var(--accent-blue); font-weight: 600; }
-        .product-btn.active .p-sub { color: #aaa; }
-        .price-row {
-            display: flex; 
-            justify-content: space-between; 
-            align-items: flex-end; 
-            margin-top: 10px;
+        .price-tag {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
         }
-        /* [끝] */
+        .unit-tag { font-size: 0.8rem; font-weight: normal; color: #888; }
+        
+        .add-icon {
+            background: #444;
+            color: white;
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: background 0.2s;
+        }
+        .schedule-card.active .add-icon { background: var(--accent-blue); }
+
+        /* 장바구니 뱃지 */
+        .qty-badge {
+            background: rgba(255,255,255,0.9);
+            color: black;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
 
         /* === 플로팅 장바구니 스타일 === */
         .cart-section { 
@@ -478,28 +433,29 @@
                 products = querySnapshot.docs
                     .map(doc => {
                         const data = doc.data();
-                        
-                        // [추가] 데이터 필터링: showPartner가 명시적으로 false인 경우만 제외 (undefined는 통과)
                         if (data.showPartner === false) return null;
 
                         let type = "Single";
                         const cat = (data.category || '').toLowerCase();
-                        
-                        if (cat === "blend" || data.name.includes('블렌드') || data.name.includes('Blend')) {
-                            type = "Blend";
-                        } else if (cat === "decaf" || data.name.includes('디카페인')) {
-                            type = "Decaf";
-                        }
+                        if (cat === "blend" || data.name.includes('블렌드')) type = "Blend";
+                        else if (cat === "decaf" || data.name.includes('디카페인')) type = "Decaf";
                         
                         return {
                             id: doc.id,
                             name: data.name,
                             type: type, 
-                            badge: data.badge,
-                            defaultPrice: data.priceB2B || data.price || 0 
+                            defaultPrice: data.priceB2B || data.price || 0,
+                            
+                            // [NEW] 상세 스펙 매핑
+                            origin: data.origin,
+                            process: data.process,
+                            cupNote: data.cupNote,
+                            roastingLevel: data.roastingLevel,
+                            altitude: data.altitude,
+                            variety: data.variety
                         };
                     })
-                    .filter(p => p !== null); // null(숨김처리된 것) 제거
+                    .filter(p => p !== null);
 
                 // 이름순 정렬
                 products.sort((a, b) => a.name.localeCompare(b.name));
@@ -828,64 +784,85 @@
                 return { price: `${displayPrice.toLocaleString()}원`, vatLabel };
             };
 
+            // ▼▼▼ [수정] createCardHtml 함수: KTX 전광판 스타일 렌더링 ▼▼▼
             const createCardHtml = (p, mode) => {
                 const item = cart.find(c => c.name === p.name);
                 const isActive = item ? 'active' : '';
-                const badge = item ? `<div class="count-badge">✔ 총 ${item.qty}kg</div>` : '';
-
-                let styleClass = '';
-                let unitText = '';
-                let clickAction = '';
-                let unitBadgeHtml = ''; 
                 
-                // getClientPrice는 B2B 원가(부가세 별도)를 가져옵니다.
+                // 가격 계산
                 const basePrice = currentClient ? getClientPrice(p) : 0;
-                let displayInfo = { price: 'Login..', vatLabel: '' };
+                const isVatFree = currentClient && currentClient.isVatFree;
+                const finalPrice = isVatFree ? basePrice : Math.round(basePrice * 1.1);
+                
+                // 모드별 설정 (1kg vs 100g)
+                let displayPrice = 0;
+                let unitLabel = '';
+                let clickAction = '';
+                let roasitingShow = p.roastingLevel || 'Medium'; // 기본값
 
-                // 1. 블렌드 (1kg 기준)
-                if (mode === 'std') {
-                    styleClass = ''; 
-                    displayInfo = getDisplayInfo(basePrice, 1); 
-                    unitText = '/kg';
+                if (mode === 'std' || mode === '1kg') {
+                    displayPrice = finalPrice;
+                    unitLabel = '/ kg';
                     clickAction = `addToCart('${p.name}', '${p.type}', 1.0)`;
-                    unitBadgeHtml = `<div class="p-sub" style="color:var(--accent-blue)">블렌드</div>`;
-                } 
-                // 2. 싱글/디카페인 (100g 기준)
-                else if (mode === '100g') {
-                    styleClass = 'single';
-                    displayInfo = getDisplayInfo(basePrice, 10); // 100g 단가
-                    unitText = '/100g';
+                } else if (mode === '100g') {
+                    displayPrice = Math.round(finalPrice / 10);
+                    unitLabel = '/ 100g';
                     clickAction = `addToCart('${p.name}', '${p.type}', 0.1)`;
-                    unitBadgeHtml = `<span class="unit-badge badge-small">100g 단위</span>`;
                 }
-                // 3. 싱글/디카페인 (1kg 팩 기준)
-                else if (mode === '1kg') {
-                    styleClass = 'single pack-1kg';
-                    displayInfo = getDisplayInfo(basePrice, 1); // 1kg 단가
-                    unitText = '/kg';
-                    clickAction = `addToCart('${p.name}', '${p.type}', 1.0)`;
-                    unitBadgeHtml = `<span class="unit-badge badge-bulk">1kg PACK</span>`;
-                }
+
+                // 헤더 색상 클래스
+                let headerClass = 'header-single';
+                if (p.type === 'Blend') headerClass = 'header-blend';
+                if (p.type === 'Decaf') headerClass = 'header-decaf';
+
+                // 상세 정보가 없으면 기본값 표시
+                const origin = p.origin || '-';
+                const process = p.process || '-';
+                const cupNote = p.cupNote || '노트 정보 없음';
+                const altitude = p.altitude || '-';
 
                 return `
-                <div class="product-btn ${styleClass} ${isActive}" onclick="${clickAction}">
-                    ${badge}
-                    <div>
-                        ${mode !== 'std' ? unitBadgeHtml : ''}
-                        <div class="p-name" style="${mode !== 'std' ? 'margin-top:4px;' : ''}">${p.name}</div>
-                        ${mode === 'std' ? unitBadgeHtml : ''}
+                <div class="schedule-card ${isActive}" onclick="${clickAction}">
+                    <div class="card-header ${headerClass}">
+                        <span>${roasitingShow}</span>
+                        ${item ? `<span class="qty-badge">✔ ${item.qty}kg</span>` : ''}
                     </div>
-                    <div style="text-align:right; margin-top:10px;">
-                        <div style="font-size:0.9rem; font-weight:bold; color:#fff;">
-                            ${displayInfo.price}<span style="font-size:0.7rem; font-weight:normal; color:#888;"> ${unitText}</span>
+
+                    <div class="card-body">
+                        <div>
+                            <div class="card-title">${p.name}</div>
+                            <div class="card-cupnote">♪ ${cupNote}</div>
+                            
+                            <div class="spec-grid">
+                                <div class="spec-item">
+                                    <span class="spec-label">원산지 (Origin)</span>
+                                    <span class="spec-value">${origin}</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">가공 (Process)</span>
+                                    <span class="spec-value">${process}</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">고도 (Altitude)</span>
+                                    <span class="spec-value">${altitude}</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">용량 (Unit)</span>
+                                    <span class="spec-value" style="color:#fff;">${mode === '100g' ? '100g 소분' : '1kg 패키지'}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div style="font-size:0.65rem; color:#aaa; margin-top:2px;">
-                            ${displayInfo.vatLabel}
+
+                        <div class="card-footer">
+                            <div>
+                                <span class="price-tag">${displayPrice.toLocaleString()}</span>
+                                <span class="unit-tag">${unitLabel}</span>
+                            </div>
+                            <div class="add-icon">+</div>
                         </div>
                     </div>
                 </div>`;
             };
-
             const renderList = (type, gridEl) => {
                 const filtered = products.filter(p => p.type === type && isVisible(p));
                 gridEl.innerHTML = filtered.map(p => {
