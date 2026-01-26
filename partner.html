@@ -74,7 +74,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 10px; /* 간격 조정 */
             background: #1c1c1e;
         }
         .ktx-dest {
@@ -82,33 +82,40 @@
             font-weight: 800;
             color: #fff;
             line-height: 1.3;
-            margin-bottom: 4px;
         }
-        /* 컵노트: 한 줄로 잘리지 않고 최대 2줄까지 표시 */
         .ktx-cupnote {
             color: #FFD60A;
             font-size: 0.95rem;
             font-weight: 500;
             line-height: 1.4;
             display: -webkit-box;
-            -webkit-line-clamp: 2; /* 최대 2줄 */
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             opacity: 0.9;
+            margin-bottom: 4px;
         }
-        .ktx-sub {
-            font-size: 0.85rem;
-            color: #8E8E93;
+        
+        /* [수정] 스펙 그리드 (4개 정보 표시용) */
+        .ktx-specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2열 배치 */
+            gap: 8px 4px; /* 위아래 8px, 좌우 4px 간격 */
             margin-top: 8px;
-            display: flex; 
-            flex-wrap: wrap; /* 내용이 길면 줄바꿈 */
-            gap: 8px;
+            border-top: 1px solid #333;
+            padding-top: 12px;
         }
-        .ktx-tag {
-            background: #2c2c2e;
-            padding: 2px 6px;
-            border-radius: 4px;
+        .spec-item {
+            font-size: 0.8rem;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
+        .spec-icon { width: 16px; text-align: center; display: inline-block; opacity: 0.7; }
 
         /* [하단] 구매 옵션 리스트 */
         .ktx-tracks {
@@ -851,15 +858,91 @@
         window.toggleCart = () => document.getElementById('cartSection').classList.toggle('folded');
 
        // ▼▼▼ [수정] renderProductGrids 및 카드 생성 로직 (KTX 통합 디자인) ▼▼▼
-        // ▼▼▼ [추가] 자주 주문하는 상품 렌더링 (카드 형태) ▼▼▼
-        function renderFavorites() {
-            const container = document.getElementById('grid-favorites'); // HTML에 이 ID를 가진 div가 있어야 함
-            if (!container) return; // 영역이 없으면 패스
+        // ▼▼▼ [수정] 카드 생성 및 렌더링 통합 로직 (정보 4개 표시 & 디자인 통일) ▼▼▼
+        
+        // 1. 공용 카드 생성 함수 (어디서든 이 함수로 카드를 만듭니다)
+        const createKTXCard = (product, options) => {
+            // 헤더 색상 결정
+            const roast = (product.roastingLevel || 'Medium').toLowerCase();
+            let headerClass = 'bg-default';
+            if (roast.includes('medium light')) headerClass = 'bg-orange';
+            else if (roast.includes('light')) headerClass = 'bg-green';
+            else if (roast.includes('medium dark')) headerClass = 'bg-purple';
+            else if (roast.includes('dark')) headerClass = 'bg-grey';
+            else if (roast.includes('medium')) headerClass = 'bg-blue';
 
-            // 자주 주문하는 상품 목록 (예시: 상위 3개 혹은 하드코딩된 리스트)
-            // *실제 데이터 연동 시에는 currentClient.favorites 등을 활용하세요.*
-            // 여기서는 예시로 products의 앞 3개를 보여줍니다.
-            const favList = products.slice(0, 3); // 임시 데이터
+            // 상세 정보 4가지 준비 (싱글/디카페인용)
+            const showSpecs = product.type !== 'Blend';
+            const origin = product.origin || '-';
+            const process = product.process || '-';
+            const altitude = product.altitude || '-';
+            const variety = product.variety || '-'; // 품종 데이터가 있다고 가정
+
+            // 구매 옵션(Tracks) HTML 생성
+            let tracksHtml = options.map(opt => {
+                const basePrice = currentClient ? getClientPrice(product) : 0;
+                const isVatFree = currentClient && currentClient.isVatFree;
+                let finalPrice = isVatFree ? basePrice : Math.round(basePrice * 1.1);
+                
+                if (opt.unit === 0.1) finalPrice = Math.round(finalPrice / 10);
+                
+                const cartItem = cart.find(c => c.name === product.name);
+                const isInCart = cartItem && cartItem.qty > 0; // *정확한 단위 구분은 생략하고 일단 표시*
+                const activeClass = isInCart ? 'in-cart' : '';
+                
+                return `
+                <div class="track-row ${activeClass}" onclick="addToCart('${product.name}', '${product.type}', ${opt.unit}); event.stopPropagation();">
+                    <div class="track-info">
+                        <div class="track-unit">
+                            ${opt.label} 
+                            ${opt.unit === 0.1 ? '<span class="badge-new">SAMPLE</span>' : ''}
+                        </div>
+                        <div class="track-price">
+                            ${finalPrice.toLocaleString()}원
+                            <span class="track-sub-price">${isVatFree ? '(VAT별도)' : ''}</span>
+                        </div>
+                    </div>
+                    <div class="track-gate">
+                        ${isInCart ? '✔' : '+'}
+                    </div>
+                </div>
+                `;
+            }).join('');
+
+            return `
+            <div class="ktx-card">
+                <div class="ktx-header ${headerClass}">
+                    <span>${product.roastingLevel || 'Roasting'}</span>
+                    <span style="font-size:0.85rem; opacity:0.9; font-weight:400;">${product.type.toUpperCase()}</span>
+                </div>
+                <div class="ktx-body">
+                    <div class="ktx-dest">${product.name}</div>
+                    <div class="ktx-cupnote">${product.cupNote ? product.cupNote : ''}</div>
+                    
+                    ${showSpecs ? `
+                    <div class="ktx-specs">
+                        <div class="spec-item"><span class="spec-icon">📍</span> ${origin}</div>
+                        <div class="spec-item"><span class="spec-icon">⚙️</span> ${process}</div>
+                        <div class="spec-item"><span class="spec-icon">⛰️</span> ${altitude}</div>
+                        <div class="spec-item"><span class="spec-icon">🌱</span> ${variety}</div>
+                    </div>
+                    ` : ''}
+                </div>
+                <div class="ktx-tracks">
+                    ${tracksHtml}
+                </div>
+            </div>
+            `;
+        };
+
+        // 2. 자주 주문하는 상품 렌더링
+        function renderFavorites() {
+            const container = document.getElementById('grid-favorites');
+            if (!container) return;
+
+            // *예시* 상위 3개 상품을 자주 주문하는 상품으로 가정
+            // 실제로는 currentClient.favorites 등의 데이터를 쓰세요.
+            const favList = products.slice(0, 3); 
 
             if (favList.length === 0) {
                 container.parentElement.style.display = 'none';
@@ -867,31 +950,23 @@
             }
 
             container.innerHTML = favList.map(p => {
-                const basePrice = currentClient ? getClientPrice(p) : 0;
-                // 즐겨찾기는 보통 가장 많이 쓰는 1kg 단위 기준 (필요시 수정)
-                const price = currentClient && currentClient.isVatFree ? basePrice : Math.round(basePrice * 1.1);
-                
-                return `
-                <div class="fav-card" onclick="addToCart('${p.name}', '${p.type}', 1.0)">
-                    <div class="fav-icon">★</div>
-                    <div>
-                        <div class="fav-name">${p.name}</div>
-                        <div class="fav-detail">${p.cupNote || 'Best Choice'}</div>
-                    </div>
-                    <div class="fav-action">
-                        <div class="fav-price">${price.toLocaleString()}원</div>
-                        <div class="fav-btn">담기</div>
-                    </div>
-                </div>
-                `;
+                // 옵션도 똑같이 표시 (블렌드는 1kg만, 그외는 둘다)
+                if (p.type === 'Blend') {
+                    return createKTXCard(p, [{label: '1kg 패키지', unit: 1.0}]);
+                } else {
+                    return createKTXCard(p, [
+                        {label: '100g 소분', unit: 0.1},
+                        {label: '1kg 대용량', unit: 1.0}
+                    ]);
+                }
             }).join('');
             
-            // 컨테이너 클래스 지정 (그리드 적용)
-            container.className = 'fav-grid'; 
+            // 스타일 클래스도 일반 그리드와 동일하게 적용
+            container.className = 'product-grid'; 
             container.parentElement.style.display = 'block';
         }
 
-        // ▼▼▼ [수정] 메인 상품 그리드 렌더링 (깔끔한 버전) ▼▼▼
+        // 3. 메인 상품 그리드 렌더링
         function renderProductGrids() {
             const blendGrid = document.getElementById('grid-blend');
             const decafGrid = document.getElementById('grid-decaf');
@@ -900,78 +975,9 @@
             const allowedList = currentClient ? currentClient.visibleProducts : null;
             const isVisible = (p) => !allowedList || allowedList.includes(p.name);
 
-            // KTX 카드 생성 함수 (개선됨)
-            const createKTXCard = (product, options) => {
-                // 1. 헤더 색상
-                const roast = (product.roastingLevel || 'Medium').toLowerCase();
-                let headerClass = 'bg-default';
-                if (roast.includes('medium light')) headerClass = 'bg-orange';
-                else if (roast.includes('light')) headerClass = 'bg-green';
-                else if (roast.includes('medium dark')) headerClass = 'bg-purple';
-                else if (roast.includes('dark')) headerClass = 'bg-grey';
-                else if (roast.includes('medium')) headerClass = 'bg-blue';
-
-                // 2. 정보 표시 (싱글/디카페인만 상세 정보)
-                const showSpecs = product.type !== 'Blend';
-                const origin = product.origin || '-';
-                const process = product.process || '-';
-                
-                // 3. 옵션 생성
-                let tracksHtml = options.map(opt => {
-                    const basePrice = currentClient ? getClientPrice(product) : 0;
-                    const isVatFree = currentClient && currentClient.isVatFree;
-                    let finalPrice = isVatFree ? basePrice : Math.round(basePrice * 1.1);
-                    
-                    if (opt.unit === 0.1) finalPrice = Math.round(finalPrice / 10);
-                    
-                    const cartItem = cart.find(c => c.name === product.name);
-                    const isInCart = cartItem && cartItem.qty > 0;
-                    const activeClass = isInCart ? 'in-cart' : '';
-                    
-                    return `
-                    <div class="track-row ${activeClass}" onclick="addToCart('${product.name}', '${product.type}', ${opt.unit}); event.stopPropagation();">
-                        <div class="track-info">
-                            <div class="track-unit">
-                                ${opt.label} 
-                                ${opt.unit === 0.1 ? '<span class="badge-new">SAMPLE</span>' : ''}
-                            </div>
-                            <div class="track-price">
-                                ${finalPrice.toLocaleString()}원
-                                <span class="track-sub-price">${isVatFree ? '(VAT별도)' : ''}</span>
-                            </div>
-                        </div>
-                        <div class="track-gate">
-                            ${isInCart ? '<span style="font-size:1rem">✔</span>' : '+'}
-                        </div>
-                    </div>
-                    `;
-                }).join('');
-
-                return `
-                <div class="ktx-card">
-                    <div class="ktx-header ${headerClass}">
-                        <span>${product.roastingLevel || 'Roasting'}</span>
-                        <span style="font-size:0.85rem; opacity:0.9; font-weight:400;">${product.type.toUpperCase()}</span>
-                    </div>
-                    <div class="ktx-body">
-                        <div class="ktx-dest">${product.name}</div>
-                        <div class="ktx-cupnote">${product.cupNote ? product.cupNote : ''}</div>
-                        ${showSpecs ? `
-                        <div class="ktx-sub">
-                            <span class="ktx-tag">📍 ${origin}</span>
-                            <span class="ktx-tag">⚙️ ${process}</span>
-                        </div>
-                        ` : ''}
-                    </div>
-                    <div class="ktx-tracks">
-                        ${tracksHtml}
-                    </div>
-                </div>
-                `;
-            };
-
             const renderList = (type, gridEl) => {
                 const filtered = products.filter(p => p.type === type && isVisible(p));
+                
                 gridEl.innerHTML = filtered.map(p => {
                     if (type === 'Blend') {
                         return createKTXCard(p, [{label: '1kg 패키지', unit: 1.0}]);
@@ -982,6 +988,7 @@
                         ]);
                     }
                 }).join('');
+
                 gridEl.parentElement.style.display = gridEl.innerHTML === '' ? 'none' : 'block';
             };
 
@@ -989,7 +996,7 @@
             renderList('Decaf', decafGrid);
             renderList('Single', singleGrid);
         }
-        // [수정된 함수] addToCart (변수명 isVatFree 로 수정)
+        // ▲▲▲ [수정 끝] ▲▲▲
         window.addToCart = (productName, type, fixedQty = null) => {
             if (!currentClient) return alert("로그인이 필요합니다.");
 
