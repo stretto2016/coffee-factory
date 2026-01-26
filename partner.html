@@ -996,13 +996,12 @@
 
         // --- 주문 전송 ---
         // --- 주문 전송 ---
+        // ▼▼▼ [수정됨] 주문 전송 버튼 (중복 선언 버그 수정 및 예약 알림 기능 강화) ▼▼▼
         document.getElementById('submitBtn').addEventListener('click', async () => {
             if (!currentClient) return alert("오류: 거래처 정보 없음");
             
-            // [추가] 날짜 검증 로직: 과거 날짜 선택 시 주문 불가
-            const selectedDateVal = document.getElementById('orderDate').value; // YYYY-MM-DD
-            
-            // 한국 시간 기준 오늘 날짜 구하기 (YYYY-MM-DD)
+            // 날짜 검증
+            const selectedDateVal = document.getElementById('orderDate').value;
             const now = new Date();
             const year = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -1011,9 +1010,8 @@
 
             if (selectedDateVal < todayStr) {
                 alert("과거 날짜로는 주문을 접수할 수 없습니다.\n날짜를 오늘 이후로 변경해 주세요.");
-                return; // 함수 종료
+                return;
             }
-            // [검증 종료]
 
             const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
             const totalPriceStr = Math.floor(totalPrice).toLocaleString();
@@ -1025,61 +1023,73 @@
             const date = document.getElementById('orderDate').value;
             const note = document.getElementById('orderNote').value;
 
-// [NEW] 이번 주문 건들을 하나로 묶을 고유 ID 생성 (시간 + 랜덤문자)
-const orderGroupId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+            // 고유 그룹 ID 생성
+            const orderGroupId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
 
-try {
-    // 주문 저장
-    const promises = cart.map(item => {
-        return addDoc(collection(db, "orders"), {
-            date: date,
-            clientId: currentClient.id,
-            clientName: currentClient.name,
-            productType: item.name,
-            amountKg: item.qty,
-            unitPrice: item.price,
-            totalPrice: item.price * item.qty,
-            note: note,
-            status: 'new',
-            isRead: false,
-            orderGroupId: orderGroupId, // [NEW] 묶음 번호 추가!
-            createdAt: serverTimestamp()
-        });
+            try {
+                // 1. 주문 저장
+                const promises = cart.map(item => {
+                    return addDoc(collection(db, "orders"), {
+                        date: date,
+                        clientId: currentClient.id,
+                        clientName: currentClient.name,
+                        productType: item.name,
+                        amountKg: item.qty,
+                        unitPrice: item.price,
+                        totalPrice: item.price * item.qty,
+                        note: note,
+                        status: 'new',
+                        isRead: false,
+                        orderGroupId: orderGroupId,
+                        createdAt: serverTimestamp()
+                    });
                 });
                 await Promise.all(promises);
 
-                const orderDetails = cart.map(item => `- ${item.name}: ${item.qty}kg`).join('\n');
+                // 2. 텔레그램 알림 메시지 구성 (예약 여부 판단)
                 const orderDateObj = new Date(date);
-            const todayDateObj = new Date(todayStr); // 위에서 정의한 오늘 날짜
-            
-            // 날짜 차이 계산 (시간 절삭)
-            orderDateObj.setHours(0,0,0,0);
-            todayDateObj.setHours(0,0,0,0);
-            
-            let titleHeader = "🔔 [신규 주문]";
-            let dateInfo = `📅 ${date}`;
-
-            if (orderDateObj > todayDateObj) {
-                // 미래 날짜라면
-                const diffTime = Math.abs(orderDateObj - todayDateObj);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                titleHeader = `🗓️ [예약 주문] (D-${diffDays})`;
-                dateInfo = `📅 ${date} (출고 예약)`;
-            }
-
-            const orderDetails = cart.map(item => `- ${item.name}: ${item.qty}kg`).join('\n');
-            
-            // 메시지 내용 조립
-            const message = `${titleHeader}\n👤 ${currentClient.name}\n${dateInfo}\n💰 총액: ${totalPriceStr}원\n📝 ${note || '없음'}\n\n📦 내역:\n${orderDetails}`;
+                const todayDateObj = new Date(todayStr);
                 
+                // 시간 정보 초기화 (날짜만 비교하기 위함)
+                orderDateObj.setHours(0,0,0,0);
+                todayDateObj.setHours(0,0,0,0);
+                
+                let titleHeader = "🔔 [신규 주문]";
+                let dateInfo = `📅 ${date}`;
+
+                if (orderDateObj > todayDateObj) {
+                    // 미래 날짜(예약)인 경우
+                    const diffTime = Math.abs(orderDateObj - todayDateObj);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    titleHeader = `🗓️ [예약 주문] (D-${diffDays})`;
+                    dateInfo = `📅 ${date} (출고 예약)`;
+                }
+
+                const orderDetails = cart.map(item => `- ${item.name}: ${item.qty}kg`).join('\n');
+                const message = `${titleHeader}\n👤 ${currentClient.name}\n${dateInfo}\n💰 총액: ${totalPriceStr}원\n📝 ${note || '없음'}\n\n📦 내역:\n${orderDetails}`;
+                
+                // 텔레그램 전송
                 sendTelegramNotification(message);
 
                 alert("✅ 주문 완료!");
-                cart = []; renderCart(); renderProductGrids(); 
-                document.getElementById('orderNote').value = ''; btn.disabled = false;
-            } catch (err) { console.error(err); alert("전송 실패"); btn.disabled = false; }
+                
+                // 초기화
+                cart = []; 
+                renderCart(); 
+                renderProductGrids(); 
+                document.getElementById('orderNote').value = ''; 
+                btn.disabled = false;
+                btn.innerText = "주문할 품목을 선택하세요";
+                btn.style.background = "#333";
+
+            } catch (err) { 
+                console.error(err); 
+                alert("전송 실패: " + err.message); 
+                btn.disabled = false; 
+                btn.innerText = "다시 시도";
+            }
         });
-    // ▼▼▼ [3단계] 조회 및 PDF 다운로드 로직 추가 (스크립트 맨 마지막에 넣으세요) ▼▼▼
+        // ▲▲▲ [여기까지 교체 끝] ▲▲▲
 
     // 1. 날짜 초기화 (이번 달 1일 ~ 오늘)
     const today = new Date();
