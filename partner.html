@@ -595,9 +595,11 @@
             return deadline;
         }
 
+        // ▼▼▼ [수정] 주문 내역 로직 (날짜별 그룹화 + 최근 3일치만 표시) ▼▼▼
         function loadOrderHistory(clientId) {
             const historyList = document.getElementById('historyList');
-            const q = query(collection(db, "orders"), where("clientId", "==", clientId));
+            // 넉넉하게 50개 가져와서 JS에서 그룹핑
+            const q = query(collection(db, "orders"), where("clientId", "==", clientId), orderBy("createdAt", "desc"), limit(50));
 
             historyUnsubscribe = onSnapshot(q, (snapshot) => {
                 const orders = snapshot.docs.map(doc => {
@@ -608,44 +610,72 @@
                         created: data.createdAt ? data.createdAt.toDate() : new Date() 
                     };
                 });
-                orders.sort((a, b) => b.created - a.created);
-
+                
                 if (orders.length === 0) {
                     historyList.innerHTML = '<div style="text-align:center; padding:20px; color:#444;">주문 내역 없음</div>';
                     return;
                 }
-                
-                const now = new Date();
-                historyList.innerHTML = orders.map(order => {
-                    const deadline = calculateDeadline(order.created);
-                    const isCancelable = now < deadline && order.status !== 'done';
-                    const days = ['일','월','화','수','목','금','토'];
-                    const deadlineStr = `${days[deadline.getDay()]}요일 11:00`;
-                    
-                    // 총액 정보가 있으면 표시, 없으면 무게만 표시
-                    const priceInfo = order.totalPrice 
-                        ? `<br><span style="font-size:0.85rem; color:#aaa;">(총 ${order.totalPrice.toLocaleString()}원)</span>` 
-                        : '';
 
-                    return `
-                    <div class="history-card">
-                        <div>
-                            <div class="h-date">${order.date}</div>
-                            <div class="h-name">${order.productType}</div>
-                            ${order.note ? `<div class="h-detail">📝 ${order.note}</div>` : ''}
-                        </div>
-                        <div style="display:flex; flex-direction:column; align-items:flex-end;">
-                            <div class="h-amount" style="margin-bottom:5px;">
-                                ${order.amountKg}kg
-                                ${priceInfo}
+                // 1. 날짜별 그룹화
+                const grouped = {};
+                orders.forEach(order => {
+                    const dateKey = order.date; // YYYY-MM-DD
+                    if (!grouped[dateKey]) grouped[dateKey] = [];
+                    grouped[dateKey].push(order);
+                });
+
+                // 2. 날짜 내림차순 정렬 후 상위 3개 날짜만 추출
+                const sortedDates = Object.keys(grouped).sort((a, b) => b.localeCompare(a)).slice(0, 3);
+
+                // 3. HTML 생성
+                let html = "";
+                const now = new Date();
+
+                sortedDates.forEach(date => {
+                    const groupItems = grouped[date];
+                    // 날짜 헤더
+                    html += `
+                        <div style="margin-bottom: 20px;">
+                            <div style="font-size:0.9rem; font-weight:bold; color:#fff; background:#222; padding:8px 12px; border-radius:6px; margin-bottom:10px; display:inline-block; border:1px solid #333;">
+                                📅 ${date}
                             </div>
-                            ${isCancelable 
-                                ? `<button class="cancel-btn" onclick="tryCancel('${order.id}', '${deadline.toISOString()}', '${order.productType} ${order.amountKg}kg')">취소 가능</button>`
-                                : `<button class="cancel-btn disabled" onclick="showContactInfo('${deadlineStr}')">취소 불가</button>`
-                            }
-                        </div>
-                    </div>
-                `}).join('');
+                    `;
+
+                    // 해당 날짜의 주문들
+                    groupItems.forEach(order => {
+                        const deadline = calculateDeadline(order.created);
+                        const isCancelable = now < deadline && order.status !== 'done';
+                        const days = ['일','월','화','수','목','금','토'];
+                        const deadlineStr = `${days[deadline.getDay()]}요일 11:00`;
+                        
+                        // 총액 정보가 있으면 표시
+                        const priceInfo = order.totalPrice 
+                            ? `<br><span style="font-size:0.85rem; color:#aaa;">(총 ${order.totalPrice.toLocaleString()}원)</span>` 
+                            : '';
+
+                        html += `
+                        <div class="history-card">
+                            <div>
+                                <div class="h-name">${order.productType}</div>
+                                ${order.note ? `<div class="h-detail" style="color:#ff6b6b;">📝 ${order.note}</div>` : ''}
+                            </div>
+                            <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                                <div class="h-amount" style="margin-bottom:5px;">
+                                    ${order.amountKg}kg
+                                    ${priceInfo}
+                                </div>
+                                ${isCancelable 
+                                    ? `<button class="cancel-btn" onclick="tryCancel('${order.id}', '${deadline.toISOString()}', '${order.productType} ${order.amountKg}kg')">취소 가능</button>`
+                                    : `<button class="cancel-btn disabled" onclick="showContactInfo('${deadlineStr}')">취소 불가</button>`
+                                }
+                            </div>
+                        </div>`;
+                    });
+
+                    html += `</div>`; // 날짜 그룹 닫기
+                });
+
+                historyList.innerHTML = html;
             });
         }
 
@@ -1122,7 +1152,11 @@ try {
             margin:       10,
             filename:     `거래명세서_${clientName}_${startStr}_${endStr}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 }, // 해상도 2배
+            html2canvas:  { 
+                scale: 2, 
+                scrollY: 0, // [중요] 스크롤 위치 초기화 (이게 없으면 아래쪽에서 찍혀서 빈 화면이 나옴)
+                useCORS: true 
+            }, 
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
