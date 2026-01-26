@@ -1049,7 +1049,28 @@ try {
                 await Promise.all(promises);
 
                 const orderDetails = cart.map(item => `- ${item.name}: ${item.qty}kg`).join('\n');
-                const message = `🔔 [신규 주문]\n👤 ${currentClient.name}\n📅 ${date}\n💰 총액: ${totalPriceStr}원\n📝 ${note || '없음'}\n\n📦 내역:\n${orderDetails}`;
+                const orderDateObj = new Date(date);
+            const todayDateObj = new Date(todayStr); // 위에서 정의한 오늘 날짜
+            
+            // 날짜 차이 계산 (시간 절삭)
+            orderDateObj.setHours(0,0,0,0);
+            todayDateObj.setHours(0,0,0,0);
+            
+            let titleHeader = "🔔 [신규 주문]";
+            let dateInfo = `📅 ${date}`;
+
+            if (orderDateObj > todayDateObj) {
+                // 미래 날짜라면
+                const diffTime = Math.abs(orderDateObj - todayDateObj);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                titleHeader = `🗓️ [예약 주문] (D-${diffDays})`;
+                dateInfo = `📅 ${date} (출고 예약)`;
+            }
+
+            const orderDetails = cart.map(item => `- ${item.name}: ${item.qty}kg`).join('\n');
+            
+            // 메시지 내용 조립
+            const message = `${titleHeader}\n👤 ${currentClient.name}\n${dateInfo}\n💰 총액: ${totalPriceStr}원\n📝 ${note || '없음'}\n\n📦 내역:\n${orderDetails}`;
                 
                 sendTelegramNotification(message);
 
