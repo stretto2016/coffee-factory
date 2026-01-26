@@ -845,27 +845,31 @@
             if (!item) return;
 
             // 1. 제품 타입에 따라 증감 단위(step) 결정
-            // 싱글/디카페인은 0.1kg 단위, 블렌드는 1kg 단위
             let step = 1.0;
-            if (item.type === 'Single' || item.type === 'Decaf') {
+            const isSmallPack = (item.type === 'Single' || item.type === 'Decaf');
+            
+            if (isSmallPack) {
                 step = 0.1;
             }
 
-            // 2. 수량 계산: 현재수량 + (버튼값 * 단위)
-            // 예: 싱글에서 '+' 버튼(change=1) 누르면 0.1kg 추가
-            // 예: 싱글에서 '+1kg' 버튼(change=10) 누르면 1.0kg 추가
+            // 2. 새로운 수량 계산
             let newQty = item.qty + (change * step);
+            newQty = parseFloat(newQty.toFixed(1)); // 소수점 오류 방지
 
-            // 3. 소수점 오류 수정 (0.30000004 방지)
-            newQty = parseFloat(newQty.toFixed(1));
+            // [핵심] 최소 수량 체크 (싱글/디카페인은 0.2kg 미만 불가)
+            if (isSmallPack && newQty < 0.2) {
+                // 수량이 0.1kg 등으로 줄어들려고 할 때 방지
+                alert("최소 주문 수량은 200g입니다.\n삭제하려면 우측 ✕ 버튼을 눌러주세요.");
+                return;
+            }
 
-            // 4. 최소 수량 방지 (0kg 이하로는 내려가지 않음)
+            // 3. 0 이하는 처리 안함 (삭제는 X 버튼 사용)
             if (newQty <= 0) return;
 
-            // 5. 적용 및 화면 갱신
+            // 4. 적용 및 화면 갱신
             item.qty = newQty;
             renderCart();
-            renderProductGrids(); // 그리드의 뱃지(수량)도 같이 업데이트
+            renderProductGrids(); 
         };
         window.removeItem = (idx) => { cart.splice(idx, 1); renderCart(); renderProductGrids(); };
 
