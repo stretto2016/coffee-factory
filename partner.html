@@ -64,9 +64,22 @@
             font-size: 1.1rem;
         }
         /* 타입별 헤더 색상 */
-        .header-single { background: linear-gradient(90deg, #34c759, #30b350); } /* 초록 */
-        .header-blend { background: linear-gradient(90deg, #007aff, #0063cf); }  /* 파랑 */
-        .header-decaf { background: linear-gradient(90deg, #ff9500, #e08300); }  /* 주황 */
+        .header-dark { background: linear-gradient(90deg, #3e2723, #4e342e); color: #fff; }
+        
+        /* 2. Medium Dark (중강배전) - 브라운 */
+        .header-medium-dark { background: linear-gradient(90deg, #5d4037, #795548); color: #fff; }
+        
+        /* 3. Medium (중배전) - 부드러운 갈색 */
+        .header-medium { background: linear-gradient(90deg, #8d6e63, #a1887f); color: #fff; }
+        
+        /* 4. Medium Light (중약배전) - 주황색 */
+        .header-medium-light { background: linear-gradient(90deg, #f57c00, #ff9800); color: #fff; }
+        
+        /* 5. Light (약배전) - 노란색 (가독성을 위해 글자색 검정) */
+        .header-light { background: linear-gradient(90deg, #fbc02d, #ffeb3b); color: #222; }
+
+        /* 기본값 (정보 없음) */
+        .header-default { background: #444; color: #ccc; }
 
         /* [본문] */
         .card-body {
@@ -785,6 +798,9 @@
             };
 
             // ▼▼▼ [수정] createCardHtml 함수: KTX 전광판 스타일 렌더링 ▼▼▼
+            // [위치] partner.html 의 <script> 태그 내부, const createCardHtml = ... 부분 전체
+
+            // ▼▼▼ [수정] createCardHtml 함수 전체 교체 (배전도 색상 로직 + 블렌드 정보 숨김) ▼▼▼
             const createCardHtml = (p, mode) => {
                 const item = cart.find(c => c.name === p.name);
                 const isActive = item ? 'active' : '';
@@ -794,11 +810,22 @@
                 const isVatFree = currentClient && currentClient.isVatFree;
                 const finalPrice = isVatFree ? basePrice : Math.round(basePrice * 1.1);
                 
-                // 모드별 설정 (1kg vs 100g)
+                // 모드별 설정
                 let displayPrice = 0;
                 let unitLabel = '';
                 let clickAction = '';
-                let roasitingShow = p.roastingLevel || 'Medium'; // 기본값
+                
+                // 배전도 데이터 확인 (없으면 기본값 Medium)
+                let roastLevel = p.roastingLevel || 'Medium';
+                
+                // [로직] 배전도에 따른 헤더 색상 클래스 결정 (공백 제거 및 소문자 변환)
+                // 예: "Medium Dark" -> "medium-dark"
+                const roastKey = roastLevel.toLowerCase().replace(/\s+/g, '-');
+                let headerClass = `header-${roastKey}`;
+                
+                // 정의되지 않은 클래스라면 기본값 적용
+                const validClasses = ['header-dark', 'header-medium-dark', 'header-medium', 'header-medium-light', 'header-light'];
+                if (!validClasses.includes(headerClass)) headerClass = 'header-default';
 
                 if (mode === 'std' || mode === '1kg') {
                     displayPrice = finalPrice;
@@ -810,21 +837,19 @@
                     clickAction = `addToCart('${p.name}', '${p.type}', 0.1)`;
                 }
 
-                // 헤더 색상 클래스
-                let headerClass = 'header-single';
-                if (p.type === 'Blend') headerClass = 'header-blend';
-                if (p.type === 'Decaf') headerClass = 'header-decaf';
+                const cupNote = p.cupNote || '노트 정보 없음';
 
-                // 상세 정보가 없으면 기본값 표시
+                // [로직] 블렌드(Blend) 타입이면 상세 스펙(원산지, 가공, 고도) 숨김
+                const showSpecs = p.type !== 'Blend';
+
                 const origin = p.origin || '-';
                 const process = p.process || '-';
-                const cupNote = p.cupNote || '노트 정보 없음';
                 const altitude = p.altitude || '-';
 
                 return `
                 <div class="schedule-card ${isActive}" onclick="${clickAction}">
                     <div class="card-header ${headerClass}">
-                        <span>${roasitingShow}</span>
+                        <span>${roastLevel}</span>
                         ${item ? `<span class="qty-badge">✔ ${item.qty}kg</span>` : ''}
                     </div>
 
@@ -833,6 +858,7 @@
                             <div class="card-title">${p.name}</div>
                             <div class="card-cupnote">♪ ${cupNote}</div>
                             
+                            ${showSpecs ? `
                             <div class="spec-grid">
                                 <div class="spec-item">
                                     <span class="spec-label">원산지 (Origin)</span>
@@ -851,6 +877,18 @@
                                     <span class="spec-value" style="color:#fff;">${mode === '100g' ? '100g 소분' : '1kg 패키지'}</span>
                                 </div>
                             </div>
+                            ` : `
+                            <div class="spec-grid" style="border-top:none; padding-top:5px;">
+                                <div class="spec-item">
+                                    <span class="spec-label">Type</span>
+                                    <span class="spec-value" style="color:#aaa;">House Blend Coffee</span>
+                                </div>
+                                 <div class="spec-item">
+                                    <span class="spec-label">Unit</span>
+                                    <span class="spec-value" style="color:#fff;">${mode === '100g' ? '100g 소분' : '1kg 패키지'}</span>
+                                </div>
+                            </div>
+                            `}
                         </div>
 
                         <div class="card-footer">
@@ -863,6 +901,7 @@
                     </div>
                 </div>`;
             };
+            // ▲▲▲ [여기까지 교체] ▲▲▲
             const renderList = (type, gridEl) => {
                 const filtered = products.filter(p => p.type === type && isVisible(p));
                 gridEl.innerHTML = filtered.map(p => {
