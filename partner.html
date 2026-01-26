@@ -596,20 +596,34 @@
         }
 
         // ▼▼▼ [수정] 주문 내역 로직 (날짜별 그룹화 + 최근 3일치만 표시) ▼▼▼
+        // ▼▼▼ [수정] 주문 내역 로직 (인덱스 오류 해결: JS에서 정렬 수행) ▼▼▼
         function loadOrderHistory(clientId) {
             const historyList = document.getElementById('historyList');
-            // 넉넉하게 50개 가져와서 JS에서 그룹핑
-            const q = query(collection(db, "orders"), where("clientId", "==", clientId), orderBy("createdAt", "desc"), limit(50));
+            
+            // [수정] orderBy 제거 (인덱스 없이 작동하도록 변경)
+            // 클라이언트 ID로만 필터링하여 가져옵니다.
+            const q = query(collection(db, "orders"), where("clientId", "==", clientId));
 
             historyUnsubscribe = onSnapshot(q, (snapshot) => {
                 const orders = snapshot.docs.map(doc => {
                     const data = doc.data();
+                    // createdAt이 없으면 date(문자열)를 기준으로 날짜 생성
+                    let createdDate;
+                    if (data.createdAt) {
+                        createdDate = data.createdAt.toDate();
+                    } else {
+                        createdDate = new Date(data.date + "T12:00:00");
+                    }
+
                     return { 
                         id: doc.id, 
                         ...data, 
-                        created: data.createdAt ? data.createdAt.toDate() : new Date() 
+                        created: createdDate
                     };
                 });
+
+                // [중요] 자바스크립트에서 최신순 정렬 수행
+                orders.sort((a, b) => b.created - a.created);
                 
                 if (orders.length === 0) {
                     historyList.innerHTML = '<div style="text-align:center; padding:20px; color:#444;">주문 내역 없음</div>';
@@ -624,7 +638,7 @@
                     grouped[dateKey].push(order);
                 });
 
-                // 2. 날짜 내림차순 정렬 후 상위 3개 날짜만 추출
+                // 2. 날짜 내림차순 정렬 후 최근 3일치만 추출
                 const sortedDates = Object.keys(grouped).sort((a, b) => b.localeCompare(a)).slice(0, 3);
 
                 // 3. HTML 생성
@@ -678,7 +692,7 @@
                 historyList.innerHTML = html;
             });
         }
-
+// ▲▲▲ [수정 끝] ▲▲▲
         // [추가] 자주 주문한 상품 분석 및 렌더링 함수
         async function loadQuickOrderItems(clientId) {
             if (!products || products.length === 0) return;
