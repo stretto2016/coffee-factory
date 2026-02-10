@@ -576,6 +576,11 @@
                 <span style="color: #888; font-size: 0.95rem;">산뜻함 · 화사함 · 과일향</span>
             </div>
             <div class="shop-grid" id="shop-fruity-grid"></div>
+            <div style="margin-top: 80px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; align-items: baseline; gap: 10px;">
+                <h3 style="font-size: 1.5rem; color: white; margin: 0;">Decaffeine</h3>
+                <span style="color: #888; font-size: 0.95rem;">카페인 부담 없이 즐기는 본연의 맛</span>
+            </div>
+            <div class="shop-grid" id="shop-decaf-grid"></div>
 
             <div style="text-align: center; margin-top: 60px;">
                 <a href="https://smartstore.naver.com/stretto_coffeefactory/" target="_blank" class="btn-primary" 
@@ -878,18 +883,31 @@
                 const snapshot = await getDocs(q);
                 
                 const products = snapshot.docs.map(doc => doc.data());
-                products.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+                
+                // [수정] 정렬 로직: 1순위(관리자 지정 순서), 2순위(최신순)
+                products.sort((a,b) => {
+                    const orderA = a.orderIndex !== undefined ? a.orderIndex : 999;
+                    const orderB = b.orderIndex !== undefined ? b.orderIndex : 999;
+                    
+                    if (orderA !== orderB) {
+                        return orderA - orderB; // 숫자가 작을수록 먼저 나옴 (1 -> 2 -> 3)
+                    }
+                    return (b.createdAt || 0) - (a.createdAt || 0); // 순서 같으면 최신 등록순
+                });
 
                 const blendGrid = document.getElementById('shop-blend-grid');
                 const nuttyGrid = document.getElementById('shop-nutty-grid');
                 const fruityGrid = document.getElementById('shop-fruity-grid');
+                const decafGrid = document.getElementById('shop-decaf-grid'); // [추가] 디카페인 그리드
                 
+                // 초기화
                 if(blendGrid) blendGrid.innerHTML = '';
                 if(nuttyGrid) nuttyGrid.innerHTML = '';
                 if(fruityGrid) fruityGrid.innerHTML = '';
+                if(decafGrid) decafGrid.innerHTML = ''; 
 
                 products.forEach(p => {
-                    // [수정] 뱃지 스타일: 배경색과 글씨색 모두 적용
+                    // 뱃지 스타일 처리
                     const bg = p.badgeColor || 'var(--accent-blue)';
                     const txt = p.badgeTextColor || 'white';
                     const badgeStyle = `background: ${bg}; color: ${txt};`;
@@ -913,22 +931,21 @@
                         </a>
                     </div>`;
 
-                    // [핵심] 카테고리 분류 로직
                     const cat = (p.category || '').toLowerCase();
 
+                    // [수정] 카테고리 분배 로직
                     if (cat === 'blend') {
                         if(blendGrid) blendGrid.innerHTML += html;
                     } 
-                    // single_nutty 이거나, decaf 이거나, 그냥 single 인데 Nutty 그리드에 넣고 싶을 때
-                    else if (cat === 'single_nutty' || cat === 'decaf') {
-                        if(nuttyGrid) nuttyGrid.innerHTML += html;
+                    else if (cat === 'decaf') {
+                        // [추가] 디카페인 전용 그리드에 넣기
+                        if(decafGrid) decafGrid.innerHTML += html;
                     }
-                    // single_fruity 일 때
                     else if (cat === 'single_fruity') {
                         if(fruityGrid) fruityGrid.innerHTML += html;
                     }
-                    // 예전 데이터(single)가 남아서 분류가 안 된 경우 -> 일단 Nutty로 보냄 (안전장치)
-                    else if (cat === 'single') {
+                    else {
+                        // 나머지는 다 Nutty로 (single_nutty, single 등)
                         if(nuttyGrid) nuttyGrid.innerHTML += html;
                     }
                 });
@@ -937,7 +954,6 @@
                 console.error("Shop Load Error:", error);
             }
         }
-
         loadShopProducts();
     </script>
 </body>

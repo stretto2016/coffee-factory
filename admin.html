@@ -93,9 +93,15 @@
     <option value="decaf">디카페인 (Decaf)</option>
 </select>
                     </div>
-                    <div>
-                        <label class="form-label">로스팅 손실률 (0.15 = 15%)</label>
-                        <input type="number" step="0.01" id="pShrinkage" class="form-input" value="0.15">
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 1;">
+                            <label class="form-label">노출 순서 (1=맨앞)</label>
+                            <input type="number" id="pOrder" class="form-input" placeholder="999" value="999">
+                        </div>
+                        <div style="flex: 1;">
+                            <label class="form-label">로스팅 손실률 (0.15 = 15%)</label>
+                            <input type="number" step="0.01" id="pShrinkage" class="form-input" value="0.15">
+                        </div>
                     </div>
                 </div>
 
@@ -400,7 +406,7 @@ if (p.badge) {
             const groupName = document.getElementById('pGroupName').value;
             const detailName = document.getElementById('pDetailName').value;
             const shrinkage = document.getElementById('pShrinkage').value;
-            
+            const orderIndex = document.getElementById('pOrder').value;
             const priceShop = document.getElementById('pPriceShop').value;
             const priceB2B = document.getElementById('pPriceB2B').value;
             
@@ -443,8 +449,9 @@ if (p.badge) {
                 name: fullName,
                 groupName, detailName, category,
                 shrinkage: Number(shrinkage),
+                orderIndex: Number(orderIndex || 999), // [추가] 순서 저장 (없으면 999)
                 
-                price: Number(priceShop),        // B2C
+                price: Number(priceShop),
                 priceB2B: Number(priceB2B || priceShop), // B2B
                 priceShop: Number(priceShop),    // 앱 호환용 명시
                 
@@ -479,6 +486,8 @@ if (p.badge) {
             
             // 1. 기본 정보 채우기
             document.getElementById('pCategory').value = p.category || 'single';
+            // [추가] 순서 값 불러오기
+            document.getElementById('pOrder').value = p.orderIndex !== undefined ? p.orderIndex : 999;
             window.toggleDetailName(); // UI 업데이트
             
             // 이름 분리 (혹시 데이터에 groupName이 없을 경우 대비)
@@ -546,6 +555,7 @@ document.getElementById('pBadgeTextColorText').value = tColor;
             
             // 기본값 복구
             document.getElementById('pCategory').value = 'single';
+            document.getElementById('pOrder').value = '999'; // [추가] 순서 초기화
             toggleDetailName();
             document.getElementById('pShrinkage').value = 0.15;
             document.getElementById('costBag').value = 300;
