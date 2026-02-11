@@ -439,12 +439,22 @@
         .repair-step-badge {
             position: absolute;
             top: 15px; left: 15px;
-            background: var(--accent-blue);
-            color: #000;
-            font-weight: 800;
-            padding: 4px 10px;
-            border-radius: 4px;
+            
+            /* 흰색 글씨 */
+            color: #ffffff;
+            
+            /* 배경: 반투명한 검은색 (투명도 조절됨) */
+            background: rgba(0, 0, 0, 0.7); 
+            
+            /* 테두리 살짝 추가해서 더 선명하게 */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 30px; /* 둥근 모서리 */
             font-size: 0.8rem;
+            z-index: 5; /* 이미지보다 위에 오도록 */
+            backdrop-filter: blur(4px); /* 배경 흐림 효과 (고급스러움) */
         }
         .repair-content {
             padding: 25px;
@@ -1072,6 +1082,62 @@
             nav.classList.toggle('active');
         }
     </script>
+    <script>
+    // === 모달 제어 스크립트 (일반 스크립트 영역으로 이동) ===
+    function openModal() {
+        const modal = document.getElementById('repairModal');
+        if(modal) {
+            modal.style.display = 'flex';
+            setTimeout(() => { modal.classList.add('show'); }, 10);
+            document.body.style.overflow = 'hidden'; 
+        } else {
+            console.error("모달 요소를 찾을 수 없습니다.");
+        }
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('repairModal');
+        if(modal) {
+            modal.classList.remove('show');
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    // 모달 바깥 배경 클릭 시 닫기
+    window.onclick = function(event) {
+        const modal = document.getElementById('repairModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+
+    // 폼 제출 기능
+    function submitRepair(e) {
+        e.preventDefault();
+
+        const name = document.getElementById('custName').value;
+        const phone = document.getElementById('custPhone').value;
+        const machine = document.getElementById('custMachine').value;
+        const symptom = document.getElementById('custSymptom').value;
+
+        const mailSubject = `[수리상담] ${name}님 머신 케어 요청`;
+        const mailBody = `
+[수리 상담 요청서]
+-------------------------
+• 성함/매장명: ${name}
+• 연락처: ${phone}
+• 머신 모델: ${machine}
+• 증상 내용: 
+${symptom}
+-------------------------
+`;
+        window.location.href = `mailto:strettocoffee@naver.com?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
+
+        alert("메일 앱으로 연결됩니다. 내용을 보내주시면 확인 후 연락드리겠습니다.");
+        closeModal();
+    }
+</script>
 <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -1166,58 +1232,7 @@
             }
         }
         loadShopProducts();
-        function openModal() {
-            const modal = document.getElementById('repairModal');
-            modal.style.display = 'flex';
-            // 약간의 지연 후 클래스 추가로 페이드인 효과
-            setTimeout(() => { modal.classList.add('show'); }, 10);
-            document.body.style.overflow = 'hidden'; // 배경 스크롤 막기
-        }
-
-        function closeModal() {
-            const modal = document.getElementById('repairModal');
-            modal.classList.remove('show');
-            setTimeout(() => { modal.style.display = 'none'; }, 300); // 애니메이션 후 숨김
-            document.body.style.overflow = 'auto';
-        }
-
-        // 모달 바깥 배경 클릭 시 닫기
-        window.onclick = function(event) {
-            const modal = document.getElementById('repairModal');
-            if (event.target == modal) {
-                closeModal();
-            }
-        }
-
-        // 폼 제출 기능 (메일 앱 연동)
-        function submitRepair(e) {
-            e.preventDefault();
-
-            const name = document.getElementById('custName').value;
-            const phone = document.getElementById('custPhone').value;
-            const machine = document.getElementById('custMachine').value;
-            const symptom = document.getElementById('custSymptom').value;
-
-            // 메일 본문 구성
-            const mailSubject = `[수리상담] ${name}님 머신 케어 요청`;
-            const mailBody = `
-[수리 상담 요청서]
--------------------------
-• 성함/매장명: ${name}
-• 연락처: ${phone}
-• 머신 모델: ${machine}
-• 증상 내용: 
-${symptom}
--------------------------
-`;
-            
-            // mailto 링크 생성 (사용자 기본 메일 앱 실행)
-            window.location.href = `mailto:strettocoffee@naver.com?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
-
-            // 안내 메시지
-            alert("메일 앱으로 연결됩니다. 내용을 보내주시면 확인 후 연락드리겠습니다.");
-            closeModal();
-        }
+        
     </script>
 <div id="repairModal" class="modal-overlay">
         <div class="modal-box">
