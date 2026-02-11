@@ -1084,13 +1084,7 @@
         }
     </script>
    <script>
-    // === 0. EmailJS 초기화 ===
-    (function(){
-        emailjs.init({
-            publicKey: "l4G2MfMxi1780Yt8N",
-        });
-    })();
-
+    // 1. 모달 열기/닫기 함수
     function openModal() {
         const modal = document.getElementById('repairModal');
         if(modal) {
@@ -1109,6 +1103,7 @@
         }
     }
 
+    // 배경 클릭 시 닫기
     window.onclick = function(event) {
         const modal = document.getElementById('repairModal');
         if (event.target == modal) {
@@ -1116,24 +1111,25 @@
         }
     }
 
-    // === [핵심] 스팸 방지 및 이메일 전송 ===
+    // 2. 이메일 전송 함수 (4번째 인자에 Public Key 직접 입력 방식)
     function submitRepair(e) {
         e.preventDefault();
 
-        // ▼▼▼ [스팸 방지 1단계] 허니팟 체크 ▼▼▼
-        // 화면에 안 보이는 bot_field에 뭔가 적혀있으면 로봇으로 간주하고 중단
-        const honeypot = document.getElementById('bot_field').value;
-        if (honeypot) {
-            console.log("스팸 봇 감지됨! 전송 차단");
-            return; // 여기서 함수를 끝내버려서 메일을 안 보냄
+        // [스팸 방지] 가짜 입력칸 체크
+        // HTML에 id="bot_field"가 없으면 여기서 에러가 나므로 1단계 HTML 적용이 필수입니다.
+        const honeypot = document.getElementById('bot_field');
+        if (honeypot && honeypot.value) {
+            console.log("스팸 봇 감지됨!");
+            return; 
         }
 
-        // 버튼 중복 클릭 방지
+        // 버튼 '전송중' 처리
         const btn = e.target.querySelector('button[type="submit"]');
         const originalText = btn.innerText;
         btn.innerText = "전송 중...";
         btn.disabled = true;
 
+        // 전송할 데이터
         const templateParams = {
             name: document.getElementById('custName').value,
             phone: document.getElementById('custPhone').value,
@@ -1141,20 +1137,23 @@
             symptom: document.getElementById('custSymptom').value
         };
 
-        emailjs.send("service_pxxoq44", "template_te689vc", templateParams)
+        // ▼▼▼ [핵심 수정] 4번째 자리에 Public Key를 직접 넣습니다 ▼▼▼
+        emailjs.send("service_pxxoq44", "template_te689vc", templateParams, "l4G2MfMxi1780Yt8N")
             .then(function(response) {
                 alert('상담 신청이 성공적으로 접수되었습니다!');
                 closeModal();
                 
-                // 입력창 초기화
+                // 입력창 비우기
                 document.getElementById('custName').value = '';
                 document.getElementById('custPhone').value = '';
                 document.getElementById('custMachine').value = '';
                 document.getElementById('custSymptom').value = '';
             }, function(error) {
-                alert('전송 실패. 잠시 후 다시 시도해주세요.');
+                console.error("전송 실패:", error);
+                alert('전송에 실패했습니다. (Error: ' + error.text + ')');
             })
             .finally(function() {
+                // 버튼 복구
                 btn.innerText = originalText;
                 btn.disabled = false;
             });
@@ -1206,6 +1205,9 @@
                 if(decafGrid) decafGrid.innerHTML = ''; 
 
                 products.forEach(p => {
+                    // [수정 1] 이미지가 없으면 기본 회색 이미지로 대체하는 코드 추가
+                    const safeImageUrl = p.imageUrl ? p.imageUrl : 'https://placehold.co/400x400?text=No+Image';
+
                     // 뱃지 스타일 처리
                     const bg = p.badgeColor || 'var(--accent-blue)';
                     const txt = p.badgeTextColor || 'white';
@@ -1216,7 +1218,7 @@
                         <a href="${p.shopLink || '#'}" target="_blank">
                             <div class="product-thumb">
                                 ${p.badge ? `<span class="badge" style="${badgeStyle}">${p.badge}</span>` : ''}
-                                <img src="${p.imageUrl}" alt="${p.name}">
+                                <img src="${safeImageUrl}" alt="${p.name}">
                             </div>
                             <div class="product-info">
                                 <h3>${p.name}</h3>
@@ -1229,6 +1231,8 @@
                             </div>
                         </a>
                     </div>`;
+
+                    // (아래 카테고리 분배 로직은 그대로 두시면 됩니다)
 
                     const cat = (p.category || '').toLowerCase();
 
@@ -1257,43 +1261,43 @@
         
     </script>
 <div id="repairModal" class="modal-overlay">
-        <div class="modal-box">
-            <button class="modal-close-btn" onclick="closeModal()">×</button>
+    <div class="modal-box">
+        <button class="modal-close-btn" onclick="closeModal()">×</button>
+        
+        <h3 style="color: white; margin-top: 0; font-size: 1.5rem;">머신 수리 상담 신청</h3>
+        <p style="color: #888; font-size: 0.9rem; margin-bottom: 30px;">
+            증상을 남겨주시면 엔지니어가 확인 후 빠르게 연락드리겠습니다.
+        </p>
+
+        <form onsubmit="submitRepair(event)">
             
-            <h3 style="color: white; margin-top: 0; font-size: 1.5rem;">머신 수리 상담 신청</h3>
-            <p style="color: #888; font-size: 0.9rem; margin-bottom: 30px;">
-                증상을 남겨주시면 엔지니어가 확인 후 빠르게 연락드리겠습니다.
-            </p>
+            <input type="text" id="bot_field" style="display:none !important;" tabindex="-1" autocomplete="off">
 
-            <form onsubmit="submitRepair(event)">
-                
-                <input type="text" id="bot_field" style="display:none !important;" tabindex="-1" autocomplete="off">
+            <div style="margin-bottom: 15px;">
+                <label class="form-label">매장명 / 성함</label>
+                <input type="text" id="custName" class="form-input" placeholder="예: 스트레토 카페 / 홍길동" required>
+            </div>
 
-                <div style="margin-bottom: 15px;">
-                    <label class="form-label">매장명 / 성함</label>
-                    <input type="text" id="custName" class="form-input" placeholder="예: 스트레토 카페 / 홍길동" required>
-                </div>
+            <div style="margin-bottom: 15px;">
+                <label class="form-label">연락처</label>
+                <input type="tel" id="custPhone" class="form-input" placeholder="010-0000-0000" required>
+            </div>
 
-                <div style="margin-bottom: 15px;">
-                    <label class="form-label">연락처</label>
-                    <input type="tel" id="custPhone" class="form-input" placeholder="010-0000-0000" required>
-                </div>
+            <div style="margin-bottom: 15px;">
+                <label class="form-label">사용 머신 모델</label>
+                <input type="text" id="custMachine" class="form-input" placeholder="예: 라마르조꼬 PB, 미티코 등">
+            </div>
 
-                <div style="margin-bottom: 15px;">
-                    <label class="form-label">사용 머신 모델</label>
-                    <input type="text" id="custMachine" class="form-input" placeholder="예: 라마르조꼬 PB, 미티코 등">
-                </div>
+            <div style="margin-bottom: 25px;">
+                <label class="form-label">증상 상세 내용</label>
+                <textarea id="custSymptom" class="form-input" placeholder="예: 추출 압력이 3바까지 떨어집니다. 스팀이 약합니다." required></textarea>
+            </div>
 
-                <div style="margin-bottom: 25px;">
-                    <label class="form-label">증상 상세 내용</label>
-                    <textarea id="custSymptom" class="form-input" placeholder="예: 추출 압력이 3바까지 떨어집니다. 스팀이 약합니다." required></textarea>
-                </div>
-
-                <button type="submit" class="btn-primary" style="width: 100%; border-radius: 8px; font-size: 1.1rem;">
-                    상담 접수하기
-                </button>
-            </form>
-        </div>
+            <button type="submit" class="btn-primary" style="width: 100%; border-radius: 8px; font-size: 1.1rem;">
+                상담 접수하기
+            </button>
+        </form>
     </div>
+</div>
 </body>
 </html>
