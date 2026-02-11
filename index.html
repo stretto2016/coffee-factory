@@ -1084,15 +1084,13 @@
         }
     </script>
    <script>
-    // === 0. EmailJS 초기화 (반드시 본인의 Public Key를 넣어야 합니다) ===
+    // === 0. EmailJS 초기화 ===
     (function(){
-        // 따옴표 안에 아까 복사한 'Public Key'를 붙여넣으세요.
         emailjs.init({
             publicKey: "l4G2MfMxi1780Yt8N",
         });
     })();
 
-    // === 1. 모달 제어 함수 ===
     function openModal() {
         const modal = document.getElementById('repairModal');
         if(modal) {
@@ -1118,17 +1116,24 @@
         }
     }
 
-    // === 2. 이메일 바로 전송 함수 ===
+    // === [핵심] 스팸 방지 및 이메일 전송 ===
     function submitRepair(e) {
         e.preventDefault();
 
-        // 버튼을 '전송중...'으로 변경 (중복 클릭 방지)
+        // ▼▼▼ [스팸 방지 1단계] 허니팟 체크 ▼▼▼
+        // 화면에 안 보이는 bot_field에 뭔가 적혀있으면 로봇으로 간주하고 중단
+        const honeypot = document.getElementById('bot_field').value;
+        if (honeypot) {
+            console.log("스팸 봇 감지됨! 전송 차단");
+            return; // 여기서 함수를 끝내버려서 메일을 안 보냄
+        }
+
+        // 버튼 중복 클릭 방지
         const btn = e.target.querySelector('button[type="submit"]');
         const originalText = btn.innerText;
         btn.innerText = "전송 중...";
         btn.disabled = true;
 
-        // 보낼 데이터 준비
         const templateParams = {
             name: document.getElementById('custName').value,
             phone: document.getElementById('custPhone').value,
@@ -1136,10 +1141,9 @@
             symptom: document.getElementById('custSymptom').value
         };
 
-        // EmailJS로 전송 (Service ID, Template ID를 본인 것으로 변경하세요)
         emailjs.send('service_pxxoq44', 'template_te689vc', templateParams)
             .then(function(response) {
-                alert('상담 신청이 성공적으로 접수되었습니다! \n빠르게 확인 후 연락드리겠습니다.');
+                alert('상담 신청이 성공적으로 접수되었습니다!');
                 closeModal();
                 
                 // 입력창 초기화
@@ -1148,10 +1152,9 @@
                 document.getElementById('custMachine').value = '';
                 document.getElementById('custSymptom').value = '';
             }, function(error) {
-                alert('전송에 실패했습니다. 잠시 후 다시 시도해주세요.\n에러내용: ' + JSON.stringify(error));
+                alert('전송 실패. 잠시 후 다시 시도해주세요.');
             })
             .finally(function() {
-                // 버튼 원상복구
                 btn.innerText = originalText;
                 btn.disabled = false;
             });
