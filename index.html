@@ -394,6 +394,164 @@
         #about .spirit-item h3 {
             color: #ffffff !important;
         }
+    .repair-process-wrap {
+            margin-top: 80px;
+            margin-bottom: 80px;
+            
+            /* ▼▼▼ [수정됨] 화면 꽉 차게 강제하는 코드 ▼▼▼ */
+            grid-column: 1 / -1;  /* 그리드 안에 갇혀있을 경우, 처음부터 끝까지 가로지르기 */
+            width: 100%;          /* 부모 요소 내에서 너비 100% 채우기 */
+            box-sizing: border-box;
+        }
+        .repair-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .repair-card {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .repair-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-blue);
+        }
+        .repair-img-box {
+            width: 100%;
+            height: 200px;
+            background-color: #222;
+            position: relative;
+        }
+        .repair-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+            transition: 0.3s;
+        }
+        .repair-card:hover .repair-img-box img {
+            opacity: 1;
+        }
+        .repair-step-badge {
+            position: absolute;
+            top: 15px; left: 15px;
+            background: var(--accent-blue);
+            color: #000;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        .repair-content {
+            padding: 25px;
+        }
+        .repair-title {
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .repair-desc {
+            color: #aaa;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            word-break: keep-all;
+            margin-bottom: 20px;
+        }
+        .btn-repair-action {
+            display: block;
+            width: 100%;
+            padding: 12px 0;
+            background: transparent;
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            text-align: center;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-repair-action:hover {
+            background: var(--accent-blue);
+            color: #000;
+        }
+
+        /* === 상담 신청 모달 (팝업) 스타일 === */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: none; /* 기본 숨김 */
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-box {
+            background: #151515;
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid #333;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .modal-close-btn:hover { color: white; }
+        
+        .form-label {
+            display: block;
+            color: #ccc;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 6px;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        textarea.form-input {
+            resize: none;
+            height: 100px;
+        }
+
+        /* 모바일 대응 */
+        @media (max-width: 768px) {
+            .repair-grid { grid-template-columns: 1fr; gap: 40px; }
+            .repair-img-box { height: 220px; }
+        }
     </style>
 </head>
 <body>
@@ -791,6 +949,57 @@
                             </p>
                         </div>
                     </div>
+                <div class="repair-process-wrap">
+                    <div style="text-align: center; margin-bottom: 40px;">
+                        <span class="section-subtitle">SERVICE PROCESS</span>
+                        <h3 style="color: white; font-size: 1.8rem; margin-top: 10px;">Professional Repair Steps</h3>
+                    </div>
+
+                    <div class="repair-grid">
+                        <div class="repair-card">
+                            <div class="repair-img-box">
+                                <span class="repair-step-badge">STEP 01</span>
+                                <img src="https://stretto.co.kr/service.jpg" alt="Service">
+                            </div>
+                            <div class="repair-content">
+                                <h4 class="repair-title">증상 상담 및 접수</h4>
+                                <p class="repair-desc">
+                                    머신의 이상 증상을 확인합니다.<br>
+                                    전화 또는 상담 양식을 통해 증상을 남겨주시면 엔지니어가 1차 진단을 진행합니다.
+                                </p>
+                                <button type="button" class="btn-repair-action" onclick="openModal()">상담 양식 작성하기 ></button>
+                            </div>
+                        </div>
+
+                        <div class="repair-card">
+                            <div class="repair-img-box">
+                                <span class="repair-step-badge">STEP 02</span>
+                                <img src="https://images.unsplash.com/photo-1581092335397-9583eb92d232?auto=format&fit=crop&w=800&q=80" alt="Internal Mechanism">
+                            </div>
+                            <div class="repair-content">
+                                <h4 class="repair-title">진단 및 견적 안내</h4>
+                                <p class="repair-desc">
+                                    상담 내용을 바탕으로 예상 원인을 파악하고 수리 방향과 견적을 안내해 드립니다.<br>
+                                    (필요 시 현장 방문 정밀 진단 진행)
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="repair-card">
+                            <div class="repair-img-box">
+                                <span class="repair-step-badge">STEP 03</span>
+                                <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&q=80" alt="Repair Tools">
+                            </div>
+                            <div class="repair-content">
+                                <h4 class="repair-title">방문 수리 및 케어</h4>
+                                <p class="repair-desc">
+                                    일정을 조율하여 엔지니어가 방문합니다.<br>
+                                    정품 부품 교체 및 수리 후, 압력/온도 테스트를 거쳐 정상 작동을 확인합니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 </div>
 
             </div>
@@ -957,6 +1166,94 @@
             }
         }
         loadShopProducts();
+        function openModal() {
+            const modal = document.getElementById('repairModal');
+            modal.style.display = 'flex';
+            // 약간의 지연 후 클래스 추가로 페이드인 효과
+            setTimeout(() => { modal.classList.add('show'); }, 10);
+            document.body.style.overflow = 'hidden'; // 배경 스크롤 막기
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('repairModal');
+            modal.classList.remove('show');
+            setTimeout(() => { modal.style.display = 'none'; }, 300); // 애니메이션 후 숨김
+            document.body.style.overflow = 'auto';
+        }
+
+        // 모달 바깥 배경 클릭 시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('repairModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // 폼 제출 기능 (메일 앱 연동)
+        function submitRepair(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('custName').value;
+            const phone = document.getElementById('custPhone').value;
+            const machine = document.getElementById('custMachine').value;
+            const symptom = document.getElementById('custSymptom').value;
+
+            // 메일 본문 구성
+            const mailSubject = `[수리상담] ${name}님 머신 케어 요청`;
+            const mailBody = `
+[수리 상담 요청서]
+-------------------------
+• 성함/매장명: ${name}
+• 연락처: ${phone}
+• 머신 모델: ${machine}
+• 증상 내용: 
+${symptom}
+-------------------------
+`;
+            
+            // mailto 링크 생성 (사용자 기본 메일 앱 실행)
+            window.location.href = `mailto:strettocoffee@naver.com?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
+
+            // 안내 메시지
+            alert("메일 앱으로 연결됩니다. 내용을 보내주시면 확인 후 연락드리겠습니다.");
+            closeModal();
+        }
     </script>
+<div id="repairModal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close-btn" onclick="closeModal()">×</button>
+            
+            <h3 style="color: white; margin-top: 0; font-size: 1.5rem;">머신 수리 상담 신청</h3>
+            <p style="color: #888; font-size: 0.9rem; margin-bottom: 30px;">
+                증상을 남겨주시면 엔지니어가 확인 후 빠르게 연락드리겠습니다.
+            </p>
+
+            <form onsubmit="submitRepair(event)">
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">매장명 / 성함</label>
+                    <input type="text" id="custName" class="form-input" placeholder="예: 스트레토 카페 / 홍길동" required>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">연락처</label>
+                    <input type="tel" id="custPhone" class="form-input" placeholder="010-0000-0000" required>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label class="form-label">사용 머신 모델</label>
+                    <input type="text" id="custMachine" class="form-input" placeholder="예: 라마르조꼬 PB, 미티코 등">
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <label class="form-label">증상 상세 내용</label>
+                    <textarea id="custSymptom" class="form-input" placeholder="예: 추출 압력이 3바까지 떨어집니다. 스팀이 약합니다." required></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; border-radius: 8px; font-size: 1.1rem;">
+                    상담 접수하기
+                </button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
