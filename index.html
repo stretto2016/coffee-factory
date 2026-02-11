@@ -9,6 +9,7 @@
     <meta property="og:title" content="STRETTO - 파주 원두 납품 & 로스팅 팩토리">
     <meta property="og:description" content="국가대표 선발전 심사위원의 엄격한 QC. 일관성 있는 원두 납품과 토탈 케어 솔루션을 제공합니다.">
     <meta property="og:image" content="https://www.stretto.co.kr/stretto.jpg">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         /* === 0. 폰트 파일 등록 === */
         @font-face {
@@ -1082,16 +1083,22 @@
             nav.classList.toggle('active');
         }
     </script>
-    <script>
-    // === 모달 제어 스크립트 (일반 스크립트 영역으로 이동) ===
+   <script>
+    // === 0. EmailJS 초기화 (반드시 본인의 Public Key를 넣어야 합니다) ===
+    (function(){
+        // 따옴표 안에 아까 복사한 'Public Key'를 붙여넣으세요.
+        emailjs.init({
+            publicKey: "l4G2MfMxi1780Yt8N",
+        });
+    })();
+
+    // === 1. 모달 제어 함수 ===
     function openModal() {
         const modal = document.getElementById('repairModal');
         if(modal) {
             modal.style.display = 'flex';
             setTimeout(() => { modal.classList.add('show'); }, 10);
             document.body.style.overflow = 'hidden'; 
-        } else {
-            console.error("모달 요소를 찾을 수 없습니다.");
         }
     }
 
@@ -1104,7 +1111,6 @@
         }
     }
 
-    // 모달 바깥 배경 클릭 시 닫기
     window.onclick = function(event) {
         const modal = document.getElementById('repairModal');
         if (event.target == modal) {
@@ -1112,30 +1118,43 @@
         }
     }
 
-    // 폼 제출 기능
+    // === 2. 이메일 바로 전송 함수 ===
     function submitRepair(e) {
         e.preventDefault();
 
-        const name = document.getElementById('custName').value;
-        const phone = document.getElementById('custPhone').value;
-        const machine = document.getElementById('custMachine').value;
-        const symptom = document.getElementById('custSymptom').value;
+        // 버튼을 '전송중...'으로 변경 (중복 클릭 방지)
+        const btn = e.target.querySelector('button[type="submit"]');
+        const originalText = btn.innerText;
+        btn.innerText = "전송 중...";
+        btn.disabled = true;
 
-        const mailSubject = `[수리상담] ${name}님 머신 케어 요청`;
-        const mailBody = `
-[수리 상담 요청서]
--------------------------
-• 성함/매장명: ${name}
-• 연락처: ${phone}
-• 머신 모델: ${machine}
-• 증상 내용: 
-${symptom}
--------------------------
-`;
-        window.location.href = `mailto:strettopark@gmail.com?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
+        // 보낼 데이터 준비
+        const templateParams = {
+            name: document.getElementById('custName').value,
+            phone: document.getElementById('custPhone').value,
+            machine: document.getElementById('custMachine').value,
+            symptom: document.getElementById('custSymptom').value
+        };
 
-        alert("메일 앱으로 연결됩니다. 내용을 보내주시면 확인 후 연락드리겠습니다.");
-        closeModal();
+        // EmailJS로 전송 (Service ID, Template ID를 본인 것으로 변경하세요)
+        emailjs.send('service_pxxoq44', 'template_te689vc', templateParams)
+            .then(function(response) {
+                alert('상담 신청이 성공적으로 접수되었습니다! \n빠르게 확인 후 연락드리겠습니다.');
+                closeModal();
+                
+                // 입력창 초기화
+                document.getElementById('custName').value = '';
+                document.getElementById('custPhone').value = '';
+                document.getElementById('custMachine').value = '';
+                document.getElementById('custSymptom').value = '';
+            }, function(error) {
+                alert('전송에 실패했습니다. 잠시 후 다시 시도해주세요.\n에러내용: ' + JSON.stringify(error));
+            })
+            .finally(function() {
+                // 버튼 원상복구
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
     }
 </script>
 <script type="module">
