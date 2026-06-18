@@ -1027,7 +1027,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); 
             gap: 30px; 
-            margin-bottom: 120px; /* 아래 매뉴얼 섹션과의 간격을 넓힘 */
+            margin-bottom: 120px; 
             width: 100%;
         }
         .consulting-card {
@@ -1057,7 +1057,6 @@
         .consulting-card h3 { color: #fff; font-size: 1.35rem; margin-bottom: 15px; word-break: keep-all; font-weight: 700; }
         .consulting-card p { font-size: 1rem; color: #aaa; margin: 0; line-height: 1.6; word-break: keep-all; }
 
-        /* 익스클루시브 베네핏 전체 래퍼 (박스 디자인 제거) */
         .manual-wrap {
             text-align: center;
             width: 100%;
@@ -1076,17 +1075,16 @@
         .manual-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px 30px; /* 개별 카드 사이의 간격 */
-            max-width: 1100px; /* 박스가 없어졌으므로 폭을 더 넓게 허용 */
+            gap: 20px 30px; 
+            max-width: 1100px; 
             margin: 60px auto;
             text-align: left;
             width: 100%;
         }
-        /* 각 항목을 개별 카드로 승격 */
         .manual-item {
-            background: #111; /* 부모 박스 대신 항목 자체에 배경색 부여 */
+            background: #111; 
             border: 1px solid #222;
-            padding: 25px 30px; /* 카드다운 여유로운 패딩 */
+            padding: 25px 30px; 
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -1100,7 +1098,7 @@
         .manual-item:hover {
             background: #1a1a1a;
             border-color: var(--accent-blue);
-            transform: translateY(-5px); /* 위로 살짝 뜨는 효과 */
+            transform: translateY(-5px); 
             box-shadow: 0 10px 20px rgba(0,0,0,0.4);
         }
         .manual-num {
@@ -1115,7 +1113,6 @@
             flex-shrink: 0;
         }
 
-        /* 모바일 대응 */
         @media (max-width: 768px) {
             .consulting-grid { 
                 display: flex;
@@ -1143,7 +1140,7 @@
         }
     </style>
 
-    <section id="consulting" style="background-color: var(--bg-color);">
+    <section id="consulting" style="background-color: var(--bg-secondary);">
         <div class="container" style="max-width: 1280px;">
             <div class="section-header">
                 <span class="section-subtitle">CAFE CONSULTING</span>
