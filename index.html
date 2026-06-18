@@ -1038,7 +1038,6 @@
             text-align: center;
             transition: all 0.3s ease;
             box-sizing: border-box;
-            width: 100%;
         }
         .consulting-card:hover {
             transform: translateY(-10px);
@@ -1120,21 +1119,33 @@
             flex-shrink: 0;
         }
 
-        /* 모바일 대응 완벽 수정 */
+        /* 모바일 대응 완벽 수정 (Flexbox로 강제 100% 확장 및 여백 최적화) */
         @media (max-width: 768px) {
             .consulting-grid { 
-                grid-template-columns: 1fr; /* 강제 1열 배치로 우측 쏠림 해결 */
+                display: flex; /* Grid 버그 방지를 위해 Flex로 변경 */
+                flex-direction: column;
+                width: 100%;
                 gap: 20px;
             }
-            .manual-grid { 
-                grid-template-columns: 1fr; 
-                margin: 30px auto; 
+            .consulting-card {
+                width: 100%;
+                padding: 30px 20px; /* 모바일에서 내부 여백을 살짝 줄여서 텍스트 공간을 더 넓게 확보 */
+                margin: 0;
             }
             .manual-container { 
-                padding: 40px 20px; /* 좌우 패딩을 줄여서 답답함 해결 */
+                width: 100%;
+                padding: 40px 20px; 
+            }
+            .manual-grid { 
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                gap: 12px;
+                margin: 30px 0; 
             }
             .manual-item {
-                padding: 12px 15px;
+                width: 100%;
+                padding: 15px;
                 font-size: 0.95rem;
             }
         }
