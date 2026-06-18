@@ -1025,17 +1025,16 @@
             <style>
         .consulting-grid {
             display: grid;
-            /* 카드가 더 넓게 퍼지도록 최소 폭을 340px로 증가 */
             grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); 
-            gap: 30px; /* 카드 사이 간격 확보 */
-            margin-bottom: 90px;
+            gap: 30px; 
+            margin-bottom: 120px; /* 아래 매뉴얼 섹션과의 간격을 넓힘 */
             width: 100%;
         }
         .consulting-card {
             background: #111;
             border: 1px solid #222;
             border-radius: 16px;
-            padding: 50px 40px; /* 카드 내부 여백을 키워 더 큼직하고 여유롭게 */
+            padding: 50px 40px; 
             text-align: center;
             transition: all 0.3s ease;
             box-sizing: border-box;
@@ -1058,15 +1057,9 @@
         .consulting-card h3 { color: #fff; font-size: 1.35rem; margin-bottom: 15px; word-break: keep-all; font-weight: 700; }
         .consulting-card p { font-size: 1rem; color: #aaa; margin: 0; line-height: 1.6; word-break: keep-all; }
 
-        .manual-container {
-            background: linear-gradient(145deg, #151515 0%, #0a0a0a 100%);
-            border: 1px solid #333;
-            border-radius: 20px;
-            padding: 70px 50px; /* 박스 내부 위아래 여백 확장 */
+        /* 익스클루시브 베네핏 전체 래퍼 (박스 디자인 제거) */
+        .manual-wrap {
             text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-sizing: border-box;
             width: 100%;
         }
         .manual-badge {
@@ -1083,44 +1076,46 @@
         .manual-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px 40px; /* 리스트 간격 더 쾌적하게 확장 */
-            max-width: 1000px; /* 850px -> 1000px으로 폭 대폭 확장 */
-            margin: 50px auto;
+            gap: 20px 30px; /* 개별 카드 사이의 간격 */
+            max-width: 1100px; /* 박스가 없어졌으므로 폭을 더 넓게 허용 */
+            margin: 60px auto;
             text-align: left;
             width: 100%;
         }
+        /* 각 항목을 개별 카드로 승격 */
         .manual-item {
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            padding: 18px 25px; /* 각 항목 높이와 넓이 키움 */
-            border-radius: 10px;
+            background: #111; /* 부모 박스 대신 항목 자체에 배경색 부여 */
+            border: 1px solid #222;
+            padding: 25px 30px; /* 카드다운 여유로운 패딩 */
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
             color: #eee;
-            font-size: 1.05rem; /* 글씨 크기 살짝 키움 */
+            font-size: 1.1rem; 
             transition: 0.3s;
             box-sizing: border-box;
             width: 100%;
         }
         .manual-item:hover {
-            background: #222;
-            border-color: #444;
-            transform: translateX(5px);
+            background: #1a1a1a;
+            border-color: var(--accent-blue);
+            transform: translateY(-5px); /* 위로 살짝 뜨는 효과 */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
         }
         .manual-num {
             background: rgba(170, 213, 219, 0.1);
             color: var(--accent-blue);
-            width: 32px; height: 32px;
+            width: 36px; height: 36px;
             display: flex; align-items: center; justify-content: center;
             border-radius: 50%;
             font-weight: bold;
             font-family: 'Ciutadella', sans-serif;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             flex-shrink: 0;
         }
 
-        /* 모바일 대응 (모바일에서는 화면 꽉 차게 유지) */
+        /* 모바일 대응 */
         @media (max-width: 768px) {
             .consulting-grid { 
                 display: flex;
@@ -1133,21 +1128,17 @@
                 padding: 30px 20px; 
                 margin: 0;
             }
-            .manual-container { 
-                width: 100%;
-                padding: 40px 20px; 
-            }
             .manual-grid { 
                 display: flex;
                 flex-direction: column;
                 width: 100%;
-                gap: 12px;
-                margin: 30px 0; 
+                gap: 15px;
+                margin: 40px 0; 
             }
             .manual-item {
                 width: 100%;
-                padding: 15px;
-                font-size: 0.95rem;
+                padding: 20px 25px;
+                font-size: 1rem;
             }
         }
     </style>
@@ -1194,7 +1185,7 @@
                 </div>
             </div>
 
-            <div class="manual-container">
+            <div class="manual-wrap">
                 <span class="manual-badge">EXCLUSIVE BENEFIT</span>
                 <h3 style="color: white; font-size: 2rem; margin-bottom: 15px;">카페 창업 마스터 매뉴얼 제공</h3>
                 <p style="color: #aaa; margin-bottom: 0; word-break: keep-all;">스트레토 커피 팩토리의 축적된 데이터와 노하우를 바탕으로 설계된 창업 솔루션</p>
@@ -1212,7 +1203,7 @@
                     <div class="manual-item"><span class="manual-num">10</span> 전체적인 예산 편성 및 스케줄링</div>
                 </div>
                 
-                <p style="font-size: 1.15rem; color: #fff; word-break: keep-all; line-height: 1.8; margin-top: 20px;">
+                <p style="font-size: 1.15rem; color: #fff; word-break: keep-all; line-height: 1.8; margin-top: 40px;">
                     수년간의 시행착오를 갈아 넣은 운영 비법노트와 함께,<br>
                     <strong style="color: var(--accent-blue);">언제든 기댈 수 있는 든든한 현장 전문가를 얻게 될 것입니다.</strong>
                 </p>
