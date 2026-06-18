@@ -1025,16 +1025,17 @@
             <style>
         .consulting-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-bottom: 80px;
+            /* 카드가 더 넓게 퍼지도록 최소 폭을 340px로 증가 */
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); 
+            gap: 30px; /* 카드 사이 간격 확보 */
+            margin-bottom: 90px;
             width: 100%;
         }
         .consulting-card {
             background: #111;
             border: 1px solid #222;
             border-radius: 16px;
-            padding: 40px 30px;
+            padding: 50px 40px; /* 카드 내부 여백을 키워 더 큼직하고 여유롭게 */
             text-align: center;
             transition: all 0.3s ease;
             box-sizing: border-box;
@@ -1054,14 +1055,14 @@
             font-size: 2rem;
             margin: 0 auto 25px;
         }
-        .consulting-card h3 { color: #fff; font-size: 1.3rem; margin-bottom: 15px; word-break: keep-all; font-weight: 700; }
-        .consulting-card p { font-size: 0.95rem; color: #aaa; margin: 0; line-height: 1.6; word-break: keep-all; }
+        .consulting-card h3 { color: #fff; font-size: 1.35rem; margin-bottom: 15px; word-break: keep-all; font-weight: 700; }
+        .consulting-card p { font-size: 1rem; color: #aaa; margin: 0; line-height: 1.6; word-break: keep-all; }
 
         .manual-container {
             background: linear-gradient(145deg, #151515 0%, #0a0a0a 100%);
             border: 1px solid #333;
             border-radius: 20px;
-            padding: 60px 40px;
+            padding: 70px 50px; /* 박스 내부 위아래 여백 확장 */
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -1082,22 +1083,22 @@
         .manual-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px 30px;
-            max-width: 850px;
-            margin: 40px auto 40px;
+            gap: 20px 40px; /* 리스트 간격 더 쾌적하게 확장 */
+            max-width: 1000px; /* 850px -> 1000px으로 폭 대폭 확장 */
+            margin: 50px auto;
             text-align: left;
             width: 100%;
         }
         .manual-item {
             background: #1a1a1a;
             border: 1px solid #2a2a2a;
-            padding: 15px 20px;
+            padding: 18px 25px; /* 각 항목 높이와 넓이 키움 */
             border-radius: 10px;
             display: flex;
             align-items: center;
             gap: 15px;
             color: #eee;
-            font-size: 1rem;
+            font-size: 1.05rem; /* 글씨 크기 살짝 키움 */
             transition: 0.3s;
             box-sizing: border-box;
             width: 100%;
@@ -1119,17 +1120,17 @@
             flex-shrink: 0;
         }
 
-        /* 모바일 대응 완벽 수정 (Flexbox로 강제 100% 확장 및 여백 최적화) */
+        /* 모바일 대응 (모바일에서는 화면 꽉 차게 유지) */
         @media (max-width: 768px) {
             .consulting-grid { 
-                display: flex; /* Grid 버그 방지를 위해 Flex로 변경 */
+                display: flex;
                 flex-direction: column;
                 width: 100%;
                 gap: 20px;
             }
             .consulting-card {
                 width: 100%;
-                padding: 30px 20px; /* 모바일에서 내부 여백을 살짝 줄여서 텍스트 공간을 더 넓게 확보 */
+                padding: 30px 20px; 
                 margin: 0;
             }
             .manual-container { 
@@ -1152,7 +1153,7 @@
     </style>
 
     <section id="consulting" style="background-color: var(--bg-color);">
-        <div class="container">
+        <div class="container" style="max-width: 1280px;">
             <div class="section-header">
                 <span class="section-subtitle">CAFE CONSULTING</span>
                 <h2 class="section-title">Driven by Responsibility.</h2>
