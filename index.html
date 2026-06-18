@@ -1030,17 +1030,20 @@
             margin-bottom: 120px; 
             width: 100%;
         }
+        /* [수정] 배경에 묻히지 않도록 박스 색상을 #1a1a1a로 변경하고 테두리 조절 */
         .consulting-card {
-            background: #111;
-            border: 1px solid #222;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
             border-radius: 16px;
             padding: 50px 40px; 
             text-align: center;
             transition: all 0.3s ease;
             box-sizing: border-box;
         }
+        /* [수정] 호버 시 박스가 더 부각되도록 배경을 #222로 변경 */
         .consulting-card:hover {
             transform: translateY(-10px);
+            background: #222;
             border-color: var(--accent-blue);
             box-shadow: 0 15px 30px rgba(0,0,0,0.5);
         }
@@ -1081,9 +1084,10 @@
             text-align: left;
             width: 100%;
         }
+        /* [수정] 매뉴얼 리스트 항목도 배경색을 #1a1a1a로 한 톤 올려서 입체감 부여 */
         .manual-item {
-            background: #111; 
-            border: 1px solid #222;
+            background: #1a1a1a; 
+            border: 1px solid #2a2a2a;
             padding: 25px 30px; 
             border-radius: 12px;
             display: flex;
@@ -1096,7 +1100,7 @@
             width: 100%;
         }
         .manual-item:hover {
-            background: #1a1a1a;
+            background: #222;
             border-color: var(--accent-blue);
             transform: translateY(-5px); 
             box-shadow: 0 10px 20px rgba(0,0,0,0.4);
