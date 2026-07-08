@@ -990,10 +990,10 @@
             let tracksHtml = options.map(opt => {
                 const basePrice = currentClient ? getClientPrice(product) : 0;
                 const isVatFree = currentClient && currentClient.isVatFree;
-                
-                // 가격 계산 (기본적으로 옵션 단위에 맞춰 표시)
-                let price1kg = isVatFree ? basePrice : Math.round(basePrice * 1.1);
-                let finalPrice = Math.round(price1kg * opt.unit);
+
+                // [수정] 카드에는 부가세 미포함(공급가) 단가를 표시하고, 부가세는 장바구니 합계에서 별도 합산
+                let finalPrice = Math.round(basePrice * opt.unit);
+                const vatTag = isVatFree ? '' : ` <span style="font-size:0.6rem; color:#888; font-weight:400;">VAT 별도</span>`;
 
                 // 장바구니 상태 확인
                 const cartItem = cart.find(c => c.name === product.name);
@@ -1022,7 +1022,7 @@
                 <div class="track-row ${activeClass}" onclick="${clickAction}; event.stopPropagation();">
                     <div class="track-info">
                         <div class="track-unit">${labelText}</div>
-                        <div class="track-price">${finalPrice.toLocaleString()}원</div>
+                        <div class="track-price">${finalPrice.toLocaleString()}원${vatTag}</div>
                     </div>
                     <div class="track-gate">${btnIcon}</div>
                 </div>
@@ -1112,11 +1112,8 @@
             const product = products.find(p => p.name === productName);
             const basePrice = getClientPrice(product);
 
-            // [핵심 수정] isTaxExempt -> isVatFree로 변경
+            // [수정] 장바구니에는 부가세 미포함(공급가) 단가를 담고, 부가세는 합계에서 별도 합산
             let finalPrice = basePrice;
-            if (!currentClient.isVatFree) { 
-                finalPrice = Math.round(basePrice * 1.1); // 과세 사업자만 부가세 추가
-            }
 
             const existing = cart.find(item => item.name === productName);
             
@@ -1184,25 +1181,36 @@
             section.style.display = 'block'; 
 
             const totalKg = cart.reduce((acc, item) => acc + item.qty, 0).toFixed(1);
-            
-            // ★ 총액 계산
-            const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
-            const totalPriceStr = Math.floor(totalPrice).toLocaleString();
 
-            // 상단 표시
-            totalWeightEl.innerHTML = `${totalKg}kg <span style="margin-left:8px; color:#ddd;">|</span> <span style="margin-left:8px; color:var(--accent-blue);">${totalPriceStr}원</span>`;
+            // ★ 총액 계산 (공급가액 + 부가세 별도 합산)
+            const isVatFree = currentClient && currentClient.isVatFree;
+            const supplyTotal = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+            const vatTotal = isVatFree ? 0 : Math.floor(supplyTotal * 0.1);
+            const grandTotal = Math.floor(supplyTotal) + vatTotal;
+            const grandTotalStr = grandTotal.toLocaleString();
+
+            // 상단 표시 (부가세 포함 최종 금액)
+            totalWeightEl.innerHTML = `${totalKg}kg <span style="margin-left:8px; color:#ddd;">|</span> <span style="margin-left:8px; color:var(--accent-blue);">${grandTotalStr}원</span>`;
 
             btn.disabled = false;
-            btn.innerHTML = `${totalPriceStr}원 주문 전송하기`;
+            btn.innerHTML = `${grandTotalStr}원 주문 전송하기`;
             btn.style.background = "var(--accent-blue)";
 
-            // 면세 안내 문구
-            let vatInfo = "";
-            if (currentClient && currentClient.isTaxExempt) {
-                vatInfo = `<div style="text-align:right; font-size:0.8rem; color:#ffcc00; margin-bottom:10px;">※ 위 금액은 부가세 별도 금액입니다.</div>`;
-            }
+            // 합계 상세 (공급가액 / 부가세 / 총액)
+            const summaryHtml = `
+                <div style="margin-top:12px; padding:12px 14px; background:#252527; border-radius:8px; font-size:0.85rem;">
+                    <div style="display:flex; justify-content:space-between; color:#aaa; margin-bottom:6px;">
+                        <span>공급가액</span><span>${Math.floor(supplyTotal).toLocaleString()}원</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; color:#aaa; margin-bottom:6px;">
+                        <span>부가세 (10%)</span><span>${isVatFree ? '해당 없음' : vatTotal.toLocaleString() + '원'}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; color:#fff; font-weight:bold; border-top:1px solid #3a3a3c; padding-top:8px; font-size:0.95rem;">
+                        <span>총 결제 금액</span><span style="color:var(--accent-blue);">${grandTotalStr}원</span>
+                    </div>
+                </div>`;
 
-            list.innerHTML = vatInfo + cart.map((item, idx) => {
+            list.innerHTML = cart.map((item, idx) => {
                 const itemTotal = Math.floor(item.price * item.qty).toLocaleString();
                 
                 // [NEW] 싱글/디카페인일 경우 +1kg 버튼 노출 로직
@@ -1216,7 +1224,7 @@
                 <div class="cart-item">
                     <div class="cart-info">
                         <span class="cart-name">${item.name}</span>
-                        <span class="cart-type">${item.price.toLocaleString()}원/kg · 합계: ${itemTotal}원</span>
+                        <span class="cart-type">${item.price.toLocaleString()}원/kg${isVatFree ? '' : ' (VAT 별도)'} · 합계: ${itemTotal}원</span>
                     </div>
                     <div class="qty-control">
                         ${bigJumpBtn} <button class="qty-btn" onclick="updateQty(${idx}, -1)">-</button>
@@ -1225,7 +1233,7 @@
                         <button class="del-btn" onclick="removeItem(${idx})">✕</button>
                     </div>
                 </div>`;
-            }).join('');
+            }).join('') + summaryHtml;
         }
 
         // --- 주문 전송 ---
@@ -1247,10 +1255,17 @@
                 return;
             }
 
-            const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
-            const totalPriceStr = Math.floor(totalPrice).toLocaleString();
-            
-            if (!confirm(`총 결제 예정 금액: ${totalPriceStr}원\n주문을 전송하시겠습니까?`)) return;
+            // [수정] 장바구니 단가는 공급가 → 부가세 별도 합산해서 최종 금액 계산
+            const isVatFree = currentClient.isVatFree;
+            const supplyTotal = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+            const vatTotal = isVatFree ? 0 : Math.floor(supplyTotal * 0.1);
+            const grandTotal = Math.floor(supplyTotal) + vatTotal;
+            const totalPriceStr = grandTotal.toLocaleString();
+
+            const confirmMsg = isVatFree
+                ? `총 결제 예정 금액: ${totalPriceStr}원\n주문을 전송하시겠습니까?`
+                : `공급가액: ${Math.floor(supplyTotal).toLocaleString()}원\n부가세(10%): ${vatTotal.toLocaleString()}원\n총 결제 예정 금액: ${totalPriceStr}원\n\n주문을 전송하시겠습니까?`;
+            if (!confirm(confirmMsg)) return;
             
             const btn = document.getElementById('submitBtn');
             btn.disabled = true; btn.innerText = "전송 중...";
@@ -1263,14 +1278,16 @@
             try {
                 // 1. 주문 저장
                 const promises = cart.map(item => {
+                    // [중요] DB에는 기존과 동일하게 부가세 포함 최종 단가로 저장 (앱/거래명세서 호환 유지)
+                    const unitPriceFinal = isVatFree ? item.price : Math.round(item.price * 1.1);
                     return addDoc(collection(db, "orders"), {
                         date: date,
                         clientId: currentClient.id,
                         clientName: currentClient.name,
                         productType: item.name,
                         amountKg: item.qty,
-                        unitPrice: item.price,
-                        totalPrice: item.price * item.qty,
+                        unitPrice: unitPriceFinal,
+                        totalPrice: unitPriceFinal * item.qty,
                         note: note,
                         status: 'new',
                         isRead: false,
