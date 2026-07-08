@@ -551,7 +551,9 @@
                 products = querySnapshot.docs
                     .map(doc => {
                         const data = doc.data();
-                        if (data.showPartner === false) return null;
+                        // [수정] showPartner=false여도 여기서 버리지 않는다.
+                        // 거래처별 노출 설정(visibleProducts)에 체크된 상품은 보여야 하므로
+                        // 최종 노출 판단은 renderProductGrids의 isVisible에서 수행.
 
                         let type = "Single";
                         const cat = (data.category || '').toLowerCase();
@@ -561,7 +563,8 @@
                         return {
                             id: doc.id,
                             name: data.name,
-                            type: type, 
+                            type: type,
+                            showPartner: data.showPartner !== false, // 전체 공개 여부
                             defaultPrice: data.priceB2B || data.price || 0,
                             
                             // [NEW] 상세 스펙 매핑
@@ -1123,8 +1126,10 @@
             const decafGrid = document.getElementById('grid-decaf');
             const singleGrid = document.getElementById('grid-single');
 
+            // [수정] 거래처별 노출 설정(visibleProducts)이 있으면 그것이 최우선 (showPartner=false 상품도 체크돼 있으면 노출)
+            // 노출 설정이 없는 거래처는 전체 공개(showPartner) 기준으로 표시
             const allowedList = currentClient ? currentClient.visibleProducts : null;
-            const isVisible = (p) => !allowedList || allowedList.includes(p.name);
+            const isVisible = (p) => allowedList ? allowedList.includes(p.name) : p.showPartner;
 
             const renderList = (type, gridEl) => {
                 const filtered = products.filter(p => p.type === type && isVisible(p));
