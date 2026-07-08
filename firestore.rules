@@ -6,11 +6,11 @@ service cloud.firestore {
       return request.auth != null && request.auth.token.email == "strettopark@gmail.com";
     }
 
-    // 2. 상품: 누구나 볼 수 있음, 등록은 사장님만
+    // 2. 상품: 누구나 볼 수 있음, 등록/수정은 사장님만
     match /products/{document=**} {
-  allow read: if true;
-  allow write: if true; // 👈 "누구나 쓸 수 있음"으로 잠시 변경
-}
+      allow read: if true;
+      allow write: if isAdmin();
+    }
 
     // 3. 주문: 로그인한 사람만
     match /orders/{document=**} {
