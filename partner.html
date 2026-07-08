@@ -605,9 +605,17 @@
                 document.getElementById('order-section').classList.remove('hidden');
                 
                 try {
-                    const q = query(collection(db, "clients"), where("email", "==", user.email));
-                    const querySnapshot = await getDocs(q);
-                    
+                    // [수정] 로그인 아이디(loginId) 기준으로 거래처 찾기
+                    // 인증 이메일이 @stretto.com 형태면 앞부분이 아이디, 외부 이메일이면 전체가 아이디
+                    const authEmail = user.email;
+                    const derivedId = /@stretto\.(com|co\.kr)$/.test(authEmail) ? authEmail.split('@')[0] : authEmail;
+
+                    let querySnapshot = await getDocs(query(collection(db, "clients"), where("loginId", "==", derivedId)));
+                    if (querySnapshot.empty) {
+                        // 구버전 호환: loginId가 없는 거래처는 기존 email 매칭으로 폴백
+                        querySnapshot = await getDocs(query(collection(db, "clients"), where("email", "==", authEmail)));
+                    }
+
                     if (!querySnapshot.empty) {
                         const docData = querySnapshot.docs[0].data();
                         // DB의 모든 정보(priceOverrides 포함)를 currentClient에 저장
