@@ -1313,16 +1313,15 @@
             try {
                 // 1. 주문 저장
                 const promises = cart.map(item => {
-                    // [중요] DB에는 기존과 동일하게 부가세 포함 최종 단가로 저장 (앱/거래명세서 호환 유지)
-                    const unitPriceFinal = isVatFree ? item.price : Math.round(item.price * 1.1);
+                    // [중요] DB에는 부가세 별도(공급가) 단가로 저장 — 앱(통계/명세서)이 필요 시 10%를 더하는 방식과 통일
                     return addDoc(collection(db, "orders"), {
                         date: date,
                         clientId: currentClient.id,
                         clientName: currentClient.name,
                         productType: item.name,
                         amountKg: item.qty,
-                        unitPrice: unitPriceFinal,
-                        totalPrice: unitPriceFinal * item.qty,
+                        unitPrice: item.price,
+                        totalPrice: item.price * item.qty,
                         note: note,
                         status: 'new',
                         isRead: false,
@@ -1447,11 +1446,11 @@
                 const tr = document.createElement('tr');
                 tr.style.borderBottom = '1px solid #eee';
 
-                // 가격 계산 (저장된 총액이 없으면 단가*수량)
-                const itemTotal = order.totalPrice || (order.unitPrice * order.amountKg);
-                const supply = isVatFree ? itemTotal : itemTotal / 1.1;
-                const vat = itemTotal - supply;
-                const unitSupply = isVatFree ? order.unitPrice : Math.round(order.unitPrice / 1.1);
+                // 저장된 금액은 부가세 별도(공급가) → 과세 거래처만 세액 10% 가산
+                const supply = order.totalPrice || (order.unitPrice * order.amountKg);
+                const vat = isVatFree ? 0 : supply * 0.1;
+                const itemTotal = supply + vat;
+                const unitSupply = order.unitPrice || 0;
 
                 tr.innerHTML = `
                     <td style="padding: 6px 3px;">${order.date.substring(5)}</td>
