@@ -239,11 +239,15 @@
         /* === 1:1 상담 채팅 === */
         .chat-fab {
             position: fixed; right: 16px; bottom: 95px; z-index: 200;
-            width: 56px; height: 56px; border-radius: 50%; border: none;
-            background: var(--accent-blue); color: #000; font-size: 1.5rem;
-            box-shadow: 0 4px 15px rgba(41, 151, 255, 0.5); cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: center; gap: 8px;
+            padding: 13px 20px; border-radius: 28px; border: none;
+            background: #ffffff; color: #111;
+            font-size: 0.9rem; font-weight: 600; font-family: inherit;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6); cursor: pointer;
+            transition: transform 0.15s;
         }
+        .chat-fab:active { transform: scale(0.96); }
+        .chat-fab svg { width: 18px; height: 18px; flex-shrink: 0; }
         .chat-fab-badge {
             position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px;
             background: #ff453a; color: white; border-radius: 10px; font-size: 0.7rem;
@@ -474,7 +478,8 @@
 
             <!-- === 1:1 상담 채팅 === -->
             <button id="chatFab" class="chat-fab" title="1:1 상담">
-                💬
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20l1.3-3.9C1.976 12.663 2.874 8.228 6.4 5.726c3.526-2.501 8.59-2.296 11.845.48 3.255 2.777 3.695 7.266 1.029 10.501C16.608 19.942 11.659 20.922 7.7 19z"/></svg>
+                1:1 상담하기
                 <span id="chatFabBadge" class="chat-fab-badge"></span>
             </button>
             <div id="chatPanel" class="chat-panel">
