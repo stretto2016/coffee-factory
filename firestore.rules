@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. 관리자(사장님) 확인
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == "strettopark@gmail.com";
+    }
+
+    // 2. 상품: 누구나 볼 수 있음, 등록은 사장님만
+    match /products/{document=**} {
+  allow read: if true;
+  allow write: if true; // 👈 "누구나 쓸 수 있음"으로 잠시 변경
+}
+
+    // 3. 주문: 로그인한 사람만
+    match /orders/{document=**} {
+      allow create, read, delete: if request.auth != null;
+      allow write: if isAdmin();
+    }
+
+    // 4. 거래처 정보
+    match /clients/{document=**} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+
+    // 5. 1:1 상담 채팅: 사장님은 전체, 거래처는 자기 방만
+    function isRoomOwner(clientId) {
+      return request.auth != null
+        && get(/databases/$(database)/documents/clients/$(clientId)).data.email == request.auth.token.email;
+    }
+    match /chats/{clientId} {
+      allow read, write: if isAdmin() || isRoomOwner(clientId);
+
+      match /messages/{messageId} {
+        allow read, write: if isAdmin() || isRoomOwner(clientId);
+      }
+    }
+
+    // 6. 기타 관리자 접근
+    match /{document=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
