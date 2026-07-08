@@ -235,6 +235,58 @@
         .h-amount { font-weight: bold; font-size: 1.1rem; color: white; }
         .cancel-btn { background: #330000; border: 1px solid #660000; color: #ff453a; font-size: 0.8rem; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 10px;}
         .cancel-btn.disabled { background: #222; border-color: #333; color: #666; cursor: not-allowed; }
+
+        /* === 1:1 상담 채팅 === */
+        .chat-fab {
+            position: fixed; right: 16px; bottom: 95px; z-index: 200;
+            width: 56px; height: 56px; border-radius: 50%; border: none;
+            background: var(--accent-blue); color: #000; font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(41, 151, 255, 0.5); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .chat-fab-badge {
+            position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px;
+            background: #ff453a; color: white; border-radius: 10px; font-size: 0.7rem;
+            font-weight: bold; display: none; align-items: center; justify-content: center;
+            padding: 0 5px; box-sizing: border-box;
+        }
+        .chat-panel {
+            position: fixed; right: 0; bottom: 0; z-index: 300;
+            width: 100%; max-width: 420px; height: 70vh; max-height: 600px;
+            background: #1c1c1e; border: 1px solid #333; border-radius: 16px 16px 0 0;
+            display: none; flex-direction: column; overflow: hidden;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.8);
+        }
+        @media (min-width: 480px) { .chat-panel { right: 16px; border-radius: 16px; bottom: 16px; } }
+        .chat-panel.open { display: flex; }
+        .chat-head {
+            padding: 14px 16px; background: #252527; border-bottom: 1px solid #333;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .chat-head-title { font-weight: bold; color: #fff; }
+        .chat-head-sub { font-size: 0.75rem; color: #888; margin-top: 2px; }
+        .chat-close { background: none; border: none; color: #888; font-size: 1.3rem; cursor: pointer; padding: 4px 8px; }
+        .chat-msgs { flex: 1; overflow-y: auto; padding: 16px 12px; display: flex; flex-direction: column; gap: 8px; }
+        .chat-bubble-row { display: flex; }
+        .chat-bubble-row.me { justify-content: flex-end; }
+        .chat-bubble {
+            max-width: 75%; padding: 9px 13px; border-radius: 16px;
+            font-size: 0.9rem; line-height: 1.4; word-break: break-word; white-space: pre-wrap;
+        }
+        .chat-bubble-row.me .chat-bubble { background: var(--accent-blue); color: #000; border-bottom-right-radius: 4px; }
+        .chat-bubble-row.them .chat-bubble { background: #333; color: #fff; border-bottom-left-radius: 4px; }
+        .chat-time { font-size: 0.65rem; color: #666; align-self: flex-end; margin: 0 6px; flex-shrink: 0; }
+        .chat-empty { text-align: center; color: #555; font-size: 0.85rem; margin-top: 40px; line-height: 1.6; }
+        .chat-input-row { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid #333; background: #1c1c1e; }
+        .chat-input {
+            flex: 1; padding: 12px 14px; background: #2c2c2e; border: 1px solid #3a3a3c;
+            color: white; border-radius: 22px; font-size: 0.9rem; outline: none; font-family: inherit;
+        }
+        .chat-send {
+            width: 44px; height: 44px; border-radius: 50%; border: none; flex-shrink: 0;
+            background: var(--accent-blue); color: #000; font-weight: bold; cursor: pointer; font-size: 1.1rem;
+        }
+        .chat-send:disabled { background: #333; color: #666; }
     </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
@@ -384,13 +436,35 @@
             <div class="bottom-action">
                 <button id="submitBtn" class="submit-btn" disabled>주문할 품목을 선택하세요</button>
             </div>
+
+            <!-- === 1:1 상담 채팅 === -->
+            <button id="chatFab" class="chat-fab" title="1:1 상담">
+                💬
+                <span id="chatFabBadge" class="chat-fab-badge"></span>
+            </button>
+            <div id="chatPanel" class="chat-panel">
+                <div class="chat-head">
+                    <div>
+                        <div class="chat-head-title">1:1 상담</div>
+                        <div class="chat-head-sub">스트레토 커피 팩토리 · 영업시간 내 순차 답변</div>
+                    </div>
+                    <button id="chatClose" class="chat-close">✕</button>
+                </div>
+                <div id="chatMsgs" class="chat-msgs">
+                    <div class="chat-empty">궁금한 점을 남겨주세요.<br>확인 후 바로 답변드리겠습니다. ☕</div>
+                </div>
+                <div class="chat-input-row">
+                    <input type="text" id="chatInput" class="chat-input" placeholder="메시지를 입력하세요" maxlength="500">
+                    <button id="chatSend" class="chat-send">➤</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, where, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, where, onSnapshot, orderBy, serverTimestamp, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAUjfrQ-HVivBLggiOl8vvRZynala1qqyM",
@@ -515,9 +589,10 @@
                         document.getElementById('disp-address').innerText = currentClient.address || "-";
                         
                         // ★ 로그인 했으니 가격 다시 계산해서 화면 갱신
-                        renderProductGrids(); 
+                        renderProductGrids();
                         loadOrderHistory(currentClient.id);
                         loadQuickOrderItems(currentClient.id);
+                        startChat(currentClient);
                     } else {
                         document.getElementById('disp-name').innerText = "미등록 거래처";
                         alert("관리자에게 문의하세요. (DB에 정보 없음)");
@@ -528,9 +603,10 @@
                 document.getElementById('login-section').classList.remove('hidden');
                 document.getElementById('order-section').classList.add('hidden');
                 currentClient = null;
-                cart = []; 
+                cart = [];
                 renderCart();
                 if(historyUnsubscribe) historyUnsubscribe();
+                stopChat();
             }
         });
 
@@ -705,6 +781,164 @@
 
             document.getElementById('quick-order-section').style.display = 'block';
         }
+        // ===================== [1:1 상담 채팅] =====================
+        let chatUnsubscribe = null;
+        let chatOpen = false;
+        let chatClientUnread = 0;
+        let lastChatSnapshot = null;
+
+        const chatFab = document.getElementById('chatFab');
+        const chatPanel = document.getElementById('chatPanel');
+        const chatMsgsEl = document.getElementById('chatMsgs');
+        const chatInputEl = document.getElementById('chatInput');
+        const chatBadgeEl = document.getElementById('chatFabBadge');
+
+        function startChat(client) {
+            stopChat(); // 중복 구독 방지
+
+            // 내 채팅방의 메시지를 실시간 구독
+            const msgsRef = collection(db, "chats", client.id, "messages");
+            const q = query(msgsRef, orderBy("createdAt", "asc"));
+
+            chatUnsubscribe = onSnapshot(q, (snapshot) => {
+                lastChatSnapshot = snapshot;
+                const msgs = snapshot.docs.map(d => d.data());
+                renderChatMessages(msgs);
+
+                // 안 읽은 사장님 메시지 개수 (패널 닫혀있을 때 뱃지 표시)
+                if (!chatOpen) {
+                    chatClientUnread = msgs.filter(m => m.sender === 'admin' && !m.readByClient).length;
+                    updateChatBadge();
+                } else {
+                    markAdminMessagesRead(snapshot);
+                }
+            });
+        }
+
+        function stopChat() {
+            if (chatUnsubscribe) { chatUnsubscribe(); chatUnsubscribe = null; }
+            lastChatSnapshot = null;
+            chatOpen = false;
+            chatPanel.classList.remove('open');
+            chatMsgsEl.innerHTML = '<div class="chat-empty">궁금한 점을 남겨주세요.<br>확인 후 바로 답변드리겠습니다. ☕</div>';
+            chatClientUnread = 0;
+            updateChatBadge();
+        }
+
+        function updateChatBadge() {
+            if (chatClientUnread > 0) {
+                chatBadgeEl.style.display = 'flex';
+                chatBadgeEl.innerText = chatClientUnread > 9 ? '9+' : chatClientUnread;
+            } else {
+                chatBadgeEl.style.display = 'none';
+            }
+        }
+
+        function renderChatMessages(msgs) {
+            if (msgs.length === 0) {
+                chatMsgsEl.innerHTML = '<div class="chat-empty">궁금한 점을 남겨주세요.<br>확인 후 바로 답변드리겠습니다. ☕</div>';
+                return;
+            }
+            chatMsgsEl.innerHTML = msgs.map(m => {
+                const isMe = m.sender === 'client';
+                let timeStr = '';
+                if (m.createdAt && m.createdAt.toDate) {
+                    const t = m.createdAt.toDate();
+                    timeStr = `${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
+                }
+                const safeText = String(m.text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                return `
+                <div class="chat-bubble-row ${isMe ? 'me' : 'them'}">
+                    ${isMe ? `<span class="chat-time">${timeStr}</span>` : ''}
+                    <div class="chat-bubble">${safeText}</div>
+                    ${!isMe ? `<span class="chat-time">${timeStr}</span>` : ''}
+                </div>`;
+            }).join('');
+            chatMsgsEl.scrollTop = chatMsgsEl.scrollHeight;
+        }
+
+        // 패널을 열면 사장님 메시지를 읽음 처리
+        async function markAdminMessagesRead(snapshot) {
+            const updates = [];
+            snapshot.docs.forEach(d => {
+                const m = d.data();
+                if (m.sender === 'admin' && !m.readByClient) {
+                    updates.push(setDoc(d.ref, { readByClient: true }, { merge: true }));
+                }
+            });
+            if (updates.length > 0) {
+                try { await Promise.all(updates); } catch (e) { console.error(e); }
+            }
+            chatClientUnread = 0;
+            updateChatBadge();
+        }
+
+        async function sendChatMessage() {
+            if (!currentClient) return alert("로그인이 필요합니다.");
+            const text = chatInputEl.value.trim();
+            if (!text) return;
+
+            const sendBtn = document.getElementById('chatSend');
+            sendBtn.disabled = true;
+            chatInputEl.value = '';
+
+            try {
+                // 1. 메시지 저장
+                await addDoc(collection(db, "chats", currentClient.id, "messages"), {
+                    sender: 'client',
+                    text: text,
+                    createdAt: serverTimestamp(),
+                    readByAdmin: false,
+                    readByClient: true
+                });
+
+                // 2. 채팅방 요약 문서 갱신 (앱 목록 표시용)
+                await setDoc(doc(db, "chats", currentClient.id), {
+                    clientId: currentClient.id,
+                    clientName: currentClient.name,
+                    lastMessage: text,
+                    lastSender: 'client',
+                    updatedAt: serverTimestamp(),
+                    adminUnread: increment(1)
+                }, { merge: true });
+
+                // 3. 텔레그램 알림 (기존 유틸 재활용)
+                sendTelegramNotification(`💬 [1:1 상담] ${currentClient.name}\n${text}`);
+            } catch (err) {
+                console.error("상담 메시지 전송 실패:", err);
+                alert("메시지 전송에 실패했습니다. 잠시 후 다시 시도해주세요.");
+                chatInputEl.value = text; // 입력 복구
+            } finally {
+                sendBtn.disabled = false;
+                chatInputEl.focus();
+            }
+        }
+
+        chatFab.addEventListener('click', () => {
+            chatOpen = !chatOpen;
+            chatPanel.classList.toggle('open', chatOpen);
+            if (chatOpen) {
+                chatClientUnread = 0;
+                updateChatBadge();
+                if (lastChatSnapshot) markAdminMessagesRead(lastChatSnapshot);
+                chatMsgsEl.scrollTop = chatMsgsEl.scrollHeight;
+                chatInputEl.focus();
+                // 열면서 읽음 처리 (요약 문서의 내 안읽음 카운터 초기화)
+                if (currentClient) {
+                    setDoc(doc(db, "chats", currentClient.id), { clientUnread: 0 }, { merge: true }).catch(()=>{});
+                }
+            }
+        });
+        document.getElementById('chatClose').addEventListener('click', () => {
+            chatOpen = false;
+            chatPanel.classList.remove('open');
+        });
+        document.getElementById('chatSend').addEventListener('click', sendChatMessage);
+        chatInputEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.isComposing) sendChatMessage();
+        });
+        // ===================== [1:1 상담 채팅 끝] =====================
+
         window.tryCancel = async (id, dl, txt) => {
             if (new Date() >= new Date(dl)) return alert("시간 초과");
             if(confirm("취소하시겠습니까?")) {
