@@ -30,14 +30,28 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/clients/$(clientId)).data.email == request.auth.token.email;
     }
     match /chats/{clientId} {
-      allow read, write: if isAdmin() || isRoomOwner(clientId);
+      allow read, create, update: if isAdmin() || isRoomOwner(clientId);
+      allow delete: if isAdmin(); // 삭제는 사장님만
 
       match /messages/{messageId} {
-        allow read, write: if isAdmin() || isRoomOwner(clientId);
+        allow read, create, update: if isAdmin() || isRoomOwner(clientId);
+        allow delete: if isAdmin(); // 삭제는 사장님만
       }
     }
 
-    // 6. 기타 관리자 접근
+    // 6. 머신 수리 상담 신청: 홈페이지 방문자 누구나 접수 가능, 열람/처리는 사장님만
+    match /repairRequests/{requestId} {
+      allow create: if request.resource.data.repName is string
+        && request.resource.data.repName.size() > 0
+        && request.resource.data.repPhone is string
+        && request.resource.data.repPhone.size() > 0
+        && request.resource.data.symptom is string
+        && request.resource.data.symptom.size() > 0
+        && request.resource.data.symptom.size() < 5000;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // 7. 기타 관리자 접근
     match /{document=**} {
       allow read, write: if isAdmin();
     }

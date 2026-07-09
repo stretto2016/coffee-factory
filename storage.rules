@@ -1,0 +1,23 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == "strettopark@gmail.com";
+    }
+
+    // 수리 상담 사업자등록증 업로드: 누구나 업로드 가능(10MB, 이미지/PDF만)
+    // 파일명에 무작위 UUID가 포함되어 URL을 아는 사람만 접근 가능 (덮어쓰기 불가)
+    match /repairUploads/{fileName} {
+      allow create: if request.resource.size < 10 * 1024 * 1024
+        && (request.resource.contentType.matches('image/.*')
+            || request.resource.contentType == 'application/pdf');
+      allow read: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // 그 외 경로는 사장님만
+    match /{allPaths=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

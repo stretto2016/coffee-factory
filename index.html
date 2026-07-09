@@ -632,10 +632,110 @@
             height: 100px;
         }
 
+        /* 수리 상담 스텝 폼 */
+        .step-indicator {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+        .step-dot {
+            flex: 1;
+            text-align: center;
+            font-size: 0.78rem;
+            color: #666;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #333;
+            transition: 0.3s;
+        }
+        .step-dot.active {
+            color: var(--accent-blue, #4a90d9);
+            border-bottom-color: var(--accent-blue, #4a90d9);
+            font-weight: 600;
+        }
+        .form-step { display: none; }
+        .form-step.active { display: block; }
+        .form-section-title {
+            color: white;
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin: 0 0 20px 0;
+        }
+        .form-hint {
+            display: block;
+            color: #777;
+            font-size: 0.8rem;
+            margin: -4px 0 8px 0;
+            line-height: 1.5;
+        }
+        .radio-group { margin-bottom: 20px; }
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ccc;
+            font-size: 0.95rem;
+            padding: 6px 0;
+            cursor: pointer;
+        }
+        .radio-item input[type="radio"] { accent-color: var(--accent-blue, #4a90d9); width: 16px; height: 16px; flex-shrink: 0; }
+        .radio-item .etc-input {
+            flex: 1;
+            background: #222;
+            border: none;
+            border-bottom: 1px solid #444;
+            color: white;
+            padding: 6px 8px;
+            font-size: 0.9rem;
+        }
+        .radio-item .etc-input:focus { outline: none; border-bottom-color: var(--accent-blue, #4a90d9); }
+        .file-input-box {
+            margin-bottom: 20px;
+        }
+        .file-input-box input[type="file"] {
+            width: 100%;
+            color: #aaa;
+            font-size: 0.85rem;
+            background: #222;
+            border: 1px dashed #555;
+            border-radius: 6px;
+            padding: 14px 12px;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+        .step-btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .btn-step {
+            flex: 1;
+            padding: 14px 0;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            border: 1px solid #555;
+            background: transparent;
+            color: #ccc;
+            transition: 0.3s;
+        }
+        .btn-step:hover { border-color: #888; color: white; }
+        .btn-step.btn-next {
+            background: var(--accent-blue, #4a90d9);
+            border: none;
+            color: white;
+            font-weight: 600;
+        }
+        .btn-step.btn-next:hover { opacity: 0.85; }
+        .modal-box.scrollable {
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
         /* 모바일 대응 */
         @media (max-width: 768px) {
             .repair-grid { grid-template-columns: 1fr; gap: 40px; }
             .repair-img-box { height: 220px; }
+            .modal-box { padding: 30px 22px; }
         }
     </style>
 </head>
@@ -1365,57 +1465,53 @@
         }
     }
 
-    // 2. 이메일 전송 함수 (4번째 인자에 Public Key 직접 입력 방식)
-    function submitRepair(e) {
-        e.preventDefault();
+    // 2. 스텝 폼 이동 및 검증
+    function getRadioValue(name) {
+        const checked = document.querySelector('input[name="' + name + '"]:checked');
+        return checked ? checked.value : '';
+    }
 
-        // [스팸 방지] 가짜 입력칸 체크
-        // HTML에 id="bot_field"가 없으면 여기서 에러가 나므로 1단계 HTML 적용이 필수입니다.
-        const honeypot = document.getElementById('bot_field');
-        if (honeypot && honeypot.value) {
-            console.log("스팸 봇 감지됨!");
-            return; 
+    function validateStep(step) {
+        if (step === 1) {
+            let ref = getRadioValue('refSource');
+            if (ref === '기타') ref = document.getElementById('refSourceEtc').value.trim();
+            if (!ref) { alert('1. 알게 되신 경로를 선택해 주세요.'); return false; }
+            if (!document.getElementById('repName').value.trim()) { alert('2-1. 대표자명을 입력해 주세요.'); return false; }
+            if (!document.getElementById('repPhone').value.trim()) { alert('2-2. 대표자 연락처를 입력해 주세요.'); return false; }
+            const email = document.getElementById('custEmail').value.trim();
+            if (!email || !email.includes('@')) { alert('4. 이메일 주소를 입력해 주세요.'); return false; }
         }
+        if (step === 2) {
+            if (!document.getElementById('storeName').value.trim()) { alert('5. 상호명 / 지역을 입력해 주세요.'); return false; }
+            if (!getRadioValue('bizType')) { alert('6-1. 영업 유형을 선택해 주세요.'); return false; }
+            const file = document.getElementById('bizFile').files[0];
+            if (!file) { alert('6-2. 사업자등록증(또는 매장 사진) 파일을 첨부해 주세요.'); return false; }
+            if (file.size > 10 * 1024 * 1024) { alert('첨부 파일은 10MB 이하만 가능합니다.'); return false; }
+        }
+        if (step === 3) {
+            if (!document.getElementById('custMachine').value.trim()) { alert('8. 머신 모델을 입력해 주세요.'); return false; }
+            if (!document.getElementById('custSymptom').value.trim()) { alert('9. 증상 상세 내용을 입력해 주세요.'); return false; }
+        }
+        return true;
+    }
 
-        // 버튼 '전송중' 처리
-        const btn = e.target.querySelector('button[type="submit"]');
-        const originalText = btn.innerText;
-        btn.innerText = "전송 중...";
-        btn.disabled = true;
+    function goStep(target) {
+        // 앞으로 갈 때만 현재 스텝 검증
+        const current = document.querySelector('.form-step.active');
+        const currentNum = Number(current.id.replace('formStep', ''));
+        if (target > currentNum && !validateStep(currentNum)) return;
 
-        // 전송할 데이터
-        const templateParams = {
-            name: document.getElementById('custName').value,
-            phone: document.getElementById('custPhone').value,
-            machine: document.getElementById('custMachine').value,
-            symptom: document.getElementById('custSymptom').value
-        };
-
-        // ▼▼▼ [핵심 수정] 4번째 자리에 Public Key를 직접 넣습니다 ▼▼▼
-        emailjs.send("service_7zy0fpo", "template_te689vc", templateParams, "l4G2MfMxi1780Yt8N")
-            .then(function(response) {
-                alert('상담 신청이 성공적으로 접수되었습니다!');
-                closeModal();
-                
-                // 입력창 비우기
-                document.getElementById('custName').value = '';
-                document.getElementById('custPhone').value = '';
-                document.getElementById('custMachine').value = '';
-                document.getElementById('custSymptom').value = '';
-            }, function(error) {
-                console.error("전송 실패:", error);
-                alert('전송에 실패했습니다. (Error: ' + error.text + ')');
-            })
-            .finally(function() {
-                // 버튼 복구
-                btn.innerText = originalText;
-                btn.disabled = false;
-            });
+        for (let i = 1; i <= 3; i++) {
+            document.getElementById('formStep' + i).classList.toggle('active', i === target);
+            document.getElementById('stepDot' + i).classList.toggle('active', i === target);
+        }
+        document.querySelector('.modal-box.scrollable').scrollTop = 0;
     }
 </script>
 <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         const firebaseConfig = {
              apiKey: "AIzaSyAUjfrQ-HVivBLggiOl8vvRZynala1qqyM",
@@ -1428,6 +1524,96 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // 머신 수리 상담 접수: Storage 업로드 → Firestore 저장 + EmailJS 발송
+        window.submitRepair = async function(e) {
+            e.preventDefault();
+
+            // [스팸 방지] 가짜 입력칸 체크
+            const honeypot = document.getElementById('bot_field');
+            if (honeypot && honeypot.value) return;
+
+            if (!validateStep(3)) return;
+
+            const btn = document.getElementById('repairSubmitBtn');
+            const originalText = btn.innerText;
+            btn.innerText = "전송 중...";
+            btn.disabled = true;
+
+            const val = (id) => document.getElementById(id).value.trim();
+            let refSource = getRadioValue('refSource');
+            if (refSource === '기타') refSource = '기타: ' + val('refSourceEtc');
+
+            const data = {
+                type: 'repair',
+                refSource: refSource,
+                repName: val('repName'),
+                repPhone: val('repPhone'),
+                mgrName: val('mgrName'),
+                mgrPhone: val('mgrPhone'),
+                email: val('custEmail'),
+                storeName: val('storeName'),
+                bizType: getRadioValue('bizType'),
+                bizFileUrl: '',
+                visitAddr: val('visitAddr'),
+                machine: val('custMachine'),
+                symptom: val('custSymptom'),
+                etcNote: val('custEtc'),
+                status: 'new',
+                createdAt: serverTimestamp()
+            };
+
+            try {
+                // 1) 사업자등록증 파일 업로드
+                const file = document.getElementById('bizFile').files[0];
+                if (file) {
+                    const safeName = crypto.randomUUID() + '_' + file.name.replace(/[^\w.\-가-힣]/g, '_');
+                    const fileRef = storageRef(storage, 'repairUploads/' + safeName);
+                    await uploadBytes(fileRef, file, { contentType: file.type });
+                    data.bizFileUrl = await getDownloadURL(fileRef);
+                }
+
+                // 2) Firestore 저장 (사장님 앱에서 확인)
+                await addDoc(collection(db, "repairRequests"), data);
+
+                // 3) 이메일 발송 (실패해도 접수는 완료된 것으로 처리)
+                try {
+                    await emailjs.send("service_7zy0fpo", "template_te689vc", {
+                        // 기존 템플릿 호환 필드
+                        name: data.storeName + ' / ' + data.repName,
+                        phone: data.repPhone,
+                        machine: data.machine,
+                        symptom: data.symptom,
+                        // 추가 상세 필드 (EmailJS 템플릿에 변수 추가 시 표시됨)
+                        ref_source: data.refSource,
+                        rep_name: data.repName,
+                        rep_phone: data.repPhone,
+                        mgr_name: data.mgrName || '-',
+                        mgr_phone: data.mgrPhone || '-',
+                        email: data.email,
+                        store_name: data.storeName,
+                        biz_type: data.bizType,
+                        biz_file_url: data.bizFileUrl || '-',
+                        visit_addr: data.visitAddr || '-',
+                        etc_note: data.etcNote || '-'
+                    }, "l4G2MfMxi1780Yt8N");
+                } catch (mailErr) {
+                    console.error("이메일 발송 실패(접수는 완료):", mailErr);
+                }
+
+                alert('상담 신청이 성공적으로 접수되었습니다!\n엔지니어 확인 후 빠르게 연락드리겠습니다.');
+                closeModal();
+                document.getElementById('repairForm').reset();
+                goStep(1);
+            } catch (error) {
+                console.error("접수 실패:", error);
+                alert('접수에 실패했습니다. 잠시 후 다시 시도해 주시거나 대표번호(010-9548-0053)로 연락 부탁드립니다.');
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        };
 
         async function loadShopProducts() {
             try {
@@ -1515,41 +1701,110 @@
         
     </script>
 <div id="repairModal" class="modal-overlay">
-    <div class="modal-box">
+    <div class="modal-box scrollable">
         <button class="modal-close-btn" onclick="closeModal()">×</button>
-        
+
         <h3 style="color: white; margin-top: 0; font-size: 1.5rem;">머신 수리 상담 신청</h3>
-        <p style="color: #888; font-size: 0.9rem; margin-bottom: 30px;">
-            증상을 남겨주시면 엔지니어가 확인 후 빠르게 연락드리겠습니다.
+        <p style="color: #888; font-size: 0.9rem; margin-bottom: 25px;">
+            아래 내용을 남겨주시면 엔지니어가 확인 후 빠르게 연락드리겠습니다.
         </p>
 
-        <form onsubmit="submitRepair(event)">
-            
+        <div class="step-indicator">
+            <div class="step-dot active" id="stepDot1">① 기본 정보</div>
+            <div class="step-dot" id="stepDot2">② 매장 정보</div>
+            <div class="step-dot" id="stepDot3">③ 수리 신청</div>
+        </div>
+
+        <form id="repairForm" onsubmit="submitRepair(event)">
+
             <input type="text" id="bot_field" style="display:none !important;" tabindex="-1" autocomplete="off">
 
-            <div style="margin-bottom: 15px;">
-                <label class="form-label">매장명 / 성함</label>
-                <input type="text" id="custName" class="form-input" placeholder="예: 스트레토 카페 / 홍길동" required>
+            <!-- STEP 1: 기본 정보 -->
+            <div class="form-step active" id="formStep1">
+                <p class="form-section-title">☑️ 기본 정보</p>
+
+                <label class="form-label">1. 스트레토 커피 팩토리를 어떻게 알게 되셨나요? *</label>
+                <div class="radio-group" id="refSourceGroup">
+                    <label class="radio-item"><input type="radio" name="refSource" value="인스타그램 / SNS"> 인스타그램 / SNS</label>
+                    <label class="radio-item"><input type="radio" name="refSource" value="지인 소개"> 지인 소개</label>
+                    <label class="radio-item"><input type="radio" name="refSource" value="포털 사이트 검색 (네이버, 구글 등)"> 포털 사이트 검색 (네이버, 구글 등)</label>
+                    <label class="radio-item"><input type="radio" name="refSource" value="블로그 / 카페 커뮤니티"> 블로그 / 카페 커뮤니티</label>
+                    <label class="radio-item"><input type="radio" name="refSource" value="기타"> 기타:
+                        <input type="text" class="etc-input" id="refSourceEtc" placeholder="직접 입력">
+                    </label>
+                </div>
+
+                <label class="form-label">2-1. 대표자명 *</label>
+                <input type="text" id="repName" class="form-input" placeholder="예: 홍길동">
+
+                <label class="form-label">2-2. 대표자 연락처 *</label>
+                <input type="tel" id="repPhone" class="form-input" placeholder="010-0000-0000">
+
+                <label class="form-label">3-1. 담당자명</label>
+                <span class="form-hint">대표자와 동일할 경우 입력하지 않으셔도 됩니다.</span>
+                <input type="text" id="mgrName" class="form-input">
+
+                <label class="form-label">3-2. 담당자 연락처</label>
+                <input type="tel" id="mgrPhone" class="form-input">
+
+                <label class="form-label">4. 이메일 주소 *</label>
+                <input type="email" id="custEmail" class="form-input" placeholder="example@email.com">
+
+                <div class="step-btn-row">
+                    <button type="button" class="btn-step btn-next" onclick="goStep(2)">다음</button>
+                </div>
             </div>
 
-            <div style="margin-bottom: 15px;">
-                <label class="form-label">연락처</label>
-                <input type="tel" id="custPhone" class="form-input" placeholder="010-0000-0000" required>
+            <!-- STEP 2: 매장 정보 -->
+            <div class="form-step" id="formStep2">
+                <p class="form-section-title">☑️ 매장 정보</p>
+
+                <label class="form-label">5. 상호명 / 지역 *</label>
+                <input type="text" id="storeName" class="form-input" placeholder="예: 스트레토 / 서울 마포구 공덕동">
+
+                <label class="form-label">6-1. 영업 유형 *</label>
+                <div class="radio-group" id="bizTypeGroup">
+                    <label class="radio-item"><input type="radio" name="bizType" value="영업 중"> 영업 중</label>
+                    <label class="radio-item"><input type="radio" name="bizType" value="오픈 준비 중"> 오픈 준비 중</label>
+                </div>
+
+                <label class="form-label">6-2. 사업자등록증 이미지 첨부 *</label>
+                <span class="form-hint">
+                    수리 서비스는 사업자 고객 대상이므로 사업자 확인이 필요합니다. 파일(JPG, PNG, PDF 등)을 업로드해 주세요.<br>
+                    사업자등록증이 없는 경우(오픈 준비 중), 준비 중인 매장 사진을 업로드해 주세요. (최대 10MB)
+                </span>
+                <div class="file-input-box">
+                    <input type="file" id="bizFile" accept="image/*,application/pdf">
+                </div>
+
+                <div class="step-btn-row">
+                    <button type="button" class="btn-step" onclick="goStep(1)">이전</button>
+                    <button type="button" class="btn-step btn-next" onclick="goStep(3)">다음</button>
+                </div>
             </div>
 
-            <div style="margin-bottom: 15px;">
-                <label class="form-label">사용 머신 모델</label>
+            <!-- STEP 3: 수리 신청 -->
+            <div class="form-step" id="formStep3">
+                <p class="form-section-title">🔧 수리 신청</p>
+
+                <label class="form-label">7. 수리 방문 주소</label>
+                <span class="form-hint">사업자등록증 주소와 다를 경우에 입력해주세요.</span>
+                <input type="text" id="visitAddr" class="form-input">
+
+                <label class="form-label">8. 머신 모델 *</label>
                 <input type="text" id="custMachine" class="form-input" placeholder="예: 라마르조꼬 PB, 미티코 등">
-            </div>
 
-            <div style="margin-bottom: 25px;">
-                <label class="form-label">증상 상세 내용</label>
-                <textarea id="custSymptom" class="form-input" placeholder="예: 추출 압력이 3바까지 떨어집니다. 스팀이 약합니다." required></textarea>
-            </div>
+                <label class="form-label">9. 증상 상세 내용 *</label>
+                <textarea id="custSymptom" class="form-input" placeholder="예: 추출 압력이 3바까지 떨어집니다. 스팀이 약합니다."></textarea>
 
-            <button type="submit" class="btn-primary" style="width: 100%; border-radius: 8px; font-size: 1.1rem;">
-                상담 접수하기
-            </button>
+                <label class="form-label">10. 기타 문의사항 및 요청사항</label>
+                <textarea id="custEtc" class="form-input"></textarea>
+
+                <div class="step-btn-row">
+                    <button type="button" class="btn-step" onclick="goStep(2)">이전</button>
+                    <button type="submit" class="btn-step btn-next" id="repairSubmitBtn">상담 접수하기</button>
+                </div>
+            </div>
         </form>
     </div>
 </div>
