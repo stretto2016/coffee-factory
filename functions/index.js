@@ -50,6 +50,57 @@ exports.notifyNewChatMessage = onDocumentCreated(
   }
 );
 
+// 파트너 페이지 새 발주 → 사장님 앱으로 푸시 알림
+// (앱에서 직접 입력한 주문은 orderGroupId가 없어 제외, 장바구니 여러 건은 그룹당 1회만 발송)
+exports.notifyNewOrder = onDocumentCreated(
+  { document: "orders/{orderId}", region: "asia-northeast3" },
+  async (event) => {
+    const order = event.data && event.data.data();
+    if (!order || !order.orderGroupId) return; // 파트너 페이지 발주만
+
+    // 같은 orderGroupId(장바구니 1회 주문)로는 푸시 1번만: 마커 문서 create가 실패하면 이미 발송됨
+    try {
+      await admin.firestore().doc(`orderPushDedupe/${order.orderGroupId}`).create({
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      return; // 이미 다른 문서가 발송함
+    }
+
+    const tokensSnap = await admin.firestore().collection("adminPushTokens").get();
+    const tokens = tokensSnap.docs.map((d) => d.id);
+    if (tokens.length === 0) return;
+
+    const clientName = String(order.clientName || "거래처");
+    const item = `${String(order.productType || "")} ${order.amountKg || ""}kg`;
+
+    const res = await admin.messaging().sendEachForMulticast({
+      tokens,
+      notification: {
+        title: `🛒 새 발주: ${clientName}`,
+        body: `${item} (자세한 내역은 앱에서 확인)`,
+      },
+      android: {
+        priority: "high",
+        notification: { channelId: "PushDefaultForeground", sound: "default" },
+      },
+      data: { type: "order", orderGroupId: String(order.orderGroupId) },
+    });
+
+    // 만료된 토큰 정리
+    const invalid = [];
+    res.responses.forEach((r, i) => {
+      if (!r.success) {
+        const code = r.error && r.error.code;
+        if (code === "messaging/registration-token-not-registered" || code === "messaging/invalid-argument") {
+          invalid.push(tokens[i]);
+        }
+      }
+    });
+    await Promise.all(invalid.map((t) => admin.firestore().doc(`adminPushTokens/${t}`).delete()));
+  }
+);
+
 // 홈페이지 머신 수리 상담 신청 → 사장님 앱으로 푸시 알림
 exports.notifyNewRepairRequest = onDocumentCreated(
   { document: "repairRequests/{requestId}", region: "asia-northeast3" },
