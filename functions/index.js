@@ -50,6 +50,49 @@ exports.notifyNewChatMessage = onDocumentCreated(
   }
 );
 
+// 주문 생성 시점의 원가 스냅샷 저장 (앱/파트너 주문 공통)
+// 이후 생두 원가·배합비·손실률·부자재비를 바꿔도 과거 주문의 마진이 변하지 않도록 고정
+exports.snapshotOrderCost = onDocumentCreated(
+  { document: "orders/{orderId}", region: "asia-northeast3" },
+  async (event) => {
+    const order = event.data && event.data.data();
+    if (!order || order.costSnapshot || !order.productType) return;
+
+    const db = admin.firestore();
+
+    // 주문된 제품 찾기
+    const prodSnap = await db.collection("products").where("name", "==", order.productType).limit(1).get();
+    if (prodSnap.empty) return; // 수기 품목 등 제품 마스터에 없으면 스냅샷 생략
+    const prod = prodSnap.docs[0].data();
+
+    // 생두 원가 합산 (배합비 반영)
+    const beansSnap = await db.collection("beans").get();
+    const beanCostMap = {};
+    beansSnap.docs.forEach((d) => { beanCostMap[d.data().name] = d.data().costPerKg || 0; });
+
+    let greenCostPerKg = 0;
+    Object.entries(prod.composition || {}).forEach(([beanName, ratio]) => {
+      greenCostPerKg += (beanCostMap[beanName] || 0) * Number(ratio || 0);
+    });
+
+    const shrinkage = Number(prod.shrinkage || 0);
+    const roastedCostPerKg = shrinkage < 1 ? greenCostPerKg / (1 - shrinkage) : greenCostPerKg;
+    const overheadPerKg =
+      Number(prod.costBag || 0) + Number(prod.costLabel || 0) +
+      Number(prod.costBox || 0) + Number(prod.extraCost || 0);
+
+    await event.data.ref.update({
+      costSnapshot: {
+        greenCostPerKg: Math.round(greenCostPerKg),
+        roastedCostPerKg: Math.round(roastedCostPerKg),
+        overheadPerKg: Math.round(overheadPerKg),
+        shrinkage,
+        capturedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+    });
+  }
+);
+
 // 파트너 페이지 새 발주 → 사장님 앱으로 푸시 알림
 // (앱에서 직접 입력한 주문은 orderGroupId가 없어 제외, 장바구니 여러 건은 그룹당 1회만 발송)
 exports.notifyNewOrder = onDocumentCreated(
