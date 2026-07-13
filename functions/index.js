@@ -77,9 +77,32 @@ exports.snapshotOrderCost = onDocumentCreated(
 
     const shrinkage = Number(prod.shrinkage || 0);
     const roastedCostPerKg = shrinkage < 1 ? greenCostPerKg / (1 - shrinkage) : greenCostPerKg;
-    const overheadPerKg =
+
+    // 부자재비: 거래처 포장 프로필(봉투/라벨)이 있으면 그것을 우선 사용, 없으면 제품 마스터 값
+    let overheadPerKg =
       Number(prod.costBag || 0) + Number(prod.costLabel || 0) +
       Number(prod.costBox || 0) + Number(prod.extraCost || 0);
+    try {
+      if (order.clientId) {
+        const clientSnap = await db.doc(`clients/${order.clientId}`).get();
+        const packaging = clientSnap.exists ? clientSnap.data().packaging : null;
+        if (packaging) {
+          const bagId = (packaging.perProduct && packaging.perProduct[order.productType] && packaging.perProduct[order.productType].bagMaterialId)
+            || packaging.defaultBagMaterialId;
+          let bagCost = Number(prod.costBag || 0);
+          if (bagId) {
+            const bagSnap = await db.doc(`packagingMaterials/${bagId}`).get();
+            if (bagSnap.exists) bagCost = Number(bagSnap.data().unitCost || 0);
+          }
+          let labelCost = 0;
+          if (packaging.labelMaterialId) {
+            const labelSnap = await db.doc(`packagingMaterials/${packaging.labelMaterialId}`).get();
+            if (labelSnap.exists) labelCost = Number(labelSnap.data().unitCost || 0);
+          }
+          overheadPerKg = bagCost + labelCost + Number(prod.extraCost || 0);
+        }
+      }
+    } catch (e) { /* 프로필 조회 실패 시 제품 마스터 값 사용 */ }
 
     await event.data.ref.update({
       costSnapshot: {
