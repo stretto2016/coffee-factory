@@ -57,6 +57,7 @@ exports.snapshotOrderCost = onDocumentCreated(
   async (event) => {
     const order = event.data && event.data.data();
     if (!order || order.costSnapshot || !order.productType) return;
+    if (order.isPrepaidDraw) return; // 선주문 차감 기록(0원)은 원가 스냅샷 불필요 (선주문 등록 건에 있음)
 
     const db = admin.firestore();
 

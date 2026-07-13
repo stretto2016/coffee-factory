@@ -774,6 +774,24 @@
                     isShipped: newShipped >= (o.amountKg || 0),
                     drawHistory: arrayUnion({ date: dateStr, amountKg: qty, by: 'client', at: Date.now() })
                 });
+                // 거래 기록용 0원 주문 생성 → 주문 내역/명세서에 "[선주문 차감]"으로 표시
+                await addDoc(collection(db, "orders"), {
+                    date: dateStr,
+                    clientId: o.clientId,
+                    clientName: o.clientName,
+                    productType: o.productType,
+                    amountKg: qty,
+                    unitPrice: 0,
+                    totalPrice: 0,
+                    note: '[선주문 차감]',
+                    isPrepaidDraw: true,
+                    prepaidParentId: o.id,
+                    isManual: true,
+                    isShipped: true,
+                    shippedAmount: qty,
+                    isRead: false,
+                    createdAt: serverTimestamp()
+                });
                 alert('차감 요청이 접수되었습니다. 준비되는 대로 전달드리겠습니다!');
             } catch (e) {
                 console.error('차감 실패:', e);
@@ -1414,16 +1432,36 @@
                 return;
             }
 
-            // [수정] 장바구니 단가는 공급가 → 부가세 별도 합산해서 최종 금액 계산
+            // [NEW] 선주문 잔량 자동 차감 계획: 어떤 항목을 잔량에서 뺄지 먼저 확인 (DB 반영은 최종 확인 후)
+            const drawPlan = []; // { prepaid, drawQty }
+            const normalItems = [];
+            for (const item of cart) {
+                const prepaid = prepaidOrdersCache.find(p => p.productType === item.name
+                    && Math.round(((p.amountKg || 0) - (p.shippedAmount || 0)) * 1000) / 1000 > 0);
+                if (!prepaid) { normalItems.push(item); continue; }
+
+                const remaining = Math.round(((prepaid.amountKg || 0) - (prepaid.shippedAmount || 0)) * 1000) / 1000;
+                const drawQty = Math.min(item.qty, remaining);
+                const restQty = Math.round((item.qty - drawQty) * 1000) / 1000;
+                const useDraw = confirm(`"${item.name}"은(는) 선주문(선입금) 잔량 ${remaining}kg이 있습니다.\n${drawQty}kg을 잔량에서 차감할까요? (추가 결제 없음${restQty > 0 ? `, 나머지 ${restQty}kg은 일반 주문` : ''})\n\n[취소]를 누르면 전량 일반 주문으로 접수됩니다.`);
+                if (!useDraw) { normalItems.push(item); continue; }
+                drawPlan.push({ prepaid, drawQty });
+                if (restQty > 0) normalItems.push({ ...item, qty: restQty });
+            }
+
+            // [수정] 장바구니 단가는 공급가 → 부가세 별도 합산해서 최종 금액 계산 (선주문 차감분 제외)
             const isVatFree = currentClient.isVatFree;
-            const supplyTotal = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+            const supplyTotal = normalItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
             const vatTotal = isVatFree ? 0 : Math.floor(supplyTotal * 0.1);
             const grandTotal = Math.floor(supplyTotal) + vatTotal;
             const totalPriceStr = grandTotal.toLocaleString();
 
+            const drawInfo = drawPlan.length > 0
+                ? `선주문 차감: ${drawPlan.map(d => `${d.prepaid.productType} ${d.drawQty}kg`).join(', ')} (결제 없음)\n`
+                : '';
             const confirmMsg = isVatFree
-                ? `총 결제 예정 금액: ${totalPriceStr}원\n주문을 전송하시겠습니까?`
-                : `공급가액: ${Math.floor(supplyTotal).toLocaleString()}원\n부가세(10%): ${vatTotal.toLocaleString()}원\n총 결제 예정 금액: ${totalPriceStr}원\n\n주문을 전송하시겠습니까?`;
+                ? `${drawInfo}총 결제 예정 금액: ${totalPriceStr}원\n주문을 전송하시겠습니까?`
+                : `${drawInfo}공급가액: ${Math.floor(supplyTotal).toLocaleString()}원\n부가세(10%): ${vatTotal.toLocaleString()}원\n총 결제 예정 금액: ${totalPriceStr}원\n\n주문을 전송하시겠습니까?`;
             if (!confirm(confirmMsg)) return;
             
             const btn = document.getElementById('submitBtn');
@@ -1435,8 +1473,47 @@
             const orderGroupId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
 
             try {
-                // 1. 주문 저장
-                const promises = cart.map(item => {
+                // 0. [NEW] 선주문 잔량 자동 차감: 활성 선주문이 있는 제품은 청구 없이 잔량에서 차감
+                const normalItems = [];
+                for (const item of cart) {
+                    const prepaid = prepaidOrdersCache.find(p => p.productType === item.name
+                        && Math.round(((p.amountKg || 0) - (p.shippedAmount || 0)) * 1000) / 1000 > 0);
+                    if (!prepaid) { normalItems.push(item); continue; }
+
+                    const remaining = Math.round(((prepaid.amountKg || 0) - (prepaid.shippedAmount || 0)) * 1000) / 1000;
+                    const drawQty = Math.min(item.qty, remaining);
+                    const restQty = Math.round((item.qty - drawQty) * 1000) / 1000;
+                    const useDraw = confirm(`"${item.name}"은(는) 선주문(선입금) 잔량 ${remaining}kg이 있습니다.\n${drawQty}kg을 잔량에서 차감할까요? (추가 결제 없음${restQty > 0 ? `, 나머지 ${restQty}kg은 일반 주문` : ''})\n\n[취소]를 누르면 전량 일반 주문으로 접수됩니다.`);
+                    if (!useDraw) { normalItems.push(item); continue; }
+
+                    const newShipped = Math.round(((prepaid.shippedAmount || 0) + drawQty) * 1000) / 1000;
+                    await updateDoc(doc(db, "orders", prepaid.id), {
+                        shippedAmount: newShipped,
+                        isShipped: newShipped >= (prepaid.amountKg || 0),
+                        drawHistory: arrayUnion({ date: date, amountKg: drawQty, by: 'client', at: Date.now() })
+                    });
+                    await addDoc(collection(db, "orders"), {
+                        date: date,
+                        clientId: currentClient.id,
+                        clientName: currentClient.name,
+                        productType: item.name,
+                        amountKg: drawQty,
+                        unitPrice: 0,
+                        totalPrice: 0,
+                        note: note ? `[선주문 차감] ${note}` : '[선주문 차감]',
+                        isPrepaidDraw: true,
+                        prepaidParentId: prepaid.id,
+                        isManual: true,
+                        isShipped: true,
+                        shippedAmount: drawQty,
+                        isRead: false,
+                        createdAt: serverTimestamp()
+                    });
+                    if (restQty > 0) normalItems.push({ ...item, qty: restQty });
+                }
+
+                // 1. 주문 저장 (일반 청구분)
+                const promises = normalItems.map(item => {
                     // [중요] DB에는 부가세 별도(공급가) 단가로 저장 — 앱(통계/명세서)이 필요 시 10%를 더하는 방식과 통일
                     return addDoc(collection(db, "orders"), {
                         date: date,
