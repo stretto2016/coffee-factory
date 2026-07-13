@@ -1,5 +1,5 @@
 // 1:1 상담 새 메시지 → 사장님 안드로이드 앱으로 푸시 알림
-const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/firestore");
+const { onDocumentCreated, onDocumentUpdated, onDocumentDeleted } = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
@@ -165,6 +165,35 @@ exports.notifyNewOrder = onDocumentCreated(
       }
     });
     await Promise.all(invalid.map((t) => admin.firestore().doc(`adminPushTokens/${t}`).delete()));
+  }
+);
+
+// 선주문 차감 기록(0원 주문)이 삭제(주문 취소)되면 선주문 잔량 자동 복구
+exports.restorePrepaidOnDelete = onDocumentDeleted(
+  { document: "orders/{orderId}", region: "asia-northeast3" },
+  async (event) => {
+    const deleted = event.data && event.data.data();
+    if (!deleted || !deleted.isPrepaidDraw || !deleted.prepaidParentId) return;
+
+    const qty = Number(deleted.amountKg || 0);
+    if (qty <= 0) return;
+
+    const parentRef = admin.firestore().doc(`orders/${deleted.prepaidParentId}`);
+    await admin.firestore().runTransaction(async (tx) => {
+      const snap = await tx.get(parentRef);
+      if (!snap.exists) return;
+      const parent = snap.data();
+      const newShipped = Math.max(0, Math.round(((parent.shippedAmount || 0) - qty) * 1000) / 1000);
+      const d = new Date();
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      tx.update(parentRef, {
+        shippedAmount: newShipped,
+        isShipped: newShipped >= Number(parent.amountKg || 0),
+        drawHistory: admin.firestore.FieldValue.arrayUnion({
+          date: dateStr, amountKg: -qty, by: "cancel", at: Date.now(),
+        }),
+      });
+    });
   }
 );
 
