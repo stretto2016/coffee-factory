@@ -1,5 +1,5 @@
 // 1:1 상담 새 메시지 → 사장님 안드로이드 앱으로 푸시 알림
-const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
@@ -128,6 +128,57 @@ exports.notifyNewOrder = onDocumentCreated(
         notification: { channelId: "PushDefaultForeground", sound: "default" },
       },
       data: { type: "order", orderGroupId: String(order.orderGroupId) },
+    });
+
+    // 만료된 토큰 정리
+    const invalid = [];
+    res.responses.forEach((r, i) => {
+      if (!r.success) {
+        const code = r.error && r.error.code;
+        if (code === "messaging/registration-token-not-registered" || code === "messaging/invalid-argument") {
+          invalid.push(tokens[i]);
+        }
+      }
+    });
+    await Promise.all(invalid.map((t) => admin.firestore().doc(`adminPushTokens/${t}`).delete()));
+  }
+);
+
+// 거래처가 파트너 페이지에서 선주문 잔량을 직접 차감 → 사장님 앱으로 푸시 알림
+exports.notifyPrepaidDraw = onDocumentUpdated(
+  { document: "orders/{orderId}", region: "asia-northeast3" },
+  async (event) => {
+    const before = event.data && event.data.before.data();
+    const after = event.data && event.data.after.data();
+    if (!before || !after || !after.isPrepaid) return;
+
+    const prevShipped = Number(before.shippedAmount || 0);
+    const newShipped = Number(after.shippedAmount || 0);
+    if (newShipped <= prevShipped) return; // 차감(증가)이 아니면 무시
+
+    // 마지막 차감 기록이 거래처(client) 직접 차감인 경우에만 알림 (앱에서 사장님이 직접 차감한 건 제외)
+    const history = Array.isArray(after.drawHistory) ? after.drawHistory : [];
+    const last = history.length > 0 ? history[history.length - 1] : null;
+    if (!last || last.by !== "client") return;
+
+    const tokensSnap = await admin.firestore().collection("adminPushTokens").get();
+    const tokens = tokensSnap.docs.map((d) => d.id);
+    if (tokens.length === 0) return;
+
+    const drawn = Math.round((newShipped - prevShipped) * 1000) / 1000;
+    const remaining = Math.round((Number(after.amountKg || 0) - newShipped) * 1000) / 1000;
+
+    const res = await admin.messaging().sendEachForMulticast({
+      tokens,
+      notification: {
+        title: `📦 선주문 차감: ${after.clientName || "거래처"}`,
+        body: `${after.productType || ""} ${drawn}kg 차감 (잔량 ${remaining}kg)`,
+      },
+      android: {
+        priority: "high",
+        notification: { channelId: "PushDefaultForeground", sound: "default" },
+      },
+      data: { type: "prepaidDraw", orderId: event.params.orderId },
     });
 
     // 만료된 토큰 정리

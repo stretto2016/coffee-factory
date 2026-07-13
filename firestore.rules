@@ -13,9 +13,30 @@ service cloud.firestore {
     }
 
     // 3. 주문: 로그인한 사람만
-    match /orders/{document=**} {
+    // 거래처 본인 확인 (clients 문서의 email 또는 loginId 기준)
+    function isClientOwner(clientId) {
+      let c = get(/databases/$(database)/documents/clients/$(clientId)).data;
+      return request.auth != null && (
+        c.email == request.auth.token.email
+        || (('loginId' in c) && (
+          (c.loginId + '@stretto.com') == request.auth.token.email
+          || (c.loginId + '@stretto.co.kr') == request.auth.token.email
+          || c.loginId == request.auth.token.email
+        ))
+      );
+    }
+    match /orders/{orderId} {
       allow create, read, delete: if request.auth != null;
       allow write: if isAdmin();
+      // 선주문(isPrepaid) 차감: 해당 거래처 본인이 출고량/이력 필드만, 잔량 초과 없이 증가시키는 경우 허용
+      allow update: if isAdmin() || (
+        resource.data.isPrepaid == true
+        && isClientOwner(resource.data.clientId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['shippedAmount', 'drawHistory', 'isShipped'])
+        && request.resource.data.shippedAmount is number
+        && request.resource.data.shippedAmount > resource.data.shippedAmount
+        && request.resource.data.shippedAmount <= resource.data.amountKg
+      );
     }
 
     // 4. 거래처 정보

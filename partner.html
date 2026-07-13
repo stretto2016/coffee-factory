@@ -445,6 +445,14 @@
         📄 PDF 다운로드
     </button>
 </div>
+            <div class="history-section" id="prepaidSection" style="display:none;">
+                <div class="grid-title" style="border-left-color: #2fbf71; color: #ccc;">
+                    선주문(선입금) 잔량
+                    <span class="grid-desc">필요한 만큼 차감 요청하면 바로 준비해 드립니다</span>
+                </div>
+                <div id="prepaidList"></div>
+            </div>
+
             <div class="history-section">
                 <div class="grid-title" style="border-left-color: #666; color: #ccc;">
                     최근 주문 내역
@@ -504,7 +512,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, where, onSnapshot, orderBy, serverTimestamp, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, where, onSnapshot, orderBy, serverTimestamp, setDoc, increment, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAUjfrQ-HVivBLggiOl8vvRZynala1qqyM",
@@ -643,6 +651,7 @@
                         renderProductGrids();
                         loadOrderHistory(currentClient.id);
                         loadQuickOrderItems(currentClient.id);
+                        loadPrepaidOrders(currentClient.id);
                         startChat(currentClient);
                     } else {
                         document.getElementById('disp-name').innerText = "미등록 거래처";
@@ -657,6 +666,7 @@
                 cart = [];
                 renderCart();
                 if(historyUnsubscribe) historyUnsubscribe();
+                if(prepaidUnsubscribe) { prepaidUnsubscribe(); prepaidUnsubscribe = null; }
                 stopChat();
             }
         });
@@ -686,6 +696,91 @@
             }
             return deadline;
         }
+
+        // ▼▼▼ [NEW] 선주문(선입금) 잔량 표시 및 직접 차감 ▼▼▼
+        let prepaidUnsubscribe = null;
+        let prepaidOrdersCache = [];
+
+        function loadPrepaidOrders(clientId) {
+            if (prepaidUnsubscribe) prepaidUnsubscribe();
+            const q = query(collection(db, "orders"), where("clientId", "==", clientId), where("isPrepaid", "==", true));
+            prepaidUnsubscribe = onSnapshot(q, (snap) => {
+                prepaidOrdersCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderPrepaidOrders();
+            }, (err) => console.error("선주문 로딩 실패:", err));
+        }
+
+        function renderPrepaidOrders() {
+            const section = document.getElementById('prepaidSection');
+            const list = document.getElementById('prepaidList');
+            if (!section || !list) return;
+
+            const active = prepaidOrdersCache
+                .map(o => ({ ...o, remaining: Math.round(((o.amountKg || 0) - (o.shippedAmount || 0)) * 1000) / 1000 }))
+                .filter(o => o.remaining > 0)
+                .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+            if (active.length === 0) { section.style.display = 'none'; return; }
+            section.style.display = 'block';
+
+            list.innerHTML = active.map(o => {
+                const total = o.amountKg || 0;
+                const usedPct = total > 0 ? Math.min(100, ((total - o.remaining) / total) * 100) : 0;
+                return `
+                <div style="background:#1a1a1a; border:1px solid #2fbf71; border-radius:10px; padding:14px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                        <div style="min-width:0;">
+                            <div style="color:#fff; font-weight:bold;">${o.productType}</div>
+                            <div style="color:#888; font-size:0.8rem;">${o.date} 선입금 · 총 ${total}kg</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="color:#2fbf71; font-weight:bold; font-size:1.2rem;">${o.remaining}kg</div>
+                            <div style="color:#666; font-size:0.7rem;">남은 잔량</div>
+                        </div>
+                    </div>
+                    <div style="height:6px; background:#333; border-radius:3px; overflow:hidden; margin:10px 0;">
+                        <div style="height:100%; width:${usedPct}%; background:#2fbf71;"></div>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <input type="number" step="0.1" min="0" max="${o.remaining}" id="draw-${o.id}" placeholder="차감 kg (예: 0.5)"
+                            style="flex:1; min-width:0; background:#222; border:1px solid #444; border-radius:6px; color:#fff; padding:10px; font-size:0.9rem;">
+                        <button onclick="drawPrepaid('${o.id}')"
+                            style="background:#2fbf71; color:#000; font-weight:bold; border:none; border-radius:6px; padding:10px 16px; cursor:pointer;">
+                            차감 요청
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        window.drawPrepaid = async function(orderId) {
+            const o = prepaidOrdersCache.find(x => x.id === orderId);
+            if (!o) return;
+            const input = document.getElementById('draw-' + orderId);
+            const qty = parseFloat(input?.value || '');
+            const remaining = Math.round(((o.amountKg || 0) - (o.shippedAmount || 0)) * 1000) / 1000;
+
+            if (!qty || qty <= 0) { alert('차감할 수량(kg)을 입력해 주세요.'); return; }
+            if (qty > remaining) { alert(`남은 잔량(${remaining}kg)보다 많이 차감할 수 없습니다.`); return; }
+            if (!confirm(`${o.productType} ${qty}kg을 차감(출고 요청)할까요?\n차감 후 잔량: ${Math.round((remaining - qty) * 1000) / 1000}kg`)) return;
+
+            const today = new Date();
+            const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            const newShipped = Math.round(((o.shippedAmount || 0) + qty) * 1000) / 1000;
+
+            try {
+                await updateDoc(doc(db, "orders", orderId), {
+                    shippedAmount: newShipped,
+                    isShipped: newShipped >= (o.amountKg || 0),
+                    drawHistory: arrayUnion({ date: dateStr, amountKg: qty, by: 'client', at: Date.now() })
+                });
+                alert('차감 요청이 접수되었습니다. 준비되는 대로 전달드리겠습니다!');
+            } catch (e) {
+                console.error('차감 실패:', e);
+                alert('차감에 실패했습니다. 새로고침 후 다시 시도해 주세요.');
+            }
+        };
+        // ▲▲▲ 선주문 끝 ▲▲▲
 
         // ▼▼▼ [수정] 주문 내역 로직 (날짜별 그룹화 + 최근 3일치만 표시) ▼▼▼
         // ▼▼▼ [수정] 주문 내역 로직 (인덱스 오류 해결: JS에서 정렬 수행) ▼▼▼
