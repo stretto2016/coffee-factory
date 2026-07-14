@@ -1809,5 +1809,242 @@
         </form>
     </div>
 </div>
+
+<!-- ===================== [1:1 상담 위젯 (홈페이지 방문자용)] ===================== -->
+<style>
+  #stChat * { box-sizing: border-box; }
+  #stChatFab {
+    position: fixed; right: 22px; bottom: 22px; z-index: 9998;
+    display: flex; align-items: center; gap: 8px;
+    padding: 13px 20px; border-radius: 28px; border: none; cursor: pointer;
+    background: #ffffff; color: #111;
+    font-size: 0.95rem; font-weight: 600; font-family: inherit;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+    transition: transform .15s;
+  }
+  #stChatFab:hover { transform: translateY(-1px); }
+  #stChatFab:active { transform: scale(0.96); }
+  #stChatFab svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .st-fab-badge {
+    position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; padding: 0 5px;
+    background: #ff453a; color: #fff; border-radius: 10px; font-size: 0.7rem; font-weight: bold;
+    align-items: center; justify-content: center; box-sizing: border-box;
+  }
+  .st-panel {
+    position: fixed; right: 22px; bottom: 92px; z-index: 9999;
+    width: 360px; max-width: calc(100vw - 32px); height: 520px; max-height: calc(100vh - 130px);
+    background: #fff; border-radius: 18px; box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    display: flex; flex-direction: column; overflow: hidden;
+    opacity: 0; transform: translateY(16px) scale(.98); pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  .st-panel.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  .st-head {
+    background: #5F4137; color: #fff; padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+  }
+  .st-head-t { font-weight: 700; font-size: 16px; }
+  .st-close { background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; opacity: .8; }
+  .st-close:hover { opacity: 1; }
+  .st-gate { padding: 22px 18px; display: flex; flex-direction: column; gap: 10px; }
+  .st-gate-lead { font-size: 14px; color: #57534e; line-height: 1.6; margin: 0 0 6px; }
+  .st-input {
+    width: 100%; padding: 12px 14px; border: 1px solid #e7e5e4; border-radius: 12px;
+    font-size: 15px; outline: none;
+  }
+  .st-input:focus { border-color: #5F4137; box-shadow: 0 0 0 3px rgba(95,65,55,.12); }
+  .st-start {
+    margin-top: 6px; width: 100%; padding: 13px; border: none; border-radius: 12px;
+    background: #5F4137; color: #fff; font-weight: 700; font-size: 15px; cursor: pointer;
+  }
+  .st-start:hover { background: #4a332b; }
+  .st-start:disabled { background: #d6d3d1; cursor: default; }
+  .st-gate-note { font-size: 11px; color: #a8a29e; text-align: center; margin: 4px 0 0; }
+  .st-body { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  .st-msgs { flex: 1; overflow-y: auto; padding: 16px; background: #faf9f8; display: flex; flex-direction: column; gap: 8px; }
+  .st-empty { text-align: center; color: #a8a29e; font-size: 14px; margin: auto; }
+  .st-row { display: flex; align-items: flex-end; gap: 6px; }
+  .st-row.me { justify-content: flex-end; }
+  .st-row.them { justify-content: flex-start; }
+  .st-bubble { max-width: 76%; padding: 9px 13px; border-radius: 16px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+  .st-row.me .st-bubble { background: #5F4137; color: #fff; border-bottom-right-radius: 5px; }
+  .st-row.them .st-bubble { background: #fff; border: 1px solid #e7e5e4; color: #292524; border-bottom-left-radius: 5px; }
+  .st-t { font-size: 10px; color: #a8a29e; flex-shrink: 0; }
+  .st-inbar { display: flex; gap: 8px; padding: 10px; border-top: 1px solid #f0efee; background: #fff; flex-shrink: 0; }
+  .st-msg-input { flex: 1; padding: 11px 14px; border: 1px solid #e7e5e4; border-radius: 22px; font-size: 14px; outline: none; }
+  .st-msg-input:focus { border-color: #5F4137; }
+  .st-send { padding: 0 18px; border: none; border-radius: 22px; background: #5F4137; color: #fff; font-weight: 700; font-size: 14px; cursor: pointer; }
+  .st-send:hover { background: #4a332b; }
+  .st-send:disabled { background: #d6d3d1; }
+  @media (max-width: 480px) {
+    .st-panel { right: 8px; bottom: 84px; width: calc(100vw - 16px); height: calc(100vh - 110px); }
+    #stChatFab { right: 16px; bottom: 16px; }
+  }
+</style>
+<div id="stChat">
+  <button id="stChatFab" aria-label="1:1 상담" title="1:1 상담">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20l1.3-3.9C1.976 12.663 2.874 8.228 6.4 5.726c3.526-2.501 8.59-2.296 11.845.48 3.255 2.777 3.695 7.266 1.029 10.501C16.608 19.942 11.659 20.922 7.7 19z"/></svg>
+    1:1 상담하기
+    <span id="stChatBadge" class="st-fab-badge" style="display:none;"></span>
+  </button>
+  <div id="stChatPanel" class="st-panel">
+    <div class="st-head">
+      <div class="st-head-t">💬 스트레토 1:1 상담</div>
+      <button id="stChatClose" class="st-close" aria-label="닫기">✕</button>
+    </div>
+    <div id="stGate" class="st-gate">
+      <p class="st-gate-lead">상담을 위해 성함과 연락처를 남겨주세요.<br>확인 후 바로 답변드리겠습니다. ☕</p>
+      <input id="stName" class="st-input" type="text" placeholder="성함" maxlength="30" autocomplete="name" />
+      <input id="stPhone" class="st-input" type="tel" placeholder="연락처 (예: 010-1234-5678)" maxlength="20" autocomplete="tel" />
+      <button id="stStart" class="st-start">상담 시작하기</button>
+      <p class="st-gate-note">남겨주신 연락처는 상담 회신 용도로만 사용됩니다.</p>
+    </div>
+    <div id="stChatBody" class="st-body" style="display:none;">
+      <div id="stMsgs" class="st-msgs"><div class="st-empty">궁금한 점을 남겨주세요. ☕</div></div>
+      <div class="st-inbar">
+        <input id="stInput" class="st-msg-input" type="text" placeholder="메시지를 입력하세요" />
+        <button id="stSend" class="st-send">전송</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="module">
+  import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, doc, addDoc, setDoc, onSnapshot, query, orderBy, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAUjfrQ-HVivBLggiOl8vvRZynala1qqyM",
+    authDomain: "roastery-f3e2e.firebaseapp.com",
+    projectId: "roastery-f3e2e",
+    storageBucket: "roastery-f3e2e.firebasestorage.app",
+    messagingSenderId: "79814680110",
+    appId: "1:79814680110:web:86aa08fe0e273fed6649bf"
+  };
+  const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  const $ = (id) => document.getElementById(id);
+  const LS = 'stretto_guest_chat';
+  let uid = null, unsub = null, open = false, unread = 0, started = false;
+
+  function updateBadge() {
+    const b = $('stChatBadge');
+    if (unread > 0) { b.style.display = 'flex'; b.textContent = unread > 9 ? '9+' : String(unread); }
+    else { b.style.display = 'none'; }
+  }
+
+  function render(msgs) {
+    const el = $('stMsgs');
+    if (!msgs.length) { el.innerHTML = '<div class="st-empty">궁금한 점을 남겨주세요. ☕</div>'; return; }
+    el.innerHTML = msgs.map(m => {
+      const me = m.sender === 'client';
+      let t = '';
+      if (m.createdAt && m.createdAt.toDate) { const d = m.createdAt.toDate(); t = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
+      const safe = String(m.text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return `<div class="st-row ${me ? 'me' : 'them'}">${me ? `<span class="st-t">${t}</span>` : ''}<div class="st-bubble">${safe}</div>${!me ? `<span class="st-t">${t}</span>` : ''}</div>`;
+    }).join('');
+    el.scrollTop = el.scrollHeight;
+  }
+
+  async function markRead(snap) {
+    const ups = [];
+    snap.docs.forEach(d => { const m = d.data(); if (m.sender === 'admin' && !m.readByClient) ups.push(setDoc(d.ref, { readByClient: true }, { merge: true })); });
+    if (ups.length) { try { await Promise.all(ups); } catch (e) {} }
+    unread = 0; updateBadge();
+    if (uid) setDoc(doc(db, 'chats', uid), { clientUnread: 0 }, { merge: true }).catch(() => {});
+  }
+
+  function subscribe() {
+    if (!uid || unsub) return;
+    const q = query(collection(db, 'chats', uid, 'messages'), orderBy('createdAt', 'asc'));
+    unsub = onSnapshot(q, (snap) => {
+      const msgs = snap.docs.map(d => d.data());
+      render(msgs);
+      if (!open) { unread = msgs.filter(m => m.sender === 'admin' && !m.readByClient).length; updateBadge(); }
+      else { markRead(snap); }
+    }, (err) => console.error('상담 구독 오류', err));
+  }
+
+  async function startRoom() {
+    const name = $('stName').value.trim();
+    const phone = $('stPhone').value.trim();
+    if (!name) { alert('성함을 입력해 주세요.'); return; }
+    if (phone.replace(/[^0-9]/g, '').length < 9) { alert('올바른 연락처를 입력해 주세요.'); return; }
+    if (!uid) { alert('연결 중입니다. 잠시 후 다시 시도해 주세요.'); return; }
+    $('stStart').disabled = true;
+    try {
+      await setDoc(doc(db, 'chats', uid), {
+        clientId: uid, clientName: name + '(방문자)', guestName: name, guestPhone: phone,
+        isGuest: true, lastMessage: '', lastSender: 'client', updatedAt: serverTimestamp(),
+        adminUnread: 0, clientUnread: 0
+      }, { merge: true });
+      localStorage.setItem(LS, JSON.stringify({ name, phone }));
+      started = true;
+      $('stGate').style.display = 'none';
+      $('stChatBody').style.display = 'flex';
+      subscribe();
+      $('stInput').focus();
+    } catch (e) {
+      console.error('상담 시작 실패', e);
+      alert('상담 시작에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+      $('stStart').disabled = false;
+    }
+  }
+
+  async function sendMsg() {
+    const inp = $('stInput');
+    const text = inp.value.trim();
+    if (!text || !uid) return;
+    const btn = $('stSend'); btn.disabled = true; inp.value = '';
+    try {
+      await addDoc(collection(db, 'chats', uid, 'messages'), {
+        sender: 'client', text, createdAt: serverTimestamp(), readByAdmin: false, readByClient: true
+      });
+      await setDoc(doc(db, 'chats', uid), {
+        lastMessage: text, lastSender: 'client', updatedAt: serverTimestamp(), adminUnread: increment(1)
+      }, { merge: true });
+    } catch (e) {
+      console.error('메시지 전송 실패', e);
+      alert('메시지 전송에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+      inp.value = text;
+    } finally {
+      btn.disabled = false; inp.focus();
+    }
+  }
+
+  // 익명 로그인은 실제로 상담을 열 때만 수행(방문자마다 계정이 생기지 않도록).
+  // 재방문자는 브라우저에 저장된 익명 세션이 onAuthStateChanged로 자동 복원됨.
+  // ※ Firebase 콘솔에서 '익명(Anonymous)' 로그인 제공업체 활성화 필요.
+  function ensureAuth() {
+    if (!auth.currentUser) signInAnonymously(auth).catch(e => console.error('익명 로그인 실패 (콘솔에서 Anonymous 인증 활성화 필요)', e));
+  }
+  onAuthStateChanged(auth, (u) => { if (u) { uid = u.uid; if (started) subscribe(); } });
+
+  // 이전 세션 복원 (같은 브라우저 재방문)
+  const saved = localStorage.getItem(LS);
+  if (saved) {
+    started = true;
+    try { const { name, phone } = JSON.parse(saved); $('stName').value = name || ''; $('stPhone').value = phone || ''; } catch (e) {}
+    $('stGate').style.display = 'none';
+    $('stChatBody').style.display = 'flex';
+  }
+
+  $('stChatFab').addEventListener('click', () => {
+    open = !open;
+    $('stChatPanel').classList.toggle('open', open);
+    if (open) {
+      ensureAuth(); // 상담 열 때 익명 로그인 보장
+      unread = 0; updateBadge();
+      if (started) { subscribe(); setTimeout(() => $('stInput') && $('stInput').focus(), 50); }
+    }
+  });
+  $('stChatClose').addEventListener('click', () => { open = false; $('stChatPanel').classList.remove('open'); });
+  $('stStart').addEventListener('click', startRoom);
+  $('stSend').addEventListener('click', sendMsg);
+  $('stInput').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing) sendMsg(); });
+</script>
+<!-- ===================== [1:1 상담 위젯 끝] ===================== -->
 </body>
 </html>
