@@ -787,9 +787,9 @@
                     isPrepaidDraw: true,
                     prepaidParentId: o.id,
                     prepaidRemainingAfter: Math.round((remaining - qty) * 1000) / 1000,
-                    isManual: true,
-                    isShipped: true,
-                    shippedAmount: qty,
+                    isManual: false,
+                    isShipped: false,
+                    shippedAmount: 0,
                     isRead: false,
                     createdAt: serverTimestamp()
                 });
@@ -1505,9 +1505,9 @@
                         isPrepaidDraw: true,
                         prepaidParentId: prepaid.id,
                         prepaidRemainingAfter: Math.round((((prepaid.amountKg || 0) - (prepaid.shippedAmount || 0)) - drawQty) * 1000) / 1000,
-                        isManual: true,
-                        isShipped: true,
-                        shippedAmount: drawQty,
+                        isManual: false,
+                        isShipped: false,
+                        shippedAmount: 0,
                         isRead: false,
                         createdAt: serverTimestamp()
                     });
