@@ -1469,6 +1469,10 @@
         return checked ? checked.value : '';
     }
 
+    function getCheckboxValues(name) {
+        return Array.from(document.querySelectorAll('input[name="' + name + '"]:checked')).map(el => el.value);
+    }
+
     function validateStep(step) {
         if (step === 1) {
             let ref = getRadioValue('refSource');
@@ -1487,8 +1491,9 @@
             if (file.size > 10 * 1024 * 1024) { alert('첨부 파일은 10MB 이하만 가능합니다.'); return false; }
         }
         if (step === 3) {
-            if (!document.getElementById('custMachine').value.trim()) { alert('8. 머신 모델을 입력해 주세요.'); return false; }
-            if (!document.getElementById('custSymptom').value.trim()) { alert('9. 증상 상세 내용을 입력해 주세요.'); return false; }
+            if (getCheckboxValues('repairItems').length === 0) { alert('7. 수리가 필요한 항목을 하나 이상 선택해 주세요.'); return false; }
+            if (!document.getElementById('custMachine').value.trim()) { alert('9. 머신 모델을 입력해 주세요.'); return false; }
+            if (!document.getElementById('custSymptom').value.trim()) { alert('10. 증상 상세 내용을 입력해 주세요.'); return false; }
         }
         return true;
     }
@@ -1554,9 +1559,11 @@
                 storeName: val('storeName'),
                 bizType: getRadioValue('bizType'),
                 bizFileUrl: '',
+                repairItems: getCheckboxValues('repairItems').join(', '),
                 visitAddr: val('visitAddr'),
                 machine: val('custMachine'),
                 symptom: val('custSymptom'),
+                visitSchedule: val('visitSchedule'),
                 etcNote: val('custEtc'),
                 status: 'new',
                 isRead: false,
@@ -1594,7 +1601,9 @@
                         store_name: data.storeName,
                         biz_type: data.bizType,
                         biz_file_url: data.bizFileUrl || '-',
+                        repair_items: data.repairItems || '-',
                         visit_addr: data.visitAddr || '-',
+                        visit_schedule: data.visitSchedule || '-',
                         etc_note: data.etcNote || '-'
                     }, "l4G2MfMxi1780Yt8N");
                 } catch (mailErr) {
@@ -1786,17 +1795,30 @@
             <div class="form-step" id="formStep3">
                 <p class="form-section-title">🔧 수리 신청</p>
 
-                <label class="form-label">7. 수리 방문 주소</label>
+                <label class="form-label">7. 수리가 필요한 항목 *</label>
+                <span class="form-hint">해당되는 항목을 모두 선택해 주세요. (복수 선택 가능)</span>
+                <div class="radio-group" id="repairItemsGroup">
+                    <label class="radio-item"><input type="checkbox" name="repairItems" value="에스프레소 머신 수리 및 점검"> 에스프레소 머신 수리 및 점검</label>
+                    <label class="radio-item"><input type="checkbox" name="repairItems" value="커피 그라인더 수리 및 케어"> 커피 그라인더 수리 및 케어</label>
+                    <label class="radio-item"><input type="checkbox" name="repairItems" value="정수 필터 및 급배수 라인"> 정수 필터 및 급배수 라인</label>
+                    <label class="radio-item"><input type="checkbox" name="repairItems" value="기타"> 기타</label>
+                </div>
+
+                <label class="form-label">8. 수리 방문 주소</label>
                 <span class="form-hint">사업자등록증 주소와 다를 경우에 입력해주세요.</span>
                 <input type="text" id="visitAddr" class="form-input">
 
-                <label class="form-label">8. 머신 모델 *</label>
+                <label class="form-label">9. 머신 모델 *</label>
                 <input type="text" id="custMachine" class="form-input" placeholder="예: 라마르조꼬 PB, 미티코 등">
 
-                <label class="form-label">9. 증상 상세 내용 *</label>
+                <label class="form-label">10. 증상 상세 내용 *</label>
                 <textarea id="custSymptom" class="form-input" placeholder="예: 추출 압력이 3바까지 떨어집니다. 스팀이 약합니다."></textarea>
 
-                <label class="form-label">10. 기타 문의사항 및 요청사항</label>
+                <label class="form-label">11. 매장 방문 희망 일정</label>
+                <span class="form-hint">예: 평일 오전 선호 / 6월 셋째 주 등 (조율 가능)</span>
+                <input type="text" id="visitSchedule" class="form-input" placeholder="예: 평일 오전 선호, 6월 셋째 주">
+
+                <label class="form-label">12. 기타 문의사항 및 요청사항</label>
                 <textarea id="custEtc" class="form-input"></textarea>
 
                 <div class="step-btn-row">
@@ -2038,10 +2060,35 @@
       if (started) { subscribe(); setTimeout(() => $('stInput') && $('stInput').focus(), 50); }
     }
   });
-  $('stChatClose').addEventListener('click', () => { open = false; $('stChatPanel').classList.remove('open'); });
+  $('stChatClose').addEventListener('click', () => { open = false; $('stChatPanel').classList.remove('open'); resetPanelLayout(); });
   $('stStart').addEventListener('click', startRoom);
   $('stSend').addEventListener('click', sendMsg);
   $('stInput').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing) sendMsg(); });
+
+  // 모바일 키보드 대응: 키보드가 올라오면 visualViewport에 맞춰 패널을 키보드 위로 붙이고,
+  // 항상 최신 메시지가 보이도록 스크롤 (대화가 위로 밀려 다시 스크롤해야 하는 문제 해결)
+  function resetPanelLayout() {
+    const p = $('stChatPanel');
+    p.style.bottom = ''; p.style.height = ''; p.style.top = '';
+  }
+  function applyKeyboardLayout() {
+    const panel = $('stChatPanel');
+    const vv = window.visualViewport;
+    if (!vv || window.innerWidth > 480 || !open) return;
+    const kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop); // 키보드 높이(근사)
+    if (kb > 60) { panel.style.top = 'auto'; panel.style.bottom = kb + 'px'; panel.style.height = vv.height + 'px'; }
+    else { resetPanelLayout(); }
+    const m = $('stMsgs'); if (m) m.scrollTop = m.scrollHeight;
+  }
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', applyKeyboardLayout);
+    window.visualViewport.addEventListener('scroll', applyKeyboardLayout);
+  }
+  ['stInput', 'stName', 'stPhone'].forEach(id => {
+    const el = $(id);
+    el.addEventListener('focus', () => setTimeout(applyKeyboardLayout, 200));
+    el.addEventListener('blur', () => setTimeout(() => { if (open) resetPanelLayout(); }, 100));
+  });
 </script>
 <!-- ===================== [1:1 상담 위젯 끝] ===================== -->
 </body>
