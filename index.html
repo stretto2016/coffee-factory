@@ -1478,22 +1478,18 @@
             let ref = getRadioValue('refSource');
             if (ref === '기타') ref = document.getElementById('refSourceEtc').value.trim();
             if (!ref) { alert('1. 알게 되신 경로를 선택해 주세요.'); return false; }
-            if (!document.getElementById('repName').value.trim()) { alert('2-1. 대표자명을 입력해 주세요.'); return false; }
-            if (!document.getElementById('repPhone').value.trim()) { alert('2-2. 대표자 연락처를 입력해 주세요.'); return false; }
+            if (!document.getElementById('storeName').value.trim()) { alert('2. 상호명 / 지역을 입력해 주세요.'); return false; }
+            if (!document.getElementById('visitAddr').value.trim()) { alert('3. 수리 방문 주소를 입력해 주세요.'); return false; }
+            if (!document.getElementById('repName').value.trim()) { alert('4. 담당자명을 입력해 주세요.'); return false; }
+            if (!document.getElementById('repPhone').value.trim()) { alert('5. 담당자 연락처를 입력해 주세요.'); return false; }
             const email = document.getElementById('custEmail').value.trim();
-            if (!email || !email.includes('@')) { alert('4. 이메일 주소를 입력해 주세요.'); return false; }
+            if (!email || !email.includes('@')) { alert('6. 견적서 수신 이메일 주소를 입력해 주세요.'); return false; }
         }
         if (step === 2) {
-            if (!document.getElementById('storeName').value.trim()) { alert('5. 상호명 / 지역을 입력해 주세요.'); return false; }
-            if (!getRadioValue('bizType')) { alert('6-1. 영업 유형을 선택해 주세요.'); return false; }
-            const file = document.getElementById('bizFile').files[0];
-            if (!file) { alert('6-2. 사업자등록증(또는 매장 사진) 파일을 첨부해 주세요.'); return false; }
-            if (file.size > 10 * 1024 * 1024) { alert('첨부 파일은 10MB 이하만 가능합니다.'); return false; }
-        }
-        if (step === 3) {
             if (getCheckboxValues('repairItems').length === 0) { alert('7. 수리가 필요한 항목을 하나 이상 선택해 주세요.'); return false; }
-            if (!document.getElementById('custMachine').value.trim()) { alert('9. 머신 모델을 입력해 주세요.'); return false; }
-            if (!document.getElementById('custSymptom').value.trim()) { alert('10. 증상 상세 내용을 입력해 주세요.'); return false; }
+            if (!document.getElementById('custMachine').value.trim()) { alert('8. 머신 모델명을 입력해 주세요.'); return false; }
+            if (!document.getElementById('custSymptom').value.trim()) { alert('9. 증상 상세 내용을 입력해 주세요.'); return false; }
+            if (!document.getElementById('visitSchedule').value.trim()) { alert('10. 매장 방문 희망 일정을 입력해 주세요.'); return false; }
         }
         return true;
     }
@@ -1504,7 +1500,7 @@
         const currentNum = Number(current.id.replace('formStep', ''));
         if (target > currentNum && !validateStep(currentNum)) return;
 
-        for (let i = 1; i <= 3; i++) {
+        for (let i = 1; i <= 2; i++) {
             document.getElementById('formStep' + i).classList.toggle('active', i === target);
             document.getElementById('stepDot' + i).classList.toggle('active', i === target);
         }
@@ -1537,7 +1533,7 @@
             const honeypot = document.getElementById('bot_field');
             if (honeypot && honeypot.value) return;
 
-            if (!validateStep(3)) return;
+            if (!validateStep(1) || !validateStep(2)) return;
 
             const btn = document.getElementById('repairSubmitBtn');
             const originalText = btn.innerText;
@@ -1551,19 +1547,15 @@
             const data = {
                 type: 'repair',
                 refSource: refSource,
-                repName: val('repName'),
-                repPhone: val('repPhone'),
-                mgrName: val('mgrName'),
-                mgrPhone: val('mgrPhone'),
-                email: val('custEmail'),
                 storeName: val('storeName'),
-                bizType: getRadioValue('bizType'),
-                bizFileUrl: '',
-                repairItems: getCheckboxValues('repairItems').join(', '),
                 visitAddr: val('visitAddr'),
+                repairItems: getCheckboxValues('repairItems').join(', '),
                 machine: val('custMachine'),
                 symptom: val('custSymptom'),
                 visitSchedule: val('visitSchedule'),
+                repName: val('repName'),
+                repPhone: val('repPhone'),
+                email: val('custEmail'),
                 etcNote: val('custEtc'),
                 status: 'new',
                 isRead: false,
@@ -1571,16 +1563,7 @@
             };
 
             try {
-                // 1) 사업자등록증 파일 업로드
-                const file = document.getElementById('bizFile').files[0];
-                if (file) {
-                    const safeName = crypto.randomUUID() + '_' + file.name.replace(/[^\w.\-가-힣]/g, '_');
-                    const fileRef = storageRef(storage, 'repairUploads/' + safeName);
-                    await uploadBytes(fileRef, file, { contentType: file.type });
-                    data.bizFileUrl = await getDownloadURL(fileRef);
-                }
-
-                // 2) Firestore 저장 (사장님 앱에서 확인)
+                // Firestore 저장 (사장님 앱에서 확인)
                 await addDoc(collection(db, "repairRequests"), data);
 
                 // 3) 이메일 발송 (실패해도 접수는 완료된 것으로 처리)
@@ -1595,12 +1578,8 @@
                         ref_source: data.refSource,
                         rep_name: data.repName,
                         rep_phone: data.repPhone,
-                        mgr_name: data.mgrName || '-',
-                        mgr_phone: data.mgrPhone || '-',
                         email: data.email,
                         store_name: data.storeName,
-                        biz_type: data.bizType,
-                        biz_file_url: data.bizFileUrl || '-',
                         repair_items: data.repairItems || '-',
                         visit_addr: data.visitAddr || '-',
                         visit_schedule: data.visitSchedule || '-',
@@ -1718,44 +1697,42 @@
         </p>
 
         <div class="step-indicator">
-            <div class="step-dot active" id="stepDot1">① 기본 정보</div>
-            <div class="step-dot" id="stepDot2">② 매장 정보</div>
-            <div class="step-dot" id="stepDot3">③ 수리 신청</div>
+            <div class="step-dot active" id="stepDot1">① 매장 · 신청자 정보</div>
+            <div class="step-dot" id="stepDot2">② 수리 상세</div>
         </div>
 
         <form id="repairForm" onsubmit="submitRepair(event)">
 
             <input type="text" id="bot_field" style="display:none !important;" tabindex="-1" autocomplete="off">
 
-            <!-- STEP 1: 기본 정보 -->
+            <!-- STEP 1: 매장 · 신청자 정보 -->
             <div class="form-step active" id="formStep1">
-                <p class="form-section-title">☑️ 기본 정보</p>
+                <p class="form-section-title">☑️ 매장 · 신청자 정보</p>
 
-                <label class="form-label">1. 스트레토 커피 팩토리를 어떻게 알게 되셨나요? *</label>
+                <label class="form-label">1. 스트레토를 어떻게 알게 되셨나요? *</label>
                 <div class="radio-group" id="refSourceGroup">
-                    <label class="radio-item"><input type="radio" name="refSource" value="인스타그램 / SNS"> 인스타그램 / SNS</label>
+                    <label class="radio-item"><input type="radio" name="refSource" value="네이버 검색"> 네이버 검색</label>
+                    <label class="radio-item"><input type="radio" name="refSource" value="구글 검색"> 구글 검색</label>
+                    <label class="radio-item"><input type="radio" name="refSource" value="인스타그램"> 인스타그램</label>
                     <label class="radio-item"><input type="radio" name="refSource" value="지인 소개"> 지인 소개</label>
-                    <label class="radio-item"><input type="radio" name="refSource" value="포털 사이트 검색 (네이버, 구글 등)"> 포털 사이트 검색 (네이버, 구글 등)</label>
-                    <label class="radio-item"><input type="radio" name="refSource" value="블로그 / 카페 커뮤니티"> 블로그 / 카페 커뮤니티</label>
                     <label class="radio-item"><input type="radio" name="refSource" value="기타"> 기타:
                         <input type="text" class="etc-input" id="refSourceEtc" placeholder="직접 입력">
                     </label>
                 </div>
 
-                <label class="form-label">2-1. 대표자명 *</label>
+                <label class="form-label">2. 상호명 / 지역 *</label>
+                <input type="text" id="storeName" class="form-input" placeholder="예: 스트레토 / 서울 마포구 공덕동">
+
+                <label class="form-label">3. 수리 방문 주소 *</label>
+                <input type="text" id="visitAddr" class="form-input" placeholder="예: 서울 마포구 공덕동 000-00 1층">
+
+                <label class="form-label">4. 담당자명 *</label>
                 <input type="text" id="repName" class="form-input" placeholder="예: 홍길동">
 
-                <label class="form-label">2-2. 대표자 연락처 *</label>
+                <label class="form-label">5. 담당자 연락처 *</label>
                 <input type="tel" id="repPhone" class="form-input" placeholder="010-0000-0000">
 
-                <label class="form-label">3-1. 담당자명</label>
-                <span class="form-hint">대표자와 동일할 경우 입력하지 않으셔도 됩니다.</span>
-                <input type="text" id="mgrName" class="form-input">
-
-                <label class="form-label">3-2. 담당자 연락처</label>
-                <input type="tel" id="mgrPhone" class="form-input">
-
-                <label class="form-label">4. 이메일 주소 *</label>
+                <label class="form-label">6. 견적서 수신 이메일 주소 *</label>
                 <input type="email" id="custEmail" class="form-input" placeholder="example@email.com">
 
                 <div class="step-btn-row">
@@ -1763,37 +1740,9 @@
                 </div>
             </div>
 
-            <!-- STEP 2: 매장 정보 -->
+            <!-- STEP 2: 수리 상세 -->
             <div class="form-step" id="formStep2">
-                <p class="form-section-title">☑️ 매장 정보</p>
-
-                <label class="form-label">5. 상호명 / 지역 *</label>
-                <input type="text" id="storeName" class="form-input" placeholder="예: 스트레토 / 서울 마포구 공덕동">
-
-                <label class="form-label">6-1. 영업 유형 *</label>
-                <div class="radio-group" id="bizTypeGroup">
-                    <label class="radio-item"><input type="radio" name="bizType" value="영업 중"> 영업 중</label>
-                    <label class="radio-item"><input type="radio" name="bizType" value="오픈 준비 중"> 오픈 준비 중</label>
-                </div>
-
-                <label class="form-label">6-2. 사업자등록증 이미지 첨부 *</label>
-                <span class="form-hint">
-                    수리 서비스는 사업자 고객 대상이므로 사업자 확인이 필요합니다. 파일(JPG, PNG, PDF 등)을 업로드해 주세요.<br>
-                    사업자등록증이 없는 경우(오픈 준비 중), 준비 중인 매장 사진을 업로드해 주세요. (최대 10MB)
-                </span>
-                <div class="file-input-box">
-                    <input type="file" id="bizFile" accept="image/*,application/pdf">
-                </div>
-
-                <div class="step-btn-row">
-                    <button type="button" class="btn-step" onclick="goStep(1)">이전</button>
-                    <button type="button" class="btn-step btn-next" onclick="goStep(3)">다음</button>
-                </div>
-            </div>
-
-            <!-- STEP 3: 수리 신청 -->
-            <div class="form-step" id="formStep3">
-                <p class="form-section-title">🔧 수리 신청</p>
+                <p class="form-section-title">🔧 수리 상세</p>
 
                 <label class="form-label">7. 수리가 필요한 항목 *</label>
                 <span class="form-hint">해당되는 항목을 모두 선택해 주세요. (복수 선택 가능)</span>
@@ -1804,25 +1753,20 @@
                     <label class="radio-item"><input type="checkbox" name="repairItems" value="기타"> 기타</label>
                 </div>
 
-                <label class="form-label">8. 수리 방문 주소</label>
-                <span class="form-hint">사업자등록증 주소와 다를 경우에 입력해주세요.</span>
-                <input type="text" id="visitAddr" class="form-input">
-
-                <label class="form-label">9. 머신 모델 *</label>
+                <label class="form-label">8. 머신 모델명 *</label>
                 <input type="text" id="custMachine" class="form-input" placeholder="예: 라마르조꼬 PB, 미티코 등">
 
-                <label class="form-label">10. 증상 상세 내용 *</label>
+                <label class="form-label">9. 증상 상세 내용 *</label>
                 <textarea id="custSymptom" class="form-input" placeholder="예: 추출 압력이 3바까지 떨어집니다. 스팀이 약합니다."></textarea>
 
-                <label class="form-label">11. 매장 방문 희망 일정</label>
-                <span class="form-hint">예: 평일 오전 선호 / 6월 셋째 주 등 (조율 가능)</span>
-                <input type="text" id="visitSchedule" class="form-input" placeholder="예: 평일 오전 선호, 6월 셋째 주">
+                <label class="form-label">10. 매장 방문 희망 일정 *</label>
+                <textarea id="visitSchedule" class="form-input" placeholder="예: 평일 오전 선호 / 6월 셋째 주 (조율 가능)"></textarea>
 
-                <label class="form-label">12. 기타 문의사항 및 요청사항</label>
+                <label class="form-label">11. 기타 문의 & 요청사항</label>
                 <textarea id="custEtc" class="form-input"></textarea>
 
                 <div class="step-btn-row">
-                    <button type="button" class="btn-step" onclick="goStep(2)">이전</button>
+                    <button type="button" class="btn-step" onclick="goStep(1)">이전</button>
                     <button type="submit" class="btn-step btn-next" id="repairSubmitBtn">상담 접수하기</button>
                 </div>
             </div>
