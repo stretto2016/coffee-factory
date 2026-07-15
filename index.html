@@ -1936,9 +1936,12 @@
     const phone = $('stPhone').value.trim();
     if (!name) { alert('성함을 입력해 주세요.'); return; }
     if (phone.replace(/[^0-9]/g, '').length < 9) { alert('올바른 연락처를 입력해 주세요.'); return; }
-    if (!uid) { alert('연결 중입니다. 잠시 후 다시 시도해 주세요.'); return; }
     $('stStart').disabled = true;
+    const startLabel = $('stStart').textContent;
+    $('stStart').textContent = '연결 중...';
     try {
+      // 익명 로그인이 아직 안 됐으면 여기서 직접 시도하고 완료까지 기다림 (회사망 등 느린 환경 대응)
+      if (!uid) { const cred = await signInAnonymously(auth); uid = cred.user.uid; }
       await setDoc(doc(db, 'chats', uid), {
         clientId: uid, clientName: name + '(방문자)', guestName: name, guestPhone: phone,
         isGuest: true, lastMessage: '', lastSender: 'client', updatedAt: serverTimestamp(),
@@ -1952,8 +1955,10 @@
       $('stInput').focus();
     } catch (e) {
       console.error('상담 시작 실패', e);
-      alert('상담 시작에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+      const code = (e && e.code) ? ' [' + e.code + ']' : '';
+      alert('상담 연결에 실패했습니다.' + code + '\n회사·기관 네트워크에서는 보안 정책으로 차단될 수 있습니다.\n휴대폰 데이터 등 다른 네트워크에서 다시 시도하시거나, 카카오톡 채널 \'스트레토\'로 문의해 주세요.');
       $('stStart').disabled = false;
+      $('stStart').textContent = startLabel;
     }
   }
 
