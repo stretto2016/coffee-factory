@@ -58,22 +58,23 @@ service cloud.firestore {
       // 읽기: 사장님 / 거래처 본인 / 방문자 본인 (게스트 검사를 먼저 두어 없는 clients 문서 조회 방지)
       allow read: if isAdmin() || isGuestOwner(clientId) || isRoomOwner(clientId);
       // 방 생성/수정: 방문자는 이름·연락처가 반드시 있어야 함 (스팸 방지)
-      allow create, update: if isAdmin() || isRoomOwner(clientId) || (
+      // 게스트 검사를 먼저 두어, 존재하지 않는 clients 문서를 조회하다 에러나는 것을 방지
+      allow create, update: if isAdmin() || (
         isGuestOwner(clientId)
         && request.resource.data.clientName is string && request.resource.data.clientName.size() > 0
         && request.resource.data.guestPhone is string && request.resource.data.guestPhone.size() > 0
-      );
+      ) || isRoomOwner(clientId);
       allow delete: if isAdmin(); // 삭제는 사장님만
 
       match /messages/{messageId} {
         allow read: if isAdmin() || isGuestOwner(clientId) || isRoomOwner(clientId);
-        // 방문자 메시지: sender는 client 고정, 텍스트 길이 제한
-        allow create: if isAdmin() || isRoomOwner(clientId) || (
+        // 방문자 메시지: sender는 client 고정, 텍스트 길이 제한 (게스트 검사를 먼저)
+        allow create: if isAdmin() || (
           isGuestOwner(clientId)
           && request.resource.data.sender == 'client'
           && request.resource.data.text is string
           && request.resource.data.text.size() > 0 && request.resource.data.text.size() < 2000
-        );
+        ) || isRoomOwner(clientId);
         allow update: if isAdmin() || isGuestOwner(clientId) || isRoomOwner(clientId);
         allow delete: if isAdmin(); // 삭제는 사장님만
       }

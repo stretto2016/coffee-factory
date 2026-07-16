@@ -1022,16 +1022,19 @@
                 <h2 class="section-title" style="font-size: 2rem;">파트너십 진행 절차</h2>
                 <p style="max-width: 660px; margin: 16px auto 0; color: #b8b8b8; font-size: 1rem; line-height: 1.75; word-break: keep-all; font-style: italic;">
                     “스트레토는 의도한 맛과 향을 온전히 전해드리기 위해,<br>직접 만나 뵙고 소통하며 소개해 드리는 방식을 고수하고 있습니다.”
-                </p>
-            </div>
+                </p><br>
+            <p style="color: #666; font-size: 0.9rem; margin: 0; word-break: keep-all;">※ 파트너십 조건 : 첫 주문 원두 10kg · 월 평균 최소 30kg</p>
+<br>
+        </div>
+
+            
 
             <div class="process-wrap">
                 <div class="process-step">
                     <div class="step-num">01</div>
                     <span class="step-title">원두 샘플 테이스팅</span>
                     <div class="step-desc">
-                        고객 매장으로 방문(유료) 또는<br>파주 팩토리 방문(무료).<br>
-                        테이스팅 원두 무료 제공.<br>
+                        직접 만나 뵙고<br>원두 샘플 테이스팅을 진행합니다.<br>(아래 신청서를 작성해 주세요.)<br>
                         <a href="https://forms.gle/2YeYPfTPfBCUS93K6" target="_blank" rel="noreferrer"
                            style="display: inline-block; margin-top: 8px; color: var(--accent-blue); font-weight: 600; text-decoration: none;">
                             신청서 작성 &gt;
@@ -1062,10 +1065,7 @@
                 </div>
             </div>
 
-            <div style="text-align: center; margin-top: 20px;">
-                <p style="color: #666; font-size: 0.9rem; margin: 0; word-break: keep-all;">※ 파트너십 조건 : 첫 주문 원두 10kg · 월 평균 최소 30kg</p>
-            </div>
-
+            
         </div>
     </section>
 
@@ -1897,6 +1897,7 @@
   const $ = (id) => document.getElementById(id);
   const LS = 'stretto_guest_chat';
   let uid = null, unsub = null, open = false, unread = 0, started = false;
+  let guestName = '', guestPhone = ''; // 방 요약 문서에 항상 채우기 위한 보관값
 
   function updateBadge() {
     const b = $('stChatBadge');
@@ -1941,6 +1942,7 @@
     const phone = $('stPhone').value.trim();
     if (!name) { alert('성함을 입력해 주세요.'); return; }
     if (phone.replace(/[^0-9]/g, '').length < 9) { alert('올바른 연락처를 입력해 주세요.'); return; }
+    guestName = name; guestPhone = phone;
     $('stStart').disabled = true;
     const startLabel = $('stStart').textContent;
     $('stStart').textContent = '연결 중...';
@@ -1977,6 +1979,9 @@
         sender: 'client', text, createdAt: serverTimestamp(), readByAdmin: false, readByClient: true
       });
       await setDoc(doc(db, 'chats', uid), {
+        clientId: uid,
+        clientName: (guestName ? guestName + '(방문자)' : '방문자'),
+        guestName: guestName || '', guestPhone: guestPhone || '', isGuest: true,
         lastMessage: text, lastSender: 'client', updatedAt: serverTimestamp(), adminUnread: increment(1)
       }, { merge: true });
     } catch (e) {
@@ -2000,7 +2005,7 @@
   const saved = localStorage.getItem(LS);
   if (saved) {
     started = true;
-    try { const { name, phone } = JSON.parse(saved); $('stName').value = name || ''; $('stPhone').value = phone || ''; } catch (e) {}
+    try { const { name, phone } = JSON.parse(saved); guestName = name || ''; guestPhone = phone || ''; $('stName').value = name || ''; $('stPhone').value = phone || ''; } catch (e) {}
     $('stGate').style.display = 'none';
     $('stChatBody').style.display = 'flex';
   }
