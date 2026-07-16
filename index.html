@@ -1573,13 +1573,52 @@
 
                 // 3) 이메일 발송 (실패해도 접수는 완료된 것으로 처리)
                 try {
+                    // 고객이 작성한 양식 전체를 '질문 → 답변' 형태로 그대로 담은 본문(message)
+                    const message = [
+                        '[스트레토 머신 수리 상담 접수]',
+                        '',
+                        '1. 스트레토를 어떻게 알게 되셨나요?',
+                        '→ ' + (data.refSource || '-'),
+                        '',
+                        '2. 상호명 / 지역',
+                        '→ ' + (data.storeName || '-'),
+                        '',
+                        '3. 수리 방문 주소',
+                        '→ ' + (data.visitAddr || '-'),
+                        '',
+                        '4. 담당자명',
+                        '→ ' + (data.repName || '-'),
+                        '',
+                        '5. 담당자 연락처',
+                        '→ ' + (data.repPhone || '-'),
+                        '',
+                        '6. 견적서 수신 이메일 주소',
+                        '→ ' + (data.email || '-'),
+                        '',
+                        '7. 수리가 필요한 항목',
+                        '→ ' + (data.repairItems || '-'),
+                        '',
+                        '8. 머신 모델명',
+                        '→ ' + (data.machine || '-'),
+                        '',
+                        '9. 증상 상세 내용',
+                        '→ ' + (data.symptom || '-'),
+                        '',
+                        '10. 매장 방문 희망 일정',
+                        '→ ' + (data.visitSchedule || '-'),
+                        '',
+                        '11. 기타 문의 & 요청사항',
+                        '→ ' + (data.etcNote || '-')
+                    ].join('\n');
+
                     await emailjs.send("service_7zy0fpo", "template_te689vc", {
-                        // 기존 템플릿 호환 필드
+                        // 전체 양식 본문 (템플릿에서 {{message}}로 그대로 출력)
+                        message: message,
+                        // 제목/요약용 + 기존 템플릿 호환 필드
                         name: data.storeName + ' / ' + data.repName,
                         phone: data.repPhone,
                         machine: data.machine,
                         symptom: data.symptom,
-                        // 추가 상세 필드 (EmailJS 템플릿에 변수 추가 시 표시됨)
                         ref_source: data.refSource,
                         rep_name: data.repName,
                         rep_phone: data.repPhone,
