@@ -898,7 +898,8 @@
 
         <div class="nav-links" id="navLinks">
             <a href="#story" onclick="toggleMenu()">브랜드스토리</a>
-            <a href="#finder" onclick="toggleMenu()">원두추천</a>
+            <!-- [원두추천 임시 숨김] 앱 릴리스 후 오픈 예정 — 아래 style 제거 + finder 섹션의 style 제거로 복구 -->
+            <a href="#finder" onclick="toggleMenu()" style="display:none;">원두추천</a>
             <a href="#shop" onclick="toggleMenu()">원두쇼핑몰</a>
             <a href="#wholesale" onclick="toggleMenu()">원두납품안내</a>
             <a href="#maintenance" onclick="toggleMenu()">머신케어</a>
@@ -1035,7 +1036,8 @@
         </div>
     </section>
 
-    <section id="finder">
+    <!-- [원두추천 임시 숨김] 앱 릴리스 후 오픈 예정 — style="display:none" 제거로 복구 -->
+    <section id="finder" style="display:none;">
         <div class="container">
             <div class="section-header">
                 <span class="section-subtitle">BEAN FINDER</span>
