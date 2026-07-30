@@ -6,10 +6,25 @@ service cloud.firestore {
       return request.auth != null && request.auth.token.email == "strettopark@gmail.com";
     }
 
-    // 2. 상품: 누구나 볼 수 있음, 등록/수정은 사장님만
+    // 2. 상품(내부용): 실제 배합비(composition)·원가·B2B 납품가가 들어 있으므로 공개 금지.
+    // 거래처(이메일 로그인)와 사장님만 읽을 수 있다.
+    // 홈페이지 방문자는 익명 로그인 상태이므로 request.auth != null 만으로는 부족하다 —
+    // 익명 제공자를 명시적으로 배제한다.
+    function isSignedInPartner() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
     match /products/{document=**} {
-      allow read: if true;
+      allow read: if isAdmin() || isSignedInPartner();
       allow write: if isAdmin();
+    }
+
+    // 2-1. 상품(공개용 미러): 홈페이지 Shop·원두 추천이 읽는다.
+    // Cloud Function syncPublicProduct가 products에서 공개 가능한 필드만 복사해 생성한다.
+    // 배합비는 별도 입력한 공개용(displayComposition)만 들어 있고 원가는 없다.
+    match /publicProducts/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin(); // 실제 쓰기는 Admin SDK(Cloud Function)가 규칙을 우회해 수행
     }
 
     // 3. 주문: 로그인한 사람만

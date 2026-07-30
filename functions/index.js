@@ -1,5 +1,6 @@
 // 1:1 상담 새 메시지 → 사장님 안드로이드 앱으로 푸시 알림
-const { onDocumentCreated, onDocumentUpdated, onDocumentDeleted } = require("firebase-functions/v2/firestore");
+const { onDocumentCreated, onDocumentUpdated, onDocumentDeleted, onDocumentWritten } = require("firebase-functions/v2/firestore");
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
@@ -287,5 +288,194 @@ exports.notifyNewRepairRequest = onDocumentCreated(
       }
     });
     await Promise.all(invalid.map((t) => admin.firestore().doc(`adminPushTokens/${t}`).delete()));
+  }
+);
+
+// ───────────────────────────────────────────────────────────────
+// products → publicProducts 공개용 미러 동기화
+//
+// products에는 실제 배합비(composition)·원가·B2B 납품가가 들어 있어 외부에 공개할 수 없다.
+// 홈페이지(Shop/원두 추천)는 publicProducts만 읽고, 여기에는 공개 가능한 필드와
+// 별도 입력한 공개용 배합비(displayComposition)만 복사한다.
+// ───────────────────────────────────────────────────────────────
+
+const ROAST_SCORE = {
+  "light": 1, "medium light": 2, "medium": 3, "medium dark": 4, "dark": 5,
+};
+
+// 과일 향미는 두 갈래로 나눈다:
+// bright(밝은 과일) = 산미와 한 몸인 계열 / darkFruit(말린·검은 과일) = 낮은 산미·묵직한 바디와
+// 공존 가능한 계열(내추럴 가공·미디엄다크에서 나옴). "과일 향 + 산미 없음" 같은 모순 답변에서
+// darkFruit 원두(예: 예멘 모카 마타리)를 정답으로 밀어주기 위한 구분이다.
+const NOTE_KEYWORDS = {
+  bright: ["베리", "시트러스", "플로럴", "자두", "히비스커스", "블랙커런트", "레몬", "귤",
+    "오렌지", "체리", "피치", "복숭아", "살구", "트로피컬", "망고", "스트로베리",
+    "사과", "파인애플", "라임", "자스민", "홍차", "와인", "자몽"],
+  darkFruit: ["건포도", "크랜베리", "말린", "무화과", "대추", "다크체리", "푸룬", "자두잼"],
+  sweetness: ["카라멜", "브라운슈거", "흑설탕", "꿀", "허니", "바닐라", "초콜릿", "캔디",
+    "군고구마", "메이플", "토피", "설탕", "단맛", "시럽", "코코아"],
+  body: ["다크초콜릿", "묵직", "견과", "아몬드", "마카다미아", "너트", "헤이즐넛", "스모키",
+    "로스티", "카카오", "몰트", "삼나무", "흙", "허브"],
+};
+
+const clamp15 = (n) => Math.round(Math.min(5, Math.max(1, n)) * 10) / 10;
+
+// 이미 입력된 필드(카테고리·로스팅 레벨·컵노트)에서 향미 프로필을 자동 산출한다.
+// 새 싱글 원두를 등록해도 추가 입력 없이 추천 대상에 편입되게 하려는 목적.
+function deriveProfile(p) {
+  const cat = String(p.category || "").toLowerCase();
+  const roast = ROAST_SCORE[String(p.roastingLevel || "").toLowerCase().trim()] || 3;
+  const note = String(p.cupNote || "") + " " + String(p.description || "");
+
+  let acidity = cat === "single_fruity" ? 4 : cat === "single_nutty" ? 2 : 3;
+  let body = cat === "single_nutty" ? 3.5 : 3;
+  let sweetness = 3;
+
+  acidity -= (roast - 3) * 0.7;
+  body += (roast - 3) * 0.6;
+
+  const hits = (list) => list.filter((kw) => note.includes(kw)).length;
+  acidity += Math.min(3, hits(NOTE_KEYWORDS.bright)) * 0.3;
+  // 말린 과일은 산미가 아니라 단맛으로 잡힌다
+  sweetness += Math.min(3, hits(NOTE_KEYWORDS.sweetness)) * 0.35
+    + Math.min(2, hits(NOTE_KEYWORDS.darkFruit)) * 0.25;
+  body += Math.min(3, hits(NOTE_KEYWORDS.body)) * 0.3;
+
+  const num = (v) => (typeof v === "number" && v >= 1 && v <= 5 ? v : null);
+  return {
+    roastScore: roast,
+    acidity: num(p.profileAcidity) || clamp15(acidity),
+    body: num(p.profileBody) || clamp15(body),
+    sweetness: num(p.profileSweetness) || clamp15(sweetness),
+    // 과일 계열 구분 — 추천 로직에서 "과일 향 + 낮은 산미" 답변에 darkFruit 원두를 우선한다
+    fruitBright: hits(NOTE_KEYWORDS.bright) > 0,
+    fruitDark: hits(NOTE_KEYWORDS.darkFruit) > 0,
+    isManual: !!(num(p.profileAcidity) || num(p.profileBody) || num(p.profileSweetness)),
+  };
+}
+
+// 공개용 배합비. displayComposition이 입력되어 있으면 그것만 쓴다.
+// 없으면 비율 없이 원산지 이름만(가나다순) 노출해 실제 비율을 추정할 수 없게 한다.
+function publicBlendInfo(p) {
+  const disp = p.displayComposition;
+  if (disp && typeof disp === "object" && Object.keys(disp).length > 0) {
+    const out = {};
+    for (const [k, v] of Object.entries(disp)) {
+      const r = Number(v) || 0;
+      if (r > 0) out[k] = r;
+    }
+    if (Object.keys(out).length > 0) {
+      return { displayComposition: out, blendOrigins: Object.keys(out) };
+    }
+  }
+  const actual = p.composition;
+  if (actual && typeof actual === "object") {
+    const names = Object.keys(actual).filter((k) => (Number(actual[k]) || 0) > 0).sort();
+    if (names.length > 0) return { displayComposition: null, blendOrigins: names };
+  }
+  return { displayComposition: null, blendOrigins: [] };
+}
+
+function buildPublicDoc(p) {
+  const blend = publicBlendInfo(p);
+  return {
+    name: p.name || "",
+    category: p.category || "",
+    roastingLevel: p.roastingLevel || "",
+    cupNote: p.cupNote || "",
+    description: p.description || "",
+    imageUrl: p.imageUrl || "",
+    badge: p.badge || "",
+    badgeColor: p.badgeColor || "",
+    badgeTextColor: p.badgeTextColor || "",
+    shopLink: p.shopLink || "",
+    origin: p.origin || "",
+    process: p.process || "",
+    variety: p.variety || "",
+    altitude: p.altitude || "",
+    // 소매가(B2C)만 공개 — priceB2B/defaultPrice/원가 계열은 절대 복사하지 않는다
+    price: Number(p.price) || 0,
+    priceShop: Number(p.priceShop) || 0,
+    retailPrice1kg: Number(p.retailPrice1kg) || 0,
+    retailPrice500g: Number(p.retailPrice500g) || 0,
+    retailPrice200g: Number(p.retailPrice200g) || 0,
+    retailPrice10g: Number(p.retailPrice10g) || 0,
+    displayComposition: blend.displayComposition,
+    blendOrigins: blend.blendOrigins,
+    profile: deriveProfile(p),
+    // 쇼핑몰 그리드 노출 여부. 커스텀 배합 재료로만 쓰는 원두는 false로 내려가
+    // 홈페이지 상품 목록에는 안 뜨지만 배합 제안에는 쓸 수 있다.
+    shopVisible: p.showShop === true,
+    recommendB2C: p.showShop === true && p.recommendB2C !== false,
+    recommendB2B: p.showShop === true && p.recommendB2B !== false,
+    useInBlend: p.useInBlend === true,
+    orderIndex: p.orderIndex !== undefined ? p.orderIndex : 999,
+    createdAt: Number(p.createdAt) || 0,
+    syncedAt: Date.now(),
+  };
+}
+
+// publicProducts에 남길 대상: 홈페이지 노출(showShop) 제품, 또는
+// 쇼핑몰에는 없지만 커스텀 배합 제안의 재료로 쓸 원두(useInBlend). 둘 다 숨김이 아니어야 한다.
+const isPublishable = (p) => !!p && p.isHidden !== true && (p.showShop === true || p.useInBlend === true);
+
+// 백필/점검 스크립트에서 동일 로직을 재사용하기 위한 export (Cloud Functions 트리거 아님)
+exports._buildPublicDoc = buildPublicDoc;
+exports._isPublishable = isPublishable;
+
+exports.syncPublicProduct = onDocumentWritten(
+  { document: "products/{productId}", region: "asia-northeast3" },
+  async (event) => {
+    const id = event.params.productId;
+    const after = event.data && event.data.after && event.data.after.exists
+      ? event.data.after.data() : null;
+    const ref = admin.firestore().doc(`publicProducts/${id}`);
+
+    if (!isPublishable(after)) {
+      await ref.delete().catch(() => {});
+      return;
+    }
+    await ref.set(buildPublicDoc(after));
+  }
+);
+
+// 최초 1회 백필 / 로직 변경 후 전체 재생성. 앱 설정 탭의 버튼에서 호출.
+exports.syncAllPublicProducts = onCall(
+  { region: "asia-northeast3" },
+  async (request) => {
+    if (!request.auth || request.auth.token.email !== "strettopark@gmail.com") {
+      throw new HttpsError("permission-denied", "관리자만 실행할 수 있습니다.");
+    }
+    const db = admin.firestore();
+    const [products, existing] = await Promise.all([
+      db.collection("products").get(),
+      db.collection("publicProducts").get(),
+    ]);
+
+    const keep = new Set();
+    let batch = db.batch();
+    let ops = 0;
+    const commits = [];
+    const flush = () => { if (ops > 0) { commits.push(batch.commit()); batch = db.batch(); ops = 0; } };
+
+    products.forEach((doc) => {
+      const p = doc.data();
+      if (!isPublishable(p)) return;
+      keep.add(doc.id);
+      batch.set(db.doc(`publicProducts/${doc.id}`), buildPublicDoc(p));
+      if (++ops >= 400) flush();
+    });
+
+    let removed = 0;
+    existing.forEach((doc) => {
+      if (keep.has(doc.id)) return;
+      batch.delete(doc.ref);
+      removed++;
+      if (++ops >= 400) flush();
+    });
+
+    flush();
+    await Promise.all(commits);
+    return { synced: keep.size, removed };
   }
 );
