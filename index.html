@@ -898,7 +898,8 @@
 
         <div class="nav-links" id="navLinks">
             <a href="#story" onclick="toggleMenu()">브랜드스토리</a>
-            <!-- [원두추천 임시 숨김] 앱 릴리스 후 오픈 예정 — 아래 style 제거 + finder 섹션의 style 제거로 복구 -->
+            <!-- [원두추천 비공개] 기본 숨김. ?preview=1 로 접속하면 표시된다 (스크립트가 style 제거).
+                 정식 오픈 시 이 style과 finder 섹션의 style을 지우면 상시 노출된다. -->
             <a href="#finder" onclick="toggleMenu()" style="display:none;">원두추천</a>
             <a href="#shop" onclick="toggleMenu()">원두쇼핑몰</a>
             <a href="#wholesale" onclick="toggleMenu()">원두납품안내</a>
@@ -1036,7 +1037,8 @@
         </div>
     </section>
 
-    <!-- [원두추천 임시 숨김] 앱 릴리스 후 오픈 예정 — style="display:none" 제거로 복구 -->
+    <!-- [원두추천 비공개] 기본 숨김. ?preview=1 접속 시에만 노출 (스크립트가 style 제거).
+         정식 오픈 시 이 style="display:none"만 지우면 상시 노출된다. -->
     <section id="finder" style="display:none;">
         <div class="container">
             <div class="section-header">
@@ -2288,6 +2290,39 @@
 <!-- ===================== [원두 추천 Bean Finder] ===================== -->
 <script>
 (function () {
+  // ── 비공개 미리보기 잠금 해제 ───────────────────────────────
+  // 원두 추천은 기본적으로 숨겨져 있고, ?preview=1 로 접속했을 때만 보인다.
+  // 한 번 열면 이 브라우저에서는 계속 유지되므로(localStorage) 페이지를 이동해도 다시 붙일 필요가 없다.
+  // ?preview=0 으로 접속하면 다시 잠긴다.
+  const PREVIEW_KEY = 'stretto_finder_preview';
+  try {
+    const q = new URLSearchParams(location.search).get('preview');
+    if (q === '1') localStorage.setItem(PREVIEW_KEY, '1');
+    else if (q === '0') localStorage.removeItem(PREVIEW_KEY);
+  } catch (e) { /* 시크릿 모드 등에서 localStorage 차단 시 무시 */ }
+
+  let previewOn = false;
+  try { previewOn = localStorage.getItem(PREVIEW_KEY) === '1'; } catch (e) { previewOn = false; }
+  if (!previewOn) {
+    try { previewOn = new URLSearchParams(location.search).get('preview') === '1'; } catch (e) { /* noop */ }
+  }
+
+  const finderSection = document.getElementById('finder');
+  if (!previewOn || !finderSection) return; // 일반 방문자: 섹션도 스크립트도 동작하지 않음
+
+  finderSection.style.display = '';
+  const navFinder = document.querySelector('.nav-links a[href="#finder"]');
+  if (navFinder) navFinder.style.display = '';
+
+  // 미리보기 상태임을 알리는 배지 (일반 공개 시에는 나타나지 않음)
+  const header = finderSection.querySelector('.section-header');
+  if (header) {
+    const badge = document.createElement('div');
+    badge.textContent = '비공개 미리보기 — 일반 방문자에게는 보이지 않습니다';
+    badge.style.cssText = 'display:inline-block;margin-bottom:14px;padding:6px 16px;border-radius:50px;font-size:0.78rem;font-weight:700;background:rgba(219,170,190,0.15);color:#dbaabe;';
+    header.insertBefore(badge, header.firstChild);
+  }
+
   // 추천 데이터는 publicProducts(공개용 미러)만 사용한다.
   // 실제 배합비·원가는 이 컬렉션에 존재하지 않으므로 노출될 수 없다.
 
