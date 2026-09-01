@@ -1000,9 +1000,10 @@ nav {
 #hero { height: auto; min-height: 88vh; }
 .hero-title { font-size: clamp(2rem, 6.2vw, 4rem); letter-spacing: -0.035em; font-weight: 700; }
 .hero-desc { font-size: clamp(1rem, 2.2vw, 1.35rem); color: rgba(255,255,255,0.74); }
+/* 주 CTA 는 어느 배경에서도 브랜드 민트 + 검정 글씨로 통일 */
 .btn-primary {
-    background-color: var(--accent-blue);
-    color: var(--accent-on);
+    background-color: var(--accent-mint);
+    color: #08191c;
     border-radius: 6px;
     padding: 16px 34px;
     font-weight: 700;
@@ -1120,7 +1121,7 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     .hero-desc br,
     .wholesale-intro p br,
     #maintenance .section-header p br,
-    #consulting .section-header p br,
+    #consulting .section-header p:last-of-type br,
     .spirit-desc br + br,
     .repair-desc br { display: none; }
 
@@ -1131,6 +1132,118 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     }
     /* 히어로·쇼핑 버튼은 글자 길이에 맞춰 */
     #hero .btn-primary, #shop .btn-primary { width: auto !important; }
+}
+
+/* ================================================================================
+   모바일 2차 정리 — 왼쪽 정렬 + 타입 한 단계 축소
+   좁은 화면에서 가운데 정렬은 줄마다 시작점이 달라져 읽는 흐름이 끊깁니다.
+   왼쪽 기준선을 하나로 맞추고 글자를 줄여 여백으로 위계를 만듭니다.
+   ================================================================================ */
+@media (max-width: 768px) {
+
+    /* ---------- 왼쪽 정렬 ---------- */
+    .section-header,
+    .wholesale-intro,
+    .vision-box,
+    .condition-box,
+    .manual-wrap,
+    footer,
+    #contact,
+    .contact-split,
+    .contact-left,
+    .contact-left h2,
+    .repair-process-wrap > div,
+    #shop .container > div {
+        text-align: left !important;
+    }
+    .section-header p,
+    .wholesale-intro,
+    .vision-text,
+    .step-desc,
+    .contact-info-list {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        max-width: none !important;
+    }
+    .contact-info-list { display: block !important; }
+
+    #hero { align-items: flex-start; text-align: left; padding: 0 20px; }
+    .hero-desc { max-width: none; }
+    /* 위쪽 규칙의 margin:auto 가운데 정렬을 히어로에서는 해제 */
+    #hero .btn-primary { margin-left: 0 !important; margin-right: 0 !important; }
+
+    .promise-card {
+        align-items: flex-start;
+        justify-content: flex-start;
+        text-align: left;
+    }
+    .promise-card h4, .promise-card p { text-align: left; }
+
+    /* 이 두 규칙은 body 쪽 <style> 보다 뒤에 오지 않으므로 id 로 명시도를 올린다 */
+    #consulting .consulting-card { text-align: left; }
+    #consulting .consulting-icon { margin: 0 0 18px 0; width: 44px; height: 44px; font-size: 1.3rem; }
+    #consulting .manual-item { font-size: 0.88rem; }
+
+    .process-step { align-items: flex-start; text-align: left; }
+    .step-num { margin: 0 0 12px 0; }
+    .step-desc { text-align: left; }
+
+    .contact-right { align-items: flex-start; }
+    #contact .btn-primary, #contact .btn-kakao, #contact .btn-instagram, #contact .btn-blog {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    .footer-social-group { justify-content: flex-start !important; }
+    .condition-list { display: block; }
+
+    /* ---------- 타입 한 단계 축소 ---------- */
+    .logo { font-size: 0.98rem; }
+    .logo-sub { font-size: 0.46rem; }
+
+    .hero-title { font-size: 1.7rem; line-height: 1.18; }
+    .hero-desc { font-size: 0.88rem; }
+    .btn-primary { font-size: 0.86rem; padding: 13px 22px; }
+
+    p, .manual-item { font-size: 0.88rem; }
+    .section-subtitle { font-size: 0.58rem; letter-spacing: 0.14em; }
+    .section-title { font-size: 1.3rem !important; }
+
+    /* 인라인 style 로 크기가 박혀 있는 제목들 */
+    #story .story-left h3,
+    #story .vision-box h3,
+    #consulting .manual-wrap h3,
+    #maintenance .repair-process-wrap h3 { font-size: 1.25rem !important; }
+    #maintenance .container h3 { font-size: 1.3rem !important; }
+    #shop .container > div > h3 { font-size: 1.1rem !important; }
+    #story .section-title > span { font-size: 0.95rem !important; margin-bottom: 14px !important; }
+    #consulting .section-header p[style*="1.25rem"] { font-size: 1rem !important; }
+    #maintenance .container p[style*="1.1rem"],
+    #maintenance .container strong[style*="1.1rem"] { font-size: 0.95rem !important; }
+    .vision-text p[style*="1.2rem"] { font-size: 1rem !important; }
+
+    .spirit-title { font-size: 1.05rem; }
+    .spirit-desc, .product-desc, .step-desc, .repair-desc,
+    .promise-card p, .why-text p, .consulting-card p, .history-desc { font-size: 0.84rem; }
+    .why-text h3, .consulting-card h3, .repair-title, .history-title { font-size: 0.98rem; }
+    .promise-card h4 { font-size: 0.95rem; }
+    .product-info h3 { font-size: 1rem; }
+    .price { font-size: 0.98rem; }
+    .btn-shop-link { font-size: 0.82rem; }
+    .year { font-size: 0.9rem; }
+    .contact-left h2 { font-size: 1.4rem; }
+    .contact-left .contact-desc { font-size: 0.9rem; }
+    .contact-info-list li { font-size: 0.86rem; }
+    .step-title { font-size: 1rem; }
+    .why-icon { font-size: 1.9rem; }
+    /* 사업자 정보 줄 — 화면 밖으로 밀리지 않게 */
+    #contact > div[style*="opacity: 0.5"] { font-size: 0.7rem !important; line-height: 1.75; }
+
+    .finder-q h3 { font-size: 1.05rem; }
+    .finder-opt-title { font-size: 1rem; }
+    .finder-opt-desc { font-size: 0.8rem; }
+    .finder-card h3 { font-size: 1.15rem; }
+    .finder-mode h4 { font-size: 1rem; }
+    .finder-mode p, .finder-q > p.finder-hint { font-size: 0.84rem; }
 }
     </style>
 </head>
