@@ -10,6 +10,9 @@
     <meta property="og:description" content="국가대표 선발전 심사위원의 엄격한 QC. 일관성 있는 원두 납품과 토탈 케어 솔루션을 제공합니다.">
     <meta property="og:image" content="https://www.stretto.co.kr/stretto.jpg">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap">
     <style>
         /* === 0. 폰트 파일 등록 === */
         @font-face {
@@ -23,21 +26,25 @@
         :root {
             /* [화이트 테마] 배경/텍스트 반전. 포인트 컬러는 #AAD5DB 유지 */
             --bg-color: #ffffff;
-            --bg-secondary: #f6f6f4;   /* 섹션 교대용 아주 옅은 웜그레이 */
-            --text-primary: #111111;
-            --text-secondary: #55555a;
-            --text-tertiary: #71717a;  /* 기존 #888/#777 자리 (흰 배경 대비 4.8:1 확보) */
+            --bg-secondary: #f5f5f6;   /* 섹션 교대용 아주 옅은 쿨그레이 */
+            --text-primary: #0b0b0c;
+            --text-secondary: #5e6165;
+            --text-tertiary: #82868b;
 
-            --surface: #ffffff;        /* 카드 배경 (기존 #1a1a1a/#141414) */
-            --surface-alt: #f6f6f4;    /* 살짝 눌린 면 (기존 #222/#0a0a0a) */
-            --border: #e3e3df;         /* 카드 테두리 (기존 #333/#444) */
-            --hairline: #e6e6e2;       /* 얇은 구분선 (기존 #222) */
-            --shadow-card: 0 1px 2px rgba(0,0,0,0.03);
-            --shadow-hover: 0 10px 30px rgba(0,0,0,0.07);
+            --surface: #ffffff;        /* 카드 배경 */
+            --surface-alt: #f5f5f6;    /* 살짝 눌린 면 */
+            --border: #e5e5e7;         /* 카드 테두리 */
+            --hairline: #ebebed;       /* 얇은 구분선 */
+            --shadow-card: none;
+            --shadow-hover: 0 8px 24px rgba(0,0,0,0.06);
 
-            /* [수정] 기존 #2997ff 에서 #AAD5DB (Clearwater)로 변경 */
-            --accent-blue: #AAD5DB;
-            --accent-on: #000000;      /* accent 배경 위 글씨 */
+            /* 브랜드 민트. 검정 위에서만 쓴다 (네비 / 히어로 / 검정 칩) */
+            --accent-mint: #AAD5DB;
+            /* 흰 배경에서 실제로 읽히는 진한 버전 — 본문 영역의 기본 accent */
+            --accent-blue: #14707e;
+            --accent-on: #ffffff;      /* accent 배경 위 글씨 */
+            --accent-ink: #14707e;
+            --ink: #0b0b0c;            /* 네비/히어로/칩 등 검정 블록 */
 
             --section-spacing: 120px;
         }
@@ -932,6 +939,199 @@
             .finder-card h3 { font-size: 1.3rem; }
             .finder-actions .finder-btn { flex: 1; text-align: center; }
         }
+
+/* ================================================================================
+   INK & STEEL — 화이트 본문 + 검정 네비/히어로
+   아래 블록은 위의 규칙들보다 뒤에 오므로 같은 명시도에서 항상 이깁니다.
+   ================================================================================ */
+
+/* ---------- 1. 타이포그래피 ---------- */
+body {
+    font-family: 'Archivo', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", sans-serif;
+    letter-spacing: -0.005em;
+}
+h1, h2, h3, h4 { letter-spacing: -0.03em; }
+p { font-size: 1.05rem; font-weight: 400; }
+/* 한글이 단어 중간에서 잘리지 않게 전역 적용 */
+p, li, h1, h2, h3, h4, .step-desc, .repair-desc, .spirit-desc, .history-desc { word-break: keep-all; }
+
+/* 영문 라벨은 모노스페이스로 — 로스팅 기록지의 인상 */
+.section-subtitle, .finder-step-label, .finder-alt-title, .repair-step-badge, .year, .manual-badge {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+/* 검정 블록(네비·히어로) 안에서만 밝은 민트를 그대로 쓴다 */
+nav, #hero {
+    --accent-blue: var(--accent-mint);
+    --accent-on: #08191c;
+}
+
+/* 섹션 라벨: 흰 배경에 흐린 민트 글씨 대신 검정 칩 + 민트 모노 */
+.section-subtitle {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--accent-mint);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    padding: 6px 12px;
+    border-radius: 3px;
+    margin-bottom: 18px;
+}
+
+/* 한 줄이어야 하는 영문 제목이 잘리지 않게 */
+.section-title, #shop h3, #maintenance h3 { text-wrap: balance; }
+.title-nowrap { white-space: nowrap; }
+
+/* ---------- 2. 네비게이션 (검정 블록 — 기존 흰 글씨 로고 그대로) ---------- */
+nav {
+    background: var(--ink);
+    backdrop-filter: none;
+    border-bottom: none;
+    padding: 14px 40px;
+}
+.logo { color: #ffffff; font-size: 1.35rem; margin-bottom: 4px; }
+.logo-sub { color: #8d9698; font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; letter-spacing: 0.16em; }
+.nav-links a { color: #c9cdce; font-weight: 400; }
+.nav-links a:hover { color: #ffffff; }
+.hamburger span { background: #ffffff; }
+
+/* ---------- 3. 히어로 ---------- */
+#hero { height: auto; min-height: 88vh; }
+.hero-title { font-size: clamp(2rem, 6.2vw, 4rem); letter-spacing: -0.035em; font-weight: 700; }
+.hero-desc { font-size: clamp(1rem, 2.2vw, 1.35rem); color: rgba(255,255,255,0.74); }
+.btn-primary {
+    background-color: var(--accent-blue);
+    color: var(--accent-on);
+    border-radius: 6px;
+    padding: 16px 34px;
+    font-weight: 700;
+}
+.btn-primary:hover { transform: none; background-color: #93c8d1; }
+
+/* ---------- 4. 카드에서 테두리·그림자 제거 (흰 배경에서 선 줄이기) ---------- */
+.spirit-card, .promise-card, .consulting-card, .manual-item, .repair-card, .condition-box, .vision-box, .finder-shell, .finder-card, .finder-alt {
+    border: none;
+    box-shadow: none;
+    background: var(--surface-alt);
+}
+.spirit-card:hover, .promise-card:hover, .consulting-card:hover, .manual-item:hover, .repair-card:hover {
+    border: none;
+    box-shadow: none;
+    background: #ededef;
+    transform: none;
+}
+/* 회색 배경 섹션 안에서는 카드를 흰색으로 — 테두리 없이 면으로만 구분 */
+#story .spirit-card, #story .vision-box,
+#wholesale .promise-card, #wholesale .condition-box,
+#maintenance .repair-card,
+#consulting .consulting-card, #consulting .manual-item,
+#finder .finder-shell, #finder .finder-card, #finder .finder-alt {
+    background: #ffffff;
+}
+#story .spirit-card:hover, #wholesale .promise-card:hover,
+#maintenance .repair-card:hover, #consulting .consulting-card:hover,
+#consulting .manual-item:hover { background: #ffffff; }
+#finder .finder-spec > div { background: var(--surface-alt); }
+.spirit-card { border-radius: 6px; padding: 32px 28px; }
+.promise-card, .consulting-card, .manual-item, .repair-card, .finder-card, .finder-alt { border-radius: 6px; }
+.vision-box, .condition-box, .finder-shell { border-radius: 8px; }
+.spirit-title { font-family: 'Archivo', sans-serif; color: var(--text-primary); font-weight: 700; font-size: 1.25rem; }
+.finder-card.primary { border: none; box-shadow: inset 0 0 0 2px var(--accent-blue); background: var(--surface); }
+.finder-spec > div { border: none; background: #ffffff; }
+.product-thumb { border: none; border-radius: 6px; background: var(--surface-alt); }
+
+/* ---------- 5. 민트를 글자색으로 쓰던 곳 → 읽히는 진한 민트 ---------- */
+.btn-shop-link, .why-icon, .check-icon, .consulting-icon, .finder-step-label,
+.step-dot.active, .finder-alt-title, .btn-repair-action {
+    color: var(--accent-ink);
+}
+.step-dot.active { border-bottom-color: var(--accent-ink); }
+.btn-repair-action { border-color: var(--accent-ink); border-radius: 6px; }
+.btn-repair-action:hover { background: var(--accent-ink); color: #ffffff; }
+.consulting-icon { background: rgba(20,112,126,0.08); border-color: rgba(20,112,126,0.22); }
+.manual-num { background: var(--ink); color: var(--accent-mint); border-radius: 4px; }
+.step-num {
+    background: var(--ink); color: var(--accent-mint);
+    border-radius: 6px; width: 46px; height: 46px; line-height: 46px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 1rem;
+}
+.badge, .manual-badge { background: var(--ink); color: var(--accent-mint); border-radius: 3px; }
+.finder-next, .finder-btn { border-radius: 6px; }
+.finder-result-badge { border-radius: 3px; background: var(--ink); color: var(--accent-mint); }
+
+/* 국가대표 심사위원 배지 — 얇은 민트 테두리 대신 검정 칩 */
+#wholesale .section-header > div[style*="border-radius: 50px"] {
+    background: var(--ink) !important;
+    border-color: var(--ink) !important;
+    color: var(--accent-mint) !important;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem !important;
+    letter-spacing: 0.12em !important;
+    padding: 8px 14px !important;
+    border-radius: 4px !important;
+    max-width: 100%;
+    word-break: keep-all;
+}
+/* "Certified Engineer." 처럼 인라인으로 민트를 글자색에 쓴 곳 */
+#maintenance h3 span[style*="--accent-blue"] { color: var(--accent-blue) !important; }
+#shop a[style*="--accent-blue"] { color: var(--accent-blue) !important; border-color: var(--accent-blue) !important; }
+footer, .contact-info-list, #contact { word-break: keep-all; }
+#contact > div[style*="opacity: 0.5"] { line-height: 1.7; }
+.finder-result-badge.custom { background: #3a2530; color: #f0c6d6; }
+.btn-kakao, .btn-instagram, .btn-blog { border-radius: 6px; }
+
+/* ---------- 6. 모바일 ---------- */
+@media (max-width: 768px) {
+    :root { --section-spacing: 44px; }
+    .container { padding: 0 20px; }
+    section { padding: 44px 0; }
+
+    nav { padding: 12px 20px; }
+    .logo { font-size: 1.05rem; margin-bottom: 3px; }
+    .logo-sub { font-size: 0.5rem; }
+    .nav-links { background: var(--ink); border-left: none; box-shadow: none; width: 78%; }
+    .nav-links a { color: #e4e6e7; font-size: 1rem; margin: 13px 0; }
+
+    #hero { min-height: 78vh; }
+    .hero-title { font-size: 1.95rem; line-height: 1.15; margin-bottom: 16px; }
+    .hero-desc { font-size: 0.95rem; margin-bottom: 28px; }
+    .btn-primary { padding: 14px 26px; font-size: 0.92rem; }
+
+    p { font-size: 0.94rem; }
+    .section-header { margin-bottom: 36px; }
+    .section-title { font-size: 1.45rem; }
+    .section-subtitle { font-size: 0.62rem; padding: 5px 10px; margin-bottom: 14px; }
+    .spirit-card { padding: 22px 20px; }
+    .spirit-desc, .product-desc, .step-desc, .repair-desc { font-size: 0.88rem; }
+    .why-text h3, .consulting-card h3, .repair-title { font-size: 1.05rem; }
+    .promise-card h4 { font-size: 1rem; }
+    .promise-card p, .why-text p, .consulting-card p { font-size: 0.88rem; }
+    .vision-box { padding: 26px 20px; }
+    .contact-left h2 { font-size: 1.6rem; }
+    .contact-left .contact-desc { font-size: 0.98rem; }
+    .shop-grid { grid-template-columns: 1fr; gap: 28px; }
+    .spirit-grid { gap: 12px; }
+    .promises-grid { gap: 12px; }
+    .process-wrap { gap: 34px; }
+    hr { margin: 44px 0 !important; }
+
+    /* PC 기준으로 하드코딩된 줄바꿈은 모바일에서 무시 */
+    .hero-desc br,
+    .wholesale-intro p br,
+    #maintenance .section-header p br,
+    #consulting .section-header p br,
+    .spirit-desc br + br,
+    .repair-desc br { display: none; }
+
+    /* 문의 영역 버튼: 고정 280px 대신 화면 폭에 맞게 */
+    #contact .btn-primary, #contact .btn-kakao, #contact .btn-instagram, #contact .btn-blog {
+        width: 100% !important;
+        max-width: 320px;
+    }
+    /* 히어로·쇼핑 버튼은 글자 길이에 맞춰 */
+    #hero .btn-primary, #shop .btn-primary { width: auto !important; }
+}
     </style>
 </head>
 <body>
@@ -991,7 +1191,7 @@
                         맛있는 커피 한 잔으로 완성될 수 있도록<br>
                         스트레토는 모든 과정을 세심하게 케어합니다.
                     </span>
-                    carefully crafted coffee
+                    <span class="title-nowrap">carefully crafted coffee</span>
                 </h2>
             </div>
 
