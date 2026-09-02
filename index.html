@@ -1018,7 +1018,8 @@
 
 /* ---------- 1. 타이포그래피 ---------- */
 body {
-    font-family: 'Archivo', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", sans-serif;
+    /* 영문·숫자는 Ciutadella, 한글은 뒤 폰트로 자동 폴백 */
+    font-family: 'Ciutadella', 'Archivo', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", sans-serif;
     letter-spacing: -0.005em;
 }
 h1, h2, h3, h4 { letter-spacing: -0.03em; }
@@ -1026,9 +1027,9 @@ p { font-size: 1.05rem; font-weight: 400; }
 /* 한글이 단어 중간에서 잘리지 않게 전역 적용 */
 p, li, h1, h2, h3, h4, .step-desc, .repair-desc, .spirit-desc, .history-desc { word-break: keep-all; }
 
-/* 영문 라벨은 모노스페이스로 — 로스팅 기록지의 인상 */
+/* 영문 라벨 폰트 통일 */
 .section-subtitle, .finder-step-label, .finder-alt-title, .repair-step-badge, .year, .manual-badge {
-    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-family: 'Ciutadella', sans-serif;
 }
 
 /* 검정 블록(네비·히어로) 안에서만 밝은 민트를 그대로 쓴다 */
@@ -1062,7 +1063,7 @@ nav {
     padding: 14px 40px;
 }
 .logo { color: #ffffff; font-size: 1.35rem; margin-bottom: 4px; }
-.logo-sub { color: #8d9698; font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; letter-spacing: 0.16em; }
+.logo-sub { color: #8d9698; font-family: 'Ciutadella', sans-serif; font-size: 0.58rem; letter-spacing: 0.16em; }
 .nav-links a { color: #c9cdce; font-weight: 400; }
 .nav-links a:hover { color: #ffffff; }
 .hamburger span { background: #ffffff; }
@@ -1108,7 +1109,7 @@ nav {
 .spirit-card { border-radius: 6px; padding: 32px 28px; }
 .promise-card, .consulting-card, .manual-item, .repair-card, .finder-card, .finder-alt { border-radius: 6px; }
 .vision-box, .condition-box, .finder-shell { border-radius: 8px; }
-.spirit-title { font-family: 'Archivo', sans-serif; color: var(--text-primary); font-weight: 700; font-size: 1.25rem; }
+.spirit-title { font-family: 'Ciutadella', sans-serif; color: var(--text-primary); font-weight: 700; font-size: 1.25rem; }
 .finder-card.primary { border: none; box-shadow: inset 0 0 0 2px var(--accent-blue); background: var(--surface); }
 .finder-spec > div { border: none; background: #ffffff; }
 .product-thumb { border: none; border-radius: 6px; background: var(--surface-alt); }
@@ -1126,7 +1127,8 @@ nav {
 .step-num {
     background: var(--ink); color: var(--accent-mint);
     border-radius: 6px; width: 46px; height: 46px; line-height: 46px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 1rem;
+    font-family: 'Ciutadella', sans-serif; font-size: 1rem;
+    text-align: center;
 }
 .badge, .manual-badge { background: var(--ink); color: var(--accent-mint); border-radius: 3px; }
 .finder-next, .finder-btn { border-radius: 6px; }
@@ -1137,13 +1139,19 @@ nav {
     background: var(--ink) !important;
     border-color: var(--ink) !important;
     color: var(--accent-mint) !important;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'Ciutadella', sans-serif;
     font-size: 0.68rem !important;
     letter-spacing: 0.12em !important;
     padding: 8px 14px !important;
     border-radius: 4px !important;
     max-width: 100%;
     word-break: keep-all;
+    /* 위 섹션 라벨과 같은 줄에 붙지 않도록 항상 새 줄에서 시작 */
+    display: flex !important;
+    width: fit-content;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: center;
 }
 /* "Certified Engineer." 처럼 인라인으로 민트를 글자색에 쓴 곳 */
 #maintenance h3 span[style*="--accent-blue"] { color: var(--accent-blue) !important; }
@@ -1464,7 +1472,7 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                     </p>
 
                     <p style="margin-bottom: 20px;">
-                        우리가 마시는 커피의 99%는 물입니다. 하지만 아이러니하게도 커피를 생산하는 많은 나라의 아이들은 마실 물을 얻기 위해 하루 평균 6km 이상을 걸어야 하고, 그마저도 깨끗하지 않은 경우가 많습니다
+                        우리가 마시는 커피의 99%는 물입니다. 하지만 아이러니하게도 커피를 생산하는 많은 나라의 아이들은 마실 물을 얻기 위해 하루 평균 6km 이상을 걸어야 하고, 그마저도 깨끗하지 않은 경우가 많습니다.
                     </p>
                     <p>
                         오늘도 스트레토 커피 팩토리는 커피 생두를 보내준 나라에 깨끗한 물을 선물해주는 날을 꿈꾸며, 정성껏 로스팅한 커피로 얻은 수익을 커피나무가 자라는 땅에 다시 돌려주기 위해 최선을 다해 로스팅합니다.
@@ -1480,7 +1488,7 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
             <div class="section-header">
                 <span class="section-subtitle">BEAN FINDER</span>
                 <h2 class="section-title">나에게 맞는 원두 찾기</h2>
-                <p>몇 가지 질문에 답하면 취향에 맞는 원두를 추천해 드립니다</p>
+                <p>몇 가지 질문에 답하면 취향에 맞는 원두를 추천해 드립니다.</p>
             </div>
 
             <div class="finder-shell">
@@ -1917,9 +1925,11 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
             }
             .consulting-card {
                 width: 100%;
-                padding: 30px 20px; 
+                padding: 30px 20px;
                 margin: 0;
             }
+            .consulting-card h3 { font-size: 1.05rem; }
+            .consulting-card p { font-size: 0.88rem; }
             .manual-grid { 
                 display: flex;
                 flex-direction: column;
