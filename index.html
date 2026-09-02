@@ -443,6 +443,77 @@
             gap: 15px;
             align-items: center;
         }
+
+        /* === 문의하기 : 신청 그리드 + 채널 아이콘 === */
+        .apply-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            margin-bottom: 45px;
+        }
+        .apply-item {
+            display: block;
+            padding: 4px 22px;
+            color: var(--text-primary);
+            border-left: 1px solid var(--hairline);
+            transition: opacity 0.2s;
+        }
+        .apply-item:first-child { border-left: none; padding-left: 0; }
+        .apply-item:last-child { padding-right: 0; }
+        .apply-item:hover { opacity: 0.65; }
+        .apply-item .apply-icon { display: block; color: var(--accent-ink); }
+        .apply-item .apply-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 20px;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        .apply-item .apply-arrow { color: var(--text-tertiary); flex-shrink: 0; transition: transform 0.2s; }
+        .apply-item:hover .apply-arrow { transform: translate(2px, -2px); }
+
+        .channel-row { display: flex; gap: 44px; flex-wrap: wrap; }
+        .channel-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        .channel-badge {
+            display: inline-flex;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+        }
+        .channel-link:hover .channel-badge { transform: scale(1.08); }
+        .channel-link:hover { color: var(--text-primary); }
+
+        @media (max-width: 768px) {
+            .apply-grid {
+                grid-template-columns: 1fr;
+                margin-bottom: 32px;
+            }
+            .apply-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 16px 0;
+                border-left: none;
+                border-top: 1px solid var(--hairline);
+            }
+            .apply-item:first-child { border-top: none; }
+            .apply-item .apply-icon { margin: 0; }
+            .apply-item .apply-label { margin-top: 0; flex: 1; font-size: 0.95rem; }
+            .channel-row { gap: 24px; }
+            .channel-link { flex-direction: column; gap: 8px; font-size: 0.78rem; }
+            .channel-badge { width: 44px; height: 44px; }
+        }
         /* === 반응형 (모바일) CSS === */
         @media (max-width: 768px) {
             /* 1. 네비게이션 메뉴 해결 */
@@ -1935,46 +2006,73 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                 
                 <h2>문의하기</h2>
                 <p class="contact-desc" style="margin-bottom: 30px;">
-                    납품 및 샘플에 관해 궁금한 점이 있으시다면 언제든 편하게 문의해 주세요.
+                    원두 납품, 머신 수리, 카페 컨설팅에 대해 궁금한 점은 언제든 편하게 문의해 주세요.
                 </p>
 
-                <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 40px; align-items: flex-start;">
-                    <a href="https://forms.gle/5UyaH3M9RWvmNfEb6" target="_blank" class="btn-primary" 
-                       style="opacity: 1; animation: none; width: 280px; padding: 15px 0; text-align:center; box-sizing: border-box; margin: 0;">
-                        샘플 테이스팅 신청하기 >
+                <div class="apply-grid">
+                    <a href="https://forms.gle/5UyaH3M9RWvmNfEb6" target="_blank" class="apply-item">
+                        <svg class="apply-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 5h11v6a5.5 5.5 0 0 1-11 0z"/>
+                            <path d="M15 7h2a2.5 2.5 0 0 1 0 5h-2"/>
+                            <path d="M3 20h13"/>
+                        </svg>
+                        <span class="apply-label">
+                            샘플 테이스팅 신청
+                            <svg class="apply-arrow" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
+                        </span>
                     </a>
 
-                    <a href="http://pf.kakao.com/_dCuKC" target="_blank" class="btn-kakao" style="margin: 0;">
-                        카카오톡 채팅 문의하기 >
+                    <a href="https://forms.gle/KGLnCZmeeydRtSKS8" target="_blank" class="apply-item">
+                        <svg class="apply-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.7 6.3a4 4 0 0 0 5 5l-8.4 8.4a2.1 2.1 0 0 1-3-3z"/>
+                            <path d="M4.5 9.5 3 8l1.5-1.5-2-2L4 3l2 2L7.5 3.5 9 5"/>
+                        </svg>
+                        <span class="apply-label">
+                            머신 수리 신청
+                            <svg class="apply-arrow" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
+                        </span>
                     </a>
 
-                    <div class="footer-social-group" style="margin-top: 10px; justify-content: flex-start; gap: 20px;">
-                        <a href="https://www.instagram.com/coffee_stretto/" target="_blank" class="footer-social-link">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16" style="margin-right: 5px;">
-                                <defs>
-                                    <linearGradient id="insta_grad_footer" x1="0%" y1="100%" x2="100%" y2="0%">
-                                        <stop offset="0%" style="stop-color:#f09433;stop-opacity:1" />
-                                        <stop offset="25%" style="stop-color:#e6683c;stop-opacity:1" />
-                                        <stop offset="50%" style="stop-color:#dc2743;stop-opacity:1" />
-                                        <stop offset="75%" style="stop-color:#cc2366;stop-opacity:1" />
-                                        <stop offset="100%" style="stop-color:#bc1888;stop-opacity:1" />
-                                    </linearGradient>
-                                </defs>
-                                <path fill="url(#insta_grad_footer)" d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.234-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"/>
-                            </svg>
-                            Instagram
-                        </a>
-                        
-                        <span style="color: #444;">|</span>
+                    <a href="https://forms.gle/pgg9RTXiWA1t7NPG6" target="_blank" class="apply-item">
+                        <svg class="apply-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 18h6"/>
+                            <path d="M10 21h4"/>
+                            <path d="M8.5 14a5.5 5.5 0 1 1 7 0c-.7.6-1 1.2-1 2h-5c0-.8-.3-1.4-1-2z"/>
+                        </svg>
+                        <span class="apply-label">
+                            카페 컨설팅 상담
+                            <svg class="apply-arrow" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
+                        </span>
+                    </a>
+                </div>
 
-                        <a href="https://blog.naver.com/coffee_stretto" target="_blank" class="footer-social-link">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" style="margin-right: 5px;">
-                                <rect width="24" height="24" rx="4" fill="#03C75A"/>
-                                <path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727v12.845z" fill="white" transform="scale(0.6) translate(8, 8)"/> 
+                <div class="channel-row" style="margin-bottom: 40px;">
+                    <a href="http://pf.kakao.com/_dCuKC/chat" target="_blank" class="channel-link">
+                        <span class="channel-badge" style="background: #FEE500;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#3C1E1E">
+                                <path d="M12 4C7.03 4 3 7.14 3 11.02c0 2.45 1.63 4.6 4.09 5.85-.18.63-.65 2.35-.74 2.72-.12.46.17.45.35.33.15-.1 2.3-1.56 3.23-2.2.67.1 1.36.15 2.07.15 4.97 0 9-3.14 9-7.02S16.97 4 12 4z"/>
                             </svg>
-                            Blog
-                        </a>
-                    </div>
+                        </span>
+                        카카오톡 채팅
+                    </a>
+
+                    <a href="https://www.instagram.com/coffee_stretto/" target="_blank" class="channel-link">
+                        <span class="channel-badge" style="background: #FBEAF0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 16 16" fill="#993556">
+                                <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.234-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"/>
+                            </svg>
+                        </span>
+                        인스타그램
+                    </a>
+
+                    <a href="https://blog.naver.com/coffee_stretto" target="_blank" class="channel-link">
+                        <span class="channel-badge" style="background: #EAF3DE;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="#3B6D11">
+                                <path d="M16.273 12.845 7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727v12.845z"/>
+                            </svg>
+                        </span>
+                        블로그
+                    </a>
                 </div>
 
                 <ul class="contact-info-list" style="border-top: 1px solid var(--hairline); padding-top: 30px; padding-left: 0; display: block; width: 100%;">
