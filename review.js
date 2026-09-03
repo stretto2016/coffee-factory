@@ -308,6 +308,7 @@ function renderList() {
             <b>지금 상태</b> ${esc(st.fontSize)} · 굵기 ${esc(st.fontWeight)} · 줄간격 ${esc(st.lineHeight)}<br>
             <b>색</b> ${esc(st.color)} · <b>정렬</b> ${esc(st.textAlign)} · <b>글꼴</b> ${esc(st.fontFamily)}<br>
             <b>보던 화면</b> ${esc(d.device)} (${d.viewport}px)
+            ${d.text ? `<div class="rv-meta-btns"><button class="rv-mini" id="rv-copytext">문구 복사</button><button class="rv-mini" id="rv-fillmemo">문구를 메모에 넣기</button></div>` : ''}
           </div>
           ${TAG_GROUPS.map((g) => `
             <div class="rv-grp">
@@ -351,9 +352,34 @@ function renderList() {
 
   // 작성 폼 동작
   if (selected) {
+    const memoBox = $('#rv-memo');
+    const curText = selected.info.text;
+
+    // 지금 문구를 그대로 메모칸에 넣어 준다 — 고칠 문장을 다시 타이핑할 필요가 없다
+    const fillMemo = () => {
+      const add = (memoBox.value.trim() ? memoBox.value.replace(/\s*$/, '') + '\n' : '') + curText;
+      memoBox.value = add;
+      memoBox.focus();
+      memoBox.setSelectionRange(add.length, add.length);
+    };
+
     list.querySelectorAll('.rv-chip').forEach((btn) => {
-      btn.addEventListener('click', () => btn.classList.toggle('rv-sel'));
+      btn.addEventListener('click', () => {
+        const on = btn.classList.toggle('rv-sel');
+        // "문구 수정"을 고르면 현재 문장을 메모에 미리 채워 준다 (비어 있을 때만)
+        if (on && btn.dataset.tag === '문구 수정' && curText && !memoBox.value.trim()) fillMemo();
+      });
     });
+
+    const copyBtn = $('#rv-copytext');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(curText); toast('문구를 복사했습니다.'); }
+        catch (_) { toast('복사에 실패했습니다.'); }
+      });
+      $('#rv-fillmemo').addEventListener('click', fillMemo);
+    }
+
     $('#rv-cancel').addEventListener('click', cancelForm);
     $('#rv-cancel2').addEventListener('click', cancelForm);
     $('#rv-save').addEventListener('click', saveComment);
@@ -415,8 +441,15 @@ function pickTarget(node) {
 }
 
 function attachPicker() {
+  // 글자를 끌어서 선택하는 중인지 판단하기 위해 누른 지점을 기억한다
+  let downPt = null;
+  document.addEventListener('mousedown', (e) => {
+    downPt = (picking && !isRvUI(e.target)) ? { x: e.clientX, y: e.clientY } : null;
+  }, true);
+
   document.addEventListener('mousemove', (e) => {
     if (!picking || selected) return;
+    if (e.buttons) return;             // 끌고 있는 동안에는 테두리를 움직이지 않는다
     drawHover(pickTarget(e.target));
   }, true);
 
@@ -427,6 +460,20 @@ function attachPicker() {
     // 리뷰 중에는 링크 이동이나 버튼 동작을 막는다 (사이트는 그대로 두고 코멘트만 남긴다)
     e.preventDefault();
     e.stopPropagation();
+
+    // 글자를 끌어서 선택한 것이라면 코멘트 창을 열지 않는다.
+    // (창이 열리면 입력칸으로 커서가 옮겨가면서 선택이 풀려 복사를 못 하게 된다)
+    const sel = window.getSelection();
+    const dragged = downPt && (Math.abs(e.clientX - downPt.x) > 4 || Math.abs(e.clientY - downPt.y) > 4);
+    if (dragged || (sel && !sel.isCollapsed && sel.toString().trim())) {
+      drawHover(null);
+      if (!attachPicker._hinted) {
+        attachPicker._hinted = true;
+        toast('글자를 선택했습니다. Ctrl+C 로 복사하세요.');
+      }
+      return;
+    }
+
     selected = { el, info: describe(el) };
     drawHover(el);
     $('#rv-panel').classList.remove('rv-collapsed');

@@ -353,6 +353,22 @@
   word-break: break-all;
 }
 .rv-meta b { color: #55504a; font-weight: 600; }
+.rv-meta-btns { display: flex; gap: 5px; margin-top: 7px; }
+.rv-mini {
+  flex: 1 1 0;
+  height: 27px;
+  border: 1px solid var(--rv-line);
+  border-radius: 6px;
+  background: var(--rv-soft);
+  color: var(--rv-accent-d);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.rv-mini:hover { border-color: var(--rv-accent); background: #fdf6ec; }
+
+/* 코멘트 목록의 문구는 마우스로 끌어서 복사할 수 있게 한다 */
+.rv-quote, .rv-memo-shown, .rv-meta { user-select: text; cursor: text; }
 
 /* 패널 하단 버튼 */
 .rv-foot {
@@ -410,6 +426,14 @@
 
 /* 코멘트 달기가 켜져 있을 때의 커서 */
 html.rv-picking, html.rv-picking * { cursor: crosshair !important; }
+
+/* 단, 오른쪽 패널 안에서는 평소 커서를 그대로 쓴다 (id 선택자라 위 규칙보다 우선한다) */
+#rv-panel, #rv-panel *, #rv-gate, #rv-gate * { cursor: auto !important; }
+#rv-panel button, #rv-panel .rv-item-top, #rv-panel .rv-pin,
+#rv-gate button { cursor: pointer !important; }
+#rv-panel textarea, #rv-panel input,
+#rv-panel .rv-quote, #rv-panel .rv-memo-shown, #rv-panel .rv-meta,
+#rv-gate input { cursor: text !important; }
 
 /* -----------------------------------------------------------
    4. 알림 토스트
