@@ -1,0 +1,432 @@
+/* ===========================================================
+   리뷰 모드 스타일 (?review 로 들어왔을 때만 로드된다)
+   본 사이트 CSS와 절대 섞이지 않도록 모든 클래스에 rv- 접두사를 붙인다.
+   =========================================================== */
+
+:root {
+  --rv-bg:      #ffffff;
+  --rv-ink:     #23201d;
+  --rv-sub:     #7d766e;
+  --rv-line:    #e4dfd8;
+  --rv-soft:    #f7f5f2;
+  --rv-accent:  #b07d3f;
+  --rv-accent-d:#8d6230;
+  --rv-danger:  #c0453b;
+  --rv-panel-w: 360px;
+}
+
+/* 리뷰 UI 공통 — 사이트 폰트 상속을 끊고 항상 동일하게 보이게 한다 */
+#rv-gate, #rv-panel, #rv-pins, #rv-hover, #rv-toast {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic",
+               "맑은 고딕", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--rv-ink);
+  letter-spacing: 0;
+  box-sizing: border-box;
+}
+#rv-gate *, #rv-panel *, #rv-pins *, #rv-toast * { box-sizing: border-box; }
+
+/* -----------------------------------------------------------
+   1. 비밀번호 화면
+   ----------------------------------------------------------- */
+#rv-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  background: rgba(28, 24, 20, .94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rv-gate-card {
+  width: 320px;
+  background: var(--rv-bg);
+  border-radius: 14px;
+  padding: 30px 28px 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .4);
+  text-align: center;
+}
+.rv-gate-card h2 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 700;
+}
+.rv-gate-card p {
+  margin: 0 0 20px;
+  font-size: 12.5px;
+  color: var(--rv-sub);
+}
+#rv-pass {
+  width: 100%;
+  height: 46px;
+  border: 1px solid var(--rv-line);
+  border-radius: 9px;
+  text-align: center;
+  font-size: 22px;
+  letter-spacing: 8px;
+  outline: none;
+  background: var(--rv-soft);
+}
+#rv-pass:focus { border-color: var(--rv-accent); background: #fff; }
+#rv-gate-err {
+  min-height: 18px;
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--rv-danger);
+}
+#rv-gate-btn {
+  width: 100%;
+  height: 44px;
+  margin-top: 10px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--rv-accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+#rv-gate-btn:hover { background: var(--rv-accent-d); }
+
+/* -----------------------------------------------------------
+   2. 오른쪽 사이드 패널
+   ----------------------------------------------------------- */
+#rv-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: var(--rv-panel-w);
+  height: 100vh;
+  z-index: 2147482900;
+  background: var(--rv-bg);
+  border-left: 1px solid var(--rv-line);
+  box-shadow: -6px 0 24px rgba(0, 0, 0, .10);
+  display: flex;
+  flex-direction: column;
+  transition: transform .22s ease;
+}
+#rv-panel.rv-collapsed { transform: translateX(var(--rv-panel-w)); }
+
+/* 패널을 접었다 폈다 하는 손잡이 */
+#rv-handle {
+  position: absolute;
+  left: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 62px;
+  border: 1px solid var(--rv-line);
+  border-right: 0;
+  border-radius: 9px 0 0 9px;
+  background: var(--rv-bg);
+  color: var(--rv-sub);
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: -3px 0 10px rgba(0, 0, 0, .08);
+}
+#rv-handle:hover { color: var(--rv-accent); }
+
+.rv-head {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--rv-line);
+  flex: 0 0 auto;
+}
+.rv-head h1 {
+  margin: 0 0 2px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -.2px;
+}
+.rv-head .rv-count {
+  font-size: 12px;
+  color: var(--rv-sub);
+}
+
+/* 코멘트 달기 On/Off 토글 */
+#rv-mode {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  margin-top: 11px;
+  padding: 9px 11px;
+  border: 1px solid var(--rv-line);
+  border-radius: 9px;
+  background: var(--rv-soft);
+  cursor: pointer;
+  text-align: left;
+}
+#rv-mode.rv-on { border-color: var(--rv-accent); background: #fdf6ec; }
+.rv-switch {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 19px;
+  border-radius: 20px;
+  background: #cdc6bd;
+  position: relative;
+  transition: background .16s;
+}
+#rv-mode.rv-on .rv-switch { background: var(--rv-accent); }
+.rv-switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform .16s;
+}
+#rv-mode.rv-on .rv-switch::after { transform: translateX(15px); }
+.rv-mode-txt { font-size: 12.5px; font-weight: 600; }
+.rv-mode-sub { display: block; font-size: 11px; font-weight: 400; color: var(--rv-sub); }
+
+/* 코멘트 목록 */
+#rv-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 10px 12px 16px;
+}
+#rv-empty {
+  padding: 34px 18px;
+  text-align: center;
+  color: var(--rv-sub);
+  font-size: 12.5px;
+  line-height: 1.8;
+}
+
+.rv-item {
+  border: 1px solid var(--rv-line);
+  border-radius: 10px;
+  margin-bottom: 9px;
+  overflow: hidden;
+  background: var(--rv-bg);
+}
+.rv-item.rv-active { border-color: var(--rv-accent); box-shadow: 0 0 0 2px rgba(176, 125, 63, .15); }
+.rv-item.rv-lost { background: #fbf7f5; border-style: dashed; }
+
+.rv-item-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 11px;
+  cursor: pointer;
+}
+.rv-num {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--rv-accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rv-item.rv-lost .rv-num { background: #b3aaa1; }
+.rv-item-body { flex: 1 1 auto; min-width: 0; }
+.rv-where {
+  font-size: 11px;
+  color: var(--rv-accent-d);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.rv-item.rv-lost .rv-where { color: #948b82; }
+.rv-quote {
+  font-size: 12px;
+  color: var(--rv-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.rv-lost-tag {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 10.5px;
+  color: #8a8078;
+  background: #ece7e1;
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+.rv-del {
+  flex: 0 0 auto;
+  border: 0;
+  background: none;
+  color: #bdb5ac;
+  font-size: 15px;
+  line-height: 1;
+  padding: 2px 3px;
+  cursor: pointer;
+}
+.rv-del:hover { color: var(--rv-danger); }
+
+.rv-tags-shown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0 11px 9px 39px;
+}
+.rv-chip-s {
+  font-size: 11px;
+  background: #f2ece3;
+  color: var(--rv-accent-d);
+  border-radius: 5px;
+  padding: 2px 7px;
+}
+.rv-memo-shown {
+  padding: 0 11px 10px 39px;
+  font-size: 12px;
+  color: #55504a;
+  white-space: pre-wrap;
+}
+
+/* 코멘트 작성 폼 */
+.rv-form { border-top: 1px solid var(--rv-line); padding: 11px; background: var(--rv-soft); }
+.rv-grp { margin-bottom: 9px; }
+.rv-grp-label {
+  font-size: 11px;
+  color: var(--rv-sub);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.rv-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.rv-chip {
+  border: 1px solid var(--rv-line);
+  background: #fff;
+  border-radius: 15px;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  color: #4d4842;
+  cursor: pointer;
+}
+.rv-chip:hover { border-color: var(--rv-accent); }
+.rv-chip.rv-sel {
+  background: var(--rv-accent);
+  border-color: var(--rv-accent);
+  color: #fff;
+  font-weight: 600;
+}
+.rv-memo {
+  width: 100%;
+  min-height: 62px;
+  border: 1px solid var(--rv-line);
+  border-radius: 8px;
+  padding: 8px 9px;
+  font-size: 12.5px;
+  resize: vertical;
+  outline: none;
+  background: #fff;
+}
+.rv-memo:focus { border-color: var(--rv-accent); }
+.rv-form-btns { display: flex; gap: 6px; margin-top: 9px; }
+.rv-btn {
+  flex: 1 1 0;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--rv-line);
+  background: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #55504a;
+  cursor: pointer;
+}
+.rv-btn:hover { border-color: #cdc6bd; }
+.rv-btn.rv-primary { background: var(--rv-accent); border-color: var(--rv-accent); color: #fff; }
+.rv-btn.rv-primary:hover { background: var(--rv-accent-d); }
+
+/* 현재 스타일 정보 (자동 기록되는 값 미리보기) */
+.rv-meta {
+  font-size: 11px;
+  color: var(--rv-sub);
+  background: #fff;
+  border: 1px solid var(--rv-line);
+  border-radius: 7px;
+  padding: 7px 9px;
+  margin-bottom: 9px;
+  line-height: 1.65;
+  word-break: break-all;
+}
+.rv-meta b { color: #55504a; font-weight: 600; }
+
+/* 패널 하단 버튼 */
+.rv-foot {
+  flex: 0 0 auto;
+  border-top: 1px solid var(--rv-line);
+  padding: 10px 12px;
+  display: flex;
+  gap: 6px;
+}
+
+/* 좁은 화면 대비 — PC 기준으로 만들었지만 폰으로 열어도 깨지지 않게 한다 */
+@media (max-width: 640px) {
+  :root { --rv-panel-w: 82vw; }
+  .rv-gate-card { width: 86vw; }
+}
+
+/* -----------------------------------------------------------
+   3. 화면 위 표시 — 마우스 따라다니는 테두리 + 번호 핀
+   ----------------------------------------------------------- */
+#rv-hover {
+  position: fixed;
+  z-index: 2147482500;
+  border: 2px solid var(--rv-accent);
+  background: rgba(176, 125, 63, .10);
+  border-radius: 3px;
+  pointer-events: none;
+  display: none;
+}
+#rv-pins {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  z-index: 2147482600;
+}
+.rv-pin {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border-radius: 50%;
+  background: var(--rv-accent);
+  color: #fff;
+  border: 2px solid #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, .3);
+}
+.rv-pin:hover { background: var(--rv-accent-d); transform: scale(1.15); }
+
+/* 코멘트 달기가 켜져 있을 때의 커서 */
+html.rv-picking, html.rv-picking * { cursor: crosshair !important; }
+
+/* -----------------------------------------------------------
+   4. 알림 토스트
+   ----------------------------------------------------------- */
+#rv-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 34px;
+  transform: translateX(-50%) translateY(12px);
+  z-index: 2147483100;
+  background: rgba(28, 24, 20, .93);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s, transform .18s;
+}
+#rv-toast.rv-show { opacity: 1; transform: translateX(-50%) translateY(0); }

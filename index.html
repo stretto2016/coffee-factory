@@ -3447,5 +3447,17 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     }, 250);
 })();
 </script>
+
+<!-- 리뷰 모드: 주소 뒤에 ?review 를 붙였을 때만 코멘트 도구를 불러온다.
+     일반 방문자에게는 아래 두 파일이 아예 로드되지 않는다. -->
+<script>
+if (/(^|[?&])review(=|&|$)/.test(location.search)) {
+    document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="review.css">');
+    var rv = document.createElement('script');
+    rv.type = 'module';
+    rv.src = 'review.js';
+    document.body.appendChild(rv);
+}
+</script>
 </body>
 </html>

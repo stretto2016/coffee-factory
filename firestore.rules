@@ -107,7 +107,23 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
-    // 7. 기타 관리자 접근
+    // 7. 홈페이지 검토 코멘트(?review 모드): 화면을 보며 남기는 수정 요청 메모.
+    //    실제 사이트 콘텐츠에는 아무 영향이 없고, 여기에 접근해도 다른 컬렉션은 읽지 못한다.
+    //    리뷰 모드의 비밀번호는 화면 진입만 막는 용도이므로 규칙 차원에서는 검사하지 않는다.
+    match /reviewComments/{commentId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.page is string
+        && request.resource.data.selector is string
+        && request.resource.data.memo is string
+        && request.resource.data.memo.size() < 2000
+        && request.resource.data.tags is list
+        && request.resource.data.tags.size() < 20;
+      allow update: if isAdmin();
+      allow delete: if request.auth != null;
+    }
+
+    // 8. 기타 관리자 접근
     match /{document=**} {
       allow read, write: if isAdmin();
     }
