@@ -240,7 +240,7 @@
         /* === 6. 납품 안내 섹션 === */
         #wholesale { background-color: var(--bg-secondary); }
         .wholesale-intro { text-align: center; max-width: 800px; margin: 0 auto 80px; word-break: keep-all; }
-        .wholesale-intro p { font-size: 1.1rem; color: var(--text-secondary); }
+        .wholesale-intro p { color: var(--text-secondary); }  /* 크기는 다른 섹션 본문(p)과 동일하게 따라간다 */
         .wholesale-intro strong { color: var(--text-primary); }
 
         .why-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; margin-bottom: 100px; }
@@ -1044,16 +1044,16 @@ nav, #hero {
     --accent-on: #08191c;
 }
 
-/* 섹션 라벨: 흰 배경에 흐린 민트 글씨 대신 검정 칩 + 민트 모노 */
+/* 섹션 라벨: 검정 칩을 없애고 배경 없는 회색 글씨로 (요청 3번) */
 .section-subtitle {
     display: inline-block;
-    background: var(--ink);
-    color: var(--accent-mint);
+    background: none;
+    color: var(--text-tertiary);
     font-size: 0.7rem;
     font-weight: 500;
     letter-spacing: 0.16em;
-    padding: 6px 12px;
-    border-radius: 3px;
+    padding: 0;
+    border-radius: 0;
     margin-bottom: 18px;
 }
 
@@ -1330,6 +1330,97 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     .finder-mode h4 { font-size: 1rem; }
     .finder-mode p, .finder-q > p.finder-hint { font-size: 0.84rem; }
 }
+
+/* ===========================================================
+   리뷰 코멘트 반영 (2026-09-03)
+   =========================================================== */
+
+/* 3. 섹션 라벨에서 검정 칩을 뺐으므로 모바일 여백도 함께 정리 */
+@media (max-width: 768px) {
+    .section-subtitle { padding: 0; }
+}
+
+/* 1. 스토리 헤더: 라벨 / 한글 문구 / carefully crafted coffee 사이 간격을 동일하게 */
+#story .section-header .section-subtitle { margin-bottom: 22px; }
+/* 영문 제목의 줄 높이가 위쪽에 여백을 더 만들므로 10px 빼서 실제 간격을 맞춘다 */
+#story .section-header .section-title > span:first-child { margin-bottom: 12px !important; }
+#story .section-header .section-title { margin-bottom: 0; }
+
+/* 4. carefully crafted coffee 는 Ciutadella 이전 폰트(Archivo)로 */
+#story .section-header .title-nowrap {
+    font-family: 'Archivo', 'Noto Sans KR', -apple-system, sans-serif;
+}
+
+/* 9. 파트너십 약속 카드: 아이콘이 있어도 제목 글자가 가운데로 보이게
+      (아이콘을 제목에서 분리해 위에 두고, 제목은 순수 텍스트만 가운데 정렬) */
+.promise-card h4 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+}
+.promise-card .promise-icon { font-size: 1.4rem; line-height: 1; }
+.promise-card .promise-label { display: block; }
+
+/* 10. 납품 섹션 제목만 한 단계 축소 (따옴표 2줄 문장이라 덩어리가 커 보임) */
+#wholesale .section-header:first-of-type .section-title { font-size: 2.1rem; }
+
+/* 13. 납품 섹션 아래 여백 축소 */
+#wholesale { padding-bottom: 72px; }
+
+/* 14. 유지보수: 엔지니어 문단과 Fast-Track 문단의 글자 크기를 통일 */
+#maintenance .why-text p,
+#maintenance .why-text + div p,
+#maintenance p[style*="--text-secondary"] { font-size: 0.95rem; }
+
+/* 15. 유지보수 섹션 아래 여백 축소 */
+#maintenance { padding-bottom: 72px; }
+
+/* 16. 컨설팅 카드를 파트너십 약속 카드와 같은 규격으로 */
+#consulting .container { max-width: 1080px; }
+#consulting .consulting-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 100px; }
+#consulting .consulting-card { padding: 30px; }
+#consulting .consulting-card .consulting-icon { width: 52px; height: 52px; font-size: 1.5rem; margin-bottom: 16px; }
+#consulting .consulting-card h3 { font-size: 1.1rem; margin-bottom: 10px; }
+#consulting .consulting-card p { font-size: 0.9rem; line-height: 1.5; }
+
+/* 18. 문의하기: 첫 화면처럼 검정 배경으로 마무리 */
+#contact {
+    background: var(--ink);
+    color: #f2f3f4;
+    max-width: none;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+#contact .contact-left { max-width: 800px; margin: 0 auto; }
+#contact h2 { color: #ffffff; }
+#contact .contact-desc { color: #b9bec1; }
+#contact .apply-item {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.16);
+    color: #f2f3f4;
+}
+#contact .apply-item:hover {
+    background: rgba(255, 255, 255, 0.11);
+    border-color: var(--accent-mint);
+}
+#contact .apply-icon, #contact .apply-arrow { color: var(--accent-mint); }
+#contact .channel-link { color: #e7e9ea; }
+#contact .contact-info-list { border-top-color: rgba(255, 255, 255, 0.16); color: #b9bec1; }
+#contact .contact-info-list strong { color: #ffffff; }
+#contact > div[style*="opacity: 0.5"] { color: #e7e9ea; opacity: 0.55 !important; }
+
+@media (max-width: 768px) {
+    #consulting .consulting-grid { grid-template-columns: 1fr; gap: 20px; }
+    #wholesale, #maintenance { padding-bottom: 48px; }
+    /* 16. 모바일에서도 파트너십 약속 카드와 같은 글자 크기 (promise-card 값과 동일) */
+    #consulting .consulting-card h3 { font-size: 0.95rem; }
+    #consulting .consulting-card p { font-size: 0.84rem; }
+    /* 14. 모바일에서도 유지보수 두 문단 크기 통일 (why-text p 와 동일) */
+    #maintenance .why-text p,
+    #maintenance p[style*="--text-secondary"] { font-size: 0.84rem; }
+}
     </style>
 </head>
 <body>
@@ -1398,11 +1489,9 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     <h3 class="spirit-title">Consistency</h3>
     <p class="spirit-desc">
         <strong>"언제 어디서나 일관된 맛"</strong><br><br>
-        한결같은 커피 한 잔을 완성하기 위해, 우리는 매일 로스팅 데이터를 기록하고 분석합니다.<br><br>
+        완벽한 커피 한 잔을 위해 매번 로스팅 데이터를 섬세하게 기록하고 분석합니다.<br><br>
 
-        기록이 만든 일관성, 체계적인 데이터 관리로 완성된 정확한 재현성, 그리고 로스터의 경험과 섬세한 노하우가 더해져<br><br>
-
-        스트레토 원두는 언제 어디서나 한결같은 커피 한 잔으로 완성됩니다.
+        기록이 만든 일관성, 체계적인 데이터의 재현성, 그리고 로스터의 노하우가 더해져 언제 어디서나 변함없는 맛을 완성합니다.
     </p>
 </div>
                 <div class="spirit-card">
@@ -1447,17 +1536,17 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                     <div class="history-list">
                         <div class="history-item">
                             <span class="year">2016.11 - 2018.10</span>
-                            <div class="history-title">Stretto Roastery (Seoul)</div>
+                            <div class="history-title">stretto roastery (Seoul)</div>
                             <div class="history-desc">서울 공덕동에서 소규모 로스팅실 겸 테이크아웃 매장 운영</div>
                         </div>
                         <div class="history-item">
                             <span class="year">2018.06 - 2025.06</span>
-                            <div class="history-title">Stretto Roastery & Cafe (Seoul)</div>
+                            <div class="history-title">stretto roastery & cafe (Seoul)</div>
                             <div class="history-desc">서울 공덕동 소담길 내 3층 규모 카페와 로스터리 운영                                                    </div>
                         </div>
                         <div class="history-item">
                             <span class="year">2023.09 - Present</span>
-                            <div class="history-title">Stretto Coffee Factory (Paju)</div>
+                            <div class="history-title">stretto coffee factory (Paju)</div>
                             <div class="history-desc">
                                 식품제조 · 가공업 인허가 기반의 전문 로스팅 공장 설립 및 운영 (원두 OEM / 납품)<br>
                                 <strong>· 국가대표 선발전(Roasting Championship) 심사위원 위촉 및 활동</strong><br>
@@ -1481,7 +1570,8 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                         우리가 마시는 커피의 99%는 물입니다. 하지만 아이러니하게도 커피를 생산하는 많은 나라의 아이들은 마실 물을 얻기 위해 하루 평균 6km 이상을 걸어야 하고, 그마저도 깨끗하지 않은 경우가 많습니다.
                     </p>
                     <p>
-                        오늘도 스트레토 커피 팩토리는 커피 생두를 보내준 나라에 깨끗한 물을 선물해주는 날을 꿈꾸며, 정성껏 로스팅한 커피로 얻은 수익을 커피나무가 자라는 땅에 다시 돌려주기 위해 최선을 다해 로스팅합니다.
+                        오늘도 스트레토 커피 팩토리는 커피 생두를 보내준 나라에 깨끗한 물을 선물해주는 날을 꿈꾸며,<br>
+                        정성껏 로스팅한 커피로 얻은 수익을 커피나무가 자라는 땅에 다시 돌려주기 위해 최선을 다해 로스팅합니다.
                     </p>
                 </div>
             </div>
@@ -1583,7 +1673,7 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                 </h2>
                 
                 <div class="wholesale-intro">
-                    <p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.8;">
+                    <p style="color: var(--text-secondary); line-height: 1.8;">
                         로스팅 대회의 승패를 가르는 것은 0.1점 차이의 디테일입니다.<br>
                         <strong>2019년부터 활동해 온 국가대표 선발전 심사위원</strong>의 엄격한 기준으로<br>
                         매일 생산되는 원두의 퀄리티를 타협 없이 검증합니다.
@@ -1631,34 +1721,34 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
 
             <div class="promises-grid">
                 <div class="promise-card">
-                    <h4>⚙️ 초기 세팅 방문 지원</h4>
+                    <h4><span class="promise-icon">⚙️</span><span class="promise-label">초기 세팅 방문 지원</span></h4>
                     <p>1:1 에스프레소 추출 교육을 무료로 제공해 드립니다. (완벽한 한 잔을 위한 가이드 제공)</p>
                 </div>
                 <div class="promise-card">
-                    <h4>💰 1kg 원두 할인가</h4>
+                    <h4><span class="promise-icon">💰</span><span class="promise-label">1kg 원두 할인가</span></h4>
                     <p>매월 30kg 이상 주문 시, 할인된 가격으로 제공되어 원가 부담을 덜어드립니다.</p>
                 </div>
                 <div class="promise-card">
-                    <h4>🤝 매장 방문 컨설팅</h4>
+                    <h4><span class="promise-icon">🤝</span><span class="promise-label">매장 방문 컨설팅</span></h4>
                     <p>요청 시 운영하시는 매장에 방문하여 커피 품질 논의 및 운영 상담을 진행합니다.</p>
                 </div>
                 <div class="promise-card">
-                    <h4>💬 상시 1:1 상담</h4>
+                    <h4><span class="promise-icon">💬</span><span class="promise-label">상시 1:1 상담</span></h4>
                     <p>카카오톡을 통해 추출, 레시피, 운영 노하우 등 궁금한 점을 언제든 해결해 드립니다.</p>
                 </div>
                 <div class="promise-card">
-                    <h4>🧪 커스텀 블렌드 개발</h4>
+                    <h4><span class="promise-icon">🧪</span><span class="promise-label">커스텀 블렌드 개발</span></h4>
                     <p>매장 컨셉에 어울리는 독자적인 블렌딩 개발이 가능합니다. (비용/단가 별도 협의)</p>
                 </div>
                 <div class="promise-card">
-                    <h4>💎 싱글오리진 소량 구매</h4>
+                    <h4><span class="promise-icon">💎</span><span class="promise-label">싱글오리진 소량 구매</span></h4>
                     <p>에스프레소 원두 주문 시, 싱글오리진을 200g부터 납품가로 구매하실 수 있습니다.</p>
                 </div>
             </div>
 
             <div class="section-header">
                 <h2 class="section-title" style="font-size: 2rem;">파트너십 진행 절차</h2>
-                <p style="max-width: 660px; margin: 16px auto 0; color: var(--text-secondary); font-size: 1rem; line-height: 1.75; word-break: keep-all; font-style: italic;">
+                <p style="max-width: 660px; margin: 16px auto 0; color: var(--text-secondary); line-height: 1.75; word-break: keep-all; font-style: italic;">
                     “스트레토는 의도한 맛과 향을 온전히 전해드리기 위해,<br>직접 만나 뵙고 소통하며 소개해 드리는 방식을 고수하고 있습니다.”
                 </p><br>
             <p style="color: var(--text-tertiary); font-size: 0.9rem; margin: 0; word-break: keep-all;">※ 파트너십 조건 : 첫 주문 원두 10kg · 월 평균 최소 30kg</p>
@@ -1952,7 +2042,7 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     </style>
 
     <section id="consulting" style="background-color: var(--bg-secondary);">
-        <div class="container" style="max-width: 1280px;">
+        <div class="container">
             <div class="section-header">
                 <span class="section-subtitle">CAFE CONSULTING</span>
                 <h2 class="section-title">Driven by Responsibility.</h2>
