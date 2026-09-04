@@ -1434,7 +1434,7 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     left: 10%;
     right: calc(var(--corner) - var(--sweep) - 4px);
     top: 21px;
-    height: 3px;
+    height: 2px;
     background: var(--rail);
 }
 /* 05 → 06 연결선. 마지막 숫자 바깥(레일 오른쪽 끝)까지 나갔다가 크게 돌아 내려온다.
@@ -1446,16 +1446,16 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     box-sizing: border-box;
     right: calc(var(--sweep) * -1);
     width: var(--corner);
-    border-right: 3px solid var(--rail);
+    border-right: 2px solid var(--rail);
 }
 #consulting .manual-row:first-child::after {
     top: 21px; bottom: calc(var(--gapY) / -2);
-    border-top: 3px solid var(--rail);
+    border-top: 2px solid var(--rail);
     border-top-right-radius: var(--corner);
 }
 #consulting .manual-row-back::after {
-    top: calc(var(--gapY) / -2); height: calc(var(--gapY) / 2 + 24px);
-    border-bottom: 3px solid var(--rail);
+    top: calc(var(--gapY) / -2); height: calc(var(--gapY) / 2 + 23px);
+    border-bottom: 2px solid var(--rail);
     border-bottom-right-radius: var(--corner);
 }
 
@@ -1475,9 +1475,11 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     height: 44px;
     margin: 0 auto 14px;
     border-radius: 50%;
-    /* 30. 연한 하늘색 배경 + 하늘색 테두리. 선이 숫자를 가리지 않게 원을 위로 */
-    background: rgba(170, 213, 219, 0.22);
-    border: 1px solid rgba(170, 213, 219, 0.75);
+    /* 30. 연한 하늘색 배경 + 하늘색 테두리. 선이 숫자를 가리지 않게 원을 위로.
+       배경/테두리는 반투명이 아닌 불투명값(섹션 배경 #f5f5f6 위에서 같은 색)이라
+       원 뒤를 지나는 연결선이 비쳐 보이지 않는다 */
+    background: #e5eef0;
+    border: 1px solid #bddde2;
     position: relative;
     z-index: 1;
     color: var(--ink);
@@ -1500,8 +1502,8 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     #consulting .manual-row { display: block; margin-bottom: 0; }
     #consulting .manual-row-back { flex-direction: row; }
     #consulting .manual-row::before {
-        left: 15.5px; right: auto; top: 10px; bottom: 10px;
-        width: 3px; height: auto;
+        left: 16px; right: auto; top: 10px; bottom: 10px;
+        width: 2px; height: auto;
     }
     #consulting .manual-row:first-child::before { top: 22px; bottom: -6px; }
     #consulting .manual-row-back::before { top: -6px; bottom: 22px; }
