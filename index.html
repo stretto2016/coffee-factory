@@ -1416,7 +1416,8 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
       윗줄은 01→05 로 흐르고, 오른쪽 끝에서 아래로 꺾여 아랫줄을 06→10 으로
       되돌아 흐른다(화면에는 10 09 08 07 06 순으로 보인다). */
 /* 30. 선은 원 테두리와 같은 하늘색으로 2배 두껍게(1.5px→3px), 꺾이는 곳은 둥글게 */
-#consulting .manual-rail { --rail: rgba(170, 213, 219, 0.75); --gapY: 44px; --corner: 28px; --sweep: 20px; margin: 60px auto; max-width: 1080px; }
+#consulting .manual-rail { --rail: rgba(170, 213, 219, 0.75); --gapY: 44px; --corner: 28px; --sweep: 20px; --flow: #5aa9b8;
+    position: relative; margin: 60px auto; max-width: 1080px; }
 
 #consulting .manual-row {
     position: relative;
@@ -1435,7 +1436,23 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     right: calc(var(--corner) - var(--sweep) - 4px);
     top: 21px;
     height: 2px;
-    background: var(--rail);
+    background-color: var(--rail);
+    /* 01 → 10 으로 물이 흐르듯 지나가는 하이라이트 */
+    background-image: linear-gradient(to right, rgba(90,169,184,0) 0%, var(--flow) 50%, rgba(90,169,184,0) 100%);
+    background-repeat: no-repeat;
+    background-size: 170px 100%;
+    background-position: -170px 0;
+}
+#consulting .manual-row:first-child::before { animation: manualFlowRight 6s linear infinite; }
+#consulting .manual-row-back::before { animation: manualFlowLeft 6s linear infinite; }
+/* 윗줄이 01→05 로 흐르고, 코너를 도는 동안 잠깐 쉬었다가 아랫줄이 06→10 으로 이어받는다 */
+@keyframes manualFlowRight {
+    0%        { background-position: -170px 0; }
+    45%, 100% { background-position: calc(100% + 170px) 0; }
+}
+@keyframes manualFlowLeft {
+    0%, 55% { background-position: calc(100% + 170px) 0; }
+    100%    { background-position: -170px 0; }
 }
 /* 05 → 06 연결선. 마지막 숫자 바깥(레일 오른쪽 끝)까지 나갔다가 크게 돌아 내려온다.
    숫자 아래 설명 글자를 가로지르지 않게 하기 위함 */
@@ -1501,14 +1518,35 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     #consulting .manual-rail { --gapY: 0px; margin: 40px 0; }
     #consulting .manual-row { display: block; margin-bottom: 0; }
     #consulting .manual-row-back { flex-direction: row; }
-    #consulting .manual-row::before {
-        left: 16px; right: auto; top: 10px; bottom: 10px;
-        width: 2px; height: auto;
-    }
-    #consulting .manual-row:first-child::before { top: 22px; bottom: -6px; }
-    #consulting .manual-row-back::before { top: -6px; bottom: 22px; }
+    /* 행 단위로 그리면 05↔06 에서 선이 끊긴다. 레일 전체에 한 줄로 긋고
+       첫 원 중심(24px)에서 시작해 마지막 원 중심에서 끝낸다 */
+    #consulting .manual-row::before,
+    #consulting .manual-row:first-child::before,
+    #consulting .manual-row-back::before { display: none; }
     #consulting .manual-row:first-child::after,
     #consulting .manual-row-back::after { display: none; }
+    #consulting .manual-rail::before {
+        content: "";
+        position: absolute;
+        left: 16px; top: 24px; bottom: 24px; width: 2px;
+        background: var(--rail);
+    }
+    /* 01 에서 10 으로 흘러내리는 하이라이트 */
+    #consulting .manual-rail::after {
+        content: "";
+        position: absolute;
+        left: 16px; top: 24px; bottom: 24px; width: 2px;
+        background-image: linear-gradient(to bottom, rgba(90,169,184,0) 0%, var(--flow) 50%, rgba(90,169,184,0) 100%);
+        background-repeat: no-repeat;
+        background-size: 100% 130px;
+        background-position: 0 -130px;
+        animation: manualFlowDown 6s linear infinite;
+        pointer-events: none;
+    }
+    @keyframes manualFlowDown {
+        0%   { background-position: 0 -130px; }
+        100% { background-position: 0 calc(100% + 130px); }
+    }
     #consulting .manual-node {
         display: flex; align-items: center; gap: 14px;
         text-align: left; padding: 7px 0;
@@ -1517,6 +1555,13 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
         width: 34px; height: 34px; margin: 0; flex: 0 0 auto; font-size: 0.82rem;
     }
     #consulting .manual-text { font-size: 0.88rem; }
+}
+
+/* 동작 최소화를 켠 사용자에게는 흐름 애니메이션 없이 정지된 선만 */
+@media (prefers-reduced-motion: reduce) {
+    #consulting .manual-row::before,
+    #consulting .manual-rail::after { animation: none; }
+    #consulting .manual-rail::after { display: none; }
 }
 
 @media (max-width: 768px) {
