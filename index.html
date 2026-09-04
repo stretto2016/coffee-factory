@@ -190,13 +190,14 @@
         .story-left { flex: 1; }
         .story-right { flex: 1; }
         
+        /* 33. 선·점 모두 메인 하늘색, 선은 2배 두께(2px→4px), 점은 선 중심에 정렬 */
         .history-list {
-            border-left: 2px solid var(--border); padding-left: 30px; margin-top: 20px;
+            border-left: 4px solid var(--accent-mint); padding-left: 30px; margin-top: 20px;
         }
         .history-item { position: relative; margin-bottom: 40px; }
         .history-item::before {
-            content: ''; position: absolute; left: -36px; top: 5px; width: 10px; height: 10px;
-            background: var(--accent-blue); border-radius: 50%;
+            content: ''; position: absolute; left: -37px; top: 5px; width: 10px; height: 10px;
+            background: var(--accent-mint); border-radius: 50%;
         }
         .year { font-family: 'Ciutadella', sans-serif; font-size: 1.1rem; font-weight: bold; color: var(--text-primary); display: block; margin-bottom: 5px; }
         .history-title { font-size: 1.1rem; color: var(--text-primary); margin-bottom: 5px; font-weight: 600; }
@@ -1414,7 +1415,8 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
 /* 17. 창업 매뉴얼 01~10: 박스를 없애고 숫자를 선으로 잇는다.
       윗줄은 01→05 로 흐르고, 오른쪽 끝에서 아래로 꺾여 아랫줄을 06→10 으로
       되돌아 흐른다(화면에는 10 09 08 07 06 순으로 보인다). */
-#consulting .manual-rail { --rail: #d8dcdd; --gapY: 44px; margin: 60px auto; max-width: 1080px; }
+/* 30. 선은 원 테두리와 같은 하늘색으로 2배 두껍게(1.5px→3px), 꺾이는 곳은 둥글게 */
+#consulting .manual-rail { --rail: rgba(170, 213, 219, 0.75); --gapY: 44px; --corner: 14px; margin: 60px auto; max-width: 1080px; }
 
 #consulting .manual-row {
     position: relative;
@@ -1430,23 +1432,31 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     content: "";
     position: absolute;
     left: 10%;
-    right: 10%;
+    right: calc(10% + var(--corner) - 4px);
     top: 21px;
-    height: 1.5px;
+    height: 3px;
     background: var(--rail);
 }
-/* 오른쪽 끝에서 아래로 꺾이는 세로 연결선 (05 → 06) */
+/* 오른쪽 끝에서 아래로 꺾이는 세로 연결선 (05 → 06) — 모서리는 둥글게 */
 #consulting .manual-row:first-child::after,
 #consulting .manual-row-back::after {
     content: "";
     position: absolute;
-    right: 10%;
-    width: 1.5px;
-    margin-right: -0.75px;
-    background: var(--rail);
+    box-sizing: border-box;
+    right: calc(10% - 1.5px);
+    width: var(--corner);
+    border-right: 3px solid var(--rail);
 }
-#consulting .manual-row:first-child::after { top: 21px; bottom: calc(var(--gapY) / -2); }
-#consulting .manual-row-back::after { top: calc(var(--gapY) / -2); height: calc(var(--gapY) / 2 + 21px); }
+#consulting .manual-row:first-child::after {
+    top: 21px; bottom: calc(var(--gapY) / -2);
+    border-top: 3px solid var(--rail);
+    border-top-right-radius: var(--corner);
+}
+#consulting .manual-row-back::after {
+    top: calc(var(--gapY) / -2); height: calc(var(--gapY) / 2 + 24px);
+    border-bottom: 3px solid var(--rail);
+    border-bottom-right-radius: var(--corner);
+}
 
 #consulting .manual-node {
     flex: 1 1 0;
@@ -1459,11 +1469,16 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     display: flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
     width: 44px;
     height: 44px;
     margin: 0 auto 14px;
     border-radius: 50%;
-    background: var(--accent-mint);
+    /* 30. 연한 하늘색 배경 + 하늘색 테두리. 선이 숫자를 가리지 않게 원을 위로 */
+    background: rgba(170, 213, 219, 0.22);
+    border: 1px solid rgba(170, 213, 219, 0.75);
+    position: relative;
+    z-index: 1;
     color: var(--ink);
     font-family: 'Ciutadella', sans-serif;
     font-size: 0.95rem;
@@ -1484,8 +1499,8 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     #consulting .manual-row { display: block; margin-bottom: 0; }
     #consulting .manual-row-back { flex-direction: row; }
     #consulting .manual-row::before {
-        left: 21px; right: auto; top: 10px; bottom: 10px;
-        width: 1.5px; height: auto;
+        left: 15.5px; right: auto; top: 10px; bottom: 10px;
+        width: 3px; height: auto;
     }
     #consulting .manual-row:first-child::before { top: 22px; bottom: -6px; }
     #consulting .manual-row-back::before { top: -6px; bottom: 22px; }
@@ -1510,6 +1525,60 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     /* 14. 모바일에서도 유지보수 두 문단 크기 통일 (why-text p 와 동일) */
     #maintenance .why-text p,
     #maintenance p[style*="--text-secondary"] { font-size: 0.84rem; }
+}
+
+/* ===========================================================
+   리뷰 코멘트 반영 (2026-09-04)
+   =========================================================== */
+
+/* 22. PARTNER BENEFIT 안내를 한 줄로 (아래 두 혜택 카드 위) */
+.partner-benefit-line {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 20px 0 24px;
+    word-break: keep-all;
+}
+.partner-benefit-line .pb-label { font-size: 0.8rem; color: var(--text-tertiary); letter-spacing: 1px; }
+.partner-benefit-line .pb-title { font-size: 1.1rem; color: var(--text-primary); }
+.partner-benefit-line .pb-desc  { font-size: 0.85rem; color: var(--text-tertiary); }
+
+/* 21. 두 혜택을 파트너십 약속 카드와 같은 규격(아이콘 + 굵은 글씨 + 얇은 글씨)으로 */
+#maintenance .benefit-grid { grid-template-columns: repeat(2, 1fr); }
+
+/* 23. 큰 흰 박스 안쪽 아래 여백을 절반으로
+      (수리절차 80 + 그리드 50 + 박스패딩 30 = 160  →  50 + 0 + 30 = 80) */
+#maintenance .repair-process-wrap { margin-bottom: 50px; }
+
+/* 24. 컨설팅 섹션 위 여백 절반으로 (120 → 60) */
+#consulting { padding-top: 60px; }
+
+/* 25. 컨설팅 카드 아이콘의 하늘색 원을 없애고 파트너십 약속 카드와 동일하게 */
+#consulting .consulting-card .consulting-icon {
+    width: auto; height: auto;
+    background: none; border: none; border-radius: 0;
+    font-size: 1.4rem; line-height: 1;
+    margin: 0 auto 8px;
+}
+
+/* 31. 문의하기 제목 40px → 30px */
+.contact-left h2 { font-size: 1.875rem; }
+
+/* 34. 히어로 CTA: 글자가 박스 위쪽으로 2px 치우쳐 보이므로 위/아래 여백을 2px 옮겨
+      글자 높이를 박스 정중앙에 맞춘다 (박스 전체 높이는 그대로) */
+#hero .btn-primary { padding-top: 18px; padding-bottom: 14px; }
+
+@media (max-width: 768px) {
+    #consulting { padding-top: 22px; }
+    #consulting .consulting-card .consulting-icon {
+        width: auto; height: auto; font-size: 1.4rem; margin: 0 0 8px 0;
+    }
+    #maintenance .benefit-grid { grid-template-columns: 1fr; }
+    .contact-left h2 { font-size: 1.4rem; }
+    #hero .btn-primary { padding-top: 14.5px; padding-bottom: 11.5px; }
 }
     </style>
 </head>
@@ -1578,28 +1647,26 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                 <div class="spirit-card">
     <h3 class="spirit-title">Consistency</h3>
     <p class="spirit-desc">
-        <strong>"언제 어디서나 일관된 맛"</strong><br><br>
+        <strong>언제 어디서나 일관된 맛</strong><br><br>
         완벽한 커피 한 잔을 위해 매번 로스팅 데이터를 섬세하게 기록하고 분석합니다.<br><br>
 
-        기록이 만든 일관성, 체계적인 데이터의 재현성, 그리고 로스터의 노하우가 더해져 언제 어디서나 변함없는 맛을 완성합니다.
+        기록이 만든 일관성, 체계적인 데이터의 재현성, 그리고 로스터의 노하우가 더해져<br>언제 어디서나 변함없는 맛을 완성합니다.
     </p>
 </div>
                 <div class="spirit-card">
                     <h3 class="spirit-title">Intensity</h3>
                     <p class="spirit-desc">
-                        <strong>"강렬한 첫인상과 깊은 여운"</strong><br><br>
-                        '커피' 하면 '스트레토'가 떠오를 수 있도록 짙고 진한 잔향을 선사합니다.<br><br>
-                        
-                        제품뿐만 아니라, 인상 깊고 만족도 높은 제품과 서비스를 통해 고객의 마음속에 오래도록 진한 기억을 남기는 브랜드가 되고자 합니다.
+                        <strong>강렬한 첫인상과 깊은 여운</strong><br><br>
+                        '커피' 하면 '스트레토'가 떠오를 수 있도록<br>짙고 진한 잔향을 선사합니다.<br><br>
+
+                        인상 깊고 만족도 높은 제품과 서비스를 통해 고객의 마음속에 오래도록 진한 기억을 남기는 브랜드가 되고자 합니다.
                     </p>
                 </div>
                 <div class="spirit-card">
                     <h3 class="spirit-title">Responsibility</h3>
                     <p class="spirit-desc">
-                        <strong>"진심을 담은 책임감"</strong><br><br>
-                        커피 원두가 한 잔의 커피로 완성되는 모든 과정에서 ‘맛있는 커피 한 잔’에 대한 책임감을 가지고 고객의 목소리에 귀 기울이며 진심을 담아 세심하게 케어합니다.<br><br>
-
-                        스트레토를 선택해 주신 분들이 스트레토 커피를 마시는 모든 순간을 편안한 마음으로 여유롭게 즐기실 수 있도록 커피가 만들어지는 모든 과정에 늘 함께하겠습니다.
+                        <strong>진심을 담은 책임감</strong><br><br>
+                        커피 원두가 한 잔의 커피로 완성되는 모든 과정에서 ‘맛있는 커피 한 잔’에 대한 책임감을 가지고 고객의 목소리에 귀 기울이며 진심을 담아 세심하게 케어합니다.
                     </p>
                 </div>
             </div>
@@ -1614,10 +1681,10 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                         스트레토는 에스프레소의 한 종류인 <strong>'Ristretto(리스트레토)'</strong>에서 영감을 받았습니다.
                     </p>
                     <p style="color: var(--text-secondary); font-weight: 400; word-break: keep-all;">
-                        짧은 시간에 추출하여 강렬한 맛과 향을 담은 리스트레토처럼,
+                        짧은 시간에 추출하여 강렬한 맛과 향을 담은 리스트레토처럼,<br>
                         강렬한 첫인상과 오래 남는 깊은 여운을 전하고자 합니다.<br><br>
                         짙고 깊은 잔향의 고품질 커피로
-                        여러분의 마음속에 오래 기억되는 이름이 되겠습니다.
+                        마음속에 오래 기억되는 이름이 되겠습니다.
                     </p>
                 </div>
 
@@ -1640,7 +1707,7 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                             <div class="history-desc">
                                 식품제조 · 가공업 인허가 기반의 전문 로스팅 공장 설립 및 운영 (원두 OEM / 납품)<br>
                                 <strong>· 국가대표 선발전(Roasting Championship) 심사위원 위촉 및 활동</strong><br>
-                                · 커피 머신 점검, 커피 추출 교육 등 통합 커피 솔루션 제공
+                                · 카페 창업 컨설팅, 커피머신 점검 등 통합 커피 솔루션 제공
                             </div>
                         </div>
                     </div>
@@ -1661,7 +1728,8 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                     </p>
                     <p>
                         오늘도 스트레토 커피 팩토리는 커피 생두를 보내준 나라에 깨끗한 물을 선물해주는 날을 꿈꾸며,<br>
-                        정성껏 로스팅한 커피로 얻은 수익을 커피나무가 자라는 땅에 다시 돌려주기 위해 최선을 다해 로스팅합니다.
+                        정성껏 로스팅한 커피로 얻은 수익을 커피나무가 자라는 땅에 다시 돌려주기 위해<br>
+                        최선을 다해 로스팅합니다.
                     </p>
                 </div>
             </div>
@@ -1714,13 +1782,13 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
             <div class="section-header">
                 <span class="section-subtitle">ONLINE STORE</span>
                 <h2 class="section-title">Signature Blends</h2>
-                <p>스트레토가 추구하는 맛의 지향점을 담은 블렌딩 라인업</p>
+                <p>스트레토 대표 블렌드</p>
             </div>
             <div class="shop-grid" id="shop-blend-grid" style="margin-bottom: 100px;"></div>
 
             <div class="section-header" style="margin-top: 100px;">
                 <h2 class="section-title">Single Origin</h2>
-                <p>각 산지의 떼루아를 온전히 담아낸 스페셜티 라인업</p>
+                <p>스트레토가 엄선한 스페셜티 커피</p>
             </div>
 
             <div style="margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: baseline; gap: 10px;">
@@ -1776,28 +1844,28 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                     <div class="why-icon">🏭</div>
                     <div class="why-text">
                         <h3>식품제조·가공업 정식 인허가</h3>
-                        <p>스트레토의 원두를 구매하신 후 재가공하여 판매하실 수 있습니다. (식품소분업 허가 필요)</p>
+                        <p>스트레토의 원두를 구매하신 후 재가공하여 판매할 수 있습니다. (식품소분업 허가 필요)</p>
                     </div>
                 </div>
                 <div class="why-card">
                     <div class="why-icon">🛡️</div>
                     <div class="why-text">
                         <h3>3개월 주기 자가품질검사</h3>
-                        <p>정기적인 품질 검사를 통해 안전성을 검증받습니다. 믿고 구매할 수 있는 스트레토 원두입니다.</p>
+                        <p>정기적인 품질 검사를 통해 안전성을 검증받은, 믿고 구매할 수 있는 스트레토 원두입니다.</p>
                     </div>
                 </div>
                 <div class="why-card">
                     <div class="why-icon">🔥</div>
                     <div class="why-text">
                         <h3>High-End Roasting</h3>
-                        <p>재현성과 안정성이 뛰어난 PROBAT 및 Stronghold 머신을 사용하여 일관성 있는 고품질 원두를 생산합니다.</p>
+                        <p>재현성과 안정성이 뛰어난 프로밧 로스터기와 스트롱홀드 로스터기를 사용하여 일관성 있는 고품질 원두를 생산합니다.</p>
                     </div>
                 </div>
                 <div class="why-card">
                     <div class="why-icon">☕</div>
                     <div class="why-text">
                         <h3>QC & Cupping</h3>
-                        <p>매일 원두 발송 전 커핑을 통해 맛과 향을 확인하며, 언제나 동일한 품질을 약속합니다.</p>
+                        <p>원두 발송 전 커핑을 통해 맛과 향을 확인하며, 언제나 동일한 품질을 약속합니다.</p>
                     </div>
                 </div>
             </div>
@@ -1806,7 +1874,7 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
 
             <div class="section-header">
                 <h2 class="section-title" style="font-size: 2rem;">6가지 파트너십 약속</h2>
-                <p>단순 납품을 넘어 카페 운영의 든든한 조력자가 되겠습니다.</p>
+                <p>원두 납품을 넘어 카페 운영의 든든한 조력자가 되겠습니다.</p>
             </div>
 
             <div class="promises-grid">
@@ -1820,7 +1888,7 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                 </div>
                 <div class="promise-card">
                     <h4><span class="promise-icon">🤝</span><span class="promise-label">매장 방문 컨설팅</span></h4>
-                    <p>요청 시 운영하시는 매장에 방문하여 커피 품질 논의 및 운영 상담을 진행합니다.</p>
+                    <p>요청 시 운영하시는 매장에 방문하여<br>커피 품질 논의 및 운영 상담을 진행합니다.</p>
                 </div>
                 <div class="promise-card">
                     <h4><span class="promise-icon">💬</span><span class="promise-label">상시 1:1 상담</span></h4>
@@ -1832,13 +1900,13 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                 </div>
                 <div class="promise-card">
                     <h4><span class="promise-icon">💎</span><span class="promise-label">싱글오리진 소량 구매</span></h4>
-                    <p>에스프레소 원두 주문 시, 싱글오리진을 200g부터 납품가로 구매하실 수 있습니다.</p>
+                    <p>에스프레소 원두 주문 시, 싱글오리진을<br>200g부터 납품가로 구매하실 수 있습니다.</p>
                 </div>
             </div>
 
             <div class="section-header">
                 <h2 class="section-title" style="font-size: 2rem;">파트너십 진행 절차</h2>
-                <p style="max-width: 660px; margin: 16px auto 0; color: var(--text-secondary); line-height: 1.75; word-break: keep-all; font-style: italic;">
+                <p style="max-width: 660px; margin: 16px auto 0; color: var(--text-secondary); line-height: 1.75; word-break: keep-all;">
                     “스트레토는 의도한 맛과 향을 온전히 전해드리기 위해,<br>직접 만나 뵙고 소통하며 소개해 드리는 방식을 고수하고 있습니다.”
                 </p><br>
             <p style="color: var(--text-tertiary); font-size: 0.9rem; margin: 0; word-break: keep-all;">※ 파트너십 조건 : 첫 주문 원두 10kg · 월 평균 최소 30kg</p>
@@ -1907,46 +1975,28 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                 <div style="background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-card); border-radius: 12px; padding: 30px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; box-sizing: border-box; width: 100%;">
                     <div style="flex: 1; min-width: 200px; word-break: keep-all;">
                         <h3 style="font-size: 1.8rem; margin-bottom: 15px; color: var(--text-primary);">
-                            <span style="color: var(--accent-blue);">Certified</span> Engineer.
+                            <span style="color: var(--text-primary);">Certified</span> Engineer.
                         </h3>
                         <p style="color: var(--text-secondary); margin-bottom: 0;">
                             스트레토는 <strong>커피머신 엔지니어 공식 인증 자격증</strong>을 보유하고 있습니다.<br>
                             단순한 소모품 교체부터 복잡한 내부 수리까지, 스트레토가 직접 책임지고 해결해 드립니다.
                         </p>
                     </div>
-                    <div style="background: var(--surface-alt); padding: 20px; border-radius: 8px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-top: 20px;">
-                        <span style="display: block; font-size: 0.8rem; color: var(--text-tertiary); letter-spacing: 1px; margin-bottom: 5px;">PARTNER BENEFIT</span>
-                        <strong style="font-size: 1.1rem; color: var(--text-primary); display: block; word-break: keep-all;">Priority Dispatch & Care</strong>
-                        <div style="font-size: 0.85rem; color: var(--text-tertiary); margin-top: 5px; word-break: keep-all;">긴급 상황 시 최우선 방문 지원</div>
+                    <div class="partner-benefit-line">
+                        <span class="pb-label">PARTNER BENEFIT</span>
+                        <strong class="pb-title">Priority Dispatch &amp; Care</strong>
+                        <span class="pb-desc">긴급 상황 시 최우선 방문 지원</span>
                     </div>
 
-                <div class="why-grid" style="margin-bottom: 50px;">
-                    <div class="why-card" style="align-items: flex-start;">
-                        <div style="width: 50px; height: 50px; background: rgba(170, 213, 219, 0.30); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--accent-blue); flex-shrink: 0;">
-                            ⚡
-                        </div>
-                        <div class="why-text">
-                            <h3 style="margin-top: 10px; font-size: 1.25rem; color: var(--text-primary); word-break: keep-all;">
-                                Fast-Track Response <span style="color: var(--text-tertiary); font-weight: 400; font-size: 1rem;">| 긴급 출동 우선권 부여</span>
-                            </h3>
-                            <p style="margin-top: 5px; color: var(--text-secondary);">
-                                머신 고장은 곧 매출 손실입니다. 파트너사의 긴급 상황 발생 시, 최우선적으로 스케줄을 조정하여 현장에 방문합니다.
-                            </p>
-                        </div>
+                <div class="promises-grid benefit-grid" style="margin-bottom: 0;">
+                    <div class="promise-card">
+                        <h4><span class="promise-icon">⚡</span><span class="promise-label">Fast-Track Response | 긴급 출동 우선권 부여</span></h4>
+                        <p>머신 고장은 곧 매출 손실입니다. 파트너사의 긴급 상황 발생 시, 최우선적으로 스케줄을 조정하여 현장에 방문합니다.</p>
                     </div>
 
-                    <div class="why-card" style="align-items: flex-start;">
-                        <div style="width: 50px; height: 50px; background: rgba(170, 213, 219, 0.30); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--accent-blue); flex-shrink: 0;">
-                            🛠️
-                        </div>
-                        <div class="why-text">
-                            <h3 style="margin-top: 10px; font-size: 1.25rem; color: var(--text-primary); word-break: keep-all;">
-                                Exclusive Benefits <span style="color: var(--text-tertiary); font-weight: 400; font-size: 1rem;">| 출장비 & 기술료 할인</span>
-                            </h3>
-                            <p style="margin-top: 5px; color: var(--text-secondary);">
-                                시중 수리비 대비 합리적인 가격(출장비/기술료 할인)으로 케어 서비스를 제공합니다.
-                            </p>
-                        </div>
+                    <div class="promise-card">
+                        <h4><span class="promise-icon">🛠️</span><span class="promise-label">Exclusive Benefits | 출장비 &amp; 기술료 할인</span></h4>
+                        <p>시중 수리비 대비 합리적인 가격(출장비/기술료 할인)으로 케어 서비스를 제공합니다.</p>
                     </div>
                 <div class="repair-process-wrap">
                     <div style="text-align: center; margin-bottom: 40px;">
@@ -2050,8 +2100,9 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
         }
         .manual-badge {
             display: inline-block;
-            background: var(--accent-blue);
-            color: var(--accent-on);
+            /* 32. 히어로 '파트너십 문의' 버튼과 같은 메인 하늘색으로 */
+            background: var(--accent-mint);
+            color: #08191c;
             font-weight: 700;
             padding: 6px 18px;
             border-radius: 30px;
@@ -2148,12 +2199,12 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                 <div class="consulting-card">
                     <div class="consulting-icon">⚙️</div>
                     <h3>하드웨어 세팅</h3>
-                    <p>머신 선정부터 정밀한 에스프레소 추출까지, 완벽한 커피 한 잔을 위한 최적의 추출 환경을 세팅합니다.</p>
+                    <p>머신 선정부터 정밀한 에스프레소 추출까지, 완벽한 커피 한 잔을 위한 최적의 추출 환경을 제공합니다.</p>
                 </div>
                 <div class="consulting-card">
                     <div class="consulting-icon">☕</div>
                     <h3>맞춤형 원두 공급</h3>
-                    <p>매장 상권과 타겟 고객의 취향을 만족시킬 독점적 시그니처 블렌딩 원두를 안정적으로 커스텀 공급합니다.</p>
+                    <p>매장 상권과 고객의 취향을 만족시킬 커스텀 시그니처 블렌딩 원두를 제공합니다.</p>
                 </div>
                 <div class="consulting-card">
                     <div class="consulting-icon">📐</div>
@@ -2163,7 +2214,7 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                 <div class="consulting-card">
                     <div class="consulting-icon">📊</div>
                     <h3>지속 가능한 품질 관리</h3>
-                    <p>오픈 후에도 매일 같은 맛과 퀄리티를 유지할 수 있도록, 현장에서 적용 가능한 실전 품질 관리 프로세스를 전수합니다.</p>
+                    <p>매일 동일한 퀄리티를 유지할 수 있도록, 현장에서 적용 가능한 실전 품질 관리 프로세스를 전수합니다.</p>
                 </div>
                 <div class="consulting-card">
                     <div class="consulting-icon">🧑‍🏫</div>
@@ -2173,7 +2224,7 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                 <div class="consulting-card">
                     <div class="consulting-icon">🤝</div>
                     <h3>든든한 파트너십</h3>
-                    <p>수년간의 시행착오로 다져진 내공으로 심리적 부담감과 불안을 확신으로 바꿔드립니다. 카페 운영의 시작부터 안정기까지, 마음 놓고 의지할 수 있는 따뜻한 조력자로 함께합니다.</p>
+                    <p>수년간의 시행착오로 다져진 내공으로 심리적 부담감과 불안을 확신으로 바꿔드립니다. 마음 놓고 의지할 수 있는 따뜻한 조력자로 함께합니다.</p>
                 </div>
                 </div>
 
