@@ -1416,7 +1416,7 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
       윗줄은 01→05 로 흐르고, 오른쪽 끝에서 아래로 꺾여 아랫줄을 06→10 으로
       되돌아 흐른다(화면에는 10 09 08 07 06 순으로 보인다). */
 /* 30. 선은 원 테두리와 같은 하늘색으로 2배 두껍게(1.5px→3px), 꺾이는 곳은 둥글게 */
-#consulting .manual-rail { --rail: rgba(170, 213, 219, 0.75); --gapY: 44px; --corner: 14px; margin: 60px auto; max-width: 1080px; }
+#consulting .manual-rail { --rail: rgba(170, 213, 219, 0.75); --gapY: 44px; --corner: 28px; --sweep: 20px; margin: 60px auto; max-width: 1080px; }
 
 #consulting .manual-row {
     position: relative;
@@ -1432,18 +1432,19 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     content: "";
     position: absolute;
     left: 10%;
-    right: calc(10% + var(--corner) - 4px);
+    right: calc(var(--corner) - var(--sweep) - 4px);
     top: 21px;
     height: 3px;
     background: var(--rail);
 }
-/* 오른쪽 끝에서 아래로 꺾이는 세로 연결선 (05 → 06) — 모서리는 둥글게 */
+/* 05 → 06 연결선. 마지막 숫자 바깥(레일 오른쪽 끝)까지 나갔다가 크게 돌아 내려온다.
+   숫자 아래 설명 글자를 가로지르지 않게 하기 위함 */
 #consulting .manual-row:first-child::after,
 #consulting .manual-row-back::after {
     content: "";
     position: absolute;
     box-sizing: border-box;
-    right: calc(10% - 1.5px);
+    right: calc(var(--sweep) * -1);
     width: var(--corner);
     border-right: 3px solid var(--rail);
 }
