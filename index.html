@@ -1683,9 +1683,10 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     #maintenance .benefit-grid { grid-template-columns: 1fr; }
     /* 혜택 카드 제목이 한 줄에 들어가도록 좌우 여백을 줄여 폭을 확보한다 */
     #maintenance div[style*="border-radius: 12px"] { padding-left: 12px !important; padding-right: 12px !important; }
-    #maintenance .benefit-grid .promise-card { padding: 22px 20px; }
-    /* 제목이 길어(영문 + 국문) 두 줄로 넘어가므로 한 단계 더 줄인다 */
-    #maintenance .benefit-grid .promise-card h4 { font-size: 0.78rem; }
+    #maintenance .benefit-grid .promise-card { padding: 22px 16px; }
+    /* 제목이 길어(영문 + 국문) 두 줄로 넘어간다. 본문보다 작아지면 안 되므로
+       본문과 같은 크기(0.84rem)로 두고 굵기로 제목임을 표시한다 */
+    #maintenance .benefit-grid .promise-card h4 { font-size: 0.84rem; gap: 6px; }
     .contact-left h2 { font-size: 1.4rem; }
     #hero .btn-primary { padding-top: 14.5px; padding-bottom: 11.5px; }
 
@@ -1699,8 +1700,10 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     #consulting .consulting-card { justify-content: flex-start; }
     #consulting .consulting-card .consulting-icon { font-size: 0.95rem; margin: 0 7px 0 0; }
 
-    /* (3) 원두추천 진입 카드 */
+    /* (3) 원두추천 진입 카드. 세로로 쌓이므로 마지막 항목 아래 선은 남는 선처럼 보인다
+           (PC 는 둘이 나란히 놓여 한쪽만 지우면 비대칭이라 그대로 둔다) */
     #finder .finder-mode { text-align: left; }
+    #finder .finder-mode:last-child { border-bottom: 0; }
 
     /* (4) 납품 섹션 심사위원 배지 */
     #wholesale .section-header > div[style*="border-radius: 50px"] {
