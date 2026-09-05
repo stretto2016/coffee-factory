@@ -1627,6 +1627,25 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
     #maintenance .benefit-grid { grid-template-columns: 1fr; }
     .contact-left h2 { font-size: 1.4rem; }
     #hero .btn-primary { padding-top: 14.5px; padding-bottom: 11.5px; }
+
+    /* 모바일은 전부 왼쪽 기준선에 맞춘다.
+       아래 네 곳만 아이콘 또는 제목이 가운데로 남아 있어 줄이 어긋나 보였다 */
+
+    /* (1) 약속·혜택 카드: 아이콘 + 제목이 h4 안에서 가운데로 쌓여 있었다 */
+    .promise-card h4 { align-items: flex-start; text-align: left; }
+
+    /* (2) 컨설팅 카드 아이콘: 폭이 카드 전체라 flex 가운데 정렬로 아이콘만 가운데였다 */
+    #consulting .consulting-card .consulting-icon { justify-content: flex-start; }
+
+    /* (3) 원두추천 진입 카드 */
+    #finder .finder-mode { text-align: left; }
+
+    /* (4) 납품 섹션 심사위원 배지 */
+    #wholesale .section-header > div[style*="border-radius: 50px"] {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        text-align: left;
+    }
 }
     </style>
 </head>
@@ -1698,14 +1717,16 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
         <strong>언제 어디서나 일관된 맛</strong><br><br>
         완벽한 커피 한 잔을 위해 매번 로스팅 데이터를 섬세하게 기록하고 분석합니다.<br><br>
 
-        기록이 만든 일관성, 체계적인 데이터의 재현성, 그리고 로스터의 노하우가 더해져<br>언제 어디서나 변함없는 맛을 완성합니다.
+        기록이 만든 일관성, 체계적인 데이터의 재현성, 그리고 로스터의 노하우가 더해져<br>
+        언제 어디서나 변함없는 맛을 완성합니다.
     </p>
 </div>
                 <div class="spirit-card">
                     <h3 class="spirit-title">Intensity</h3>
                     <p class="spirit-desc">
                         <strong>강렬한 첫인상과 깊은 여운</strong><br><br>
-                        '커피' 하면 '스트레토'가 떠오를 수 있도록<br>짙고 진한 잔향을 선사합니다.<br><br>
+                        '커피' 하면 '스트레토'가 떠오를 수 있도록<br>
+                        짙고 진한 잔향을 선사합니다.<br><br>
 
                         인상 깊고 만족도 높은 제품과 서비스를 통해 고객의 마음속에 오래도록 진한 기억을 남기는 브랜드가 되고자 합니다.
                     </p>
@@ -2061,7 +2082,9 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                             <div class="repair-content">
                                 <h4 class="repair-title">증상 상담 및 접수</h4>
                                 <p class="repair-desc">
-                                    본 양식을 통해 머신의 이상 증상을<br>남겨주시면, 엔지니어가 신속하게<br>내용을 확인합니다.
+                                    본 양식을 통해 머신의 이상 증상을<br>
+                                    남겨주시면, 엔지니어가 신속하게<br>
+                                    내용을 확인합니다.
                                 </p>
                                 <button type="button" class="btn-repair-action" onclick="openModal()">상담 양식 작성하기 ></button>
                             </div>
@@ -2239,7 +2262,8 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                     "카페 창업 A부터 Z까지.<br>실전형 카페 컨설팅"
                 </p>
                 <p style="color: var(--text-secondary); word-break: keep-all; max-width: 700px; margin: 0 auto; line-height: 1.6;">
-                    화려한 이론보다 10년간 치열하게 카페를 운영하며 완성한 핵심 요소만 담았습니다.<br>머신 선정부터 원두 공급, 안정적인 운영까지 흔들리지 않는 중심을 잡아드립니다.
+                    화려한 이론보다 10년간 치열하게 카페를 운영하며 완성한 핵심 요소만 담았습니다.<br>
+                    머신 선정부터 원두 공급, 안정적인 운영까지 흔들리지 않는 중심을 잡아드립니다.
                 </p>
             </div>
 
