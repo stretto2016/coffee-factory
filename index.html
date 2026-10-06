@@ -1638,6 +1638,9 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
 .why-icon svg { width: 34px; height: 34px; display: block; stroke-width: 1.6; }
 .promise-card .promise-icon { display: inline-flex; }
 .promise-card .promise-icon svg { width: 1.2em; height: 1.2em; stroke-width: 1.8; }
+/* 컨설팅 카드도 같은 규격. 색은 넣지 않고 제목 글자색을 그대로 쓴다 */
+#consulting .consulting-card .consulting-icon { color: var(--text-primary); }
+#consulting .consulting-card .consulting-icon svg { width: 1.2em; height: 1.2em; stroke-width: 1.8; }
 @media (max-width: 768px) {
     .why-icon svg { width: 28px; height: 28px; }
 }
@@ -2363,32 +2366,32 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
 
             <div class="consulting-grid">
                 <div class="consulting-card">
-                    <div class="consulting-icon">⚙️</div>
+                    <div class="consulting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10h3v-3l-3.5 -3.5a6 6 0 0 1 8 8l6 6a2 2 0 0 1 -3 3l-6 -6a6 6 0 0 1 -8 -8l3.5 3.5"/></svg></div>
                     <h3>하드웨어 세팅</h3>
                     <p>머신 선정부터 정밀한 에스프레소 추출까지, 완벽한 커피 한 잔을 위한 최적의 추출 환경을 제공합니다.</p>
                 </div>
                 <div class="consulting-card">
-                    <div class="consulting-icon">☕</div>
+                    <div class="consulting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M5 17h-2v-4m-1 -8h11v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5"/><path d="M3 9l4 0"/></svg></div>
                     <h3>맞춤형 원두 공급</h3>
                     <p>매장 상권과 고객의 취향을 만족시킬 커스텀 시그니처 블렌딩 원두를 제공합니다.</p>
                 </div>
                 <div class="consulting-card">
-                    <div class="consulting-icon">📐</div>
+                    <div class="consulting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.875 12c.621 0 1.125 .512 1.125 1.143v5.714c0 .631 -.504 1.143 -1.125 1.143h-15.875a1 1 0 0 1 -1 -1v-5.857c0 -.631 .504 -1.143 1.125 -1.143h15.75z"/><path d="M9 12v2"/><path d="M6 12v3"/><path d="M12 12v3"/><path d="M18 12v3"/><path d="M15 12v2"/><path d="M3 3v4"/><path d="M3 5h18"/><path d="M21 3v4"/></svg></div>
                     <h3>실전형 바 레이아웃</h3>
                     <p>화려하기만 하고 몸이 지치는 동선이 아닌, 바리스타의 피로도를 낮추고 회전율을 극대화하는 현장 중심의 동선을 설계합니다.</p>
                 </div>
                 <div class="consulting-card">
-                    <div class="consulting-icon">📊</div>
+                    <div class="consulting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M20 18v3"/><path d="M16 16v5"/><path d="M12 13v8"/><path d="M8 16v5"/><path d="M3 11c6 0 5 -5 9 -5s3 5 9 5"/></svg></div>
                     <h3>지속 가능한 품질 관리</h3>
                     <p>매일 동일한 퀄리티를 유지할 수 있도록, 현장에서 적용 가능한 실전 품질 관리 프로세스를 전수합니다.</p>
                 </div>
                 <div class="consulting-card">
-                    <div class="consulting-icon">🧑‍🏫</div>
+                    <div class="consulting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 9l-10 -4l-10 4l10 4l10 -4v6"/><path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4"/></svg></div>
                     <h3>직원 교육 서비스</h3>
                     <p>실무 바리스타 교육을 진행하고 고객 응대 노하우를 전수하여 매장의 서비스 품질을 향상시킵니다.</p>
                 </div>
                 <div class="consulting-card">
-                    <div class="consulting-icon">🤝</div>
+                    <div class="consulting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"/><path d="M12 6l-3.293 3.293a1 1 0 0 0 0 1.414l.543 .543c.69 .69 1.81 .69 2.5 0l1 -1a3.182 3.182 0 0 1 4.5 0l2.25 2.25"/><path d="M12.5 15.5l2 2"/><path d="M15 13l2 2"/></svg></div>
                     <h3>든든한 파트너십</h3>
                     <p>수년간의 시행착오로 다져진 내공으로 심리적 부담감과 불안을 확신으로 바꿔드립니다. 마음 놓고 의지할 수 있는 따뜻한 조력자로 함께합니다.</p>
                 </div>
