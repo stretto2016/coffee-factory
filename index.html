@@ -1636,10 +1636,12 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
    선 아이콘은 currentColor 를 따르므로 주변 글자색을 그대로 쓴다.
    =========================================================== */
 .why-icon svg { width: 34px; height: 34px; display: block; stroke-width: 1.6; }
-.promise-card .promise-icon { display: inline-flex; }
+/* 선 아이콘은 전부 같은 하늘색 계열(진한 톤)로 통일.
+   배지의 #AAD5DB 는 흰 카드 위 대비가 1.58:1 이라 가는 선이 사라져서 쓰지 않는다 */
+.promise-card .promise-icon { display: inline-flex; color: var(--accent-ink); }
 .promise-card .promise-icon svg { width: 1.2em; height: 1.2em; stroke-width: 1.8; }
-/* 컨설팅 카드도 같은 규격. 색은 넣지 않고 제목 글자색을 그대로 쓴다 */
-#consulting .consulting-card .consulting-icon { color: var(--text-primary); }
+/* 컨설팅 카드도 같은 규격·같은 색 */
+#consulting .consulting-card .consulting-icon { color: var(--accent-ink); }
 #consulting .consulting-card .consulting-icon svg { width: 1.2em; height: 1.2em; stroke-width: 1.8; }
 @media (max-width: 768px) {
     .why-icon svg { width: 28px; height: 28px; }
