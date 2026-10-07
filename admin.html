@@ -479,13 +479,13 @@ if (p.badge) {
                 
                 composition, // 배합 정보 저장
                 
-                badge, badgeColor, badgeTextColor, cupNote, description: desc, shopLink: link, imageUrl, 
-                showShop, showPartner,
-                createdAt: Date.now()
+                badge, badgeColor, badgeTextColor, cupNote, description: desc, shopLink: link, imageUrl,
+                showShop, showPartner
             };
 
             try {
                 if (editId) {
+                    // createdAt 은 등록 시각이므로 수정할 때는 건드리지 않는다
                     await updateDoc(doc(db, "products", editId), data);
                     alert("수정 완료");
                 } else {
