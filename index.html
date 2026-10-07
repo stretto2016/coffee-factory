@@ -3471,7 +3471,8 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
 
     const roast = Math.round(clamp(t.roast, 1, 5));
     const notes = [];
-    parts.forEach(x => String(x.p.cupNote || '').split(',').forEach(n => {
+    // 컵노트 구분자는 상품마다 쉼표 / 가운뎃점이 섞여 있으므로 둘 다 끊는다
+    parts.forEach(x => String(x.p.cupNote || '').split(/[,·]/).forEach(n => {
       const s = n.trim();
       if (s && notes.length < 4 && !notes.includes(s)) notes.push(s);
     }));
