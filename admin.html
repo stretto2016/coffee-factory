@@ -359,10 +359,19 @@
 
         // --- 2. 상품 관리 (앱 연동 완벽 지원) ---
         function loadAllProducts() {
-            const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-            onSnapshot(q, (snapshot) => {
+            // 서버 정렬(orderBy)을 쓰면 createdAt 이 없거나 타입이 다른 문서는 아예 빠지고,
+            // 단일 필드 색인이 해제돼 있으면 쿼리 자체가 실패한다. 상품 수가 적으므로
+            // 전부 받아서 화면에서 정렬한다.
+            onSnapshot(collection(db, "products"), (snapshot) => {
                 const list = document.getElementById('productList');
-                list.innerHTML = snapshot.docs.map(doc => {
+                const docs = snapshot.docs.slice().sort((a, b) =>
+                    (Number(b.data().createdAt) || 0) - (Number(a.data().createdAt) || 0));
+                if (!docs.length) {
+                    list.innerHTML = `<tr><td colspan="4" style="padding:24px; color:#888;">
+                        상품이 없습니다. (products 컬렉션이 비어 있음)</td></tr>`;
+                    return;
+                }
+                list.innerHTML = docs.map(doc => {
                     const p = doc.data();
                     const imgShow = p.imageUrl ? `<img src="${p.imageUrl}" width="50" height="50" style="object-fit:cover; border-radius:4px;">` : `<div style="width:50px;height:50px;background:#eee;">No Img</div>`;
                     
@@ -398,6 +407,14 @@ if (p.badge) {
                         </td>
                     </tr>`;
                 }).join('');
+            }, (err) => {
+                // 에러 콜백이 없으면 읽기에 실패해도 조용히 빈 목록이 된다 — 이유를 화면에 띄운다
+                console.error('[상품 목록] 읽기 실패:', err);
+                document.getElementById('productList').innerHTML =
+                    `<tr><td colspan="4" style="padding:24px; color:#c00; line-height:1.6;">
+                        상품 목록을 불러오지 못했습니다.<br>
+                        <b>${err.code || ''}</b> ${err.message || ''}
+                    </td></tr>`;
             });
         }
 
