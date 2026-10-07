@@ -245,6 +245,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
 
         const firebaseConfig = {
              apiKey: "AIzaSyAUjfrQ-HVivBLggiOl8vvRZynala1qqyM",
@@ -258,6 +259,18 @@
         const ADMIN_EMAIL = "strettopark@gmail.com"; 
 
         const app = initializeApp(firebaseConfig);
+        const functions = getFunctions(app, "asia-northeast3");
+
+        // 홈페이지 공개용 미러(publicProducts) 동기화.
+        // Firestore 트리거(syncPublicProduct)가 있지만 Eventarc 전달이 지연·누락될 수 있어
+        // 앱(App.tsx)과 똑같이 저장/삭제 직후 전체 동기화를 명시적으로 호출한다.
+        // 이게 없으면 admin 에서 고친 내용이 홈페이지에 안 보인다.
+        const syncPublicMirror = () =>
+            httpsCallable(functions, 'syncAllPublicProducts')({})
+                .catch(e => {
+                    console.warn('홈페이지 동기화 실패', e);
+                    alert('저장은 됐지만 홈페이지 반영에 실패했습니다.\n앱 설정 탭의 [홈페이지 동기화] 버튼으로 다시 시도해 주세요.\n\n' + (e?.message || ''));
+                });
         const auth = getAuth(app);
         const db = getFirestore(app);
 
@@ -487,10 +500,12 @@ if (p.badge) {
                 if (editId) {
                     // createdAt 은 등록 시각이므로 수정할 때는 건드리지 않는다
                     await updateDoc(doc(db, "products", editId), data);
-                    alert("수정 완료");
+                    await syncPublicMirror();
+                    alert("수정 완료 (홈페이지 반영됨)");
                 } else {
-                    await addDoc(collection(db, "products"), data);
-                    alert("등록 완료");
+                    const ref = await addDoc(collection(db, "products"), { ...data, createdAt: Date.now() });
+                    await syncPublicMirror();
+                    alert("등록 완료 (홈페이지 반영됨)");
                 }
                 resetForm();
             } catch(e) { console.error(e); alert("저장 실패"); }
@@ -563,7 +578,10 @@ document.getElementById('pBadgeTextColorText').value = tColor;
         };
 
         window.deleteProduct = async (id) => {
-            if(confirm("정말 삭제하시겠습니까?")) await deleteDoc(doc(db, "products", id));
+            if(confirm("정말 삭제하시겠습니까?")) {
+                await deleteDoc(doc(db, "products", id));
+                await syncPublicMirror();
+            }
         };
 
         window.resetForm = () => {
