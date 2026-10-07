@@ -244,7 +244,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, limit, onSnapshot, doc, deleteDoc, updateDoc, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
 
         const firebaseConfig = {
@@ -346,8 +346,11 @@
         };
 
         // --- 1. 주문 관리 ---
+        // 주문은 계속 쌓이기만 하므로 전체를 구독하면 관리자 페이지를 열 때마다
+        // 주문 수만큼 Firestore 읽기가 발생한다. 최근 건만 본다.
+        const ORDER_LIMIT = 300;
         function loadAllOrders() {
-            const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+            const q = query(collection(db, "orders"), orderBy("createdAt", "desc"), limit(ORDER_LIMIT));
             onSnapshot(q, (snapshot) => {
                 const list = document.getElementById('orderList');
                 if (snapshot.empty) { list.innerHTML = '<tr><td colspan="5">주문 내역 없음</td></tr>'; return; }
@@ -365,6 +368,14 @@
                         </td>
                     </tr>`;
                 }).join('');
+                if (snapshot.size >= ORDER_LIMIT) {
+                    list.innerHTML += `<tr><td colspan="5" style="padding:14px; color:#888; text-align:center;">
+                        최근 ${ORDER_LIMIT}건만 표시됩니다. 이전 내역은 앱에서 확인해 주세요.</td></tr>`;
+                }
+            }, (err) => {
+                console.error('[주문 목록] 읽기 실패:', err);
+                document.getElementById('orderList').innerHTML =
+                    `<tr><td colspan="5" style="padding:24px; color:#c00;">주문 목록을 불러오지 못했습니다.<br><b>${err.code || ''}</b> ${err.message || ''}</td></tr>`;
             });
         }
         window.updateOrderStatus = (id, st) => updateDoc(doc(db, "orders", id), { status: st });
