@@ -1653,6 +1653,21 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
 #hero .btn-primary { padding-top: 18px; padding-bottom: 14px; }
 
 /* ===========================================================
+   OUR VISION : 사진을 박스 위쪽에 꽉 채우고 그 아래로 글이 이어진다.
+   사진은 지평선까지 담고 로고가 세로 정중앙에 오도록 미리 잘라둔 것(1.96:1).
+   =========================================================== */
+.vision-box--photo { padding: 0; overflow: hidden; }
+.vision-photo { width: 100%; height: auto; display: block; }
+.vision-box--photo .vision-inner { padding: 42px 40px 54px; }
+.vision-box--photo .vision-inner .section-subtitle { display: block; margin-bottom: 12px; }
+.vision-box--photo .vision-inner h3 { font-size: 2rem; margin: 0 0 30px; }
+@media (max-width: 768px) {
+    .vision-box--photo { padding: 0; }
+    .vision-box--photo .vision-inner { padding: 24px 20px 28px; }
+    .vision-box--photo .vision-inner h3 { margin-bottom: 18px; }
+}
+
+/* ===========================================================
    아이콘을 소제목 위 → 소제목 왼쪽으로, 크기는 제목 글자와 동일하게
    =========================================================== */
 
@@ -1896,10 +1911,13 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                 </div>
             </div>
 
-            <div class="vision-box">
+            <div class="vision-box vision-box--photo">
+                <img class="vision-photo" src="ov-final.jpg" width="2160" height="1100"
+                     alt="커피 산지의 들판 위로 무지개가 뜬 풍경">
+                <div class="vision-inner">
                 <span class="section-subtitle">OUR VISION</span>
-                <h3 style="font-size: 2rem; margin-bottom: 30px;">The Cycle of Purity.</h3>
-                
+                <h3>The Cycle of Purity.</h3>
+
                 <div class="vision-text">
                     <p style="font-size: 1.2rem; color: var(--text-primary); margin-bottom: 25px; font-weight: 500;">
                         "물에서 시작된 커피, 그 가치가 다시 생명의 물이 되어 흐르도록."
@@ -1913,6 +1931,7 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                         정성껏 로스팅한 커피로 얻은 수익을 커피나무가 자라는 땅에 다시 돌려주기 위해<br>
                         최선을 다해 로스팅합니다.
                     </p>
+                </div>
                 </div>
             </div>
 
