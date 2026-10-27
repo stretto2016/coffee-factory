@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/brand", "destination": "/index.html" },
+    { "source": "/beans", "destination": "/index.html" },
+    { "source": "/wholesale", "destination": "/index.html" },
+    { "source": "/care", "destination": "/index.html" },
+    { "source": "/consulting", "destination": "/index.html" }
+  ]
+}

@@ -1783,12 +1783,200 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
         text-align: left;
     }
 }
+
+/* ================================================================================
+   페이지 분리 — 한 파일 안의 섹션을 주소(/brand, /beans ...)별로 나눠 보여준다.
+   body[data-route] 는 아래 라우터 스크립트가 정한다. 스크립트가 돌기 전에는 메인만 보인다.
+   ================================================================================ */
+[data-page] { display: none; }
+body:not([data-route]) [data-page="home"],
+body[data-route="home"] [data-page="home"],
+body[data-route="brand"] [data-page="brand"],
+body[data-route="beans"] [data-page="beans"],
+body[data-route="wholesale"] [data-page="wholesale"],
+body[data-route="care"] [data-page="care"],
+body[data-route="consulting"] [data-page="consulting"] { display: block; }
+/* #hero 는 id 규칙으로 display:flex 를 갖고 있어 [data-page] 숨김보다 강하다 — 따로 숨긴다 */
+body[data-route]:not([data-route="home"]) #hero { display: none; }
+/* 히어로가 없는 페이지는 고정 네비에 첫 줄이 가리지 않게 위 여백을 더 준다 */
+.page-first { padding-top: calc(var(--section-spacing) + 64px) !important; }
+section[id] { scroll-margin-top: 80px; }
+.nav-links a.is-active { color: #ffffff; }
+
+/* ---------- 메인 미리보기 ---------- */
+.home-block { padding: 110px 0; }
+.home-block--alt { background: var(--bg-secondary); }
+.home-title { font-size: 2.1rem; font-weight: 700; line-height: 1.3; margin: 0 0 22px; word-break: keep-all; }
+.home-text p, .home-head p { line-height: 1.85; margin: 0 0 16px; }
+.home-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 64px; align-items: center; }
+.home-photo { margin: 0; border-radius: 8px; overflow: hidden; aspect-ratio: 4 / 5; background: var(--surface-alt); }
+.home-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 1.2s ease; }
+.home-photo:hover img { transform: scale(1.04); }
+.home-facts { list-style: none; padding: 0; margin: 28px 0 32px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.home-facts li { border-top: 1px solid var(--text-primary); padding-top: 12px; }
+.home-facts strong { display: block; font-family: 'Ciutadella', sans-serif; font-size: 1.5rem; font-weight: 400; line-height: 1.2; }
+.home-facts span { font-size: 0.85rem; color: var(--text-secondary); word-break: keep-all; }
+.home-more { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--text-primary);
+    border-bottom: 1px solid var(--text-primary); padding-bottom: 3px; }
+.home-more span { transition: transform .25s ease; }
+.home-more:hover span { transform: translateX(4px); }
+
+.home-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; margin-bottom: 44px; }
+.home-head > div { max-width: 640px; }
+.home-head p { margin-bottom: 0; }
+.home-head .home-more { flex: none; }
+.home-head--center { display: block; text-align: center; max-width: 680px; margin: 0 auto 70px; }
+
+.home-product-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.home-product-grid .product-thumb { margin-bottom: 14px; }
+.home-product-grid .product-info h3 { font-size: 1.05rem; margin-bottom: 4px; }
+.home-product-grid .product-desc { display: none; }
+.home-product-grid .product-meta { margin-top: 6px; }
+.home-finder { margin-top: 40px; display: flex; justify-content: space-between; align-items: center; gap: 24px;
+    background: #ffffff; border-radius: 8px; padding: 26px 30px; color: var(--text-secondary); line-height: 1.7; }
+.home-finder strong { display: block; color: var(--text-primary); font-size: 1.1rem; margin-bottom: 2px; }
+.home-finder-go { flex: none; background: var(--ink); color: #ffffff; border-radius: 6px; padding: 12px 20px; font-weight: 600; font-size: 0.95rem; }
+
+.home-service { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 64px; align-items: center; margin-bottom: 100px; }
+.home-service:last-child { margin-bottom: 0; }
+.home-service--flip .home-photo { order: 2; }
+.home-service .home-photo { aspect-ratio: 1 / 1; }
+.home-service h3 { font-size: 1.6rem; margin: 6px 0 18px; word-break: keep-all; }
+.home-service-label { font-family: 'Ciutadella', sans-serif; font-size: 0.8rem; letter-spacing: 0.12em; color: var(--text-tertiary); }
+.home-steps { list-style: none; counter-reset: st; padding: 0; margin: 22px 0 28px; display: flex; flex-wrap: wrap; gap: 8px; }
+.home-steps li { counter-increment: st; background: var(--surface-alt); border-radius: 999px; padding: 6px 14px; font-size: 0.9rem; color: var(--text-primary); }
+.home-steps li::before { content: counter(st, decimal-leading-zero) "  "; font-family: 'Ciutadella', sans-serif; color: var(--text-tertiary); }
+.home-actions { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; margin-top: 24px; }
+.home-btn { background: var(--ink); color: #ffffff; border: 0; border-radius: 6px; padding: 13px 22px; font-size: 0.95rem; font-weight: 600; cursor: pointer; font-family: inherit; }
+.home-btn:hover { background: #2a2a2c; }
+
+/* ---------- 서비스 상세 (항목마다 사진 + 풀어 쓴 설명) ---------- */
+.svc-list { display: flex; flex-direction: column; gap: 110px; margin: 20px 0 130px; }
+.svc-item { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 64px; align-items: center; }
+.svc-item--flip .svc-photo { order: 2; }
+.svc-photo { margin: 0; border-radius: 8px; overflow: hidden; aspect-ratio: 4 / 5; background: #e9e9eb; }
+.svc-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* 아직 사진이 없는 자리 — 어떤 사진이 필요한지 보이게 둔다 */
+.svc-photo--todo { display: flex; align-items: center; justify-content: center; text-align: center;
+    border: 1px dashed #c4c6c9; background: repeating-linear-gradient(-45deg, #f0f0f1 0 12px, #e9e9eb 12px 24px);
+    color: var(--text-tertiary); font-size: 0.95rem; }
+.svc-photo--todo small { display: block; margin-top: 6px; font-size: 0.8rem; }
+.svc-num { font-family: 'Ciutadella', sans-serif; font-size: 0.85rem; letter-spacing: 0.14em; color: var(--text-tertiary); }
+.svc-body h3 { font-size: 1.75rem; font-weight: 700; margin: 6px 0 18px; color: var(--text-primary); word-break: keep-all; }
+.svc-body p { line-height: 1.85; margin: 0 0 16px; text-align: left; }
+.svc-body p.svc-lead { color: var(--text-primary); font-size: 1.15rem; font-weight: 500; line-height: 1.7; }
+.svc-check { list-style: none; padding: 20px 0 0; margin: 24px 0 0; border-top: 1px solid var(--hairline); display: grid; gap: 10px; }
+.svc-check li { position: relative; padding-left: 28px; color: var(--text-primary); font-size: 0.98rem; line-height: 1.6; word-break: keep-all; text-align: left; }
+.svc-check li::before { content: ""; position: absolute; left: 2px; top: 7px; width: 12px; height: 7px;
+    border-left: 2px solid var(--text-primary); border-bottom: 2px solid var(--text-primary); transform: rotate(-45deg); }
+.svc-list--steps { margin-top: 70px; }
+
+/* 머신 케어 — 파트너 혜택 */
+.care-benefit { background: #ffffff; border-radius: 8px; padding: 48px 52px; text-align: left; }
+.care-benefit h3 { font-size: 1.6rem; margin: 0 0 26px; color: var(--text-primary); word-break: keep-all; }
+.care-benefit-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; margin-bottom: 30px; }
+.care-benefit-grid strong { display: block; font-size: 1.1rem; color: var(--text-primary); margin-bottom: 8px; }
+.care-benefit-grid p { margin: 0; line-height: 1.8; }
+
+/* 창업 매뉴얼 상세 */
+.manual-lead { max-width: 680px; margin: 26px auto 60px !important; line-height: 1.85; color: var(--text-primary) !important; word-break: keep-all; }
+.manual-docs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; text-align: left; margin-bottom: 70px; }
+.manual-doc { background: #ffffff; border-radius: 8px; padding: 26px 26px 30px; }
+.manual-doc h4 { font-size: 1.3rem; margin: 6px 0 12px; color: var(--text-primary); }
+.manual-doc p { font-size: 0.97rem; line-height: 1.8; margin: 0 0 16px; }
+.manual-doc-tag { font-family: 'Ciutadella', sans-serif; font-size: 0.72rem; letter-spacing: 0.14em; color: var(--text-tertiary); }
+.manual-doc-list { list-style: none; padding: 14px 0 0; margin: 0; border-top: 1px solid var(--hairline); display: grid; gap: 6px; }
+.manual-doc-list li { font-size: 0.92rem; color: var(--text-primary); padding-left: 14px; position: relative; word-break: keep-all; }
+.manual-doc-list li::before { content: ""; position: absolute; left: 0; top: 0.7em; width: 5px; height: 1px; background: var(--text-primary); }
+/* 종이가 겹친 모양의 페이지 미리보기 자리 */
+.manual-page { display: block; aspect-ratio: 16 / 9; border-radius: 4px; border: 1px solid #e3e3e5; margin-bottom: 22px; position: relative; background: #f3f3f4;
+    box-shadow: 6px 6px 0 -1px #ffffff, 6px 6px 0 0 #dcdcdf, 12px 12px 0 -1px #ffffff, 12px 12px 0 0 #e6e6e8; }
+.manual-page img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; display: block; }
+.manual-page--todo { display: flex; align-items: center; justify-content: center; text-align: center; border: 1px dashed #c4c6c9;
+    color: var(--text-tertiary); font-size: 0.85rem; line-height: 1.5; }
+.manual-how { background: #ffffff; border-radius: 8px; padding: 40px 44px; text-align: left; margin-bottom: 40px; }
+.manual-how h4 { font-size: 1.25rem; margin: 0 0 24px; color: var(--text-primary); }
+.manual-how-steps { list-style: none; counter-reset: mh; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 14px; }
+.manual-how-steps li { counter-increment: mh; font-size: 0.85rem; line-height: 1.55; color: var(--text-secondary); word-break: keep-all; border-top: 2px solid var(--text-primary); padding-top: 12px; }
+.manual-how-steps li::before { content: counter(mh); display: block; font-family: 'Ciutadella', sans-serif; color: var(--text-tertiary); font-size: 0.8rem; margin-bottom: 4px; }
+.manual-how-steps strong { display: block; color: var(--text-primary); font-size: 0.98rem; margin-bottom: 4px; }
+.manual-excerpt { margin: 0 0 90px; padding: 44px 40px; border-left: 3px solid var(--text-primary); background: #ffffff; text-align: left; border-radius: 0; }
+.manual-excerpt blockquote { margin: 14px 0 16px; }
+.manual-excerpt blockquote p { font-size: 1.3rem; line-height: 1.7; color: var(--text-primary); margin: 0; }
+.manual-excerpt figcaption { font-size: 0.85rem; color: var(--text-tertiary); }
+.manual-gallery { text-align: left; margin-bottom: 40px; }
+.manual-gallery h4 { font-size: 1.25rem; margin: 0 0 8px; color: var(--text-primary); }
+.manual-gallery > p { margin: 0 0 26px; font-size: 0.97rem; }
+.manual-gallery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+.manual-gallery-grid figure { margin: 0; }
+.manual-gallery-grid figcaption { font-size: 0.92rem; color: var(--text-secondary); line-height: 1.6; word-break: keep-all; }
+.manual-gallery-grid figcaption strong { display: block; color: var(--text-primary); font-size: 1rem; margin-bottom: 2px; }
+a.manual-page { transition: transform .25s ease; }
+a.manual-page:hover { transform: translateY(-3px); }
+.manual-rail-title { font-size: 1.4rem; color: var(--text-primary); margin: 0 0 10px; }
+
+@media (max-width: 900px) {
+    .manual-docs { grid-template-columns: minmax(0, 1fr); }
+    .manual-how-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 22px; }
+    .manual-gallery-grid { grid-template-columns: minmax(0, 1fr); gap: 34px; }
+}
+@media (max-width: 768px) {
+    .care-benefit { padding: 30px 24px; }
+    .care-benefit-grid { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+    .manual-how { padding: 28px 22px; }
+    .manual-excerpt { padding: 28px 22px; margin-bottom: 60px; }
+    .manual-excerpt blockquote p { font-size: 1.1rem; }
+}
+
+@media (max-width: 768px) {
+    .svc-list { gap: 64px; margin-bottom: 80px; }
+    .svc-item { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .svc-item--flip .svc-photo { order: 0; }
+    .svc-photo { aspect-ratio: 4 / 3; }
+    .svc-body h3 { font-size: 1.35rem; }
+    .svc-body p.svc-lead { font-size: 1.05rem; }
+}
+
+/* 스크롤하면 살짝 떠오르며 나타난다. 스크립트가 꺼져 있으면 그냥 보인다 */
+.js-reveal .reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }
+.js-reveal .reveal.is-in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+    .js-reveal .reveal { opacity: 1; transform: none; transition: none; }
+    .home-photo img { transition: none; }
+}
+
+@media (max-width: 900px) {
+    .home-product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+}
+@media (max-width: 768px) {
+    .home-block { padding: 64px 0; }
+    .home-title { font-size: 1.55rem; }
+    .home-split, .home-service { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+    .home-service { margin-bottom: 64px; }
+    .home-service--flip .home-photo { order: 0; }
+    .home-photo, .home-service .home-photo { aspect-ratio: 4 / 3; }
+    .home-service h3 { font-size: 1.3rem; }
+    .home-head { display: block; margin-bottom: 28px; }
+    .home-head .home-more { margin-top: 18px; }
+    .home-head--center { margin-bottom: 44px; }
+    .home-facts strong { font-size: 1.2rem; }
+    .home-finder { flex-direction: column; align-items: flex-start; padding: 22px; }
+    .page-first { padding-top: calc(var(--section-spacing) + 60px) !important; }
+}
     </style>
 </head>
 <body>
+<script>
+/* 첫 화면 깜빡임 방지: 본문이 그려지기 전에 주소로 페이지를 정해 둔다 (자세한 처리는 아래 라우터) */
+(function () {
+    var n = location.pathname.replace(/^\/+|\/+$/g, '').replace(/\.html$/, '');
+    if (['brand', 'beans', 'wholesale', 'care', 'consulting'].indexOf(n) !== -1) document.body.dataset.route = n;
+    if ('IntersectionObserver' in window) document.documentElement.classList.add('js-reveal');
+})();
+</script>
 
     <nav>
-        <a href="#hero" class="logo-group">
+        <a href="/" data-route="" class="logo-group">
             <div class="logo">stretto coffee factory</div>
             <div class="logo-sub">carefully crafted coffee</div>
         </a>
@@ -1800,18 +1988,17 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
         </div>
 
         <div class="nav-links" id="navLinks">
-            <a href="#story" onclick="toggleMenu()">브랜드스토리</a>
-            <a href="#finder" onclick="toggleMenu()">원두추천</a>
-            <a href="#shop" onclick="toggleMenu()">원두쇼핑몰</a>
-            <a href="#wholesale" onclick="toggleMenu()">원두납품안내</a>
-            <a href="#maintenance" onclick="toggleMenu()">머신케어</a>
-            <a href="#consulting" onclick="toggleMenu()">창업컨설팅</a>
+            <a href="/brand" data-route="brand" onclick="toggleMenu()">브랜드스토리</a>
+            <a href="/beans" data-route="beans" onclick="toggleMenu()">원두</a>
+            <a href="/wholesale" data-route="wholesale" onclick="toggleMenu()">원두납품안내</a>
+            <a href="/care" data-route="care" onclick="toggleMenu()">머신케어</a>
+            <a href="/consulting" data-route="consulting" onclick="toggleMenu()">창업컨설팅</a>
             <a href="#contact" onclick="toggleMenu()">문의하기</a>
             <a href="partner.html" target="_blank" style="color: var(--accent-blue); font-weight: bold;" onclick="toggleMenu()">파트너십 주문</a>
         </div>
     </nav>
 
-    <section id="hero">
+    <section id="hero" data-page="home">
         <iframe class="hero-video-bg" id="heroVideo" title="스트레토 커피 팩토리 배경 영상"
                 allow="autoplay; encrypted-media" frameborder="0" tabindex="-1" aria-hidden="true"></iframe>
         <div class="hero-video-overlay"></div>
@@ -1828,10 +2015,138 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
         
         <a href="http://pf.kakao.com/_dCuKC/chat" target="_blank" class="btn-primary" style="margin-top: 35px;">파트너십 문의 ></a>
     </section>
-        
-    
 
-    <section id="story">
+    <!-- ===================== [메인: 각 페이지 미리보기] =====================
+         메인은 요약만 보여주고, 자세한 내용은 /brand, /beans 등 각 페이지에서 본다.
+         문구는 각 페이지 본문에서 가져온 사실만 쓴다. -->
+    <section id="home-brand" class="home-block" data-page="home">
+        <div class="container home-split">
+            <figure class="home-photo reveal">
+                <img src="img/home-brand.jpg" width="1200" height="1200" loading="lazy"
+                     alt="커피 산지 마을에서 물동이를 이고 걸어가는 사람들">
+            </figure>
+            <div class="home-text reveal">
+                <span class="section-subtitle">OUR STORY</span>
+                <h2 class="home-title">커피 한 잔이 완성되는<br>모든 과정을 케어합니다</h2>
+                <p>
+                    스트레토라는 이름은 짧게 추출해 강렬한 맛과 향을 담는 에스프레소,
+                    '리스트레토'에서 왔습니다. 2016년 서울 공덕동의 작은 로스팅실에서 시작해,
+                    지금은 파주에서 식품제조·가공업 인허가를 받은 로스팅 공장을 운영하고 있습니다.
+                </p>
+                <p>
+                    매번 로스팅 데이터를 기록하고 분석하는 이유는 하나입니다. 언제 어디서 마셔도
+                    같은 맛을 내기 위해서입니다. 그렇게 얻은 결실을 언젠가 커피나무가 자라는 땅에
+                    깨끗한 물로 돌려주는 것이 스트레토의 꿈입니다.
+                </p>
+                <ul class="home-facts">
+                    <li><strong>2016</strong><span>서울 공덕동에서 시작</span></li>
+                    <li><strong>2019~</strong><span>국가대표 선발전 심사위원</span></li>
+                    <li><strong>2023~</strong><span>파주 로스팅 공장 운영</span></li>
+                </ul>
+                <a href="/brand" data-route="brand" class="home-more">브랜드 스토리 보기 <span aria-hidden="true">→</span></a>
+            </div>
+        </div>
+    </section>
+
+    <section id="home-beans" class="home-block home-block--alt" data-page="home">
+        <div class="container">
+            <div class="home-head reveal">
+                <div>
+                    <span class="section-subtitle">OUR BEANS</span>
+                    <h2 class="home-title">지금 스트레토가 볶는 원두</h2>
+                    <p>
+                        고소하고 묵직한 시그니처 블렌드부터 산뜻하고 화사한 싱글 오리진,
+                        카페인 부담 없이 즐기는 디카페인까지 준비했습니다. 모든 원두는 발송 전
+                        커핑으로 맛과 향을 확인한 뒤 보내드립니다.
+                    </p>
+                </div>
+                <a href="/beans" data-route="beans" class="home-more">전체 원두 보기 <span aria-hidden="true">→</span></a>
+            </div>
+            <div class="home-product-grid reveal" id="home-product-grid"></div>
+            <a href="/beans#finder" data-route="beans" data-anchor="finder" class="home-finder reveal">
+                <span>
+                    <strong>어떤 원두가 맞을지 모르겠다면</strong>
+                    몇 가지 질문에 답하면 취향이나 매장에 맞는 원두를 추천해 드립니다.
+                </span>
+                <span class="home-finder-go">원두 추천 받기 <span aria-hidden="true">→</span></span>
+            </a>
+        </div>
+    </section>
+
+    <section id="home-business" class="home-block" data-page="home">
+        <div class="container">
+            <div class="home-head home-head--center reveal">
+                <span class="section-subtitle">FOR BUSINESS</span>
+                <h2 class="home-title">원두 납품을 넘어,<br>카페 운영의 든든한 파트너</h2>
+                <p>
+                    좋은 원두를 보내드리는 것으로 끝나지 않습니다. 머신이 멈추면 직접 고치러 가고,
+                    창업을 준비하신다면 처음부터 함께 설계합니다.
+                </p>
+            </div>
+
+            <article class="home-service reveal">
+                <figure class="home-photo"><img src="img/home-wholesale.jpg" width="1000" height="1000" loading="lazy" alt="스트레토 블렌드 원두"></figure>
+                <div class="home-text">
+                    <span class="home-service-label">01 · 원두 납품</span>
+                    <h3>국가대표를 심사하는 기준 그대로</h3>
+                    <p>
+                        2019년부터 국가대표 선발전 심사위원으로 활동해 온 기준으로 매일 생산되는 원두를
+                        검증합니다. 프로밧·스트롱홀드 로스터기로 볶고, 3개월마다 자가품질검사를 받습니다.
+                    </p>
+                    <p>
+                        먼저 직접 만나 샘플 테이스팅을 하고, 원두와 단가를 정한 뒤 파트너십을 시작합니다.
+                        첫 방문 때 에스프레소 세팅과 추출 교육을 해드리고, 이후에도 꾸준히 관리합니다.
+                    </p>
+                    <ol class="home-steps">
+                        <li>샘플 테이스팅</li><li>파트너십 확정</li><li>추출 교육</li><li>지속적 관리</li>
+                    </ol>
+                    <a href="/wholesale" data-route="wholesale" class="home-more">납품 안내 보기 <span aria-hidden="true">→</span></a>
+                </div>
+            </article>
+
+            <article class="home-service home-service--flip reveal">
+                <figure class="home-photo"><img src="img/home-care.jpg" width="1000" height="1235" loading="lazy" alt="그라인더를 점검하는 엔지니어의 손"></figure>
+                <div class="home-text">
+                    <span class="home-service-label">02 · 머신 케어</span>
+                    <h3>인증 엔지니어가 직접 고칩니다</h3>
+                    <p>
+                        커피 맛의 시작은 원두지만, 그 맛을 완성하는 건 머신입니다. 스트레토는 커피머신
+                        엔지니어 공식 인증 자격을 갖추고, 소모품 교체부터 복잡한 내부 수리까지 직접 책임집니다.
+                    </p>
+                    <p>
+                        증상을 남겨주시면 원인을 먼저 진단해 수리 계획과 예상 견적을 안내해 드립니다.
+                        수리 후에는 압력과 온도 테스트까지 마치고 정상 작동을 확인한 뒤 마무리합니다.
+                        파트너 매장은 긴급 출동 우선권과 출장비 할인을 받습니다.
+                    </p>
+                    <div class="home-actions">
+                        <button type="button" class="home-btn" onclick="openModal()">수리 상담 접수</button>
+                        <a href="/care" data-route="care" class="home-more">수리 절차 보기 <span aria-hidden="true">→</span></a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="home-service reveal">
+                <figure class="home-photo"><img src="img/home-consulting.jpg" width="1000" height="916" loading="lazy" alt="에스프레소 머신을 세팅하는 모습"></figure>
+                <div class="home-text">
+                    <span class="home-service-label">03 · 창업 컨설팅</span>
+                    <h3>10년의 카페 운영을 그대로</h3>
+                    <p>
+                        화려한 이론보다 10년간 카페를 직접 운영하며 얻은 핵심만 전해드립니다.
+                        머신 선정과 추출 세팅, 매장에 맞춘 시그니처 블렌드, 바리스타가 덜 지치는 바 동선,
+                        직원 교육까지 창업의 처음부터 함께합니다.
+                    </p>
+                    <p>
+                        컨설팅을 받으시면 사업 기획부터 프리오프닝 체크리스트까지 10단계로 정리한
+                        '카페 창업 마스터 매뉴얼'을 함께 드립니다.
+                    </p>
+                    <a href="/consulting" data-route="consulting" class="home-more">컨설팅 자세히 보기 <span aria-hidden="true">→</span></a>
+                </div>
+            </article>
+        </div>
+    </section>
+    <!-- ===================== [메인 미리보기 끝] ===================== -->
+
+    <section id="story" data-page="brand" class="page-first">
         <div class="container">
             
             <div class="section-header">
@@ -1945,7 +2260,7 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
         </div>
     </section>
 
-    <section id="finder">
+    <section id="finder" data-page="beans" class="page-first">
         <div class="container">
             <div class="section-header">
                 <span class="section-subtitle">BEAN FINDER</span>
@@ -1992,7 +2307,7 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
         </div>
     </section>
 
-   <section id="shop">
+   <section id="shop" data-page="beans">
         <div class="container">
             <div class="section-header">
                 <span class="section-subtitle">ONLINE STORE</span>
@@ -2032,7 +2347,7 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
         </div>
     </section>
 
-    <section id="wholesale">
+    <section id="wholesale" data-page="wholesale" class="page-first">
         <div class="container">
             <div class="section-header">
                 <span class="section-subtitle">WHOLESALE PARTNERSHIP</span>
@@ -2054,35 +2369,53 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                 </div>
             </div>
 
-            <div class="why-grid">
-                <div class="why-card">
-                    <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21v-12l5 4v-4l5 4h4"/><path d="M19 21v-8l-1.436 -9.574a.5 .5 0 0 0 -.495 -.426h-1.145a.5 .5 0 0 0 -.494 .418l-1.43 8.582"/><path d="M9 17h1"/><path d="M14 17h1"/></svg></div>
-                    <div class="why-text">
-                        <h3>식품제조·가공업 정식 인허가</h3>
-                        <p>스트레토의 원두를 구매하신 후 재가공하여 판매할 수 있습니다. (식품소분업 허가 필요)</p>
+            <!-- 품질 근거: 예전 4칸 아이콘 카드를 사진 + 풀어 쓴 설명으로 -->
+            <div class="svc-list">
+                <article class="svc-item">
+                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>파주 로스팅 공장 외관 또는 생산 공간</small></span></figure>
+                    <div class="svc-body">
+                        <span class="svc-num">QUALITY 01</span>
+                        <h3>믿고 받아 쓰실 수 있는 원두</h3>
+                        <p class="svc-lead">스트레토 커피 팩토리는 식품제조·가공업 정식 인허가를 받은 로스팅 공장입니다.</p>
+                        <p>
+                            그래서 스트레토의 원두를 구매하신 뒤 매장에서 소분해 다시 판매하실 수도 있습니다(식품소분업 허가 필요).
+                            또 3개월마다 자가품질검사를 받아 안전성을 꾸준히 확인하고 있어, 손님께 내어드리는 원두를
+                            안심하고 쓰실 수 있습니다.
+                        </p>
+                        <ul class="svc-check">
+                            <li>식품제조·가공업 정식 인허가</li>
+                            <li>원두 재가공 판매 가능 (식품소분업 허가 필요)</li>
+                            <li>3개월 주기 자가품질검사</li>
+                        </ul>
                     </div>
-                </div>
-                <div class="why-card">
-                    <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"/><path d="M21 21l-6 -6"/><path d="M7 10l2 2l4 -4"/></svg></div>
-                    <div class="why-text">
-                        <h3>3개월 주기 자가품질검사</h3>
-                        <p>정기적인 품질 검사를 통해 안전성을 검증받은, 믿고 구매할 수 있는 스트레토 원두입니다.</p>
+                </article>
+
+                <article class="svc-item svc-item--flip">
+                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>프로밧 · 스트롱홀드 로스터기</small></span></figure>
+                    <div class="svc-body">
+                        <span class="svc-num">QUALITY 02</span>
+                        <h3>매번 같은 맛으로 볶습니다</h3>
+                        <p class="svc-lead">납품 원두에서 가장 중요한 건 지난달과 이번 달의 맛이 같은 것입니다.</p>
+                        <p>
+                            재현성과 안정성이 뛰어난 프로밧 로스터기와 스트롱홀드 로스터기를 사용하고,
+                            로스팅할 때마다 데이터를 기록하고 분석합니다. 기록이 쌓일수록 재현성이 높아지고,
+                            여기에 로스터의 노하우가 더해져 언제 받아도 변함없는 맛을 만듭니다.
+                        </p>
                     </div>
-                </div>
-                <div class="why-card">
-                    <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 10.941c2.333 -3.308 .167 -7.823 -1 -8.941c0 3.395 -2.235 5.299 -3.667 6.706c-1.43 1.408 -2.333 3.621 -2.333 5.588c0 3.704 3.134 6.706 7 6.706s7 -3.002 7 -6.706c0 -1.712 -1.232 -4.403 -2.333 -5.588c-2.084 3.353 -3.257 3.353 -4.667 2.235"/></svg></div>
-                    <div class="why-text">
-                        <h3>High-End Roasting</h3>
-                        <p>재현성과 안정성이 뛰어난 프로밧 로스터기와 스트롱홀드 로스터기를 사용하여 일관성 있는 고품질 원두를 생산합니다.</p>
+                </article>
+
+                <article class="svc-item">
+                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>출고 전 커핑하는 장면</small></span></figure>
+                    <div class="svc-body">
+                        <span class="svc-num">QUALITY 03</span>
+                        <h3>보내기 전에 한 번 더 맛봅니다</h3>
+                        <p class="svc-lead">로스팅 대회의 승패는 0.1점 차이의 디테일에서 갈립니다.</p>
+                        <p>
+                            2019년부터 국가대표 선발전 심사위원으로 활동해 온 그 기준으로, 원두를 발송하기 전에
+                            커핑을 해서 맛과 향을 확인합니다. 기준에 맞지 않는 원두는 매장으로 보내지 않습니다.
+                        </p>
                     </div>
-                </div>
-                <div class="why-card">
-                    <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14c.83 .642 2.077 1.017 3.5 1c1.423 .017 2.67 -.358 3.5 -1c.83 -.642 2.077 -1.017 3.5 -1c1.423 -.017 2.67 .358 3.5 1"/><path d="M8 3a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2"/><path d="M12 3a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2"/><path d="M3 10h14v5a6 6 0 0 1 -6 6h-2a6 6 0 0 1 -6 -6v-5z"/><path d="M16.746 16.726a3 3 0 1 0 .252 -5.555"/></svg></div>
-                    <div class="why-text">
-                        <h3>QC & Cupping</h3>
-                        <p>원두 발송 전 커핑을 통해 맛과 향을 확인하며, 언제나 동일한 품질을 약속합니다.</p>
-                    </div>
-                </div>
+                </article>
             </div>
 
             <hr style="border: 0; border-top: 1px solid var(--hairline); margin: 80px 0;">
@@ -2137,46 +2470,87 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
 
             
 
-            <div class="process-wrap">
-                <div class="process-step">
-                    <div class="step-num">01</div>
-                    <span class="step-title">원두 샘플 테이스팅</span>
-                    <div class="step-desc">
-                        직접 만나 뵙고<br>원두 샘플 테이스팅을 진행합니다.<br>(아래 신청서를 작성해 주세요.)<br>
-                        <a href="https://forms.gle/2YeYPfTPfBCUS93K6" target="_blank" rel="noreferrer"
-                           style="display: inline-block; margin-top: 8px; color: var(--accent-blue); font-weight: 600; text-decoration: none;">
-                            신청서 작성 &gt;
-                        </a>
+            <!-- 진행 절차: 예전 4칸 요약을 단계별 사진 + 설명으로 -->
+            <div class="svc-list svc-list--steps">
+                <article class="svc-item">
+                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>샘플 테이스팅 장면</small></span></figure>
+                    <div class="svc-body">
+                        <span class="svc-num">STEP 01</span>
+                        <h3>원두 샘플 테이스팅</h3>
+                        <p class="svc-lead">스트레토는 원두를 택배로 먼저 보내드리지 않습니다. 직접 만나서 함께 마셔 봅니다.</p>
+                        <p>
+                            같은 원두라도 어떻게 추출하느냐에 따라 맛이 달라지기 때문에, 의도한 맛과 향을 온전히 전해드리려면
+                            얼굴을 마주하고 이야기하는 게 가장 확실합니다. 아래 신청서를 남겨 주시면 일정을 잡아 연락드리고,
+                            매장의 메뉴와 원하시는 맛에 대해 이야기를 나누며 원두를 테이스팅합니다.
+                        </p>
+                        <div class="home-actions">
+                            <a href="https://forms.gle/2YeYPfTPfBCUS93K6" target="_blank" rel="noreferrer" class="home-btn">샘플 테이스팅 신청</a>
+                        </div>
                     </div>
-                </div>
-                <div class="process-step">
-                    <div class="step-num">02</div>
-                    <span class="step-title">파트너십 확정</span>
-                    <div class="step-desc">
-                        납품 원두 및 단가 협의 후<br>
-                        정식 계약서를 작성하여,<br>신뢰할 수 있는 파트너십을 시작합니다.
+                </article>
+
+                <article class="svc-item svc-item--flip">
+                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>상담 · 계약 장면 또는 납품 포장 원두</small></span></figure>
+                    <div class="svc-body">
+                        <span class="svc-num">STEP 02</span>
+                        <h3>파트너십 확정</h3>
+                        <p class="svc-lead">마음에 드는 원두를 고르셨다면, 납품 조건을 함께 정합니다.</p>
+                        <p>
+                            사용하실 원두와 월 사용량을 바탕으로 단가를 협의합니다. 사용량에 따라 받으시는 혜택이 달라지며,
+                            세부 조건은 상담에서 하나하나 안내해 드립니다. 협의가 끝나면 정식 계약서를 작성하고,
+                            서로 믿을 수 있는 파트너십을 시작합니다.
+                        </p>
+                        <ul class="svc-check">
+                            <li>납품 원두와 월 사용량 확정</li>
+                            <li>사용량에 따른 파트너 단가 협의</li>
+                            <li>정식 계약서 작성</li>
+                        </ul>
                     </div>
-                </div>
-                <div class="process-step">
-                    <div class="step-num">03</div>
-                    <span class="step-title">교육</span>
-                    <div class="step-desc">
-                        첫 방문 시, 에스프레소 세팅 및<br>그라인더 · 머신 사용/관리 등<br>추출 교육을 진행합니다.
+                </article>
+
+                <article class="svc-item">
+                    <figure class="svc-photo"><img src="img/home-consulting.jpg" width="1000" height="916" loading="lazy" alt="에스프레소 머신을 세팅하는 모습"></figure>
+                    <div class="svc-body">
+                        <span class="svc-num">STEP 03</span>
+                        <h3>매장 방문 교육</h3>
+                        <p class="svc-lead">좋은 원두도 매장에서 제대로 추출되어야 비로소 완성됩니다.</p>
+                        <p>
+                            첫 납품 때 매장에 직접 찾아가 에스프레소 세팅을 맞춰 드립니다. 그라인더와 머신 사용법,
+                            일상 관리 방법까지 1:1로 추출 교육을 진행하고, 매일 같은 한 잔을 내릴 수 있도록
+                            가이드를 함께 드립니다.
+                        </p>
+                        <ul class="svc-check">
+                            <li>납품 원두에 맞춘 에스프레소 세팅</li>
+                            <li>그라인더 · 머신 사용과 관리 방법</li>
+                            <li>1:1 추출 교육과 가이드 제공</li>
+                        </ul>
                     </div>
-                </div>
-                <div class="process-step">
-                    <div class="step-num">04</div>
-                    <span class="step-title">지속적 관리</span>
-                    <div class="step-desc">
-                        완벽한 커피 한 잔을 위한<br>지속적인 관리를 해드립니다.<br>(추출·세팅/머신 점검·수리 등)
+                </article>
+
+                <article class="svc-item svc-item--flip">
+                    <figure class="svc-photo"><img src="img/home-care.jpg" width="1000" height="1235" loading="lazy" alt="그라인더를 점검하는 엔지니어의 손"></figure>
+                    <div class="svc-body">
+                        <span class="svc-num">STEP 04</span>
+                        <h3>지속적인 관리</h3>
+                        <p class="svc-lead">납품을 시작한 날부터가 진짜 파트너십입니다.</p>
+                        <p>
+                            추출이나 레시피, 운영에 대해 궁금한 점은 카카오톡으로 언제든 물어보실 수 있습니다.
+                            요청하시면 매장에 방문해 커피 품질과 운영을 함께 점검하고, 머신에 문제가 생기면
+                            인증 엔지니어가 우선적으로 찾아가 수리합니다.
+                        </p>
+                        <ul class="svc-check">
+                            <li>카카오톡 상시 1:1 상담</li>
+                            <li>요청 시 매장 방문 컨설팅</li>
+                            <li>머신 점검 · 수리 (파트너 긴급 출동 우선)</li>
+                        </ul>
                     </div>
-                </div>
+                </article>
             </div>
 
         </div>
     </section>
 
-<section id="maintenance" style="background-color: var(--bg-secondary); position: relative; overflow: hidden;">
+<section id="maintenance" data-page="care" class="page-first" style="background-color: var(--bg-secondary); position: relative; overflow: hidden;">
         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 80% 20%, #ffffff 0%, var(--bg-secondary) 70%); z-index: 1;"></div>
         
         <div class="container" style="position: relative; z-index: 2;">
@@ -2191,90 +2565,104 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                 </p>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 60px;">
-                
-                <div style="background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-card); border-radius: 12px; padding: 30px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; box-sizing: border-box; width: 100%;">
-                    <div style="flex: 1; min-width: 200px; word-break: keep-all;">
-                        <h3 style="font-size: 1.8rem; margin-bottom: 15px; color: var(--text-primary);">
-                            <span style="color: var(--text-primary);">Certified</span> Engineer.
-                        </h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 0;">
-                            스트레토는 <strong>커피머신 엔지니어 공식 인증 자격증</strong>을 보유하고 있습니다.<br>
-                            단순한 소모품 교체부터 복잡한 내부 수리까지, 스트레토가 직접 책임지고 해결해 드립니다.
+            <!-- 머신 케어: 예전 카드 묶음을 사진 + 풀어 쓴 설명으로 -->
+            <div class="svc-list">
+                <article class="svc-item">
+                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>엔지니어가 머신 내부를 수리하는 모습</small></span></figure>
+                    <div class="svc-body">
+                        <span class="svc-num">CERTIFIED ENGINEER</span>
+                        <h3>인증 엔지니어가 직접 책임집니다</h3>
+                        <p class="svc-lead">머신이 멈추면 커피도, 매출도 함께 멈춥니다.</p>
+                        <p>
+                            스트레토는 커피머신 엔지니어 공식 인증 자격을 갖추고 있습니다. 가스켓 같은 소모품 교체부터
+                            복잡한 내부 수리까지 외부 업체에 넘기지 않고 직접 맡아 해결합니다. 로스터로서 커피 맛을 아는 사람이
+                            장비를 보기 때문에, 고치는 데서 끝나지 않고 원래의 맛이 나오는지까지 확인합니다.
                         </p>
+                        <ul class="svc-check">
+                            <li>에스프레소 머신 수리 및 점검</li>
+                            <li>커피 그라인더 수리 및 케어</li>
+                            <li>정수 필터 및 급배수 라인</li>
+                        </ul>
                     </div>
-                    <div class="partner-benefit-line">
-                        <span class="pb-label">PARTNER BENEFIT</span>
-                        <strong class="pb-title">Priority Dispatch &amp; Care</strong>
-                        <span class="pb-desc">긴급 상황 시 최우선 방문 지원</span>
-                    </div>
-
-                <div class="promises-grid benefit-grid" style="margin-bottom: 0;">
-                    <div class="promise-card">
-                        <h4><span class="promise-icon">⚡</span><span class="promise-label">Fast-Track Response | 긴급 출동 우선권 부여</span></h4>
-                        <p>머신 고장은 곧 매출 손실입니다. 파트너사의 긴급 상황 발생 시, 최우선적으로 스케줄을 조정하여 현장에 방문합니다.</p>
-                    </div>
-
-                    <div class="promise-card">
-                        <h4><span class="promise-icon">🛠️</span><span class="promise-label">Exclusive Benefits | 출장비 &amp; 기술료 할인</span></h4>
-                        <p>시중 수리비 대비 합리적인 가격(출장비/기술료 할인)으로 케어 서비스를 제공합니다.</p>
-                    </div>
-                <div class="repair-process-wrap">
-                    <div style="text-align: center; margin-bottom: 40px;">
-                        <span class="section-subtitle">SERVICE PROCESS</span>
-                        <h3 style="color: var(--text-primary); font-size: 1.8rem; margin-top: 10px;">정밀 진단 및 수리 절차</h3>
-                    </div>
-
-                    <div class="repair-grid">
-                        <div class="repair-card">
-                            <div class="repair-img-box">
-                                <span class="repair-step-badge">STEP 01</span>
-                                <img src="espresso.jpg" alt="Service">
-                            </div>
-                            <div class="repair-content">
-                                <h4 class="repair-title">증상 상담 및 접수</h4>
-                                <p class="repair-desc">
-                                    본 양식을 통해 머신의 이상 증상을<br>
-                                    남겨주시면, 엔지니어가 신속하게<br>
-                                    내용을 확인합니다.
-                                </p>
-                                <button type="button" class="btn-repair-action" onclick="openModal()">상담 양식 작성하기 ></button>
-                            </div>
-                        </div>
-
-                        <div class="repair-card">
-                            <div class="repair-img-box">
-                                <span class="repair-step-badge">STEP 02</span>
-                                <img src="grinder.jpg" alt="Diagnosis">
-                            </div>
-                            <div class="repair-content">
-                                <h4 class="repair-title">진단 및 견적 안내</h4>
-                                <p class="repair-desc">
-                                    작성해 주신 내용을 토대로 전문 엔지니어가 1차 원인을 진단하여, 상세 수리 계획과 예상 견적을 안내해 드립니다.<br>
-                                    (필요한 경우, 매장 방문을 통한 정밀 진단이 진행됩니다.)
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="repair-card">
-                            <div class="repair-img-box">
-                                <span class="repair-step-badge">STEP 03</span>
-                                <img src="filter.jpg" alt="Repair">
-                            </div>
-                            <div class="repair-content">
-                                <h4 class="repair-title">방문 수리 및 케어</h4>
-                                <p class="repair-desc">
-                                    안내해 드린 견적 합의 후, 일정을 조율하여 엔지니어가 매장에 방문합니다. 정품 부품 교체와 수리뿐만 아니라, 커피 추출에 가장 중요한 압력 및 온도 테스트까지 마친 후 정상 작동을 확인하고 작업을 마무리합니다.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                </div>
-
+                </article>
             </div>
-            
-            
+
+            <div class="section-header">
+                <span class="section-subtitle">SERVICE PROCESS</span>
+                <h2 class="section-title" style="font-size: 2rem;">정밀 진단 및 수리 절차</h2>
+            </div>
+
+            <div class="svc-list">
+                <article class="svc-item">
+                    <figure class="svc-photo"><img src="img/home-consulting.jpg" width="1000" height="916" loading="lazy" alt="에스프레소 머신을 살펴보는 모습"></figure>
+                    <div class="svc-body">
+                        <span class="svc-num">STEP 01</span>
+                        <h3>증상 상담 및 접수</h3>
+                        <p class="svc-lead">"추출 압력이 떨어져요", "스팀이 약해요" — 느끼신 그대로 적어 주시면 됩니다.</p>
+                        <p>
+                            상담 양식에 매장 정보와 머신 모델명, 증상, 방문 희망 일정을 남겨 주세요.
+                            접수된 내용은 엔지니어가 바로 확인하고 연락드립니다. 전문 용어를 모르셔도 괜찮습니다.
+                        </p>
+                        <div class="home-actions">
+                            <button type="button" class="home-btn" onclick="openModal()">수리 상담 접수</button>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="svc-item svc-item--flip">
+                    <figure class="svc-photo"><img src="img/home-care.jpg" width="1000" height="1235" loading="lazy" alt="그라인더를 점검하는 엔지니어의 손"></figure>
+                    <div class="svc-body">
+                        <span class="svc-num">STEP 02</span>
+                        <h3>진단 및 견적 안내</h3>
+                        <p class="svc-lead">무엇을 왜 고쳐야 하는지, 비용은 얼마인지 먼저 알려드립니다.</p>
+                        <p>
+                            남겨 주신 내용을 토대로 엔지니어가 1차 원인을 진단하고, 상세 수리 계획과 예상 견적을
+                            안내해 드립니다. 증상만으로 판단하기 어려운 경우에는 매장에 방문해 정밀 진단을 진행합니다.
+                            견적에 동의하시기 전에는 수리를 시작하지 않습니다.
+                        </p>
+                        <ul class="svc-check">
+                            <li>접수 내용 기반 1차 원인 진단</li>
+                            <li>수리 계획과 예상 견적 안내</li>
+                            <li>필요 시 매장 방문 정밀 진단</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="svc-item">
+                    <figure class="svc-photo"><img src="img/repair-3.jpg" width="900" height="969" loading="lazy" alt="정수 필터와 급수 라인을 점검하는 모습"></figure>
+                    <div class="svc-body">
+                        <span class="svc-num">STEP 03</span>
+                        <h3>방문 수리 및 케어</h3>
+                        <p class="svc-lead">고친 뒤에 커피를 직접 내려 보고 나서야 작업을 마칩니다.</p>
+                        <p>
+                            견적에 합의하시면 일정을 맞춰 엔지니어가 매장으로 찾아갑니다. 정품 부품으로 교체하고 수리한 뒤,
+                            커피 추출에 가장 중요한 압력과 온도 테스트까지 마치고 정상 작동을 확인한 다음 마무리합니다.
+                        </p>
+                        <ul class="svc-check">
+                            <li>정품 부품 교체 및 수리</li>
+                            <li>추출 압력 · 온도 테스트</li>
+                            <li>정상 작동 확인 후 마무리</li>
+                        </ul>
+                    </div>
+                </article>
+            </div>
+
+            <div class="care-benefit">
+                <span class="section-subtitle">PARTNER BENEFIT</span>
+                <h3>원두 파트너 매장은 먼저 찾아갑니다</h3>
+                <div class="care-benefit-grid">
+                    <div>
+                        <strong>긴급 출동 우선권</strong>
+                        <p>머신 고장은 곧 매출 손실입니다. 파트너 매장에 긴급 상황이 생기면 다른 일정을 조정해서라도 가장 먼저 방문합니다.</p>
+                    </div>
+                    <div>
+                        <strong>출장비 · 기술료 할인</strong>
+                        <p>시중 수리비보다 합리적인 가격으로, 출장비와 기술료를 할인해 케어 서비스를 제공합니다.</p>
+                    </div>
+                </div>
+                <a href="/wholesale" data-route="wholesale" class="home-more">원두 파트너십 알아보기 <span aria-hidden="true">→</span></a>
+            </div>
+
         </div>
     </section>
 
@@ -2405,7 +2793,7 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
         }
     </style>
 
-    <section id="consulting" style="background-color: var(--bg-secondary);">
+    <section id="consulting" data-page="consulting" class="page-first" style="background-color: var(--bg-secondary);">
         <div class="container">
             <div class="section-header">
                 <span class="section-subtitle">CAFE CONSULTING</span>
@@ -2419,43 +2807,219 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                 </p>
             </div>
 
-            <div class="consulting-grid">
-                <div class="consulting-card">
-                    <div class="consulting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10h3v-3l-3.5 -3.5a6 6 0 0 1 8 8l6 6a2 2 0 0 1 -3 3l-6 -6a6 6 0 0 1 -8 -8l3.5 3.5"/></svg></div>
-                    <h3>하드웨어 세팅</h3>
-                    <p>머신 선정부터 정밀한 에스프레소 추출까지, 완벽한 커피 한 잔을 위한 최적의 추출 환경을 제공합니다.</p>
-                </div>
-                <div class="consulting-card">
-                    <div class="consulting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M5 17h-2v-4m-1 -8h11v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5"/><path d="M3 9l4 0"/></svg></div>
-                    <h3>맞춤형 원두 공급</h3>
-                    <p>매장 상권과 고객의 취향을 만족시킬 커스텀 시그니처 블렌딩 원두를 제공합니다.</p>
-                </div>
-                <div class="consulting-card">
-                    <div class="consulting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.875 12c.621 0 1.125 .512 1.125 1.143v5.714c0 .631 -.504 1.143 -1.125 1.143h-15.875a1 1 0 0 1 -1 -1v-5.857c0 -.631 .504 -1.143 1.125 -1.143h15.75z"/><path d="M9 12v2"/><path d="M6 12v3"/><path d="M12 12v3"/><path d="M18 12v3"/><path d="M15 12v2"/><path d="M3 3v4"/><path d="M3 5h18"/><path d="M21 3v4"/></svg></div>
-                    <h3>실전형 바 레이아웃</h3>
-                    <p>화려하기만 하고 몸이 지치는 동선이 아닌, 바리스타의 피로도를 낮추고 회전율을 극대화하는 현장 중심의 동선을 설계합니다.</p>
-                </div>
-                <div class="consulting-card">
-                    <div class="consulting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M20 18v3"/><path d="M16 16v5"/><path d="M12 13v8"/><path d="M8 16v5"/><path d="M3 11c6 0 5 -5 9 -5s3 5 9 5"/></svg></div>
-                    <h3>지속 가능한 품질 관리</h3>
-                    <p>매일 동일한 퀄리티를 유지할 수 있도록, 현장에서 적용 가능한 실전 품질 관리 프로세스를 전수합니다.</p>
-                </div>
-                <div class="consulting-card">
-                    <div class="consulting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 9l-10 -4l-10 4l10 4l10 -4v6"/><path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4"/></svg></div>
-                    <h3>직원 교육 서비스</h3>
-                    <p>실무 바리스타 교육을 진행하고 고객 응대 노하우를 전수하여 매장의 서비스 품질을 향상시킵니다.</p>
-                </div>
-                <div class="consulting-card">
-                    <div class="consulting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572"/><path d="M12 6l-3.293 3.293a1 1 0 0 0 0 1.414l.543 .543c.69 .69 1.81 .69 2.5 0l1 -1a3.182 3.182 0 0 1 4.5 0l2.25 2.25"/><path d="M12.5 15.5l2 2"/><path d="M15 13l2 2"/></svg></div>
-                    <h3>든든한 파트너십</h3>
-                    <p>수년간의 시행착오로 다져진 내공으로 심리적 부담감과 불안을 확신으로 바꿔드립니다. 마음 놓고 의지할 수 있는 따뜻한 조력자로 함께합니다.</p>
-                </div>
-                </div>
+            <!-- 서비스 항목: 한 줄 카드 대신, 항목마다 사진 + 풀어 쓴 설명 + 실제로 하는 일 목록.
+                 사진이 아직 없는 항목은 svc-photo--todo 자리표시(어떤 사진이 필요한지 적어 둠) -->
+            <div class="svc-list">
+                <article class="svc-item">
+                    <figure class="svc-photo"><img src="img/home-consulting.jpg" width="1000" height="916" loading="lazy" alt="에스프레소 머신을 세팅하는 모습"></figure>
+                    <div class="svc-body">
+                        <span class="svc-num">01</span>
+                        <h3>하드웨어 세팅</h3>
+                        <p class="svc-lead">머신과 그라인더는 한 번 들이면 몇 년을 함께 쓰는 장비입니다. 그래서 '좋은 장비'보다 '우리 매장에 맞는 장비'를 먼저 찾습니다.</p>
+                        <p>
+                            하루 예상 판매량과 메뉴 구성, 매장의 전기 용량과 급배수 위치를 먼저 확인한 뒤,
+                            예산 안에서 무리 없는 머신·그라인더 조합을 함께 고릅니다. 설치가 끝났다고 끝이 아닙니다.
+                            실제로 쓰실 원두로 분쇄도와 도징량, 추출 시간을 하나씩 맞추고 정수 필터까지 확인해서
+                            오픈 첫 잔부터 의도한 맛이 나오도록 잡아드립니다.
+                        </p>
+                        <ul class="svc-check">
+                            <li>판매량·메뉴에 맞춘 머신, 그라인더 추천</li>
+                            <li>전기 용량, 급배수 등 설치 환경 확인</li>
+                            <li>분쇄도·도징량·추출 시간 레시피 세팅</li>
+                            <li>정수 필터와 물 상태 점검</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="svc-item svc-item--flip">
+                    <figure class="svc-photo"><img src="img/consult-blend.jpg" width="1000" height="1000" loading="lazy" alt="구스토 블렌드 원두"></figure>
+                    <div class="svc-body">
+                        <span class="svc-num">02</span>
+                        <h3>맞춤형 원두 공급</h3>
+                        <p class="svc-lead">같은 원두라도 오피스 상권과 주택가, 라떼가 많이 나가는 매장과 아메리카노가 많이 나가는 매장에서는 반응이 다릅니다.</p>
+                        <p>
+                            매장이 들어설 상권과 주 손님층, 주력 메뉴를 먼저 듣고 그에 맞는 원두를 제안합니다.
+                            스트레토의 블렌드로 시작하실 수도 있고, 매장 콘셉트에 맞춘 시그니처 블렌드를
+                            따로 개발할 수도 있습니다(비용·단가는 별도 협의). 어느 쪽이든 샘플을 직접 마셔 보신 뒤 결정합니다.
+                        </p>
+                        <ul class="svc-check">
+                            <li>상권·손님층·주력 메뉴 상담</li>
+                            <li>기존 블렌드 또는 시그니처 블렌드 제안</li>
+                            <li>샘플 테이스팅 후 최종 결정</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="svc-item">
+                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>바 동선이 한눈에 보이는 매장 사진</small></span></figure>
+                    <div class="svc-body">
+                        <span class="svc-num">03</span>
+                        <h3>실전형 바 레이아웃</h3>
+                        <p class="svc-lead">보기에만 멋진 바는 바쁜 시간에 바리스타를 지치게 합니다. 실제로 일하는 순서대로 바를 그립니다.</p>
+                        <p>
+                            주문을 받고, 추출하고, 음료를 만들어 내어드리기까지 손과 발이 한 방향으로 흐르도록 동선을 짭니다.
+                            자주 쓰는 도구는 손이 바로 닿는 곳에 두고, 냉장고·제빙기·싱크의 위치는 메뉴를 만드는 순서에 맞춥니다.
+                            혼자 일할 때와 바쁜 시간 두 명이 일할 때 모두 서로 부딪히지 않는지 확인합니다.
+                        </p>
+                        <ul class="svc-check">
+                            <li>주문 → 추출 → 제조 → 픽업 동선 설계</li>
+                            <li>냉장고·제빙기·싱크 등 집기 배치</li>
+                            <li>1인 / 2인 근무 상황별 동선 확인</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="svc-item svc-item--flip">
+                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>추출을 점검하거나 기록하는 사진</small></span></figure>
+                    <div class="svc-body">
+                        <span class="svc-num">04</span>
+                        <h3>지속 가능한 품질 관리</h3>
+                        <p class="svc-lead">오픈 날의 맛을 1년 뒤에도 똑같이 내는 것, 그게 가장 어렵습니다.</p>
+                        <p>
+                            매일 영업 전 추출 상태를 확인하는 방법, 원두 보관법, 머신과 그라인더 청소 주기처럼
+                            매장에서 바로 따라 할 수 있는 루틴을 정리해 드립니다. 누가 내려도 같은 맛이 나도록
+                            레시피를 기록하고 맞춰 나가는 방법도 함께 알려드립니다.
+                        </p>
+                        <ul class="svc-check">
+                            <li>영업 전 추출 점검 루틴</li>
+                            <li>원두 보관과 청소 주기 가이드</li>
+                            <li>레시피 기록과 맛 맞추는 방법</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="svc-item">
+                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>바리스타 교육 장면</small></span></figure>
+                    <div class="svc-body">
+                        <span class="svc-num">05</span>
+                        <h3>직원 교육 서비스</h3>
+                        <p class="svc-lead">사장님 한 분만 잘 내리는 매장은 오래가기 어렵습니다.</p>
+                        <p>
+                            에스프레소 추출과 우유 스티밍 같은 기본기부터 실제 영업 상황을 가정한 연습까지,
+                            현장에서 바로 쓰는 실무 위주로 교육합니다. 손님을 응대하는 노하우도 함께 전해드려
+                            매장의 서비스 품질을 한 단계 끌어올립니다.
+                        </p>
+                        <ul class="svc-check">
+                            <li>에스프레소 추출, 우유 스티밍 기본기</li>
+                            <li>영업 상황을 가정한 실전 연습</li>
+                            <li>고객 응대 노하우</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="svc-item svc-item--flip">
+                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>사장님과 상담하는 장면</small></span></figure>
+                    <div class="svc-body">
+                        <span class="svc-num">06</span>
+                        <h3>든든한 파트너십</h3>
+                        <p class="svc-lead">창업은 결정할 것도, 불안한 것도 많은 일입니다.</p>
+                        <p>
+                            스트레토도 서울에서 직접 카페를 운영하며 같은 고민을 해 왔습니다. 수년간의 시행착오로 다진 경험으로
+                            그 부담과 불안을 확신으로 바꿔드리고, 오픈한 뒤에도 카카오톡으로 추출·레시피·운영에 대해
+                            언제든 물어보실 수 있습니다. 마음 놓고 의지할 수 있는 조력자로 함께하겠습니다.
+                        </p>
+                    </div>
+                </article>
+            </div>
 
             <div class="manual-wrap">
                 <span class="manual-badge">EXCLUSIVE BENEFIT</span>
                 <h3 style="color: var(--text-primary); font-size: 2rem; margin-bottom: 15px;">카페 창업 마스터<br>매뉴얼 제공</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 0; word-break: keep-all;">스트레토 커피 팩토리의 축적된 데이터와 노하우를 바탕으로 설계된 창업 솔루션</p>
+
+                <!-- 매뉴얼 상세: 실제 컨설팅에서 만들어 드린 매뉴얼의 구성을 보여준다 (거래처 이름은 밝히지 않음).
+                     manual-page--todo 는 실제 페이지 이미지를 넣을 자리 -->
+                <p class="manual-lead">
+                    컨설팅이 끝나면 사장님 머릿속에만 남는 게 아니라, 매장에 '책'으로 남습니다.
+                    처음 들어온 직원이 혼자 읽어도 따라 할 수 있도록, 매장의 메뉴와 장비와 동선에 맞춰 직접 써 드립니다.
+                </p>
+
+                <div class="manual-docs">
+                    <article class="manual-doc">
+                        <a class="manual-page" href="img/manual-contents.jpg" target="_blank" rel="noopener"><img src="img/manual-contents.jpg" width="1600" height="900" loading="lazy" alt="직원 운영 매뉴얼 목차 페이지"></a>
+                        <span class="manual-doc-tag">STAFF TRAINING MANUAL</span>
+                        <h4>직원 운영 매뉴얼</h4>
+                        <p>
+                            바 · 홀 · 카운터 직원이 모두 함께 보는 매장의 기준서입니다. 실제 컨설팅 매장 기준 95쪽,
+                            8개 파트로 구성되어 커피 기본기부터 오픈 · 마감 루틴, 위생과 장비 관리, 직원 평가까지 담았습니다.
+                        </p>
+                        <ul class="manual-doc-list">
+                            <li>매장 이해 · 서비스 톤</li>
+                            <li>원두 · 추출 · 캘리브레이션 · 우유</li>
+                            <li>음료 레시피 · 러시 타임 대응</li>
+                            <li>카운터 &amp; POS · 홀 운영</li>
+                            <li>오픈 · 마감 · 교대 루틴</li>
+                            <li>위생 · 장비 트러블슈팅</li>
+                            <li>필기 · 실기 평가</li>
+                        </ul>
+                    </article>
+                    <article class="manual-doc">
+                        <a class="manual-page" href="img/manual-recipe-day.jpg" target="_blank" rel="noopener"><img src="img/manual-recipe-day.jpg" width="1600" height="900" loading="lazy" alt="레시피 세팅 매뉴얼 하루 일정표 페이지"></a>
+                        <span class="manual-doc-tag">RECIPE SETTING MANUAL</span>
+                        <h4>레시피 세팅 매뉴얼</h4>
+                        <p>
+                            오픈 전, 판매할 레시피를 하루 만에 확정하는 진행 가이드입니다. 아메리카노 · 라떼 · 에스프레소의
+                            샷과 물 · 우유 양을 원두별로 정한 뒤, 그 위에서 나머지 메뉴의 농도와 당도를 맞춥니다.
+                        </p>
+                        <ul class="manual-doc-list">
+                            <li>시간대별 하루 진행표</li>
+                            <li>전날 준비물 · 재료 수량 체크리스트</li>
+                            <li>원두별 테이스팅 기록지</li>
+                        </ul>
+                    </article>
+                    <article class="manual-doc">
+                        <div class="manual-page manual-page--todo"><span>실제 페이지<br>미리보기 준비 중</span></div>
+                        <span class="manual-doc-tag">SCHEDULE &amp; BUDGET</span>
+                        <h4>창업 일정 · 예산표</h4>
+                        <p>
+                            계약부터 오픈까지 무엇을 언제 해야 하는지 정리한 전체 일정과, 실제로 들어가는 지출 내역,
+                            필요한 집기 리스트를 함께 드립니다. 예산이 어디서 새는지 한눈에 보입니다.
+                        </p>
+                        <ul class="manual-doc-list">
+                            <li>오픈까지의 전체 일정</li>
+                            <li>항목별 지출 내역</li>
+                            <li>장비 · 집기 리스트</li>
+                        </ul>
+                    </article>
+                </div>
+
+                <div class="manual-how">
+                    <h4>매뉴얼의 모든 챕터는 이 순서로 쓰여 있습니다</h4>
+                    <ol class="manual-how-steps">
+                        <li><strong>목표</strong>다 읽고 나면 무엇을 할 수 있어야 하는지</li>
+                        <li><strong>원리</strong>왜 이렇게 하는지, 이유부터</li>
+                        <li><strong>매장 기준</strong>우리 매장에서 지키는 숫자와 모습</li>
+                        <li><strong>절차</strong>실제로 하는 순서</li>
+                        <li><strong>자주 하는 실수</strong>먼저 겪은 사람들이 자주 틀린 부분</li>
+                        <li><strong>실습</strong>직접 해 보며 몸으로 익히는 과제</li>
+                        <li><strong>확인 질문</strong>제대로 이해했는지 스스로 점검</li>
+                    </ol>
+                </div>
+
+                <div class="manual-gallery">
+                    <h4>실제 매뉴얼 페이지</h4>
+                    <p>컨설팅 매장에 실제로 전달한 매뉴얼의 일부입니다. 매장 이름은 가렸습니다. 누르면 크게 볼 수 있습니다.</p>
+                    <div class="manual-gallery-grid">
+                        <figure>
+                            <a class="manual-page" href="img/manual-bar-layout.jpg" target="_blank" rel="noopener"><img src="img/manual-bar-layout.jpg" width="1600" height="900" loading="lazy" alt="운영 매뉴얼 바 배치도 페이지"></a>
+                            <figcaption><strong>바 배치도</strong>바를 세 줄로 나누고 장비 22개의 자리를 번호로 정리한 페이지</figcaption>
+                        </figure>
+                        <figure>
+                            <a class="manual-page" href="img/manual-extraction.jpg" target="_blank" rel="noopener"><img src="img/manual-extraction.jpg" width="1600" height="900" loading="lazy" alt="운영 매뉴얼 추출을 눈으로 읽기 페이지"></a>
+                            <figcaption><strong>추출을 눈으로 읽기</strong>추출되는 모습만 보고 원인과 조치를 찾는 표</figcaption>
+                        </figure>
+                    </div>
+                </div>
+
+                <figure class="manual-excerpt">
+                    <span class="manual-doc-tag">매뉴얼 속 한 페이지</span>
+                    <blockquote>
+                        <p><strong>ICED는 두 번 맛본다.</strong> 만든 직후와 5분 뒤.<br>얼음이 녹은 뒤의 농도가 손님이 실제로 마시는 맛입니다.</p>
+                    </blockquote>
+                    <figcaption>레시피 세팅 매뉴얼 · 진행 원칙 중에서</figcaption>
+                </figure>
+
+                <h4 class="manual-rail-title">창업 준비 10단계</h4>
                 
                 <div class="manual-rail">
                     <div class="manual-row">
@@ -2597,6 +3161,95 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
             const nav = document.getElementById('navLinks');
             nav.classList.toggle('active');
         }
+    </script>
+    <script>
+    /* ===== 페이지 라우터 =====
+       /brand, /beans 같은 주소마다 해당 섹션만 보여준다. 실제 파일은 index.html 하나이고,
+       Vercel(vercel.json rewrites)이 이 주소들을 index.html 로 돌려준다.
+       예전 링크(/#shop 등)로 들어와도 새 주소로 바꿔 해당 페이지를 연다. */
+    (function () {
+        const ROUTES = {
+            home:       { path: '/',           title: 'STRETTO COFFEE FACTORY - 파주 원두 납품 & 로스팅 랩' },
+            brand:      { path: '/brand',      title: '브랜드 스토리 | STRETTO COFFEE FACTORY' },
+            beans:      { path: '/beans',      title: '원두 | STRETTO COFFEE FACTORY' },
+            wholesale:  { path: '/wholesale',  title: '원두 납품 안내 | STRETTO COFFEE FACTORY' },
+            care:       { path: '/care',       title: '머신 케어 | STRETTO COFFEE FACTORY' },
+            consulting: { path: '/consulting', title: '카페 창업 컨설팅 | STRETTO COFFEE FACTORY' }
+        };
+        // 예전 한 페이지 시절의 섹션 앵커 → [페이지, 그 안에서 스크롤할 섹션]
+        const LEGACY = {
+            hero: ['home'], story: ['brand'], finder: ['beans', 'finder'], shop: ['beans', 'shop'],
+            wholesale: ['wholesale'], maintenance: ['care'], consulting: ['consulting']
+        };
+        const canonical = document.querySelector('link[rel="canonical"]');
+
+        function routeFromPath(pathname) {
+            const name = pathname.replace(/^\/+|\/+$/g, '').replace(/\.html$/, '');
+            if (name === '' || name === 'index') return 'home';
+            return ROUTES[name] ? name : 'home';
+        }
+
+        // html 에 scroll-behavior: smooth 가 걸려 있어 'auto' 로는 페이지를 바꾼 뒤
+        // 이전 위치에서 미끄러져 내려간다. 페이지 전환은 'instant' 로 바로 옮긴다.
+        function scrollToAnchor(id) {
+            const el = id && document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'instant', block: 'start' });
+            else window.scrollTo({ top: 0, behavior: 'instant' });
+        }
+
+        function render(route, anchor) {
+            document.body.dataset.route = route;
+            document.title = ROUTES[route].title;
+            if (canonical) canonical.href = 'https://www.stretto.co.kr' + ROUTES[route].path;
+            document.querySelectorAll('.nav-links a[data-route]').forEach(a => {
+                a.classList.toggle('is-active', a.dataset.route === route);
+            });
+            const nav = document.getElementById('navLinks');
+            if (nav) nav.classList.remove('active');
+            scrollToAnchor(anchor);
+        }
+
+        function go(route, anchor) {
+            // ?review 같은 쿼리는 페이지를 옮겨도 유지한다
+            const url = ROUTES[route].path + location.search + (anchor ? '#' + anchor : '');
+            history.pushState({ route: route }, '', url);
+            render(route, anchor);
+        }
+
+        document.addEventListener('click', function (e) {
+            const a = e.target.closest('a[data-route]');
+            if (!a || e.metaKey || e.ctrlKey || e.shiftKey || a.target === '_blank') return;
+            e.preventDefault();
+            go(a.dataset.route || 'home', a.dataset.anchor);
+        });
+
+        window.addEventListener('popstate', function () {
+            render(routeFromPath(location.pathname), location.hash.slice(1));
+        });
+
+        // 첫 진입
+        const hash = location.hash.slice(1);
+        let route = routeFromPath(location.pathname);
+        let anchor = hash;
+        if (route === 'home' && LEGACY[hash]) {
+            route = LEGACY[hash][0];
+            anchor = LEGACY[hash][1] || '';
+            history.replaceState({ route: route }, '', ROUTES[route].path + location.search + (anchor ? '#' + anchor : ''));
+        }
+        // 브라우저가 기억한 스크롤 위치 대신 페이지 맨 위(또는 앵커)에서 시작한다
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+        render(route, anchor);
+
+        // 스크롤하면 메인 미리보기 블록이 살짝 떠오르며 나타난다
+        if ('IntersectionObserver' in window) {
+            const io = new IntersectionObserver(entries => {
+                entries.forEach(en => {
+                    if (en.isIntersecting) { en.target.classList.add('is-in'); io.unobserve(en.target); }
+                });
+            }, { rootMargin: '0px 0px -8% 0px' });
+            document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+        }
+    })();
     </script>
    <script>
     // 1. 모달 열기/닫기 함수
@@ -2835,7 +3488,12 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                 if(blendGrid) blendGrid.innerHTML = '';
                 if(nuttyGrid) nuttyGrid.innerHTML = '';
                 if(fruityGrid) fruityGrid.innerHTML = '';
-                if(decafGrid) decafGrid.innerHTML = ''; 
+                if(decafGrid) decafGrid.innerHTML = '';
+
+                // 메인 '지금 스트레토가 볶는 원두' — 관리자 지정 순서 앞쪽 4개
+                const homeGrid = document.getElementById('home-product-grid');
+                let homeCount = 0;
+                if (homeGrid) homeGrid.innerHTML = '';
 
                 products.forEach(p => {
                     // 배합 재료 전용으로만 미러된 원두는 쇼핑몰 목록에 표시하지 않는다 (추천에만 사용)
@@ -2867,6 +3525,8 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
                             </div>
                         </a>
                     </div>`;
+
+                    if (homeGrid && homeCount < 4) { homeGrid.innerHTML += html; homeCount++; }
 
                     // (아래 카테고리 분배 로직은 그대로 두시면 됩니다)
 
