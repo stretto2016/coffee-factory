@@ -1963,10 +1963,10 @@ a.manual-page:hover { transform: translateY(-3px); }
     .home-finder { flex-direction: column; align-items: flex-start; padding: 22px; }
     .page-first { padding-top: calc(var(--section-spacing) + 60px) !important; }
 }
-.topbar { display: none; }
+.topbar, .page-hero, .page-chips { display: none; }
     </style>
-    <!-- La Cabra 풍 테마 (미리보기 검토 중). 아래 두 줄을 지우면 예전 모습으로 돌아간다 -->
-    <link rel="stylesheet" href="theme-lacabra.css">
+    <!-- Origin 풍 테마 (미리보기 검토 중). 아래 한 줄을 지우면 예전 모습으로, theme-lacabra.css 로 바꾸면 La Cabra 시안으로 -->
+    <link rel="stylesheet" href="theme-origin.css">
 </head>
 <body>
 <script>
@@ -2155,6 +2155,13 @@ a.manual-page:hover { transform: translateY(-3px); }
     </section>
     <!-- ===================== [메인 미리보기 끝] ===================== -->
 
+    <!-- 페이지 첫 배너 + 바로가기 (Origin 테마에서만 보인다) -->
+    <div class="page-hero page-hero--brand">
+        <img src="ov-final.jpg" alt="" loading="eager">
+        <div class="page-hero-text"><h1>브랜드 스토리</h1><p>carefully crafted coffee</p></div>
+    </div>
+    <div class="page-chips page-chips--brand" role="navigation" aria-label="브랜드 스토리 바로가기"><a href="#story">스트레토 정신</a><a href="#brand-naming">이름과 연혁</a><a href="#brand-vision">우리의 비전</a></div>
+
     <section id="story" data-page="brand" class="page-first">
         <div class="container">
             
@@ -2202,7 +2209,7 @@ a.manual-page:hover { transform: translateY(-3px); }
 
             <hr style="border: 0; border-top: 1px solid var(--hairline); margin: 80px 0;">
 
-            <div class="story-split">
+            <div class="story-split" id="brand-naming">
                 <div class="story-left">
                     <span class="section-subtitle">NAMING STORY</span>
                     <h3 style="font-size: 2rem; margin-bottom: 20px;">'stretto'?</h3>
@@ -2243,7 +2250,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </div>
             </div>
 
-            <div class="vision-box vision-box--photo">
+            <div class="vision-box vision-box--photo" id="brand-vision">
                 <img class="vision-photo" src="ov-final.jpg" width="2160" height="1100"
                      alt="커피 산지의 들판 위로 무지개가 뜬 풍경">
                 <div class="vision-inner">
@@ -2268,6 +2275,13 @@ a.manual-page:hover { transform: translateY(-3px); }
 
         </div>
     </section>
+
+    <!-- 페이지 첫 배너 + 바로가기 (Origin 테마에서만 보인다) -->
+    <div class="page-hero page-hero--beans">
+        <img src="img/home-wholesale.jpg" alt="" loading="eager">
+        <div class="page-hero-text"><h1>원두</h1><p>지금 스트레토가 볶는 원두</p></div>
+    </div>
+    <div class="page-chips page-chips--beans" role="navigation" aria-label="원두 바로가기"><a href="#finder">원두 추천</a><a href="#shop">전체 원두</a></div>
 
     <section id="finder" data-page="beans" class="page-first">
         <div class="container">
@@ -2356,6 +2370,13 @@ a.manual-page:hover { transform: translateY(-3px); }
         </div>
     </section>
 
+    <!-- 페이지 첫 배너 + 바로가기 (Origin 테마에서만 보인다) -->
+    <div class="page-hero page-hero--wholesale">
+        <img src="img/hero-wholesale.jpg" alt="" loading="eager">
+        <div class="page-hero-text"><h1>원두 납품 안내</h1><p>국가대표를 심사하는 기준 그대로</p></div>
+    </div>
+    <div class="page-chips page-chips--wholesale" role="navigation" aria-label="원두 납품 안내 바로가기"><a href="#wh-quality">품질</a><a href="#wh-promise">파트너십 약속</a><a href="#wh-process">진행 절차</a></div>
+
     <section id="wholesale" data-page="wholesale" class="page-first">
         <div class="container">
             <div class="section-header">
@@ -2379,7 +2400,7 @@ a.manual-page:hover { transform: translateY(-3px); }
             </div>
 
             <!-- 품질 근거: 예전 4칸 아이콘 카드를 사진 + 풀어 쓴 설명으로 -->
-            <div class="svc-list">
+            <div class="svc-list" id="wh-quality">
                 <article class="svc-item">
                     <figure data-label="Licensed roastery" class="svc-photo svc-photo--todo"><span>사진 준비 중<small>파주 로스팅 공장 외관 또는 생산 공간</small></span></figure>
                     <div class="svc-body">
@@ -2429,7 +2450,7 @@ a.manual-page:hover { transform: translateY(-3px); }
 
             <hr style="border: 0; border-top: 1px solid var(--hairline); margin: 80px 0;">
 
-            <div class="section-header">
+            <div class="section-header" id="wh-promise">
                 <h2 class="section-title" style="font-size: 2rem;">6가지 파트너십 약속</h2>
                 <p>❝스트레토는 원두 납품을 넘어 카페 운영의 든든한 파트너가 되어드립니다.❞</p>
             </div>
@@ -2462,7 +2483,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </div>
             </div>
 
-            <div class="section-header">
+            <div class="section-header" id="wh-process">
                 <h2 class="section-title" style="font-size: 2rem;">파트너십 진행 절차</h2>
                 <p style="max-width: 660px; margin: 16px auto 0; color: var(--text-secondary); line-height: 1.75; word-break: keep-all;">
                     ❝스트레토는 의도한 맛과 향을 온전히 전해드리기 위해,<br>직접 만나 뵙고 소통하며 소개해 드리는 방식을 고수하고 있습니다.❞
@@ -2559,6 +2580,13 @@ a.manual-page:hover { transform: translateY(-3px); }
         </div>
     </section>
 
+    <!-- 페이지 첫 배너 + 바로가기 (Origin 테마에서만 보인다) -->
+    <div class="page-hero page-hero--care">
+        <img src="img/home-care.jpg" alt="" loading="eager">
+        <div class="page-hero-text"><h1>머신 케어</h1><p>인증 엔지니어가 직접 고칩니다</p></div>
+    </div>
+    <div class="page-chips page-chips--care" role="navigation" aria-label="머신 케어 바로가기"><a href="#care-intro">수리 항목</a><a href="#care-process">수리 절차</a><a href="#care-benefit">파트너 혜택</a></div>
+
 <section id="maintenance" data-page="care" class="page-first" style="background-color: var(--bg-secondary); position: relative; overflow: hidden;">
         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 80% 20%, #ffffff 0%, var(--bg-secondary) 70%); z-index: 1;"></div>
         
@@ -2575,7 +2603,7 @@ a.manual-page:hover { transform: translateY(-3px); }
             </div>
 
             <!-- 머신 케어: 예전 카드 묶음을 사진 + 풀어 쓴 설명으로 -->
-            <div class="svc-list">
+            <div class="svc-list" id="care-intro">
                 <article class="svc-item">
                     <figure data-label="Certified engineer" class="svc-photo svc-photo--todo"><span>사진 준비 중<small>엔지니어가 머신 내부를 수리하는 모습</small></span></figure>
                     <div class="svc-body">
@@ -2596,7 +2624,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </article>
             </div>
 
-            <div class="section-header">
+            <div class="section-header" id="care-process">
                 <span class="section-subtitle">SERVICE PROCESS</span>
                 <h2 class="section-title" style="font-size: 2rem;">정밀 진단 및 수리 절차</h2>
             </div>
@@ -2656,7 +2684,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </article>
             </div>
 
-            <div class="care-benefit">
+            <div class="care-benefit" id="care-benefit">
                 <span class="section-subtitle">PARTNER BENEFIT</span>
                 <h3>원두 파트너 매장은 먼저 찾아갑니다</h3>
                 <div class="care-benefit-grid">
@@ -2802,6 +2830,13 @@ a.manual-page:hover { transform: translateY(-3px); }
         }
     </style>
 
+    <!-- 페이지 첫 배너 + 바로가기 (Origin 테마에서만 보인다) -->
+    <div class="page-hero page-hero--consulting">
+        <img src="img/home-consulting.jpg" alt="" loading="eager">
+        <div class="page-hero-text"><h1>카페 창업 컨설팅</h1><p>10년의 카페 운영을 그대로</p></div>
+    </div>
+    <div class="page-chips page-chips--consulting" role="navigation" aria-label="카페 창업 컨설팅 바로가기"><a href="#cs-services">컨설팅 내용</a><a href="#cs-manual">창업 매뉴얼</a><a href="#cs-steps">창업 10단계</a></div>
+
     <section id="consulting" data-page="consulting" class="page-first" style="background-color: var(--bg-secondary);">
         <div class="container">
             <div class="section-header">
@@ -2818,7 +2853,7 @@ a.manual-page:hover { transform: translateY(-3px); }
 
             <!-- 서비스 항목: 한 줄 카드 대신, 항목마다 사진 + 풀어 쓴 설명 + 실제로 하는 일 목록.
                  사진이 아직 없는 항목은 svc-photo--todo 자리표시(어떤 사진이 필요한지 적어 둠) -->
-            <div class="svc-list">
+            <div class="svc-list" id="cs-services">
                 <article class="svc-item">
                     <figure data-label="Hardware setup" class="svc-photo"><img src="img/home-consulting.jpg" width="1000" height="916" loading="lazy" alt="에스프레소 머신을 세팅하는 모습"></figure>
                     <div class="svc-body">
@@ -2931,7 +2966,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </article>
             </div>
 
-            <div class="manual-wrap">
+            <div class="manual-wrap" id="cs-manual">
                 <span class="manual-badge">EXCLUSIVE BENEFIT</span>
                 <h3 style="color: var(--text-primary); font-size: 2rem; margin-bottom: 15px;">카페 창업 마스터<br>매뉴얼 제공</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 0; word-break: keep-all;">스트레토 커피 팩토리의 축적된 데이터와 노하우를 바탕으로 설계된 창업 솔루션</p>
@@ -3028,7 +3063,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                     <figcaption>레시피 세팅 매뉴얼 · 진행 원칙 중에서</figcaption>
                 </figure>
 
-                <h4 class="manual-rail-title">창업 준비 10단계</h4>
+                <h4 class="manual-rail-title" id="cs-steps">창업 준비 10단계</h4>
                 
                 <div class="manual-rail">
                     <div class="manual-row">

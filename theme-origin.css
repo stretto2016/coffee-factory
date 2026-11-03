@@ -1,0 +1,238 @@
+/* ================================================================================
+   Origin Coffee 풍 테마 (미리보기 검토용)
+   - origincoffee.co.uk 의 색 · 배치 · 여백을 실측해서 옮겼다. 글꼴은 우리 것 유지.
+   - 실측(1024px 화면): 흰 배경, 글씨 #202020, 회색 판 #F6F6F6(모서리 각짐, 화면 양옆 32px 안쪽),
+     판 안 글 여백 48px, 사진은 판의 절반을 꽉 채움, 버튼은 검정 알약형(높이 38px · 둥글기 40px),
+     목록 제목 24px 굵게 + 한 줄 설명, 큰 문장 45px, 상품 사진 정사각 · 간격 32px,
+     상단 검정 띠 + 흰 메뉴(오른쪽 끝 검정 알약 버튼), 페이지 첫머리는 사진 배너 + 알약형 바로가기.
+   - index.html 위에 덮어쓴다. <link> 한 줄을 지우면 예전 모습으로 돌아간다.
+   ================================================================================ */
+
+:root {
+    --og-ink: #202020;
+    --og-text: #000000;
+    --og-muted: #818080;
+    --og-panel: #F6F6F6;
+    --og-chip: #EDEDED;
+    --og-line: #E6E6E6;
+    --og-pad: 32px;          /* 화면 양옆 */
+    --og-inner: 48px;        /* 판 안쪽 글 여백 */
+    --og-top: 30px;          /* 상단 띠 */
+    --og-nav: 64px;          /* 메뉴 */
+
+    --bg-color: #ffffff;
+    --bg-secondary: #ffffff;
+    --text-primary: var(--og-text);
+    --text-secondary: #3a3a3a;
+    --text-tertiary: var(--og-muted);
+    --surface: var(--og-panel);
+    --surface-alt: var(--og-panel);
+    --border: var(--og-line);
+    --hairline: var(--og-line);
+    --ink: var(--og-ink);
+    --accent-mint: var(--og-ink);
+    --accent-blue: var(--og-ink);
+}
+
+html body { background: #ffffff; color: var(--og-text); }
+html p { color: #3a3a3a; font-size: 16px; line-height: 1.6; }
+html h1, html h2, html h3, html h4, html strong { color: var(--og-text); }
+
+/* ---------- 상단 띠 + 흰 메뉴 ---------- */
+html .topbar {
+    display: flex; justify-content: center; align-items: center;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1001;
+    height: var(--og-top); background: var(--og-ink); color: #ffffff; font-size: 12px;
+}
+html .topbar a { color: #ffffff; }
+html .topbar > a, html .topbar > span:last-child { display: none; }
+
+html nav {
+    top: var(--og-top); height: var(--og-nav); box-sizing: border-box;
+    padding: 0 var(--og-pad) 0 20px;
+    background: #ffffff; border-bottom: 1px solid var(--og-line);
+    justify-content: flex-start;
+}
+html .logo { color: var(--og-text); font-size: 1.3rem; margin-bottom: 0; white-space: nowrap; }
+html .logo-sub { display: none; }
+html .nav-links { flex: 1; margin-left: 12px; }
+html .nav-links a { color: var(--og-text); font-size: 15px; font-weight: 400; margin: 0; padding: 20px 14px; white-space: nowrap; }
+html .nav-links a:hover, html .nav-links a.is-active { color: var(--og-text); text-decoration: underline; text-underline-offset: 6px; }
+/* 오른쪽 끝 검정 알약 버튼 */
+html .nav-links a[href="partner.html"] {
+    margin-left: auto; padding: 12px 20px; border-radius: 40px;
+    background: var(--og-ink); color: #ffffff !important; font-size: 13.7px; font-weight: 500 !important;
+}
+html .nav-links a[href="partner.html"]:hover { text-decoration: none; background: #000; }
+html .hamburger span { background: var(--og-text); }
+
+/* ---------- 폭 · 여백 ---------- */
+html .container { max-width: 1440px; padding: 0 var(--og-pad); box-sizing: border-box; }
+html section { padding: 0 0 96px; }
+html .home-block { padding: 64px 0; }
+html .home-block--alt, html #maintenance, html #consulting, html #finder, html #story, html #shop, html #wholesale { background: #ffffff !important; }
+html #maintenance > div[style*="radial-gradient"] { display: none; }
+html .page-first { padding-top: 64px !important; }
+html section[id], html [id^="wh-"], html [id^="care-"], html [id^="cs-"], html [id^="brand-"] { scroll-margin-top: calc(var(--og-top) + var(--og-nav) + 24px); }
+
+/* ---------- 페이지 첫 배너 (사진 + 가운데 흰 제목) ---------- */
+html body[data-route="brand"] .page-hero--brand,
+html body[data-route="beans"] .page-hero--beans,
+html body[data-route="wholesale"] .page-hero--wholesale,
+html body[data-route="care"] .page-hero--care,
+html body[data-route="consulting"] .page-hero--consulting {
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    position: relative; overflow: hidden;
+    height: clamp(320px, 42vw, 560px);
+    margin-top: calc(var(--og-top) + var(--og-nav));
+}
+html .page-hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+html .page-hero::after { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.32); }
+html .page-hero-text { position: relative; z-index: 1; padding: 0 20px; }
+html .page-hero-text h1 { color: #ffffff; font-size: 40px; line-height: 1.2; margin: 0 0 10px; }
+html .page-hero-text p { color: rgba(255, 255, 255, 0.88); font-size: 17px; margin: 0; }
+
+/* 알약형 바로가기 */
+html body[data-route="brand"] .page-chips--brand,
+html body[data-route="beans"] .page-chips--beans,
+html body[data-route="wholesale"] .page-chips--wholesale,
+html body[data-route="care"] .page-chips--care,
+html body[data-route="consulting"] .page-chips--consulting {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 12px;
+    max-width: 760px; margin: 32px auto 0; padding: 0 20px;
+}
+html .page-chips a {
+    background: var(--og-chip); color: var(--og-text); border-radius: 40px;
+    padding: 9px 20px; font-size: 13.7px; font-weight: 500;
+}
+html .page-chips a:hover { background: #E0E0E0; }
+
+/* ---------- 제목 ---------- */
+/* 페이지 머리말: 가운데 문장형 (Origin 'Our Definition of ...' 블록) */
+html .section-header { text-align: center; max-width: 760px; margin: 0 auto 56px; }
+html .section-title { font-size: 30px; line-height: 1.35; }
+html .section-header > p, html .wholesale-intro p { color: var(--og-text) !important; font-size: 18px; line-height: 1.6; }
+html .section-subtitle, html .svc-num, html .home-service-label, html .manual-doc-tag, html .pb-label, html .manual-badge {
+    font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: none;
+    color: var(--og-muted) !important; background: none !important; padding: 0 !important; margin-bottom: 10px;
+}
+/* 메인 목록 제목: 왼쪽 24px 굵게 + 한 줄 설명 */
+html .home-head, html .home-head--center { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; text-align: left; max-width: none; margin: 0 0 28px; }
+html .home-head--center { display: block; }
+html .home-title { font-size: 24px; line-height: 1.4; margin: 0 0 6px; }
+html .home-head p, html .home-head--center p { font-size: 16px; color: #3a3a3a; max-width: 720px; }
+
+/* ---------- 버튼: 검정 알약 ---------- */
+html .btn-primary, html .home-btn, html .home-finder-go, html .btn-repair-action, html .btn-step.btn-next {
+    display: inline-flex !important; align-items: center; justify-content: center;
+    padding: 12px 20px !important; min-height: 38px; box-sizing: border-box;
+    border-radius: 40px !important; border: 0 !important;
+    background: var(--og-ink) !important; color: #ffffff !important;
+    font-size: 13.7px !important; font-weight: 500 !important; letter-spacing: 0; text-transform: none;
+    transform: none !important;
+}
+html .btn-primary:hover, html .home-btn:hover, html .home-finder-go:hover, html .btn-repair-action:hover { background: #000 !important; }
+/* 사진 위 버튼은 흰 알약 */
+html #hero .btn-primary { background: #ffffff !important; color: var(--og-text) !important; }
+html .home-more {
+    display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--og-ink); border-radius: 40px;
+    padding: 9px 18px; font-size: 13.7px; font-weight: 500; color: var(--og-text);
+}
+html .home-more:hover { background: var(--og-ink); color: #ffffff; }
+html #shop a.btn-primary[style] { background: var(--og-ink) !important; color: #fff !important; border: 0 !important; }
+
+/* ---------- 메인 히어로: 사진 위 가운데 흰 글씨 ---------- */
+html #hero { margin-top: calc(var(--og-top) + var(--og-nav)); min-height: 0; height: clamp(460px, 56vw, 760px); }
+html .hero-title { font-size: 45px; line-height: 1.22; }
+html .hero-desc { font-size: 18px; line-height: 1.55; color: rgba(255, 255, 255, 0.88); }
+
+/* ---------- 회색 판: 사진 절반 + 글 (Origin 'Coffee Subscriptions' · 'Complexities' 블록) ---------- */
+html .svc-list { gap: 32px; margin: 0 0 96px; }
+html .home-split, html .home-service, html .svc-item {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0;
+    align-items: stretch; background: var(--og-panel); margin-bottom: 0;
+}
+html .home-service { margin-bottom: 32px; }
+html .home-service:last-child { margin-bottom: 0; }
+html .home-photo, html .svc-photo { margin: 0; width: 100%; height: 100%; min-height: 420px; aspect-ratio: auto; border-radius: 0; background: #e9e9e9; }
+html .home-photo img, html .svc-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 0; }
+html .home-photo:hover img { transform: none; }
+html .svc-item--flip .svc-photo, html .home-service--flip .home-photo { order: 2; }
+html .svc-photo--todo { border: 0; background: #ECECEC; }
+html .svc-body, html .home-text { padding: var(--og-inner); align-self: center; max-width: 560px; }
+html .svc-body h3, html .home-service h3 { font-size: 24px; line-height: 1.4; margin: 0 0 16px; }
+html .svc-body p, html .home-text p { font-size: 16px; line-height: 1.65; margin: 0 0 14px; }
+html .svc-body p.svc-lead { font-size: 18px; font-weight: 500; color: var(--og-text); line-height: 1.55; }
+html .svc-check { border-top-color: #DDDDDD; margin-top: 20px; padding-top: 16px; }
+html .svc-check li { font-size: 15px; color: var(--og-text); }
+html .svc-check li::before { border-color: var(--og-text); }
+html .home-steps li { background: #ffffff; border-radius: 40px; font-size: 13.7px; font-weight: 500; }
+html .home-facts li { border-top-color: var(--og-text); }
+html .home-actions { gap: 14px; }
+/* 브랜드 블록(메인 첫 판): 사진 오른쪽 */
+html .home-split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+html .home-split .home-photo { order: 2; }
+
+/* ---------- 상품 카드 (정사각 사진 · 간격 32px) ---------- */
+html .home-product-grid { gap: 32px; }
+html .product-thumb { background: var(--og-panel); border: 0; border-radius: 0; }
+html .product-info h3 { font-size: 14px !important; font-weight: 700; }
+html .product-card .cup-note { color: var(--og-muted) !important; font-weight: 300 !important; font-size: 14px !important; }
+html .product-card .price { color: var(--og-text); font-weight: 500; }
+html .btn-shop-link { color: var(--og-text) !important; }
+html .badge { border-radius: 40px !important; background: #ffffff !important; color: var(--og-text) !important; font-size: 12px !important; }
+html .home-finder { background: var(--og-panel); border-radius: 0; }
+
+/* ---------- 그 밖의 카드: 회색 판 · 각진 모서리 ---------- */
+html .spirit-card, html .promise-card, html .consulting-card, html .repair-card, html .manual-item,
+html .vision-box, html .finder-shell, html .finder-card, html .finder-alt, html .condition-box,
+html .care-benefit, html .manual-doc, html .manual-how, html .manual-excerpt,
+html #story .spirit-card, html #story .vision-box, html #wholesale .promise-card,
+html #finder .finder-shell, html #finder .finder-card, html #finder .finder-alt {
+    background: var(--og-panel) !important; border-radius: 0 !important;
+}
+html .manual-page, html .apply-item, html .channel-link { border-radius: 0 !important; }
+html .care-benefit { padding: var(--og-inner); }
+html .manual-wrap { text-align: center; }
+html .manual-num { background: var(--og-panel) !important; color: var(--og-text) !important; }
+html #consulting .manual-rail { --rail: rgba(0, 0, 0, 0.25); --flow: var(--og-ink); }
+html .why-icon, html .promise-icon, html .consulting-icon { color: var(--og-text) !important; background: none !important; border: 0 !important; }
+html #wholesale .section-header > div[style*="border"] { background: transparent !important; border-color: var(--og-ink) !important; color: var(--og-ink) !important; border-radius: 40px !important; }
+
+/* ---------- 문의하기 · 푸터 ---------- */
+html #contact { background: var(--og-ink); color: #f2f2f2; }
+html #contact h2 { color: #ffffff; }
+html #contact .apply-item:hover { border-color: #ffffff; }
+html #contact .apply-icon, html #contact .apply-arrow { color: #ffffff; }
+
+/* ---------- 1:1 상담 버튼 ---------- */
+html #stChatFab { background: var(--og-ink); color: #ffffff; border-radius: 40px; box-shadow: none; }
+
+/* ---------- 중간 화면 ---------- */
+@media (max-width: 1100px) and (min-width: 769px) {
+    html .nav-links a { padding: 20px 9px; font-size: 14px; }
+    html .nav-links a[href="partner.html"] { padding: 10px 16px; }
+}
+
+/* ---------- 모바일 ---------- */
+@media (max-width: 768px) {
+    :root { --og-pad: 16px; --og-inner: 24px; --og-top: 28px; --og-nav: 56px; }
+    html nav { padding: 0 16px; justify-content: space-between; }
+    html .nav-links { position: fixed; flex: none; margin: 0; background: #ffffff !important; }
+    html .nav-links a { color: var(--og-text) !important; font-size: 1.1rem; padding: 12px 0; margin: 0; }
+    html .nav-links a[href="partner.html"] { margin: 16px 0 0; padding: 12px 22px; color: #fff !important; }
+    html .page-hero-text h1 { font-size: 30px; }
+    html .hero-title { font-size: 32px; }
+    html .section-title { font-size: 24px; }
+    html .home-split, html .home-service, html .svc-item { grid-template-columns: minmax(0, 1fr); }
+    html .home-photo, html .svc-photo { min-height: 0; height: auto; aspect-ratio: 4 / 3; order: 0 !important; }
+    html .svc-body, html .home-text { padding: 24px; max-width: none; }
+    html .home-head { display: block; }
+    html .home-head .home-more { margin-top: 14px; }
+    html .home-product-grid { gap: 16px; }
+    html section { padding-bottom: 64px; }
+    html .page-first { padding-top: 40px !important; }
+}
+
+/* 메인 브랜드 판: .container 를 겸하고 있어 화면 끝까지 퍼지므로 다른 판처럼 양옆 32px 안쪽으로 */
+html .home-split.container { width: calc(100% - 2 * var(--og-pad)); max-width: calc(1440px - 2 * var(--og-pad)); margin: 0 auto; padding: 0; }
