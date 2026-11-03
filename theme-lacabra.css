@@ -1,0 +1,259 @@
+/* ================================================================================
+   La Cabra 풍 테마 (미리보기 검토용)
+   - 따뜻한 크림 배경 + 올리브빛 차콜 글씨, 세리프 제목 + 기하학 산세리프 본문,
+     각진 모서리, 작은 대문자 버튼, 넓은 여백.
+   - index.html 의 기존 스타일 위에 덮어쓰는 층이다. 이 파일의 <link> 한 줄만 지우면
+     예전 모습(흰 배경 · 검정 네비 · 민트 버튼)으로 돌아간다.
+   - index.html 본문 안에 있는 <style>(컨설팅, 상담 위젯) 보다 나중에 적용되도록
+     선택자 앞에 html 을 붙여 우선순위를 한 단계 올렸다.
+   ================================================================================ */
+
+:root {
+    --lc-cream: #F8F1EC;       /* 페이지 배경 */
+    --lc-cream-2: #F1E8E1;     /* 교대 섹션 */
+    --lc-sand: #EBE3DE;        /* 카드 · 버튼 면 */
+    --lc-paper: #FDFAF8;       /* 밝은 카드 */
+    --lc-ink: #34352A;         /* 글씨 · 진한 면 */
+    --lc-ink-2: #5B5C53;       /* 본문 글씨 */
+    --lc-ink-3: #8A8A80;       /* 보조 글씨 */
+    --lc-line: rgba(52, 53, 42, 0.14);
+
+    --bg-color: var(--lc-cream);
+    --bg-secondary: var(--lc-cream-2);
+    --text-primary: var(--lc-ink);
+    --text-secondary: var(--lc-ink-2);
+    --text-tertiary: var(--lc-ink-3);
+    --surface: var(--lc-paper);
+    --surface-alt: var(--lc-sand);
+    --border: var(--lc-line);
+    --hairline: var(--lc-line);
+    --ink: var(--lc-ink);
+    --accent-mint: var(--lc-ink);
+    --accent-blue: var(--lc-ink);
+
+    --lc-serif: 'Newsreader', 'Noto Serif KR', Georgia, serif;
+    --lc-sans: 'Montserrat', 'Noto Sans KR', -apple-system, 'Apple SD Gothic Neo', sans-serif;
+}
+
+/* ---------- 바탕 · 글꼴 ---------- */
+html body {
+    background: var(--lc-cream);
+    color: var(--lc-ink-2);
+    font-family: var(--lc-sans);
+    font-size: 16px;
+    line-height: 1.8;
+    letter-spacing: 0;
+}
+html p { color: var(--lc-ink-2); font-size: 1rem; font-weight: 400; line-height: 1.85; }
+html h1, html h2, html h3, html h4 { color: var(--lc-ink); letter-spacing: -0.02em; }
+html strong { color: var(--lc-ink); font-weight: 600; }
+
+/* 큰 제목은 세리프, 굵기는 보통 — La Cabra 의 핵심 인상 */
+html .hero-title,
+html .section-title,
+html .home-title,
+html .svc-body h3,
+html .home-service h3,
+html .care-benefit h3,
+html .manual-wrap > h3,
+html .manual-doc h4,
+html .manual-how h4,
+html .manual-gallery h4,
+html .manual-rail-title,
+html #contact h2,
+html .story-left h3,
+html .vision-inner h3,
+html .spirit-title,
+html .finder-intro-q,
+html #shop .section-header h2,
+html #shop h3[style] {
+    font-family: var(--lc-serif) !important;
+    font-weight: 400 !important;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+}
+html .section-title { font-size: 2.6rem; }
+html .home-title { font-size: 2.4rem; line-height: 1.25; margin-bottom: 26px; }
+html .svc-body h3, html .home-service h3 { font-size: 2rem; margin: 10px 0 20px; }
+html .svc-body p.svc-lead { font-family: var(--lc-serif); font-size: 1.3rem; font-weight: 400; line-height: 1.6; color: var(--lc-ink); }
+
+/* 작은 영문 라벨: 넓은 자간의 대문자 */
+html .section-subtitle,
+html .svc-num,
+html .home-service-label,
+html .manual-doc-tag,
+html .manual-badge,
+html .pb-label {
+    font-family: var(--lc-sans) !important;
+    font-size: 0.72rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.18em !important;
+    text-transform: uppercase;
+    color: var(--lc-ink-3) !important;
+    background: none !important;
+    padding: 0 !important;
+}
+
+/* ---------- 상단 네비: 크림 바탕 + 세리프 메뉴 ---------- */
+html nav {
+    background: var(--lc-cream);
+    border-bottom: 1px solid var(--lc-line);
+    padding: 16px 50px;
+    --accent-blue: var(--lc-ink);
+}
+html .logo { color: var(--lc-ink); }
+html .logo-sub { color: var(--lc-ink-3); }
+html .nav-links a {
+    color: var(--lc-ink);
+    font-family: var(--lc-serif);
+    font-size: 1.05rem;
+    font-weight: 400;
+    margin-left: 28px;
+}
+html .nav-links a:hover, html .nav-links a.is-active { color: var(--lc-ink); text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
+html .nav-links a[href="partner.html"] {
+    font-family: var(--lc-sans);
+    font-size: 0.72rem;
+    font-weight: 500 !important;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--lc-cream) !important;
+    background: var(--lc-ink);
+    padding: 11px 18px;
+}
+html .nav-links a[href="partner.html"]:hover { text-decoration: none; background: #23241c; }
+html .hamburger span { background: var(--lc-ink); }
+/* 메뉴 · 로고가 단어 중간에서 줄바꿈되지 않게 */
+html .logo, html .logo-sub, html .nav-links a { white-space: nowrap; }
+@media (max-width: 1180px) and (min-width: 769px) {
+    html nav { padding: 14px 28px; }
+    html .nav-links a { margin-left: 18px; font-size: 0.98rem; }
+    html .nav-links a[href="partner.html"] { padding: 10px 14px; }
+}
+@media (max-width: 960px) and (min-width: 769px) {
+    html .logo-sub { display: none; }
+    html .nav-links a { margin-left: 14px; font-size: 0.92rem; }
+}
+
+/* ---------- 버튼: 각진 모서리 · 작은 대문자 ---------- */
+html .btn-primary,
+html .home-btn,
+html .home-finder-go,
+html .btn-repair-action,
+html .btn-step.btn-next {
+    border-radius: 0 !important;
+    font-family: var(--lc-sans);
+    font-size: 0.78rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 16px 28px !important;
+    background: var(--lc-ink) !important;
+    color: var(--lc-cream) !important;
+    border: 0 !important;
+    transform: none !important;
+}
+html .btn-primary:hover, html .home-btn:hover, html .home-finder-go:hover, html .btn-repair-action:hover, html .btn-step.btn-next:hover { background: #23241c !important; }
+/* 히어로 위 버튼은 밝은 모래색 면 */
+html #hero .btn-primary { background: var(--lc-sand) !important; color: var(--lc-ink) !important; }
+html #hero .btn-primary:hover { background: var(--lc-paper) !important; }
+/* 쇼핑몰 '네이버 스토어 전체보기' 같은 외곽선 버튼 */
+html #shop a.btn-primary[style] { background: transparent !important; color: var(--lc-ink) !important; border: 1px solid var(--lc-ink) !important; }
+
+/* 밑줄 링크 */
+html .home-more { font-family: var(--lc-sans); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; border-bottom-color: var(--lc-ink); }
+
+/* ---------- 히어로 ---------- */
+html .hero-title { font-size: clamp(2.4rem, 6vw, 4.4rem); color: #FDFAF8; }
+html .hero-desc { font-family: var(--lc-sans); font-size: clamp(0.95rem, 1.6vw, 1.1rem); color: rgba(253, 250, 248, 0.82); }
+html .hero-video-overlay { background: linear-gradient(rgba(30, 30, 24, 0.35), rgba(30, 30, 24, 0.6)); }
+
+/* ---------- 여백: 섹션 사이를 넉넉하게 ---------- */
+html { --section-spacing: 140px; }
+html .container { max-width: 1240px; padding: 0 50px; }
+html .home-block { padding: 140px 0; }
+html .page-first { padding-top: calc(var(--section-spacing) + 70px) !important; }
+
+/* ---------- 면 · 카드: 둥근 모서리와 흰 카드 대신 크림 톤 ---------- */
+html .home-photo, html .svc-photo, html .home-photo img, html .svc-photo img,
+html .product-thumb, html .vision-box, html .finder-shell, html .spirit-card,
+html .promise-card, html .consulting-card, html .repair-card, html .manual-item,
+html .home-finder, html .care-benefit, html .manual-doc, html .manual-how,
+html .manual-page, html .manual-page img, html .why-card, html .condition-box,
+html .finder-card, html .finder-alt, html .apply-item, html .channel-link {
+    border-radius: 0 !important;
+}
+html .home-block--alt,
+html #maintenance,
+html #consulting,
+html #finder { background: var(--lc-cream-2) !important; }
+html #maintenance > div[style*="radial-gradient"] { display: none; }
+
+html .spirit-card, html .promise-card, html .consulting-card, html .repair-card,
+html .finder-shell, html .finder-card, html .finder-alt, html .condition-box,
+html #story .spirit-card, html #story .vision-box, html #wholesale .promise-card,
+html #maintenance .repair-card, html #consulting .consulting-card, html #consulting .manual-item,
+html #finder .finder-shell, html #finder .finder-card, html #finder .finder-alt,
+html .home-finder, html .care-benefit, html .manual-doc, html .manual-how, html .manual-excerpt {
+    background: var(--lc-paper) !important;
+}
+html .product-thumb { background: var(--lc-sand); border: 0; }
+html .svc-photo { background: var(--lc-sand); }
+html .svc-photo--todo { background: var(--lc-sand); border-color: rgba(52, 53, 42, 0.25); }
+html .home-steps li { background: var(--lc-sand); border-radius: 0; }
+html .home-facts li { border-top-color: var(--lc-ink); }
+html .home-facts strong { font-family: var(--lc-serif); font-size: 1.9rem; }
+html .svc-check { border-top-color: var(--lc-line); }
+html .svc-check li::before { border-color: var(--lc-ink); }
+html .manual-excerpt { border-left-color: var(--lc-ink); }
+html .manual-excerpt blockquote p { font-family: var(--lc-serif); font-size: 1.5rem; }
+html .manual-how-steps li { border-top-color: var(--lc-ink); }
+
+/* 상품 카드 */
+html .product-info h3 { font-family: var(--lc-sans) !important; font-weight: 600 !important; font-size: 1rem !important; letter-spacing: -0.01em; }
+html .product-card .cup-note { color: var(--lc-ink-3) !important; font-weight: 500 !important; }
+html .product-card .price { color: var(--lc-ink); font-weight: 500; }
+html .btn-shop-link { color: var(--lc-ink) !important; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; }
+html .badge { border-radius: 0 !important; font-size: 0.68rem !important; letter-spacing: 0.14em; text-transform: uppercase; background: var(--lc-paper) !important; color: var(--lc-ink) !important; }
+
+/* 납품 상단 '심사위원' 배지: 민트 테두리 → 차콜 */
+html #wholesale .section-header > div[style*="border"] { border-color: var(--lc-ink) !important; color: var(--lc-ink) !important; border-radius: 0 !important; font-weight: 500 !important; letter-spacing: 0.14em !important; }
+
+/* 창업 10단계 레일: 민트 → 차콜 */
+html #consulting .manual-rail { --rail: rgba(52, 53, 42, 0.35); --flow: var(--lc-ink); }
+html .manual-num { background: var(--lc-sand) !important; color: var(--lc-ink) !important; font-family: var(--lc-sans) !important; }
+html .manual-badge { color: var(--lc-ink-3) !important; }
+
+/* 아이콘 원 (남아 있는 카드들) */
+html .why-icon, html .promise-icon, html .consulting-icon { color: var(--lc-ink) !important; background: none !important; border: 0 !important; }
+
+/* ---------- 문의하기 · 푸터: 진한 올리브 차콜 ---------- */
+html #contact { background: var(--lc-ink); color: var(--lc-cream); }
+html #contact h2 { color: var(--lc-cream); font-size: 2.4rem; }
+html #contact .contact-desc, html #contact .contact-info-list { color: rgba(248, 241, 236, 0.72); }
+html #contact .apply-item { background: rgba(248, 241, 236, 0.05); border-color: rgba(248, 241, 236, 0.18); color: var(--lc-cream); }
+html #contact .apply-item:hover { background: rgba(248, 241, 236, 0.1); border-color: var(--lc-cream); }
+html #contact .apply-icon, html #contact .apply-arrow { color: var(--lc-sand); }
+html #contact .contact-info-list strong { color: var(--lc-cream); }
+
+/* ---------- 1:1 상담 버튼 ---------- */
+html #stChatFab { background: var(--lc-ink); color: var(--lc-cream); border-radius: 0; box-shadow: none;
+    font-size: 0.75rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; }
+
+/* ---------- 모바일 ---------- */
+@media (max-width: 768px) {
+    html { --section-spacing: 64px; }
+    html .container { padding: 0 20px; }
+    html nav { padding: 12px 20px; }
+    html .nav-links { background: var(--lc-cream) !important; }
+    html .nav-links a { color: var(--lc-ink) !important; font-size: 1.15rem; margin: 12px 0; }
+    html .nav-links a[href="partner.html"] { color: var(--lc-cream) !important; font-size: 0.75rem; }
+    html .home-block { padding: 72px 0; }
+    html .section-title { font-size: 1.9rem; }
+    html .home-title { font-size: 1.8rem; }
+    html .svc-body h3, html .home-service h3 { font-size: 1.55rem; }
+    html .svc-body p.svc-lead { font-size: 1.12rem; }
+    html .manual-excerpt blockquote p { font-size: 1.2rem; }
+    html #contact h2 { font-size: 1.9rem; }
+    html .page-first { padding-top: calc(var(--section-spacing) + 60px) !important; }
+}
