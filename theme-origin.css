@@ -199,11 +199,7 @@ html #consulting .manual-rail { --rail: rgba(0, 0, 0, 0.25); --flow: var(--og-in
 html .why-icon, html .promise-icon, html .consulting-icon { color: var(--og-text) !important; background: none !important; border: 0 !important; }
 html #wholesale .section-header > div[style*="border"] { background: transparent !important; border-color: var(--og-ink) !important; color: var(--og-ink) !important; border-radius: 40px !important; }
 
-/* ---------- 문의하기 · 푸터 ---------- */
-html #contact { background: var(--og-ink); color: #f2f2f2; }
-html #contact h2 { color: #ffffff; }
-html #contact .apply-item:hover { border-color: #ffffff; }
-html #contact .apply-icon, html #contact .apply-arrow { color: #ffffff; }
+/* 푸터는 index.html 의 .site-footer (Origin 구성, 연회색) 를 그대로 쓴다 */
 
 /* ---------- 1:1 상담 버튼 ---------- */
 html #stChatFab { background: var(--og-ink); color: #ffffff; border-radius: 40px; box-shadow: none; }

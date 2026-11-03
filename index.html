@@ -1402,31 +1402,6 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
 #consulting .consulting-card h3 { font-size: 1.1rem; margin-bottom: 10px; }
 #consulting .consulting-card p { font-size: 0.9rem; line-height: 1.5; }
 
-/* 18. 문의하기: 첫 화면처럼 검정 배경으로 마무리 */
-#contact {
-    background: var(--ink);
-    color: #f2f3f4;
-    max-width: none;
-    padding-left: 20px;
-    padding-right: 20px;
-}
-#contact .contact-left { max-width: 800px; margin: 0 auto; }
-#contact h2 { color: #ffffff; }
-#contact .contact-desc { color: #b9bec1; }
-#contact .apply-item {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.16);
-    color: #f2f3f4;
-}
-#contact .apply-item:hover {
-    background: rgba(255, 255, 255, 0.11);
-    border-color: var(--accent-mint);
-}
-#contact .apply-icon, #contact .apply-arrow { color: var(--accent-mint); }
-#contact .channel-link { color: #e7e9ea; }
-#contact .contact-info-list { border-top-color: rgba(255, 255, 255, 0.16); color: #b9bec1; }
-#contact .contact-info-list strong { color: #ffffff; }
-#contact > div[style*="opacity: 0.5"] { color: #e7e9ea; opacity: 0.55 !important; }
 
 /* 17. 창업 매뉴얼 01~10: 박스를 없애고 숫자를 선으로 잇는다.
       윗줄은 01→05 로 흐르고, 오른쪽 끝에서 아래로 꺾여 아랫줄을 06→10 으로
@@ -1964,6 +1939,45 @@ a.manual-page:hover { transform: translateY(-3px); }
     .page-first { padding-top: calc(var(--section-spacing) + 60px) !important; }
 }
 .topbar, .page-hero, .page-chips { display: none; }
+
+/* ---------- 푸터 (Origin 구성) ---------- */
+.site-footer { background: #F6F6F6; color: #000; padding: 0 56px; text-align: left; word-break: keep-all; }
+.site-footer a { color: inherit; }
+.sf-top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 40px; padding: 44px 0; border-bottom: 1px solid #E3E3E3; }
+.sf-social { display: flex; gap: 22px; }
+.sf-social a { display: flex; width: 22px; height: 22px; color: #000; }
+.sf-social svg { width: 100%; height: 100%; }
+.sf-social a:hover { opacity: 0.6; }
+.sf-pitch { justify-self: center; }
+.sf-pitch p { margin: 0 0 2px; font-size: 15px; color: #000; }
+.sf-pitch h2 { margin: 0; font-size: 26px; font-weight: 400; letter-spacing: -0.02em; color: #000; }
+.sf-cta { display: flex; align-items: center; gap: 40px; border: 1px solid #000; border-radius: 999px; padding: 8px 8px 8px 34px; font-size: 15px; color: #555 !important; }
+.sf-cta-btn { background: #202020; color: #fff; border-radius: 999px; padding: 10px 26px; font-weight: 500; }
+.sf-cta:hover .sf-cta-btn { background: #000; }
+.sf-mid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.9fr); gap: 40px; padding: 48px 0 64px; }
+.sf-logo { font-family: 'Ciutadella', sans-serif; font-size: 26px; line-height: 1.05; color: #000; }
+.sf-mark p { margin: 14px 0 0; font-size: 13px; line-height: 1.6; color: #555; }
+.sf-cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.sf-cols h3 { margin: 0 0 18px; font-size: 15px; font-weight: 700; color: #000; }
+.sf-cols a, .sf-cols span { display: block; margin: 0 0 14px; font-size: 15px; color: #000; }
+.sf-cols span { color: #555; }
+.sf-cols a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.sf-bottom { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 28px 0 36px; }
+.sf-legal { display: flex; flex-wrap: wrap; gap: 6px 28px; font-size: 13px; color: #000; }
+.sf-wordmark { font-family: 'Ciutadella', sans-serif; font-size: 34px; line-height: 1; color: #000; letter-spacing: 0.02em; }
+@media (max-width: 900px) {
+    .sf-top { grid-template-columns: 1fr; gap: 22px; justify-items: start; }
+    .sf-pitch { justify-self: start; }
+    .sf-mid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+    .site-footer { padding: 0 20px 70px; }
+    .sf-pitch h2 { font-size: 21px; }
+    .sf-cta { width: 100%; box-sizing: border-box; justify-content: space-between; gap: 12px; padding-left: 20px; font-size: 14px; }
+    .sf-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 10px; }
+    .sf-bottom { flex-direction: column; align-items: flex-start; }
+    .sf-legal { flex-direction: column; gap: 4px; }
+}
     </style>
     <!-- Origin 풍 테마 (미리보기 검토 중). 아래 한 줄을 지우면 예전 모습으로, theme-lacabra.css 로 바꾸면 La Cabra 시안으로 -->
     <link rel="stylesheet" href="theme-origin.css">
@@ -3114,89 +3128,69 @@ a.manual-page:hover { transform: translateY(-3px); }
             </div>
         </div>
     </section>
-        <div class="container" id="contact" style="padding-top: 100px; padding-bottom: 40px;">
-            <div class="contact-left" style="max-width: 800px; margin: 0 auto; text-align: left;">
-                
-                <h2>문의하기</h2>
-                <p class="contact-desc" style="margin-bottom: 30px;">
-                    원두 납품, 머신 수리, 카페 컨설팅에 대해 궁금한 점은 언제든 편하게 문의해 주세요.
-                </p>
-
-                <div class="apply-grid">
-                    <a href="https://forms.gle/5UyaH3M9RWvmNfEb6" target="_blank" class="apply-item">
-                        <svg class="apply-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 5h11v6a5.5 5.5 0 0 1-11 0z"/>
-                            <path d="M15 7h2a2.5 2.5 0 0 1 0 5h-2"/>
-                            <path d="M3 20h13"/>
-                        </svg>
-                        <span class="apply-label">
-                            샘플 테이스팅 신청
-                            <svg class="apply-arrow" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
-                        </span>
-                    </a>
-
-                    <a href="https://forms.gle/KGLnCZmeeydRtSKS8" target="_blank" class="apply-item">
-                        <svg class="apply-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14.7 6.3a4 4 0 0 0 5 5l-8.4 8.4a2.1 2.1 0 0 1-3-3z"/>
-                            <path d="M4.5 9.5 3 8l1.5-1.5-2-2L4 3l2 2L7.5 3.5 9 5"/>
-                        </svg>
-                        <span class="apply-label">
-                            머신 수리 신청
-                            <svg class="apply-arrow" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
-                        </span>
-                    </a>
-
-                    <a href="https://forms.gle/pgg9RTXiWA1t7NPG6" target="_blank" class="apply-item">
-                        <svg class="apply-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 18h6"/>
-                            <path d="M10 21h4"/>
-                            <path d="M8.5 14a5.5 5.5 0 1 1 7 0c-.7.6-1 1.2-1 2h-5c0-.8-.3-1.4-1-2z"/>
-                        </svg>
-                        <span class="apply-label">
-                            카페 컨설팅 상담
-                            <svg class="apply-arrow" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
-                        </span>
-                    </a>
-                </div>
-
-                <div class="channel-row" style="margin-bottom: 40px;">
-                    <a href="http://pf.kakao.com/_dCuKC/chat" target="_blank" class="channel-link">
-                        <span class="channel-badge" style="background: #FBE58F;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="#0b0b0c">
-                                <path d="M12 4C7.03 4 3 7.14 3 11.02c0 2.45 1.63 4.6 4.09 5.85-.18.63-.65 2.35-.74 2.72-.12.46.17.45.35.33.15-.1 2.3-1.56 3.23-2.2.67.1 1.36.15 2.07.15 4.97 0 9-3.14 9-7.02S16.97 4 12 4z"/>
-                            </svg>
-                        </span>
-                        카카오톡 채팅
-                    </a>
-
-                    <a href="https://www.instagram.com/coffee_stretto/" target="_blank" class="channel-link">
-                        <span class="channel-badge" style="background: #F7D2DF;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 16 16" fill="#993556">
-                                <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.234-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"/>
-                            </svg>
-                        </span>
-                        인스타그램
-                    </a>
-
-                    <a href="https://blog.naver.com/coffee_stretto" target="_blank" class="channel-link">
-                        <span class="channel-badge" style="background: #D6E8BE;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="#3B6D11">
-                                <path d="M16.273 12.845 7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727v12.845z"/>
-                            </svg>
-                        </span>
-                        블로그
-                    </a>
-                </div>
-
-                <ul class="contact-info-list" style="border-top: 1px solid var(--hairline); padding-top: 30px; padding-left: 0; display: block; width: 100%;">
-                    <li><strong>고객센터</strong>평일 09:00 - 17:00 (주말 및 공휴일 휴무)</li>
-                    
-                </ul>
+    <!-- ===================== [푸터 · 문의하기] =====================
+         Origin Coffee 푸터 구성: 위(소셜 · 문의 문구 · 상담 버튼) → 가운데(링크 4단) → 아래(회사 정보) -->
+    <footer id="contact" class="site-footer">
+        <div class="sf-top">
+            <div class="sf-social">
+                <a href="http://pf.kakao.com/_dCuKC/chat" target="_blank" rel="noopener" aria-label="카카오톡 채팅"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"> <path d="M12 4C7.03 4 3 7.14 3 11.02c0 2.45 1.63 4.6 4.09 5.85-.18.63-.65 2.35-.74 2.72-.12.46.17.45.35.33.15-.1 2.3-1.56 3.23-2.2.67.1 1.36.15 2.07.15 4.97 0 9-3.14 9-7.02S16.97 4 12 4z"/> </svg></a>
+                <a href="https://www.instagram.com/coffee_stretto/" target="_blank" rel="noopener" aria-label="인스타그램"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"> <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.234-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"/> </svg></a>
+                <a href="https://blog.naver.com/coffee_stretto" target="_blank" rel="noopener" aria-label="네이버 블로그"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"> <path d="M16.273 12.845 7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727v12.845z"/> </svg></a>
             </div>
-            <div style="margin-top: 50px; font-size: 0.8rem; opacity: 0.5;">
-                © 2025 STRETTO COFFEE FACTORY. All rights reserved.<br>
-                경기도 파주시 문산읍 사목로 69, 3동 스트레토 커피 팩토리 | 사업자등록번호: 762-53-00875 | 대표번호: 010-9548-0053
+            <div class="sf-pitch">
+                <p>원두 납품 · 머신 수리 · 카페 컨설팅</p>
+                <h2>궁금한 점은 언제든 편하게 문의해 주세요</h2>
             </div>
+            <a class="sf-cta" href="http://pf.kakao.com/_dCuKC/chat" target="_blank" rel="noopener">
+                <span>카카오톡으로 바로 상담하기</span>
+                <span class="sf-cta-btn">채팅 시작</span>
+            </a>
+        </div>
+
+        <div class="sf-mid">
+            <div class="sf-mark">
+                <div class="sf-logo">stretto<br>coffee factory</div>
+                <p>국가대표 선발전 심사위원이<br>QC하는 파주 로스팅 팩토리</p>
+            </div>
+            <div class="sf-cols">
+                <div>
+                    <h3>스트레토</h3>
+                    <a href="/brand" data-route="brand">브랜드 스토리</a>
+                    <a href="/beans" data-route="beans">원두</a>
+                    <a href="https://smartstore.naver.com/stretto_coffeefactory/" target="_blank" rel="noopener">네이버 스토어</a>
+                    <a href="https://blog.naver.com/coffee_stretto" target="_blank" rel="noopener">블로그</a>
+                </div>
+                <div>
+                    <h3>서비스</h3>
+                    <a href="/wholesale" data-route="wholesale">원두 납품</a>
+                    <a href="/care" data-route="care">머신 케어</a>
+                    <a href="/consulting" data-route="consulting">창업 컨설팅</a>
+                    <a href="partner.html" target="_blank">파트너십 주문</a>
+                </div>
+                <div>
+                    <h3>신청하기</h3>
+                    <a href="https://forms.gle/5UyaH3M9RWvmNfEb6" target="_blank" rel="noopener">샘플 테이스팅 신청</a>
+                    <a href="https://forms.gle/KGLnCZmeeydRtSKS8" target="_blank" rel="noopener">머신 수리 신청</a>
+                    <a href="https://forms.gle/pgg9RTXiWA1t7NPG6" target="_blank" rel="noopener">카페 컨설팅 상담</a>
+                </div>
+                <div>
+                    <h3>고객센터</h3>
+                    <span>평일 09:00 – 17:00</span>
+                    <span>주말 · 공휴일 휴무</span>
+                    <a href="tel:010-9548-0053">010-9548-0053</a>
+                    <a href="http://pf.kakao.com/_dCuKC/chat" target="_blank" rel="noopener">카카오톡 채팅</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="sf-bottom">
+            <div class="sf-legal">
+                <span>© 2025 STRETTO COFFEE FACTORY</span>
+                <span>경기도 파주시 문산읍 사목로 69, 3동</span>
+                <span>사업자등록번호 762-53-00875</span>
+                <span>대표번호 010-9548-0053</span>
+            </div>
+            <div class="sf-wordmark">stretto</div>
         </div>
     </footer>
 
