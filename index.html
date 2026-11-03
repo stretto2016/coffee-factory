@@ -1963,9 +1963,9 @@ a.manual-page:hover { transform: translateY(-3px); }
     .home-finder { flex-direction: column; align-items: flex-start; padding: 22px; }
     .page-first { padding-top: calc(var(--section-spacing) + 60px) !important; }
 }
+.topbar { display: none; }
     </style>
     <!-- La Cabra 풍 테마 (미리보기 검토 중). 아래 두 줄을 지우면 예전 모습으로 돌아간다 -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Noto+Serif+KR:wght@400;500&display=swap">
     <link rel="stylesheet" href="theme-lacabra.css">
 </head>
 <body>
@@ -1978,6 +1978,12 @@ a.manual-page:hover { transform: translateY(-3px); }
 })();
 </script>
 
+    <!-- 상단 띠 (La Cabra 테마에서만 보인다. 기본 스타일에서는 숨김) -->
+    <div class="topbar">
+        <a href="partner.html" target="_blank">파트너 로그인</a>
+        <span>원두 납품 · 머신 케어 · 창업 컨설팅 상담 <a href="#contact">문의하기 →</a></span>
+        <span>평일 09:00 – 17:00</span>
+    </div>
     <nav>
         <a href="/" data-route="" class="logo-group">
             <div class="logo">stretto coffee factory</div>
@@ -2024,7 +2030,7 @@ a.manual-page:hover { transform: translateY(-3px); }
          문구는 각 페이지 본문에서 가져온 사실만 쓴다. -->
     <section id="home-brand" class="home-block" data-page="home">
         <div class="container home-split">
-            <figure class="home-photo reveal">
+            <figure data-label="Our story" class="home-photo reveal">
                 <img src="img/home-brand.jpg" width="1200" height="1200" loading="lazy"
                      alt="커피 산지 마을에서 물동이를 이고 걸어가는 사람들">
             </figure>
@@ -2088,7 +2094,7 @@ a.manual-page:hover { transform: translateY(-3px); }
             </div>
 
             <article class="home-service reveal">
-                <figure class="home-photo"><img src="img/home-wholesale.jpg" width="1000" height="1000" loading="lazy" alt="스트레토 블렌드 원두"></figure>
+                <figure data-label="Wholesale" class="home-photo"><img src="img/home-wholesale.jpg" width="1000" height="1000" loading="lazy" alt="스트레토 블렌드 원두"></figure>
                 <div class="home-text">
                     <span class="home-service-label">01 · 원두 납품</span>
                     <h3>국가대표를 심사하는 기준 그대로</h3>
@@ -2108,7 +2114,7 @@ a.manual-page:hover { transform: translateY(-3px); }
             </article>
 
             <article class="home-service home-service--flip reveal">
-                <figure class="home-photo"><img src="img/home-care.jpg" width="1000" height="1235" loading="lazy" alt="그라인더를 점검하는 엔지니어의 손"></figure>
+                <figure data-label="Machine care" class="home-photo"><img src="img/home-care.jpg" width="1000" height="1235" loading="lazy" alt="그라인더를 점검하는 엔지니어의 손"></figure>
                 <div class="home-text">
                     <span class="home-service-label">02 · 머신 케어</span>
                     <h3>인증 엔지니어가 직접 고칩니다</h3>
@@ -2129,7 +2135,7 @@ a.manual-page:hover { transform: translateY(-3px); }
             </article>
 
             <article class="home-service reveal">
-                <figure class="home-photo"><img src="img/home-consulting.jpg" width="1000" height="916" loading="lazy" alt="에스프레소 머신을 세팅하는 모습"></figure>
+                <figure data-label="Consulting" class="home-photo"><img src="img/home-consulting.jpg" width="1000" height="916" loading="lazy" alt="에스프레소 머신을 세팅하는 모습"></figure>
                 <div class="home-text">
                     <span class="home-service-label">03 · 창업 컨설팅</span>
                     <h3>10년의 카페 운영을 그대로</h3>
@@ -2375,7 +2381,7 @@ a.manual-page:hover { transform: translateY(-3px); }
             <!-- 품질 근거: 예전 4칸 아이콘 카드를 사진 + 풀어 쓴 설명으로 -->
             <div class="svc-list">
                 <article class="svc-item">
-                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>파주 로스팅 공장 외관 또는 생산 공간</small></span></figure>
+                    <figure data-label="Licensed roastery" class="svc-photo svc-photo--todo"><span>사진 준비 중<small>파주 로스팅 공장 외관 또는 생산 공간</small></span></figure>
                     <div class="svc-body">
                         <span class="svc-num">QUALITY 01</span>
                         <h3>믿고 받아 쓰실 수 있는 원두</h3>
@@ -2394,7 +2400,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </article>
 
                 <article class="svc-item svc-item--flip">
-                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>프로밧 · 스트롱홀드 로스터기</small></span></figure>
+                    <figure data-label="Roasting" class="svc-photo svc-photo--todo"><span>사진 준비 중<small>프로밧 · 스트롱홀드 로스터기</small></span></figure>
                     <div class="svc-body">
                         <span class="svc-num">QUALITY 02</span>
                         <h3>매번 같은 맛으로 볶습니다</h3>
@@ -2408,7 +2414,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </article>
 
                 <article class="svc-item">
-                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>출고 전 커핑하는 장면</small></span></figure>
+                    <figure data-label="Cupping" class="svc-photo svc-photo--todo"><span>사진 준비 중<small>출고 전 커핑하는 장면</small></span></figure>
                     <div class="svc-body">
                         <span class="svc-num">QUALITY 03</span>
                         <h3>보내기 전에 한 번 더 맛봅니다</h3>
@@ -2476,7 +2482,7 @@ a.manual-page:hover { transform: translateY(-3px); }
             <!-- 진행 절차: 예전 4칸 요약을 단계별 사진 + 설명으로 -->
             <div class="svc-list svc-list--steps">
                 <article class="svc-item">
-                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>샘플 테이스팅 장면</small></span></figure>
+                    <figure data-label="Sample tasting" class="svc-photo svc-photo--todo"><span>사진 준비 중<small>샘플 테이스팅 장면</small></span></figure>
                     <div class="svc-body">
                         <span class="svc-num">STEP 01</span>
                         <h3>원두 샘플 테이스팅</h3>
@@ -2493,7 +2499,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </article>
 
                 <article class="svc-item svc-item--flip">
-                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>상담 · 계약 장면 또는 납품 포장 원두</small></span></figure>
+                    <figure data-label="Partnership" class="svc-photo svc-photo--todo"><span>사진 준비 중<small>상담 · 계약 장면 또는 납품 포장 원두</small></span></figure>
                     <div class="svc-body">
                         <span class="svc-num">STEP 02</span>
                         <h3>파트너십 확정</h3>
@@ -2512,7 +2518,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </article>
 
                 <article class="svc-item">
-                    <figure class="svc-photo"><img src="img/home-consulting.jpg" width="1000" height="916" loading="lazy" alt="에스프레소 머신을 세팅하는 모습"></figure>
+                    <figure data-label="Training" class="svc-photo"><img src="img/home-consulting.jpg" width="1000" height="916" loading="lazy" alt="에스프레소 머신을 세팅하는 모습"></figure>
                     <div class="svc-body">
                         <span class="svc-num">STEP 03</span>
                         <h3>매장 방문 교육</h3>
@@ -2531,7 +2537,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </article>
 
                 <article class="svc-item svc-item--flip">
-                    <figure class="svc-photo"><img src="img/home-care.jpg" width="1000" height="1235" loading="lazy" alt="그라인더를 점검하는 엔지니어의 손"></figure>
+                    <figure data-label="Ongoing care" class="svc-photo"><img src="img/home-care.jpg" width="1000" height="1235" loading="lazy" alt="그라인더를 점검하는 엔지니어의 손"></figure>
                     <div class="svc-body">
                         <span class="svc-num">STEP 04</span>
                         <h3>지속적인 관리</h3>
@@ -2571,7 +2577,7 @@ a.manual-page:hover { transform: translateY(-3px); }
             <!-- 머신 케어: 예전 카드 묶음을 사진 + 풀어 쓴 설명으로 -->
             <div class="svc-list">
                 <article class="svc-item">
-                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>엔지니어가 머신 내부를 수리하는 모습</small></span></figure>
+                    <figure data-label="Certified engineer" class="svc-photo svc-photo--todo"><span>사진 준비 중<small>엔지니어가 머신 내부를 수리하는 모습</small></span></figure>
                     <div class="svc-body">
                         <span class="svc-num">CERTIFIED ENGINEER</span>
                         <h3>인증 엔지니어가 직접 책임집니다</h3>
@@ -2597,7 +2603,7 @@ a.manual-page:hover { transform: translateY(-3px); }
 
             <div class="svc-list">
                 <article class="svc-item">
-                    <figure class="svc-photo"><img src="img/home-consulting.jpg" width="1000" height="916" loading="lazy" alt="에스프레소 머신을 살펴보는 모습"></figure>
+                    <figure data-label="Consultation" class="svc-photo"><img src="img/home-consulting.jpg" width="1000" height="916" loading="lazy" alt="에스프레소 머신을 살펴보는 모습"></figure>
                     <div class="svc-body">
                         <span class="svc-num">STEP 01</span>
                         <h3>증상 상담 및 접수</h3>
@@ -2613,7 +2619,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </article>
 
                 <article class="svc-item svc-item--flip">
-                    <figure class="svc-photo"><img src="img/home-care.jpg" width="1000" height="1235" loading="lazy" alt="그라인더를 점검하는 엔지니어의 손"></figure>
+                    <figure data-label="Diagnosis" class="svc-photo"><img src="img/home-care.jpg" width="1000" height="1235" loading="lazy" alt="그라인더를 점검하는 엔지니어의 손"></figure>
                     <div class="svc-body">
                         <span class="svc-num">STEP 02</span>
                         <h3>진단 및 견적 안내</h3>
@@ -2632,7 +2638,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </article>
 
                 <article class="svc-item">
-                    <figure class="svc-photo"><img src="img/repair-3.jpg" width="900" height="969" loading="lazy" alt="정수 필터와 급수 라인을 점검하는 모습"></figure>
+                    <figure data-label="On-site repair" class="svc-photo"><img src="img/repair-3.jpg" width="900" height="969" loading="lazy" alt="정수 필터와 급수 라인을 점검하는 모습"></figure>
                     <div class="svc-body">
                         <span class="svc-num">STEP 03</span>
                         <h3>방문 수리 및 케어</h3>
@@ -2814,7 +2820,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                  사진이 아직 없는 항목은 svc-photo--todo 자리표시(어떤 사진이 필요한지 적어 둠) -->
             <div class="svc-list">
                 <article class="svc-item">
-                    <figure class="svc-photo"><img src="img/home-consulting.jpg" width="1000" height="916" loading="lazy" alt="에스프레소 머신을 세팅하는 모습"></figure>
+                    <figure data-label="Hardware setup" class="svc-photo"><img src="img/home-consulting.jpg" width="1000" height="916" loading="lazy" alt="에스프레소 머신을 세팅하는 모습"></figure>
                     <div class="svc-body">
                         <span class="svc-num">01</span>
                         <h3>하드웨어 세팅</h3>
@@ -2835,7 +2841,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </article>
 
                 <article class="svc-item svc-item--flip">
-                    <figure class="svc-photo"><img src="img/consult-blend.jpg" width="1000" height="1000" loading="lazy" alt="구스토 블렌드 원두"></figure>
+                    <figure data-label="Custom beans" class="svc-photo"><img src="img/consult-blend.jpg" width="1000" height="1000" loading="lazy" alt="구스토 블렌드 원두"></figure>
                     <div class="svc-body">
                         <span class="svc-num">02</span>
                         <h3>맞춤형 원두 공급</h3>
@@ -2854,7 +2860,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </article>
 
                 <article class="svc-item">
-                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>바 동선이 한눈에 보이는 매장 사진</small></span></figure>
+                    <figure data-label="Bar layout" class="svc-photo svc-photo--todo"><span>사진 준비 중<small>바 동선이 한눈에 보이는 매장 사진</small></span></figure>
                     <div class="svc-body">
                         <span class="svc-num">03</span>
                         <h3>실전형 바 레이아웃</h3>
@@ -2873,7 +2879,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </article>
 
                 <article class="svc-item svc-item--flip">
-                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>추출을 점검하거나 기록하는 사진</small></span></figure>
+                    <figure data-label="Quality control" class="svc-photo svc-photo--todo"><span>사진 준비 중<small>추출을 점검하거나 기록하는 사진</small></span></figure>
                     <div class="svc-body">
                         <span class="svc-num">04</span>
                         <h3>지속 가능한 품질 관리</h3>
@@ -2892,7 +2898,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </article>
 
                 <article class="svc-item">
-                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>바리스타 교육 장면</small></span></figure>
+                    <figure data-label="Staff training" class="svc-photo svc-photo--todo"><span>사진 준비 중<small>바리스타 교육 장면</small></span></figure>
                     <div class="svc-body">
                         <span class="svc-num">05</span>
                         <h3>직원 교육 서비스</h3>
@@ -2911,7 +2917,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </article>
 
                 <article class="svc-item svc-item--flip">
-                    <figure class="svc-photo svc-photo--todo"><span>사진 준비 중<small>사장님과 상담하는 장면</small></span></figure>
+                    <figure data-label="Partnership" class="svc-photo svc-photo--todo"><span>사진 준비 중<small>사장님과 상담하는 장면</small></span></figure>
                     <div class="svc-body">
                         <span class="svc-num">06</span>
                         <h3>든든한 파트너십</h3>
