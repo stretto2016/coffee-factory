@@ -4640,10 +4640,10 @@ a.manual-page:hover { transform: translateY(-3px); }
      일반 방문자에게는 아래 두 파일이 아예 로드되지 않는다. -->
 <script>
 if (/(^|[?&])review(=|&|$)/.test(location.search)) {
-    document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="review.css">');
+    document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="/review.css?v=20261104">');
     var rv = document.createElement('script');
     rv.type = 'module';
-    rv.src = 'review.js';
+    rv.src = '/review.js?v=20261104'; // 파일을 고치면 v= 뒤 숫자를 바꿔 옛 파일 캐시를 막는다
     document.body.appendChild(rv);
 }
 </script>

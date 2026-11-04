@@ -15,6 +15,16 @@ service firebase.storage {
       allow update, delete: if isAdmin();
     }
 
+    // 홈페이지 리뷰 모드(?review): 바꿀 사진 · 화면에 그린 그림 캡처
+    // 익명 로그인한 리뷰 화면에서만 올린다 (15MB 이하 이미지, 덮어쓰기 불가, 지우기는 리뷰 화면에서 가능)
+    match /reviewUploads/{fileName} {
+      allow create: if request.auth != null
+        && request.resource.size < 15 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow read: if true;
+      allow delete: if request.auth != null;
+    }
+
     // 그 외 경로는 사장님만
     match /{allPaths=**} {
       allow read, write: if isAdmin();
