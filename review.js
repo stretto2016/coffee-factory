@@ -43,8 +43,28 @@ const TAG_GROUPS = [
 const SECTION_NAMES = {
   hero: '메인 첫 화면', story: '스토리', shop: '원두 샵', finder: '원두 추천',
   wholesale: '납품·도매', maintenance: '유지보수', consulting: '컨설팅',
-  contact: '문의하기', repairModal: '수리 신청 창'
+  contact: '푸터 · 문의하기', repairModal: '수리 신청 창',
+  'home-brand': '메인 · 브랜드', 'home-beans': '메인 · 원두', 'home-business': '메인 · 비즈니스',
+  'brand-naming': '이름과 연혁', 'brand-vision': '비전',
+  'wh-quality': '품질', 'wh-promise': '파트너십 약속', 'wh-process': '진행 절차',
+  'care-intro': '수리 항목', 'care-process': '수리 절차', 'care-benefit': '파트너 혜택',
+  'cs-services': '컨설팅 내용', 'cs-manual': '창업 매뉴얼', 'cs-steps': '창업 10단계'
 };
+
+/* 홈페이지가 /brand, /wholesale 같은 페이지로 나뉜 뒤로는 코멘트마다 어느 페이지인지 기록한다 */
+const ROUTE_NAMES = {
+  home: '메인', brand: '브랜드 스토리', beans: '원두', wholesale: '원두 납품',
+  care: '머신 케어', consulting: '창업 컨설팅'
+};
+const ROUTE_PATHS = {
+  home: '/', brand: '/brand', beans: '/beans', wholesale: '/wholesale', care: '/care', consulting: '/consulting'
+};
+const currentRoute = () => document.body.dataset.route || 'home';
+
+/* 미리보기(vercel.app · 내 컴퓨터)와 실제 사이트의 코멘트를 섞지 않는다.
+   예전 코멘트에는 site 가 없으므로 실제 사이트 것으로 본다. */
+const SITE = /(^|\.)stretto\.co\.kr$/.test(location.hostname) ? 'live' : 'preview';
+const SITE_NAMES = { live: '실제 사이트', preview: '미리보기' };
 
 /* 코멘트를 달 수 있는 요소들 */
 const PICKABLE = 'h1,h2,h3,h4,h5,h6,p,li,span,a,button,strong,em,img,figcaption,blockquote,td,th,label,dt,dd,summary';
@@ -135,6 +155,8 @@ function describe(el) {
   const text = norm(el.innerText || el.getAttribute('alt') || '');
   return {
     page: location.pathname.split('/').pop() || 'index.html',
+    site: SITE,
+    route: currentRoute(),
     sectionId: sec.id,
     sectionName: sec.name,
     selector: cssPath(el),
@@ -331,15 +353,16 @@ function renderList() {
   }
 
   comments.forEach((c, i) => {
-    const lost = !c._el;
+    const away = otherPage(c);
+    const lost = !away && (!c._el || !isShown(c._el));
     html += `
       <div class="rv-item ${c.id === activeId ? 'rv-active' : ''} ${lost ? 'rv-lost' : ''}" data-id="${esc(c.id)}">
         <div class="rv-item-top" data-goto="${esc(c.id)}">
           <span class="rv-num">${i + 1}</span>
           <div class="rv-item-body">
-            <div class="rv-where">${esc(c.sectionName || '기타')} › ${esc(c.tagName || '')}</div>
+            <div class="rv-where">${c.route ? `<b>${esc(ROUTE_NAMES[c.route] || c.route)}</b> · ` : ''}${esc(c.sectionName || '기타')} › ${esc(c.tagName || '')}</div>
             <div class="rv-quote">${esc(c.text || (c.imgSrc ? '(사진) ' + c.imgSrc : '(내용 없음)'))}</div>
-            ${lost ? '<span class="rv-lost-tag">화면에서 위치를 못 찾음</span>' : ''}
+            ${away ? '<span class="rv-lost-tag">다른 페이지 · 누르면 이동</span>' : (lost ? '<span class="rv-lost-tag">화면에서 위치를 못 찾음</span>' : '')}
           </div>
           <button class="rv-del" data-del="${esc(c.id)}" title="삭제">×</button>
         </div>
@@ -398,6 +421,7 @@ function renderList() {
     row.addEventListener('click', () => {
       const c = comments.find((x) => x.id === row.dataset.goto);
       activeId = row.dataset.goto;
+      if (c && otherPage(c)) { goRoute(c.route); return; }
       if (c && c._el) c._el.scrollIntoView({ block: 'center', behavior: 'smooth' });
       renderList();
     });
@@ -502,13 +526,13 @@ function buildMd() {
   const now = new Date();
   const stamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   let out = `# 스트레토 홈페이지 수정 요청\n\n`;
-  out += `- 작성일: ${stamp}\n- 총 ${comments.length}건\n\n---\n\n`;
+  out += `- 작성일: ${stamp}\n- 사이트: ${SITE_NAMES[SITE]} (${location.host})\n- 총 ${comments.length}건\n\n---\n\n`;
 
   comments.forEach((c, i) => {
     const st = c.style || {};
     out += `## ${i + 1}. ${c.sectionName || '기타'} › ${c.tagName || ''}\n\n`;
     out += `- **위치**: \`${c.selector || '-'}\`\n`;
-    out += `- **파일**: ${c.page || 'index.html'}\n`;
+    out += `- **페이지**: ${c.route ? `${ROUTE_NAMES[c.route] || c.route} (${ROUTE_PATHS[c.route] || ''})` : (c.page || 'index.html')}\n`;
     if (c.text) out += `- **현재 문구**: "${c.text}"\n`;
     if (c.imgSrc) out += `- **사진 파일**: ${c.imgSrc}\n`;
     out += `- **현재 스타일**: ${st.fontSize || '-'} / 굵기 ${st.fontWeight || '-'} / 줄간격 ${st.lineHeight || '-'} / 색 ${st.color || '-'} / 정렬 ${st.textAlign || '-'} / 글꼴 ${st.fontFamily || '-'} / 자간 ${st.letterSpacing || '-'}\n`;
@@ -546,10 +570,32 @@ async function copyMd() {
 
 /* ---------- 8. 시작 ---------- */
 function mapComments() {
-  comments.forEach((c) => { c._el = relocate(c); });
+  // 지금 보고 있는 페이지의 코멘트만 화면에서 찾는다 (다른 페이지 요소는 숨겨져 있다)
+  comments.forEach((c) => { c._el = otherPage(c) ? null : relocate(c); });
   rebuildPins();
   renderList();
 }
+
+function isShown(el) {
+  const r = el.getBoundingClientRect();
+  return r.width > 0 || r.height > 0;
+}
+function otherPage(c) { return !!c.route && c.route !== currentRoute(); }
+
+/* 홈페이지 라우터에 페이지 이동을 맡긴다 (?review 는 주소에 그대로 남긴다) */
+function goRoute(route) {
+  history.pushState({ route }, '', (ROUTE_PATHS[route] || '/') + location.search);
+  window.dispatchEvent(new PopStateEvent('popstate'));
+}
+
+/* 메뉴나 목록으로 페이지를 옮기면 그 페이지의 핀을 다시 그리고, 고른 코멘트로 스크롤한다 */
+new MutationObserver(() => {
+  if (!db) return;
+  mapComments();
+  const c = comments.find((x) => x.id === activeId);
+  // html 의 scroll-behavior: smooth 때문에 페이지를 바꾼 직후에는 'instant' 로 옮겨야 한다
+  if (c && c._el) setTimeout(() => c._el.scrollIntoView({ block: 'center', behavior: 'instant' }), 50);
+}).observe(document.body, { attributes: true, attributeFilter: ['data-route'] });
 
 function start() {
   const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
@@ -564,7 +610,8 @@ function start() {
   signInAnonymously(auth)
     .then(() => {
       onSnapshot(query(collection(db, COL), orderBy('createdAt', 'asc')), (snap) => {
-        comments = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        comments = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+          .filter((c) => (c.site || 'live') === SITE);
         mapComments();
       }, (err) => {
         console.error(err);
