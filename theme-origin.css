@@ -171,6 +171,16 @@ html .svc-check li { font-size: 15px; color: var(--og-text); }
 html .svc-check li::before { border-color: var(--og-text); }
 html .home-steps li { background: #ffffff; border-radius: 40px; font-size: 13.7px; font-weight: 500; }
 html .home-facts li { border-top-color: var(--og-text); }
+/* 메인 브랜드 판 (11/10 아내분 요청): 문장 먼저, 제목은 작게 · 아래 여백 넉넉히, 세 단어는 작게 */
+html .home-text p.home-lead { font-size: 17px; line-height: 1.75; color: var(--og-text); margin: 6px 0 18px; word-break: keep-all; }
+html .home-title--brand { font-size: 20px; margin: 30px 0 30px; }
+html .home-facts--words { margin-top: 0; }
+html .home-facts--words strong { font-size: 17px; letter-spacing: 0.01em; }
+html .home-facts--words span { font-size: 13px; }
+@media (max-width: 760px) { html .home-facts--words strong { font-size: 14.5px; } html .home-facts--words span { font-size: 12px; } }
+/* 원두 · 비즈니스 머리말: 따옴표 문장형, 제목보다 한 단계 작게 */
+html .home-title--quote { font-size: 20px; line-height: 1.55; font-weight: 500; word-break: keep-all; }
+
 html .home-actions { gap: 14px; }
 /* 브랜드 블록(메인 첫 판): 사진 오른쪽 */
 html .home-split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
