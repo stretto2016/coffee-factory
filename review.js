@@ -111,6 +111,11 @@ const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) =>
 const norm = (s) => String(s || '').replace(/\s+/g, ' ').trim();
 const isRvUI = (el) => !!(el && el.closest && el.closest(RV_UI));
 const isDone = (c) => c.status === 'done';
+/* 이 화면을 연 뒤에(또는 열기 직전 1분 30초 안에) 반영된 요청은, 화면을 새로 받기 전까지 고친 모습을 계속 보여 준다.
+   예전에는 "반영 완료"가 되는 순간 원래 사진 · 글자로 되돌아가서, 새로고침 전에는 안 바뀐 것처럼 보였다. */
+const LOADED_AT = Date.now();
+const doneSinceLoad = (c) => isDone(c) && c.doneAt && c.doneAt.toMillis && c.doneAt.toMillis() > LOADED_AT - 90 * 1000;
+const showChange = (c) => !isDone(c) || doneSinceLoad(c);
 const kindOf = (c) => c.kind || 'memo';
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
 
@@ -255,15 +260,16 @@ function restoreAll() {
 function applyChanges() {
   comments.forEach((c) => {
     const el = c._el;
-    if (!el || isDone(c)) return;
+    if (!el || !showChange(c)) return;
+    const done = isDone(c);   // 반영 완료된 것은 노란 표시 없이 바뀐 모습만
     if (kindOf(c) === 'edit' && el.tagName !== 'IMG') {
       if (!origStore.has(el)) origStore.set(el, snap(el));
       el.innerText = c.newText || '';
-      el.classList.add('rv-edited');
+      if (!done) el.classList.add('rv-edited');
     } else if (kindOf(c) === 'photo' && el.tagName === 'IMG' && c.newImageUrl) {
       if (!origStore.has(el)) origStore.set(el, snap(el));
       el.setAttribute('src', c.newImageUrl);
-      el.classList.add('rv-replaced');
+      if (!done) el.classList.add('rv-replaced');
     }
   });
 }
@@ -273,9 +279,9 @@ function withOriginal(el, fn) {
   const o = origStore.get(el);
   if (!o) return fn();
   const cur = snap(el);
-  const cls = el.classList.contains('rv-edited') ? 'rv-edited' : 'rv-replaced';
+  const cls = ['rv-edited', 'rv-replaced'].filter((k) => el.classList.contains(k));
   putBack(el, o);
-  try { return fn(); } finally { putBack(el, cur); el.classList.add(cls); }
+  try { return fn(); } finally { putBack(el, cur); el.classList.add(...cls); }
 }
 
 /* ---------- 4. 화면 표시 — 테두리와 번호 핀 ---------- */
@@ -1265,7 +1271,7 @@ async function sendChat() {
   btn.disabled = true;
   try {
     await addDoc(collection(db, CHAT_COL), {
-      site: SITE, role: 'user', status: 'pending',
+      site: SITE, role: 'user', status: 'pending', host: location.host,
       text: text.slice(0, 4900), attachments: [...attach, ...links].slice(0, 19),
       route: currentRoute(), viewport: window.innerWidth,
       device: window.innerWidth < 768 ? '모바일' : (window.innerWidth < 1100 ? '태블릿' : 'PC'),
@@ -1422,7 +1428,7 @@ function mapComments() {
   if (editing) { mapPending = true; return; }
   // 미리 보기로 바꿔 둔 글자 · 사진을 원래대로 돌린 뒤 다시 찾아서 다시 바꾼다
   restoreAll();
-  comments.forEach((c) => { c._el = (otherPage(c) || isDone(c)) ? null : relocate(c); });
+  comments.forEach((c) => { c._el = (otherPage(c) || !showChange(c)) ? null : relocate(c); });
   applyChanges();
   rebuildPins();
   renderList();
