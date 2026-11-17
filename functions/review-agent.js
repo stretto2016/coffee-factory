@@ -41,7 +41,17 @@ const LOCK_PORT = 47219;                               // 두 번 켜지는 것�
 const QUIET_MS = 20 * 1000;                            // 마지막 요청 뒤 20초 기다렸다가 한꺼번에 처리
 const CLAUDE_TIMEOUT_MS = 20 * 60 * 1000;
 const HEARTBEAT_MS = 30 * 1000;
-const CLAUDE_CLI = path.join(process.env.APPDATA || "", "npm", "node_modules", "@anthropic-ai", "claude-code", "cli.js");
+// Claude Code는 업데이트되면 실행 파일 모양이 바뀐다 (예전 cli.js → 지금 bin/claude.exe). 실행할 때마다 찾는다.
+const CLAUDE_PKG = path.join(process.env.APPDATA || "", "npm", "node_modules", "@anthropic-ai", "claude-code");
+function claudeCmd() {
+  const exe = path.join(CLAUDE_PKG, "bin", "claude.exe");
+  if (fs.existsSync(exe)) return { cmd: exe, pre: [] };
+  const local = path.join(os.homedir(), ".local", "bin", "claude.exe");
+  if (fs.existsSync(local)) return { cmd: local, pre: [] };
+  const js = path.join(CLAUDE_PKG, "cli.js");
+  if (fs.existsSync(js)) return { cmd: process.execPath, pre: [js] };
+  throw new Error("Claude Code를 찾지 못했어요 (설치가 바뀌었을 수 있음)");
+}
 
 const CHAT = "reviewChat";
 const COMMENTS = "reviewComments";
@@ -261,12 +271,13 @@ const DISALLOWED = [
 
 function runClaude(prompt, resumeId) {
   return new Promise((resolve, reject) => {
-    const a = [CLAUDE_CLI, "-p", "--output-format", "json", "--permission-mode", "bypassPermissions",
+    const { cmd, pre } = claudeCmd();
+    const a = [...pre, "-p", "--output-format", "json", "--permission-mode", "bypassPermissions",
       "--append-system-prompt", SYSTEM, "--disallowedTools", ...DISALLOWED];
     if (resumeId) a.push("--resume", resumeId);
     const env = { ...process.env };
     delete env.CLAUDECODE; delete env.CLAUDE_CODE_ENTRYPOINT;
-    const child = spawn(process.execPath, a, { cwd: WORK, env, windowsHide: true });
+    const child = spawn(cmd, a, { cwd: WORK, env, windowsHide: true });
     let out = "", err = "";
     child.stdout.on("data", (d) => (out += d));
     child.stderr.on("data", (d) => (err += d));
@@ -413,7 +424,7 @@ function lock() {
 
 (async () => {
   if (!(await lock())) { console.log("리뷰 도우미가 이미 켜져 있습니다."); process.exit(0); }
-  if (!FAKE && !fs.existsSync(CLAUDE_CLI)) log("경고: Claude Code를 찾지 못했습니다 →", CLAUDE_CLI);
+  if (!FAKE) { try { log("Claude Code:", claudeCmd().cmd); } catch (e) { log("경고:", e.message); } }
   ensureClone();
   syncClone();
   log(`리뷰 도우미 시작 — 브랜치 ${BRANCH}${FAKE ? " (시험 모드)" : ""}, 사본 ${WORK}`);
