@@ -292,3 +292,10 @@ html .sf-logo--wide span { font-size: 15px; letter-spacing: 0.04em; margin-left:
 @media (max-width: 600px) {
     html .svc-list--cols4 { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* 가로형 로고 이미지 (메뉴 · 푸터) */
+html .logo-img { display: block; height: 20px; width: auto; max-width: 100%; }
+html .sf-logo--wide .logo-img { height: auto; width: 100%; max-width: 300px; }
+@media (max-width: 768px) {
+    html .logo .logo-img { height: 15px; }
+}
