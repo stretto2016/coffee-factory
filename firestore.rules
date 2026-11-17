@@ -123,6 +123,27 @@ service cloud.firestore {
       allow delete: if request.auth != null;
     }
 
+    // 7-2. 리뷰 화면의 💬 Claude와 대화 (미리보기 사이트).
+    //    리뷰 화면은 아내분 메시지(role 'user')만 남길 수 있고, Claude 답장 · 처리 상태는
+    //    사장님 컴퓨터의 리뷰 도우미(서비스 계정 = 규칙 우회)만 쓴다.
+    match /reviewChat/{msgId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.role == 'user'
+        && request.resource.data.status == 'pending'
+        && request.resource.data.site is string
+        && request.resource.data.text is string
+        && request.resource.data.text.size() < 5000
+        && request.resource.data.attachments is list
+        && request.resource.data.attachments.size() < 20;
+      allow update, delete: if isAdmin();
+    }
+    // 리뷰 도우미가 켜져 있는지 (🟢 연결됨 표시) — 읽기만
+    match /reviewAgent/{site} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+
     // 8. 기타 관리자 접근
     match /{document=**} {
       allow read, write: if isAdmin();

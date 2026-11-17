@@ -12,12 +12,16 @@
    모든 요청은 Firestore(reviewComments)에 저장되고, 개발자가 직접 읽어 가므로
    파일을 내보내 전달할 필요가 없다. 반영이 끝난 요청은 "반영 완료"로 표시된다.
    고친 글자 · 사진은 이 화면에서만 미리 보여 줄 뿐, 실제 사이트 내용은 바뀌지 않는다.
+
+   미리보기 사이트에서는 💬 Claude와 대화 창이 더 붙는다 (reviewChat).
+   사장님 컴퓨터의 리뷰 도우미(functions/review-agent.js)가 대화 · 바로 고침 요청을 받아
+   Claude에게 넘기고, 고친 결과를 미리보기 브랜치에만 올린다. 실제 사이트에는 올리지 않는다.
    =========================================================== */
 
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getFirestore, collection, addDoc, deleteDoc, doc,
-  onSnapshot, query, orderBy, serverTimestamp
+  onSnapshot, query, orderBy, serverTimestamp, limitToLast
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import {
@@ -76,13 +80,18 @@ const currentRoute = () => document.body.dataset.route || 'home';
 const SITE = /(^|\.)stretto\.co\.kr$/.test(location.hostname) ? 'live' : 'preview';
 const SITE_NAMES = { live: '실제 사이트', preview: '미리보기' };
 
+/* 💬 Claude와 대화 — 미리보기 사이트에서만 (실제 사이트 리뷰는 예전처럼 요청만 남긴다) */
+const CHAT_ON = SITE === 'preview';
+const CHAT_COL = 'reviewChat';
+const AGENT_COL = 'reviewAgent';
+
 const KIND_LABEL = { edit: '✏️ 글자 고침', photo: '🖼 사진 교체', draw: '🖍 그림', memo: '💬 메모' };
 
 /* 코멘트를 달 수 있는 요소들 */
 const PICKABLE = 'h1,h2,h3,h4,h5,h6,p,li,span,a,button,strong,em,img,figcaption,blockquote,td,th,label,dt,dd,summary';
 /* 그 자리에서 글자를 고칠 수 있는 요소들 */
 const TEXT_TAGS = /^(H[1-6]|P|LI|SPAN|A|BUTTON|STRONG|EM|B|FIGCAPTION|BLOCKQUOTE|TD|TH|LABEL|DT|DD|SUMMARY|SMALL)$/;
-const RV_UI = '#rv-panel,#rv-gate,#rv-pins,#rv-hover,#rv-toast,#rv-bubble,#rv-editbar,#rv-draw,#rv-lightbox,#rv-fab';
+const RV_UI = '#rv-panel,#rv-gate,#rv-pins,#rv-hover,#rv-toast,#rv-bubble,#rv-editbar,#rv-draw,#rv-lightbox,#rv-fab,#rv-pickbar';
 
 let db, storage, comments = [], selected = null, picking = true, activeId = null;
 let editing = null;        // 지금 고쳐 쓰는 중인 글자 { el, startHtml, origText, info, prevId }
@@ -90,6 +99,10 @@ let mapPending = false;    // 글자를 고치는 동안 들어온 새 목록은
 let showDone = false;
 const pinEls = new Map();
 const origStore = new Map(); // 미리 보여 주려고 바꾼 요소의 원래 모습 (el → { html } 또는 { src })
+let chatMsgs = [], chatReady = false, agent = null;
+let attach = [];           // 보낼 메시지에 붙인 것들 (📍 위치 · 🖍 그림 · 📎 사진)
+let pickForChat = false;   // 📍 위치 버튼을 누른 뒤 화면을 누르면 그 자리를 대화에 붙인다
+let tab = CHAT_ON ? 'chat' : 'list';
 
 /* ---------- 작은 도우미들 ---------- */
 const $ = (s, r = document) => r.querySelector(s);
@@ -325,7 +338,7 @@ function focusComment(id) {
 function buildPanel() {
   const p = document.createElement('div');
   p.id = 'rv-panel';
-  p.innerHTML = `
+  p.innerHTML = CHAT_ON ? chatPanelHtml() : `
     <button id="rv-handle" title="패널 접기/펴기">❯</button>
     <div class="rv-head">
       <h1>수정 요청 남기기</h1>
@@ -360,12 +373,13 @@ function buildPanel() {
   $('#rv-export').addEventListener('click', exportMd);
   $('#rv-draw-btn').addEventListener('click', startDraw);
   fab.addEventListener('click', startDraw);
+  if (CHAT_ON) bindChat();
 
   // 폰에서는 패널이 화면 대부분을 가리므로 접은 채로 시작한다
   if (window.innerWidth < 760) closePanel();
 }
 
-function openPanel() { $('#rv-panel').classList.remove('rv-collapsed'); $('#rv-handle').textContent = '❯'; }
+function openPanel() { $('#rv-panel').classList.remove('rv-collapsed'); $('#rv-handle').textContent = '❯'; $('#rv-handle').classList.remove('rv-new'); }
 function closePanel() { $('#rv-panel').classList.add('rv-collapsed'); $('#rv-handle').textContent = '❮'; }
 
 function setPicking() {
@@ -582,7 +596,7 @@ function showBubble(el) {
   if (isTextEl(el)) acts.push(['edit', '✏️ 글자 고치기']);
   const img = imgOf(el);
   if (img) acts.push(['photo', '🖼 사진 바꾸기']);
-  acts.push(['memo', '💬 메모']);
+  acts.push(CHAT_ON ? ['ask', '💬 Claude에게 말하기'] : ['memo', '💬 메모']);
 
   const b = document.createElement('div');
   b.id = 'rv-bubble';
@@ -600,6 +614,7 @@ function showBubble(el) {
     hideBubble();
     if (act === 'edit') startEdit(el);
     else if (act === 'photo') startPhoto(img);
+    else if (act === 'ask') attachEl(el);
     else if (act === 'memo') {
       selected = { el, info: withOriginal(el, () => describe(el)) };
       drawHover(el);
@@ -616,6 +631,7 @@ function attachPicker() {
   }, true);
 
   document.addEventListener('mousemove', (e) => {
+    if (pickForChat) { if (!e.buttons) drawHover(pickTarget(e.target)); return; }
     if (!picking || selected || editing || $('#rv-bubble') || $('#rv-draw')) return;
     if (e.buttons) return;
     drawHover(pickTarget(e.target));
@@ -629,6 +645,15 @@ function attachPicker() {
       e.preventDefault();
       e.stopPropagation();
       if (!editing.el.contains(e.target)) finishEdit(true);
+      return;
+    }
+    if (pickForChat) {
+      const el = pickTarget(e.target);
+      if (!el) return;
+      e.preventDefault();
+      e.stopPropagation();
+      stopPickForChat();
+      attachEl(el);
       return;
     }
     if (!picking) return;
@@ -654,6 +679,7 @@ function attachPicker() {
     } else if (e.key === 'Escape') {
       hideBubble();
       closeLightbox();
+      if (pickForChat) stopPickForChat();
     }
   }, true);
 
@@ -743,7 +769,7 @@ async function finishEdit(save) {
         createdAt: serverTimestamp()
       });
       if (ed.prevId) await deleteDoc(doc(db, COL, ed.prevId));
-      toast('고친 글자를 저장했어요.');
+      toast(CHAT_ON ? '저장했어요. Claude가 곧 반영해요.' : '고친 글자를 저장했어요.');
     }
   } catch (err) {
     console.error(err);
@@ -813,7 +839,7 @@ function startPhoto(img) {
         createdAt: serverTimestamp()
       });
       if (prev) { await deleteDoc(doc(db, COL, prev.id)); removeUpload(prev); }
-      toast('사진을 바꿨어요. 화면에서 확인해 보세요.');
+      toast(CHAT_ON ? '사진을 저장했어요. Claude가 곧 반영해요.' : '사진을 바꿨어요. 화면에서 확인해 보세요.');
     } catch (err) {
       console.error(err);
       toast('사진을 올리지 못했습니다. 다시 해 주세요.');
@@ -902,8 +928,28 @@ function startDraw() {
 
   $('#rv-dr-undo').addEventListener('click', () => { strokes.pop(); paint(); });
   $('#rv-dr-cancel').addEventListener('click', close);
-  $('#rv-dr-next').addEventListener('click', () => {
+  $('#rv-dr-next').addEventListener('click', async () => {
     if (!strokes.length) { toast('먼저 화면에 그려 주세요.'); return; }
+    if (CHAT_ON) {
+      // 미리보기에서는 다 그리면 그 화면을 대화에 붙이고, 무엇을 고칠지는 대화로 적는다
+      const btn = $('#rv-dr-next');
+      btn.disabled = true; btn.textContent = '화면 담는 중…';
+      try {
+        const { info, shot } = await captureDrawing(strokes, wrap, { vw, vh, sx: window.scrollX, sy: window.scrollY });
+        if (!shot) throw new Error('캡처 실패');
+        close();
+        attach.push({ type: 'draw', url: shot.url, path: shot.path, info });
+        renderAtt();
+        showTab('chat'); openPanel();
+        $('#rv-input').focus();
+        toast('그림을 붙였어요. 무엇을 고칠지 적고 보내 주세요.');
+      } catch (err) {
+        console.error(err);
+        btn.disabled = false; btn.textContent = '다 그렸어요';
+        toast('화면을 담지 못했어요. 다시 해 주세요.');
+      }
+      return;
+    }
     $('#rv-draw-bar').innerHTML = `
       <textarea class="rv-memo" id="rv-dr-memo" rows="2" placeholder="무엇을 고치면 될지 적어 주세요 (안 적어도 돼요)"></textarea>
       <div class="rv-draw-btns">
@@ -943,6 +989,17 @@ function drawStrokes(g, strokes, k) {
 }
 
 async function saveDrawing(strokes, memo, wrap, v) {
+  const { info, shot } = await captureDrawing(strokes, wrap, v);
+  await addDoc(collection(db, COL), {
+    ...info, kind: 'draw', tags: ['그림'], memo,
+    strokes: strokes.map((s) => ({ p: s.flatMap(([x, y]) => [Math.round(x + v.sx), Math.round(y + v.sy)]) })),
+    scrollY: Math.round(v.sy), viewH: v.vh, viewport: v.vw,
+    imageUrl: shot ? shot.url : '', imagePath: shot ? shot.path : '',
+    createdAt: serverTimestamp()
+  });
+}
+
+async function captureDrawing(strokes, wrap, v) {
   // 그림 한가운데에 있는 요소를 기준 위치로 삼는다 (어느 섹션인지 알 수 있게)
   const xs = strokes.flat().map((p) => p[0]), ys = strokes.flat().map((p) => p[1]);
   const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
@@ -977,14 +1034,7 @@ async function saveDrawing(strokes, memo, wrap, v) {
   } catch (err) {
     console.warn('화면 캡처 실패 — 그림 좌표만 저장합니다.', err);
   }
-
-  await addDoc(collection(db, COL), {
-    ...info, kind: 'draw', tags: ['그림'], memo,
-    strokes: strokes.map((s) => ({ p: s.flatMap(([x, y]) => [Math.round(x + v.sx), Math.round(y + v.sy)]) })),
-    scrollY: Math.round(v.sy), viewH: v.vh, viewport: v.vw,
-    imageUrl: shot ? shot.url : '', imagePath: shot ? shot.path : '',
-    createdAt: serverTimestamp()
-  });
+  return { info, shot };
 }
 
 /* 사진 · 그림을 크게 보기 */
@@ -1038,6 +1088,315 @@ function exportMd() {
   a.click();
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
   toast('파일을 저장했어요.');
+}
+
+/* ---------- 11-2. 💬 Claude와 대화 (미리보기 사이트) ----------
+   가리키고(📍 위치 · 🖍 그림 · 📎 사진) → 말하면, 사장님 컴퓨터의 리뷰 도우미가
+   Claude에게 넘겨 미리보기에 반영하고 이 창으로 답을 보낸다. */
+function chatPanelHtml() {
+  return `
+    <button id="rv-handle" title="패널 접기/펴기">❯</button>
+    <div class="rv-head">
+      <h1>홈페이지 고치기</h1>
+      <div class="rv-tabs">
+        <button class="rv-tab" data-tab="chat">💬 Claude와 대화</button>
+        <button class="rv-tab" data-tab="list">📋 요청 목록</button>
+      </div>
+      <div class="rv-head-btns rv-list-only">
+        <button id="rv-draw-btn" class="rv-btn rv-primary">🖍 화면에 그리기</button>
+        <button id="rv-mode" class="rv-on" title="끄면 사이트를 평소처럼 눌러볼 수 있어요">
+          <span class="rv-switch"></span><span class="rv-mode-txt">고치기 켜짐</span>
+        </button>
+      </div>
+      <div class="rv-count rv-list-only" id="rv-count">요청 0개</div>
+    </div>
+    <div id="rv-chat">
+      <div id="rv-agent" class="rv-agent"></div>
+      <div id="rv-msgs"></div>
+      <div class="rv-compose">
+        <div id="rv-att"></div>
+        <textarea id="rv-input" rows="2" placeholder="고치고 싶은 걸 편하게 말해 주세요&#10;다른 사이트 링크를 붙여도 돼요"></textarea>
+        <div class="rv-compose-btns">
+          <button class="rv-cbtn" id="rv-pick-btn" title="화면에서 고칠 곳을 눌러 알려 주기">📍 위치</button>
+          <button class="rv-cbtn" id="rv-cdraw-btn" title="화면에 동그라미 · 화살표 그리기">🖍 그리기</button>
+          <button class="rv-cbtn" id="rv-file-btn" title="사진 · 캡처 붙이기">📎 사진</button>
+          <button class="rv-btn rv-primary" id="rv-send">보내기</button>
+        </div>
+      </div>
+    </div>
+    <div id="rv-list"></div>
+    <div class="rv-foot">
+      <span class="rv-foot-note">글자 고침 · 사진 바꾸기도 Claude가 반영해요</span>
+      <button class="rv-link" id="rv-export">파일로 받기</button>
+    </div>`;
+}
+
+function showTab(t) {
+  tab = t;
+  const p = $('#rv-panel');
+  if (!p) return;
+  p.classList.toggle('rv-tab-chat', t === 'chat');
+  p.classList.toggle('rv-tab-list', t === 'list');
+  p.querySelectorAll('.rv-tab').forEach((b) => b.classList.toggle('rv-on', b.dataset.tab === t));
+  if (t === 'chat') scrollChat();
+}
+
+function bindChat() {
+  const p = $('#rv-panel');
+  p.querySelectorAll('.rv-tab').forEach((b) => b.addEventListener('click', () => showTab(b.dataset.tab)));
+  showTab(tab);
+
+  const input = $('#rv-input');
+  $('#rv-send').addEventListener('click', sendChat);
+  input.addEventListener('keydown', (e) => {
+    // PC에서는 Enter로 보내고 Shift+Enter로 줄바꿈. 폰에서는 Enter가 줄바꿈.
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && window.innerWidth >= 760) {
+      e.preventDefault();
+      sendChat();
+    }
+  });
+  // 캡처한 그림을 붙여넣기 · 끌어다 놓기
+  input.addEventListener('paste', (e) => {
+    const files = [...(e.clipboardData?.files || [])].filter((f) => f.type.startsWith('image/'));
+    if (files.length) { e.preventDefault(); addFiles(files); }
+  });
+  const comp = p.querySelector('.rv-compose');
+  comp.addEventListener('dragover', (e) => { e.preventDefault(); comp.classList.add('rv-drop'); });
+  comp.addEventListener('dragleave', () => comp.classList.remove('rv-drop'));
+  comp.addEventListener('drop', (e) => {
+    e.preventDefault(); comp.classList.remove('rv-drop');
+    const files = [...(e.dataTransfer?.files || [])].filter((f) => f.type.startsWith('image/'));
+    if (files.length) addFiles(files);
+  });
+
+  $('#rv-pick-btn').addEventListener('click', startPickForChat);
+  $('#rv-cdraw-btn').addEventListener('click', startDraw);
+  $('#rv-file-btn').addEventListener('click', () => {
+    const f = document.createElement('input');
+    f.type = 'file'; f.accept = 'image/*'; f.multiple = true; f.style.display = 'none';
+    document.body.appendChild(f);
+    f.addEventListener('change', () => { const files = [...(f.files || [])]; f.remove(); if (files.length) addFiles(files); });
+    f.click();
+  });
+
+  renderAtt();
+  renderChat();
+  setInterval(renderAgent, 15000);
+}
+
+/* 📍 위치: 버튼을 누른 뒤 화면을 누르면 그 자리가 대화에 붙는다 */
+function startPickForChat() {
+  if (editing) finishEdit(true);
+  hideBubble();
+  pickForChat = true;
+  document.documentElement.classList.add('rv-picking');
+  if (window.innerWidth < 760) closePanel();
+  const bar = document.createElement('div');
+  bar.id = 'rv-pickbar';
+  bar.innerHTML = `<span>고칠 곳을 화면에서 눌러 주세요</span><button class="rv-btn">취소</button>`;
+  bar.querySelector('button').addEventListener('click', stopPickForChat);
+  document.body.appendChild(bar);
+}
+function stopPickForChat() {
+  pickForChat = false;
+  const bar = $('#rv-pickbar');
+  if (bar) bar.remove();
+  drawHover(null);
+  if (!picking) document.documentElement.classList.remove('rv-picking');
+}
+
+function attachEl(el) {
+  const info = withOriginal(el, () => describe(el));
+  attach.push({ type: 'element', info });
+  drawHover(null);
+  renderAtt();
+  showTab('chat');
+  openPanel();
+  $('#rv-input').focus();
+}
+
+async function addFiles(files) {
+  for (const file of files.slice(0, 6)) {
+    if (!file.type.startsWith('image/')) continue;
+    toast('사진을 올리는 중이에요…', true);
+    try {
+      const blob = await shrinkImage(file);
+      const up = await upload(blob, 'chat');
+      attach.push({ type: 'image', url: up.url, path: up.path, name: (file.name || '').slice(0, 120) });
+      renderAtt();
+      toast('사진을 붙였어요.');
+    } catch (err) {
+      console.error(err);
+      toast('사진을 올리지 못했어요.');
+    }
+  }
+  showTab('chat');
+}
+
+function attLabel(a) {
+  if (a.type === 'element') {
+    const t = a.info.text ? `“${a.info.text.slice(0, 16)}${a.info.text.length > 16 ? '…' : ''}”` : (a.info.imgSrc ? '사진' : a.info.tagName);
+    return `📍 ${esc(a.info.sectionName || '')} · ${esc(t)}`;
+  }
+  if (a.type === 'draw') return `<img src="${esc(a.url)}" alt="">🖍 그림`;
+  if (a.type === 'image') return `<img src="${esc(a.url)}" alt="">📎 사진`;
+  if (a.type === 'link') return `🔗 ${esc(a.url.replace(/^https?:\/\//, '').slice(0, 28))}`;
+  return '';
+}
+
+function renderAtt() {
+  const box = $('#rv-att');
+  if (!box) return;
+  box.innerHTML = attach.map((a, i) => `<span class="rv-att">${attLabel(a)}<button data-rm="${i}" title="빼기">×</button></span>`).join('');
+  box.querySelectorAll('[data-rm]').forEach((b) => b.addEventListener('click', () => {
+    const a = attach.splice(Number(b.dataset.rm), 1)[0];
+    if (a && a.path) deleteObject(sRef(storage, a.path)).catch(() => {});
+    renderAtt();
+  }));
+}
+
+async function sendChat() {
+  const input = $('#rv-input');
+  let text = input.value.trim();
+  if (!text && !attach.length) { input.focus(); return; }
+  if (!text) text = '(첨부한 것을 봐 주세요)';
+  const links = [...new Set(text.match(/https?:\/\/[^\s<>"']+/g) || [])].slice(0, 5).map((url) => ({ type: 'link', url }));
+  const btn = $('#rv-send');
+  btn.disabled = true;
+  try {
+    await addDoc(collection(db, CHAT_COL), {
+      site: SITE, role: 'user', status: 'pending',
+      text: text.slice(0, 4900), attachments: [...attach, ...links].slice(0, 19),
+      route: currentRoute(), viewport: window.innerWidth,
+      device: window.innerWidth < 768 ? '모바일' : (window.innerWidth < 1100 ? '태블릿' : 'PC'),
+      createdAt: serverTimestamp()
+    });
+    input.value = '';
+    attach = [];
+    renderAtt();
+  } catch (err) {
+    console.error(err);
+    toast('보내지 못했어요. 인터넷 연결을 확인해 주세요.');
+  }
+  btn.disabled = false;
+}
+
+async function askRevert(m) {
+  if (!confirm('이 변경을 원래대로 되돌릴까요?')) return;
+  try {
+    await addDoc(collection(db, CHAT_COL), {
+      site: SITE, role: 'user', status: 'pending', action: 'revert', commit: m.commit, replyId: m.id,
+      text: '↩ 방금 바꾼 것을 되돌려 주세요', attachments: [], route: currentRoute(),
+      viewport: window.innerWidth, createdAt: serverTimestamp()
+    });
+  } catch (err) {
+    console.error(err);
+    toast('보내지 못했어요.');
+  }
+}
+
+/* 사장님 컴퓨터(리뷰 도우미)가 켜져 있는지 */
+function agentOnline() {
+  if (!agent || agent.state === 'off' || !agent.lastSeen) return false;
+  const t = agent.lastSeen.toMillis ? agent.lastSeen.toMillis() : 0;
+  return Date.now() - t < 100 * 1000;
+}
+
+function renderAgent() {
+  const box = $('#rv-agent');
+  if (!box) return;
+  const on = agentOnline();
+  const working = on && agent.state === 'working';
+  box.className = 'rv-agent ' + (working ? 'rv-working' : on ? 'rv-online' : 'rv-offline');
+  const paused = on && (agent.state === 'login' || agent.state === 'limit');
+  if (paused) box.className = 'rv-agent rv-offline';
+  box.innerHTML = paused ? (agent.state === 'login'
+      ? '<i></i>사장님 컴퓨터의 Claude 로그인이 필요해요. 남긴 말은 저장돼요.'
+      : '<i></i>Claude 사용량이 잠시 꽉 찼어요. 조금 뒤 이어서 반영해요.')
+    : working ? '<i></i>Claude가 고치는 중이에요…'
+    : on ? '<i></i>Claude 연결됨 · 말을 걸면 바로 고쳐요'
+    : '<i></i>사장님 컴퓨터가 꺼져 있어요. 남긴 말은 저장되고, 켜지면 처리돼요.';
+  const typing = $('#rv-typing');
+  if (typing) typing.style.display = working ? '' : 'none';
+}
+
+const fmtText = (s) => esc(s).replace(/(https?:\/\/[^\s<>"']+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>').replace(/\n/g, '<br>');
+
+function msgHtml(m) {
+  const atts = (m.attachments || []).filter((a) => a.type !== 'link');
+  const attHtml = atts.length ? `<div class="rv-msg-atts">${atts.map((a) =>
+    (a.type === 'draw' || a.type === 'image')
+      ? `<img src="${esc(a.url)}" data-zoom="${esc(a.url)}" alt="">`
+      : `<span class="rv-att rv-att-s" data-locate='${esc(JSON.stringify({ selector: a.info.selector, text: a.info.text, imgSrc: a.info.imgSrc, route: a.info.route }))}'>${attLabel(a)}</span>`
+  ).join('')}</div>` : '';
+
+  if (m.role === 'assistant') {
+    let acts = '';
+    if (m.commit && !m.revertOf) {
+      acts = m.reverted ? '<div class="rv-msg-acts"><span class="rv-reverted">↩ 되돌림</span></div>'
+        : `<div class="rv-msg-acts"><span class="rv-msg-note">1~2분 뒤 새로고침하면 보여요</span>
+             <button class="rv-mini" data-reload>새로고침</button>
+             <button class="rv-mini" data-revert="${esc(m.id)}">되돌리기</button></div>`;
+    } else if (m.revertOf) {
+      acts = '<div class="rv-msg-acts"><span class="rv-msg-note">1~2분 뒤 새로고침하면 보여요</span><button class="rv-mini" data-reload>새로고침</button></div>';
+    }
+    return `<div class="rv-msg rv-ai${m.error ? ' rv-err' : ''}"><div class="rv-msg-who">Claude</div><div class="rv-msg-text">${fmtText(m.text)}</div>${acts}</div>`;
+  }
+  const st = { pending: '전송됨 · 곧 확인해요', working: 'Claude가 보고 있어요…', error: '반영하지 못했어요', done: '' }[m.status] || '';
+  return `<div class="rv-msg rv-me">${attHtml}<div class="rv-msg-text">${fmtText(m.text)}</div>${st ? `<div class="rv-msg-st">${st}</div>` : ''}</div>`;
+}
+
+function scrollChat() {
+  const box = $('#rv-msgs');
+  if (box) requestAnimationFrame(() => { box.scrollTop = box.scrollHeight; });
+}
+
+function renderChat() {
+  const box = $('#rv-msgs');
+  if (!box) return;
+  box.innerHTML = (chatMsgs.length ? chatMsgs.map(msgHtml).join('') : `
+    <div class="rv-chat-empty">
+      <b>이렇게 해 보세요</b>
+      <ol>
+        <li>화면에서 고칠 곳을 누르고 <b>💬 Claude에게 말하기</b><br>(또는 아래 <b>📍 위치</b> · <b>🖍 그리기</b>)</li>
+        <li>“이 제목 더 작게, 한 줄로” 처럼 적고 보내기</li>
+        <li>1~2분 뒤 새로고침하면 바뀐 화면이 보여요</li>
+      </ol>
+      <p>다른 사이트 링크나 캡처를 붙여서 “이런 느낌으로”라고 해도 돼요.</p>
+    </div>`) + '<div class="rv-msg rv-ai rv-typing" id="rv-typing" style="display:none"><span></span><span></span><span></span></div>';
+
+  box.querySelectorAll('[data-zoom]').forEach((img) => img.addEventListener('click', () => showLightbox(img.dataset.zoom)));
+  box.querySelectorAll('[data-reload]').forEach((b) => b.addEventListener('click', () => location.reload()));
+  box.querySelectorAll('[data-revert]').forEach((b) => b.addEventListener('click', () => {
+    const m = chatMsgs.find((x) => x.id === b.dataset.revert);
+    if (m) askRevert(m);
+  }));
+  box.querySelectorAll('[data-locate]').forEach((s) => s.addEventListener('click', () => {
+    try {
+      const c = JSON.parse(s.dataset.locate);
+      if (c.route && c.route !== currentRoute()) { goRoute(c.route); return; }
+      const el = relocate(c);
+      if (el) { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); drawHover(el); setTimeout(() => drawHover(null), 1600); }
+    } catch (_) {}
+  }));
+  renderAgent();
+  scrollChat();
+}
+
+function listenChat() {
+  onSnapshot(query(collection(db, CHAT_COL), orderBy('createdAt', 'asc'), limitToLast(300)), (snap) => {
+    const before = new Set(chatMsgs.map((m) => m.id));
+    chatMsgs = snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((m) => m.site === SITE);
+    if (chatReady && chatMsgs.some((m) => m.role === 'assistant' && !before.has(m.id))) {
+      toast('Claude가 답했어요.');
+      if ($('#rv-panel').classList.contains('rv-collapsed')) $('#rv-handle').classList.add('rv-new');
+    }
+    chatReady = true;
+    renderChat();
+  }, (err) => { console.error(err); toast('대화를 불러오지 못했어요.'); });
+
+  onSnapshot(doc(db, AGENT_COL, SITE), (d) => { agent = d.exists() ? d.data() : null; renderAgent(); },
+    (err) => console.error(err));
 }
 
 /* ---------- 12. 시작 ---------- */
@@ -1096,6 +1455,7 @@ function start() {
         console.error(err);
         toast('요청 목록을 불러오지 못했습니다.');
       });
+      if (CHAT_ON) listenChat();
     })
     .catch((err) => {
       console.error(err);
