@@ -1317,7 +1317,15 @@ function renderAgent() {
     : on ? '<i></i>Claude 연결됨 · 말을 걸면 바로 고쳐요'
     : '<i></i>사장님 컴퓨터가 꺼져 있어요. 남긴 말은 저장되고, 켜지면 처리돼요.';
   const typing = $('#rv-typing');
-  if (typing) typing.style.display = working ? '' : 'none';
+  if (typing) {
+    typing.style.display = working ? '' : 'none';
+    // 도우미가 보내는 진행 상황 ("보내 주신 사진을 보는 중이에요" 등)
+    const p = working && agent.progress ? agent.progress : '';
+    const label = typing.querySelector('.rv-typing-txt');
+    if (label) label.textContent = p;
+    typing.classList.toggle('rv-has-txt', !!p);
+    if (working) scrollChat();
+  }
 }
 
 const fmtText = (s) => esc(s)
@@ -1336,13 +1344,16 @@ function msgHtml(m) {
 
   if (m.role === 'assistant') {
     let acts = '';
-    if (m.commit && !m.revertOf) {
+    if (m.commit) {
+      // 미리보기가 다 만들어졌는지 (도우미가 Vercel 을 확인해 deployed 를 붙인다. 오래된 답장은 이미 됐다고 본다)
+      const old = m.createdAt && m.createdAt.toMillis && Date.now() - m.createdAt.toMillis() > 10 * 60 * 1000;
+      const ready = m.deployed || (old && !m.deployError);
+      const note = m.deployError ? '<span class="rv-msg-note rv-bad">미리보기를 만들지 못했어요. 사장님께 알려 주세요.</span>'
+        : ready ? `<span class="rv-msg-note rv-ready">✅ 이제 보여요</span><button class="rv-mini rv-mini-go" data-reload>새로고침해서 보기</button>`
+        : '<span class="rv-msg-note rv-wait"><i></i>미리보기에 올리는 중이에요 (보통 30초쯤)</span>';
+      const undo = (!m.revertOf && !m.reverted) ? `<button class="rv-mini" data-revert="${esc(m.id)}">되돌리기</button>` : '';
       acts = m.reverted ? '<div class="rv-msg-acts"><span class="rv-reverted">↩ 되돌림</span></div>'
-        : `<div class="rv-msg-acts"><span class="rv-msg-note">1~2분 뒤 새로고침하면 보여요</span>
-             <button class="rv-mini" data-reload>새로고침</button>
-             <button class="rv-mini" data-revert="${esc(m.id)}">되돌리기</button></div>`;
-    } else if (m.revertOf) {
-      acts = '<div class="rv-msg-acts"><span class="rv-msg-note">1~2분 뒤 새로고침하면 보여요</span><button class="rv-mini" data-reload>새로고침</button></div>';
+        : `<div class="rv-msg-acts">${note}${undo}</div>`;
     }
     return `<div class="rv-msg rv-ai${m.error ? ' rv-err' : ''}"><div class="rv-msg-who">Claude</div><div class="rv-msg-text">${fmtText(m.text)}</div>${acts}</div>`;
   }
@@ -1367,7 +1378,7 @@ function renderChat() {
         <li>1~2분 뒤 새로고침하면 바뀐 화면이 보여요</li>
       </ol>
       <p>다른 사이트 링크나 캡처를 붙여서 “이런 느낌으로”라고 해도 돼요.</p>
-    </div>`) + '<div class="rv-msg rv-ai rv-typing" id="rv-typing" style="display:none"><span></span><span></span><span></span></div>';
+    </div>`) + '<div class="rv-msg rv-ai rv-typing" id="rv-typing" style="display:none"><span></span><span></span><span></span><b class="rv-typing-txt"></b></div>';
 
   box.querySelectorAll('[data-zoom]').forEach((img) => img.addEventListener('click', () => showLightbox(img.dataset.zoom)));
   box.querySelectorAll('[data-reload]').forEach((b) => b.addEventListener('click', () => location.reload()));
@@ -1389,11 +1400,14 @@ function renderChat() {
 
 function listenChat() {
   onSnapshot(query(collection(db, CHAT_COL), orderBy('createdAt', 'asc'), limitToLast(300)), (snap) => {
-    const before = new Set(chatMsgs.map((m) => m.id));
+    const before = new Map(chatMsgs.map((m) => [m.id, m]));
     chatMsgs = snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((m) => m.site === SITE);
     if (chatReady && chatMsgs.some((m) => m.role === 'assistant' && !before.has(m.id))) {
       toast('Claude가 답했어요.');
       if ($('#rv-panel').classList.contains('rv-collapsed')) $('#rv-handle').classList.add('rv-new');
+    }
+    if (chatReady && chatMsgs.some((m) => m.deployed && before.has(m.id) && !before.get(m.id).deployed)) {
+      toast('✅ 바뀐 화면이 준비됐어요. 새로고침하면 보여요.');
     }
     chatReady = true;
     renderChat();

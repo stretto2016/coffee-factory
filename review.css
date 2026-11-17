@@ -775,3 +775,14 @@ html.rv-drawing #rv-fab { display: none; }
   #rv-panel.rv-tab-chat { --rv-panel-w: 92vw; }
   .rv-cbtn { padding: 0 7px; font-size: 11.5px; }
 }
+
+/* 진행 상황 말풍선 · 미리보기 준비 표시 */
+.rv-typing { align-items: center; flex-wrap: wrap; max-width: 88%; }
+.rv-typing-txt { font-weight: 400; font-size: 12.5px; color: #55504a; margin-left: 6px; }
+.rv-typing.rv-has-txt span { flex: 0 0 auto; }
+.rv-msg-note.rv-ready { color: #1f7a4d; font-weight: 600; flex-basis: auto; }
+.rv-msg-note.rv-bad { color: var(--rv-danger); }
+.rv-msg-note.rv-wait { display: inline-flex; align-items: center; gap: 6px; }
+.rv-msg-note.rv-wait i { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #cdc6bd; border-top-color: var(--rv-accent); animation: rv-spin .8s linear infinite; }
+@keyframes rv-spin { to { transform: rotate(360deg); } }
+.rv-mini.rv-mini-go { background: var(--rv-accent); border-color: var(--rv-accent); color: #fff; }
