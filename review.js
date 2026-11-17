@@ -1320,7 +1320,11 @@ function renderAgent() {
   if (typing) typing.style.display = working ? '' : 'none';
 }
 
-const fmtText = (s) => esc(s).replace(/(https?:\/\/[^\s<>"']+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>').replace(/\n/g, '<br>');
+const fmtText = (s) => esc(s)
+  .replace(/(https?:\/\/[^\s<>"']+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>')
+  .replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>')   // Claude 답장의 **굵게** 표시
+  .replace(/^#{1,4}\s*/gm, '')
+  .replace(/\n/g, '<br>');
 
 function msgHtml(m) {
   const atts = (m.attachments || []).filter((a) => a.type !== 'link');
