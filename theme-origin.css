@@ -249,3 +249,46 @@ html .home-split.container { width: calc(100% - 2 * var(--og-pad)); max-width: c
 /* 푸터 상담 버튼도 브랜드 민트 */
 html .sf-cta-btn { background: var(--og-brand); color: var(--og-brand-ink); font-weight: 600; }
 html .sf-cta:hover .sf-cta-btn { background: var(--og-brand-hover); }
+
+/* ---------- 11/17 아내분 요청 ---------- */
+/* 메인 비즈니스: 01 · 02 · 03 을 가로 세 칸으로 (사진 위 · 글 아래) */
+html .home-service-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; align-items: stretch; }
+html .home-service-row .home-service { display: flex; flex-direction: column; margin: 0; }
+html .home-service-row .home-photo { min-height: 0; height: auto; aspect-ratio: 4 / 3; order: 0; }
+html .home-service-row .home-text { padding: 28px 28px 32px; max-width: none; align-self: stretch; }
+html .home-service-row h3 { font-size: 20px; margin: 0 0 12px; }
+html .home-service-row .home-text p { font-size: 15px; line-height: 1.7; word-break: keep-all; }
+html .home-service-row .home-text p br { display: none; }
+html .home-service-row .home-steps { margin: 16px 0 22px; gap: 6px; }
+
+/* 원두 납품 안내: 품질 3칸 · 진행 절차 4칸 (사진 위 · 글 아래) */
+html .svc-list--cols { display: grid; gap: 24px; align-items: stretch; }
+html .svc-list--cols3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+html .svc-list--cols4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+html .svc-list--cols .svc-item { display: flex; flex-direction: column; }
+html .svc-list--cols .svc-photo { min-height: 0; height: auto; aspect-ratio: 4 / 3; order: 0; }
+html .svc-list--cols .svc-body { padding: 24px 24px 28px; max-width: none; align-self: stretch; }
+html .svc-list--cols .svc-body h3 { font-size: 19px; margin: 0 0 12px; word-break: keep-all; }
+html .svc-list--cols .svc-body p { font-size: 14.5px; line-height: 1.7; word-break: keep-all; }
+html .svc-list--cols .svc-body p.svc-lead { font-size: 15.5px; line-height: 1.6; }
+html .svc-list--cols .svc-check li { font-size: 14px; }
+
+/* 진행 절차 안내 문구(※) 작게 */
+html .section-header > p.partner-cond-note { font-size: 14px; }
+
+/* 브랜드: 슬로건 아래 작은 제목 */
+html .brand-identity-label { display: block; margin: 48px 0 0; }
+
+/* 푸터: 가로형 로고 */
+html .sf-logo--wide { white-space: nowrap; font-size: 26px; line-height: 1; }
+html .sf-logo--wide span { font-size: 15px; letter-spacing: 0.04em; margin-left: 4px; }
+
+@media (max-width: 1100px) {
+    html .svc-list--cols4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+    html .home-service-row, html .svc-list--cols3 { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+    html .svc-list--cols4 { grid-template-columns: minmax(0, 1fr); }
+}
