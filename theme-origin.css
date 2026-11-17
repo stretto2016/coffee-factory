@@ -294,8 +294,11 @@ html .sf-logo--wide span { font-size: 15px; letter-spacing: 0.04em; margin-left:
 }
 
 /* 가로형 로고 이미지 (메뉴 · 푸터) */
-html .logo-img { display: block; height: 20px; width: auto; max-width: 100%; }
-html .sf-logo--wide .logo-img { height: auto; width: 100%; max-width: 300px; }
+html .logo-img { display: block; height: 16px; width: auto; max-width: 100%; }
+/* 메뉴 글자와 가운데 높이를 맞춘다 (로고 글자가 그림 아래쪽에 몰려 있어 살짝 올림) */
+html nav .logo { display: flex; align-items: center; line-height: 1; }
+html nav .logo-img { transform: translateY(-2px); }
+html .sf-logo--wide .logo-img { height: auto; width: 100%; max-width: 240px; }
 @media (max-width: 768px) {
-    html .logo .logo-img { height: 15px; }
+    html .logo .logo-img { height: 13px; transform: translateY(-1px); }
 }
