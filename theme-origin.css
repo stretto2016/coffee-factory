@@ -324,6 +324,9 @@ html .home-more--corner:hover span { transform: translate(2px, -2px); }
 /* 원두 납품 칸: '파트너십 6가지 혜택.' 굵은 제목 + 6개 항목 세로 목록 (앞 짧은 선, 글자 시작선 가지런히) */
 html .home-service-row .home-text p.home-benefit-title { font-weight: 700; color: var(--og-text); margin: 0 0 8px; }
 html .home-benefits { list-style: none; margin: 0 0 22px; padding: 0; }
+/* 머신 케어 칸: partner benefit 작은 라벨 + 굵은 제목 + 한 줄 설명 */
+html .home-benefit-label { display: block; margin: 10px 0 6px; font-family: 'Ciutadella', sans-serif; font-size: 12px; letter-spacing: 0.06em; color: var(--og-muted); }
+html .home-service-row .home-text p.home-benefit-sub { margin: 0 0 6px; }
 html .home-benefits li { position: relative; padding-left: 16px; font-size: 15px; line-height: 1.9; color: #3a3a3a; }
 html .home-benefits li::before { content: ""; position: absolute; left: 0; top: 0.95em; width: 7px; height: 1px; background: currentColor; }
 
