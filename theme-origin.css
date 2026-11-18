@@ -395,16 +395,17 @@ html [id^="rv-"], html [id^="rv-"] * { text-transform: none; }
 html .keep-case, html #hero .hero-en { text-transform: none; }
 
 /* ---------- 원두 페이지 ----------
-   1) 칸 머리: 제목은 왼쪽, 설명은 오른쪽 끝 (같은 아랫선) */
+   1) 칸 머리: 제목 바로 오른쪽에 설명 (같은 아랫선). 시선이 왼쪽 위에서 오른쪽으로 끊기지 않게
+      설명을 화면 오른쪽 끝으로 보내지 않는다 */
 html #finder .section-header, html #shop .section-header {
-    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+    display: grid; grid-template-columns: auto minmax(0, 1fr);
     grid-template-areas: "label sub" "title sub";
     align-items: end; column-gap: 40px;
     text-align: left; max-width: none; margin: 0 0 40px;
 }
 html #finder .section-header > .section-subtitle, html #shop .section-header > .section-subtitle { grid-area: label; margin: 0 0 10px; }
 html #finder .section-header > h2, html #shop .section-header > h2 { grid-area: title; margin: 0; }
-html #finder .section-header > p, html #shop .section-header > p { grid-area: sub; margin: 0; text-align: right; }
+html #finder .section-header > p, html #shop .section-header > p { grid-area: sub; margin: 0; text-align: left; }
 /* 원두 종류 줄(nutty & heavy 등)도 제목 왼쪽 · 설명 오른쪽 끝 */
 html #shop .container > div[style*="border-bottom"] { justify-content: space-between; }
 /* 취향 찾기 상자도 제목과 같은 좌우 끝선으로 */
