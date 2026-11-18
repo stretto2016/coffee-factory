@@ -500,5 +500,5 @@ html #shop .shop-row .shop-dripbag-empty { margin: 0; }
     html .svc-list--compact .svc-body p.svc-lead { font-size: 16px; }
     html .svc-list--compact .svc-body p:last-of-type { margin-bottom: 0; }
 }
-/* 매뉴얼 '한 페이지' 인용을 뺀 뒤 실제 매뉴얼 페이지와 창업 준비 10단계 사이를 넉넉히 */
-html #cs-manual .manual-rail-title { margin-top: 96px; }
+/* 창업 준비 10단계: 페이지 맨 위(소개 글 아래) · 아래 01~06 칸과 사이 넉넉히 */
+html .cs-steps-top { margin: 0 0 96px; }
