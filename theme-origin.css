@@ -79,6 +79,8 @@ html .nav-group-title {
     padding: 22px 14px; white-space: nowrap;
     font-family: 'Ciutadella', 'Archivo', sans-serif; font-size: 15px; letter-spacing: 0.14em; color: var(--og-text); /* 로고 옆 'coffee factory'와 같은 글자 간격 */
 }
+/* Ciutadella 는 굵은 글씨가 없어서, 아주 얇은 테두리로 한 단계만 또렷하게 */
+html .nav-group-title { -webkit-text-stroke: 0.3px currentColor; }
 html .nav-group-title:hover, html .nav-group.is-active > .nav-group-title { text-decoration: underline; text-underline-offset: 6px; }
 html .nav-caret {
     width: 5px; height: 5px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;

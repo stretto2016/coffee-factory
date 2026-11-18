@@ -1826,7 +1826,8 @@ section[id] { scroll-margin-top: 80px; }
 .home-service-label { font-family: 'Ciutadella', sans-serif; font-size: 0.8rem; letter-spacing: 0.12em; color: var(--text-tertiary); }
 .home-steps { list-style: none; counter-reset: st; padding: 0; margin: 22px 0 28px; display: flex; flex-wrap: wrap; gap: 8px; }
 .home-steps li { counter-increment: st; background: var(--surface-alt); border-radius: 999px; padding: 6px 14px; font-size: 0.9rem; color: var(--text-primary); }
-.home-steps li::before { content: counter(st, decimal-leading-zero) "  "; font-family: 'Ciutadella', sans-serif; color: var(--text-tertiary); }
+/* 단계 앞 번호(01 02 03 04)는 빼고 단계 이름만 보인다 */
+.home-steps li::before { content: none; }
 .home-actions { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; margin-top: 24px; }
 .home-btn { background: var(--ink); color: #ffffff; border: 0; border-radius: 6px; padding: 13px 22px; font-size: 0.95rem; font-weight: 600; cursor: pointer; font-family: inherit; }
 .home-btn:hover { background: #2a2a2c; }
