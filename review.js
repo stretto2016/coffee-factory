@@ -1144,7 +1144,7 @@ function showTab(t) {
   p.classList.toggle('rv-tab-chat', t === 'chat');
   p.classList.toggle('rv-tab-list', t === 'list');
   p.querySelectorAll('.rv-tab').forEach((b) => b.classList.toggle('rv-on', b.dataset.tab === t));
-  if (t === 'chat') scrollChat();
+  if (t === 'chat') scrollChat(true);
 }
 
 function bindChat() {
@@ -1269,6 +1269,7 @@ async function sendChat() {
   const links = [...new Set(text.match(/https?:\/\/[^\s<>"']+/g) || [])].slice(0, 5).map((url) => ({ type: 'link', url }));
   const btn = $('#rv-send');
   btn.disabled = true;
+  chatForceBottom = true;   // 내가 보낸 말은 맨 아래로 내려가서 보이게
   try {
     await addDoc(collection(db, CHAT_COL), {
       site: SITE, role: 'user', status: 'pending', host: location.host,
@@ -1367,14 +1368,23 @@ function msgHtml(m) {
   return `<div class="rv-msg rv-me">${attHtml}<div class="rv-msg-text">${fmtText(m.text)}</div>${st ? `<div class="rv-msg-st">${st}</div>` : ''}</div>`;
 }
 
-function scrollChat() {
+// 대화창을 위로 올려 예전 대화를 보는 중이면, 새 답장이 와도 아래로 끌어내리지 않는다.
+// (맨 아래 근처에 있을 때만 따라 내려간다. 내가 보낼 때·대화 탭을 열 때는 맨 아래로)
+let chatForceBottom = false;
+const chatNearBottom = (box) => box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+function scrollChat(force) {
   const box = $('#rv-msgs');
-  if (box) requestAnimationFrame(() => { box.scrollTop = box.scrollHeight; });
+  if (!box) return;
+  if (!force && !chatForceBottom && !chatNearBottom(box)) return;
+  chatForceBottom = false;
+  requestAnimationFrame(() => { box.scrollTop = box.scrollHeight; });
 }
 
 function renderChat() {
   const box = $('#rv-msgs');
   if (!box) return;
+  const wasNear = chatNearBottom(box);
+  const prevTop = box.scrollTop;
   box.innerHTML = (chatMsgs.length ? chatMsgs.map(msgHtml).join('') : `
     <div class="rv-chat-empty">
       <b>이렇게 해 보세요</b>
@@ -1401,7 +1411,8 @@ function renderChat() {
     } catch (_) {}
   }));
   renderAgent();
-  scrollChat();
+  if (wasNear || chatForceBottom) scrollChat(true);
+  else box.scrollTop = prevTop;   // 보던 위치 그대로
 }
 
 function listenChat() {
