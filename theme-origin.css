@@ -454,3 +454,13 @@ html #shop .shop-row .shop-dripbag-empty { margin: 0; }
     html .shop-group { margin-bottom: 8px; }
     html .shop-sub { margin-bottom: 16px; }
 }
+
+/* 브랜드 · our vision: 사진 왼쪽 · 글 오른쪽 (넓은 화면). 좁은 화면은 예전처럼 사진 위 · 글 아래 */
+@media (min-width: 901px) {
+    html .vision-box--photo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; text-align: left; }
+    html .vision-box--photo .vision-photo { height: 100%; min-height: 440px; object-fit: cover; object-position: 55% 50%; }
+    html .vision-box--photo .vision-inner { display: flex; flex-direction: column; justify-content: center; padding: 48px 52px; }
+    html .vision-box--photo .vision-text { max-width: none; margin: 0; }
+    html .vision-box--photo .vision-text p { text-align: left; }
+    html .vision-box--photo .vision-text br { display: none; }  /* 칸이 좁아져 억지 줄바꿈이 "날을 꿈꾸며,"처럼 짧은 줄을 만든다 */
+}
