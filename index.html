@@ -1951,6 +1951,12 @@ a.manual-page:hover { transform: translateY(-3px); }
 .sf-pitch { justify-self: center; }
 .sf-pitch p { margin: 0 0 2px; font-size: 15px; color: #000; }
 .sf-pitch h2 { margin: 0; font-size: 26px; font-weight: 400; letter-spacing: -0.02em; color: #000; }
+/* 문의 문구 오른쪽: 신청서 링크 (세로 구분선으로 문구와 나눔) */
+.sf-pitch { display: flex; align-items: center; gap: 36px; }
+.sf-pitch .sf-hours { margin: 10px 0 0; font-size: 13px; color: #555; }
+.sf-forms { display: flex; flex-direction: column; gap: 10px; padding-left: 36px; border-left: 1px solid #D6D6D6; }
+.sf-forms a { font-size: 15px; color: #000; white-space: nowrap; }
+.sf-forms a:hover { text-decoration: underline; text-underline-offset: 4px; }
 .sf-cta { display: flex; align-items: center; gap: 40px; border: 1px solid #000; border-radius: 999px; padding: 8px 8px 8px 34px; font-size: 15px; color: #555 !important; }
 .sf-cta-btn { background: #202020; color: #fff; border-radius: 999px; padding: 10px 26px; font-weight: 500; }
 .sf-cta:hover .sf-cta-btn { background: #000; }
@@ -1973,6 +1979,8 @@ a.manual-page:hover { transform: translateY(-3px); }
 @media (max-width: 768px) {
     .site-footer { padding: 0 20px 70px; }
     .sf-pitch h2 { font-size: 21px; }
+    .sf-pitch { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .sf-forms { flex-direction: row; flex-wrap: wrap; gap: 8px 24px; padding-left: 0; border-left: 0; }
     .sf-cta { width: 100%; box-sizing: border-box; justify-content: space-between; gap: 12px; padding-left: 20px; font-size: 14px; }
     .sf-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 10px; }
     .sf-bottom { flex-direction: column; align-items: flex-start; }
@@ -3115,8 +3123,15 @@ a.manual-page:hover { transform: translateY(-3px); }
                 <a href="https://blog.naver.com/coffee_stretto" target="_blank" rel="noopener" aria-label="네이버 블로그"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"> <path d="M16.273 12.845 7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727v12.845z"/> </svg></a>
             </div>
             <div class="sf-pitch">
-                <p>원두 납품 · 카페 컨설팅 · 머신 케어</p>
-                <h2>궁금한 점은 언제든 편하게 문의해 주세요.</h2>
+                <div class="sf-pitch-text">
+                    <p>원두 납품 · 카페 컨설팅 · 머신 케어</p>
+                    <h2>궁금한 점은 언제든 편하게 문의해 주세요.</h2>
+                    <p class="sf-hours">평일 09:00 – 17:00 / 주말 · 공휴일 휴무</p>
+                </div>
+                <div class="sf-forms">
+                    <a href="https://forms.gle/KGLnCZmeeydRtSKS8" target="_blank" rel="noopener">머신 수리 신청 →</a>
+                    <a href="https://forms.gle/pgg9RTXiWA1t7NPG6" target="_blank" rel="noopener">카페 컨설팅 상담 →</a>
+                </div>
             </div>
             <a class="sf-cta" href="http://pf.kakao.com/_dCuKC/chat" target="_blank" rel="noopener">
                 <span>카카오톡으로 상담하기</span>
@@ -3124,41 +3139,7 @@ a.manual-page:hover { transform: translateY(-3px); }
             </a>
         </div>
 
-        <div class="sf-mid">
-            <div class="sf-mark">
-                <div class="sf-logo sf-logo--wide"><img class="logo-img" src="img/slogan-careful.png" width="684" height="100" alt="Carefully Crafted Coffee — stretto coffee factory"></div>
-            </div>
-            <div class="sf-cols">
-                <div>
-                    <h3>스트레토</h3>
-                    <a href="/brand" data-route="brand">브랜드</a>
-                    <a href="/brand#brand-naming" data-route="brand" data-anchor="brand-naming">히스토리</a>
-                    <a href="/brand#brand-vision" data-route="brand" data-anchor="brand-vision">비전</a>
-                </div>
-                <div>
-                    <h3>커피</h3>
-                    <a href="/beans" data-route="beans">원두</a>
-                    <a href="https://smartstore.naver.com/stretto_coffeefactory/" target="_blank" rel="noopener">드립백커피</a>
-                </div>
-                <div>
-                    <h3>파트너십</h3>
-                    <a href="/wholesale" data-route="wholesale">원두 납품</a>
-                    <a href="/consulting" data-route="consulting">창업 컨설팅</a>
-                    <a href="/care" data-route="care">머신 케어</a>
-                </div>
-                <div>
-                    <h3>신청하기</h3>
-                    <a href="https://forms.gle/5UyaH3M9RWvmNfEb6" target="_blank" rel="noopener">샘플 테이스팅 신청</a>
-                    <a href="https://forms.gle/KGLnCZmeeydRtSKS8" target="_blank" rel="noopener">머신 수리 신청</a>
-                    <a href="https://forms.gle/pgg9RTXiWA1t7NPG6" target="_blank" rel="noopener">카페 컨설팅 상담</a>
-                </div>
-                <div>
-                    <h3>고객센터</h3>
-                    <span>평일 09:00 – 17:00</span>
-                    <span>주말 · 공휴일 휴무</span>
-                </div>
-            </div>
-        </div>
+        <!-- 가운데: 일러스트 그림 자리 (그림 파일 받으면 넣기) -->
 
         <div class="sf-bottom">
             <div class="sf-legal">
