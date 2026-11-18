@@ -524,3 +524,5 @@ html .cs-steps-top { margin: 0 0 96px; }
     html .manual-docs--rows .manual-doc h4 { font-size: 21px; margin: 6px 0 12px; }
     html .manual-docs--rows .manual-doc p { font-size: 15px; line-height: 1.7; margin: 0; word-break: keep-all; }
 }
+/* 창업 준비 10단계 숫자 동그라미: 한 단계 진하고 완전히 불투명하게 — 뒤를 지나는 연결선이 비치지 않게 */
+html #consulting .manual-num { background: #d2e7eb !important; border: 1px solid #a8d2d9 !important; color: #14555f; position: relative; z-index: 2; }
