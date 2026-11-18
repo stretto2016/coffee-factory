@@ -107,7 +107,8 @@ function ensureClone() {
 
 function syncClone() {
   git("fetch", "origin", BRANCH);
-  git("checkout", "-B", BRANCH, `origin/${BRANCH}`);
+  // -f: 작업 도중 컴퓨터가 꺼져 고치다 만 파일이 남아 있어도 버리고 시작한다 (그 요청은 시작할 때 다시 대기로 돌린다)
+  git("checkout", "-f", "-B", BRANCH, `origin/${BRANCH}`);
   git("reset", "--hard", `origin/${BRANCH}`);
   git("clean", "-fd");
 }
