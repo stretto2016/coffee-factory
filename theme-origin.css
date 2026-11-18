@@ -330,7 +330,7 @@ html .home-benefits { list-style: none; margin: 0 0 22px; padding: 0; }
 html .home-benefit-label { display: block; margin: 10px 0 6px; font-family: 'Ciutadella', sans-serif; font-size: 12px; letter-spacing: 0.06em; color: var(--og-muted); }
 html .home-service-row .home-text p.home-benefit-sub { margin: 0 0 6px; }
 html .home-benefits li { position: relative; padding-left: 16px; font-size: 15px; line-height: 1.9; color: #3a3a3a; }
-html .home-benefits li::before { content: ""; position: absolute; left: 0; top: 0.95em; width: 7px; height: 1px; background: currentColor; }
+html .home-benefits li::before { content: ""; position: absolute; left: 2px; top: calc(0.95em - 2px); width: 4px; height: 4px; border-radius: 50%; background: currentColor; }  /* 가운데 동그란 점 */
 
 /* 원두 납품 안내: 품질 3칸 · 진행 절차 4칸 (사진 위 · 글 아래) */
 html .svc-list--cols { display: grid; gap: 24px; align-items: stretch; }
