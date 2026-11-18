@@ -1968,7 +1968,9 @@ a.manual-page:hover { transform: translateY(-3px); }
 .sf-cols a, .sf-cols span { display: block; margin: 0 0 14px; font-size: 15px; color: #000; }
 .sf-cols span { color: #555; }
 .sf-cols a:hover { text-decoration: underline; text-underline-offset: 4px; }
-.sf-bottom { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 28px 0 36px; }
+.sf-illust { padding: 56px 0 0; line-height: 0; }
+.sf-illust img { display: block; width: 100%; height: auto; }
+.sf-bottom { border-top: 1px solid #E3E3E3; display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 28px 0 36px; }
 .sf-legal { display: flex; flex-wrap: wrap; gap: 6px 28px; font-size: 13px; color: #000; }
 .sf-wordmark { font-family: 'Ciutadella', sans-serif; font-size: 34px; line-height: 1; color: #000; letter-spacing: 0.02em; }
 @media (max-width: 900px) {
@@ -1983,6 +1985,7 @@ a.manual-page:hover { transform: translateY(-3px); }
     .sf-forms { flex-direction: row; flex-wrap: wrap; gap: 8px 24px; padding-left: 0; border-left: 0; }
     .sf-cta { width: 100%; box-sizing: border-box; justify-content: space-between; gap: 12px; padding-left: 20px; font-size: 14px; }
     .sf-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 10px; }
+    .sf-illust { padding-top: 32px; }
     .sf-bottom { flex-direction: column; align-items: flex-start; }
     .sf-legal { flex-direction: column; gap: 4px; }
 }
@@ -3139,11 +3142,12 @@ a.manual-page:hover { transform: translateY(-3px); }
             </a>
         </div>
 
-        <!-- 가운데: 일러스트 그림 자리 (그림 파일 받으면 넣기) -->
+        <!-- 가운데: 일러스트 한 장 (왼쪽 끝 = 위 아이콘 시작선, 오른쪽 끝 = 상담 버튼 끝선, 아래 선 위에 서 있게) -->
+        <div class="sf-illust"><img src="img/footer-illust.png" width="1198" height="369" alt="Carefully Crafted Coffee — 로스터기 앞에서 원두를 볶는 모습, stretto coffee factory" loading="lazy"></div>
 
         <div class="sf-bottom">
             <div class="sf-legal">
-                <span>© 2025 STRETTO COFFEE FACTORY</span>
+                <span>© 2025 stretto coffee factory. All rights reserved.</span>
                 <span>경기도 파주시 문산읍 사목로 69, 3동</span>
                 <span>사업자등록번호 762-53-00875</span>
                 <span>대표번호 010-9548-0053</span>
