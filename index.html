@@ -2430,42 +2430,45 @@ a.manual-page:hover { transform: translateY(-3px); }
 
    <section id="shop" data-page="beans">
         <div class="container">
-            <div class="section-header">
-                <span class="section-subtitle">ONLINE STORE</span>
-                <h2 class="section-title">Signature Blends</h2>
-                <p>스트레토 대표 블렌드</p>
+            <!-- 원두 목록: 한 줄 = [큰 분류] [세부 분류] [원두들]. 큰 분류는 맨 왼쪽, 원두는 모두 같은 시작선 -->
+            <div class="shop-rows">
+            <div class="shop-row">
+                <h2 class="shop-group">Signature Blends</h2>
+                <div class="shop-sub"></div>
+                <div class="shop-row-items">
+                    <div class="shop-grid" id="shop-blend-grid"></div>
+                </div>
             </div>
-            <div class="shop-grid" id="shop-blend-grid" style="margin-bottom: 100px;"></div>
-
-            <div class="section-header" style="margin-top: 100px;">
-                <h2 class="section-title">Single Origin</h2>
-                <p>스트레토가 엄선한 스페셜티 커피</p>
+            <div class="shop-row">
+                <h2 class="shop-group">Single Origin</h2>
+                <div class="shop-sub"><h3>Nutty &amp; Heavy</h3><p>고소함 · 묵직함 · 밸런스</p></div>
+                <div class="shop-row-items">
+                    <div class="shop-grid" id="shop-nutty-grid"></div>
+                </div>
             </div>
-
-            <div style="margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: baseline; gap: 10px;">
-                <h3 style="font-size: 1.5rem; color: var(--text-primary); margin: 0;">Nutty & Heavy</h3>
-                <span style="color: var(--text-tertiary); font-size: 0.95rem;">고소함 · 묵직함 · 밸런스</span>
+            <div class="shop-row shop-row--cont">
+                <span class="shop-group" aria-hidden="true"></span>
+                <div class="shop-sub"><h3>Fruity &amp; Floral</h3><p>산뜻함 · 화사함 · 과일향</p></div>
+                <div class="shop-row-items">
+                    <div class="shop-grid" id="shop-fruity-grid"></div>
+                </div>
             </div>
-            <div class="shop-grid" id="shop-nutty-grid" style="margin-bottom: 80px;"></div>
-
-            <div style="margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: baseline; gap: 10px;">
-                <h3 style="font-size: 1.5rem; color: var(--text-primary); margin: 0;">Fruity & Floral</h3>
-                <span style="color: var(--text-tertiary); font-size: 0.95rem;">산뜻함 · 화사함 · 과일향</span>
+            <div class="shop-row">
+                <h2 class="shop-group">Decaffeine</h2>
+                <div class="shop-sub"></div>
+                <div class="shop-row-items">
+                    <div class="shop-grid" id="shop-decaf-grid"></div>
+                </div>
             </div>
-            <div class="shop-grid" id="shop-fruity-grid"></div>
-            <div style="margin-top: 80px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: baseline; gap: 10px;">
-                <h3 style="font-size: 1.5rem; color: var(--text-primary); margin: 0;">Decaffeine</h3>
-                <span style="color: var(--text-tertiary); font-size: 0.95rem;">카페인 부담 없이 즐기는 본연의 맛</span>
+            <div class="shop-row" id="shop-dripbag">
+                <h2 class="shop-group">Drip Bag</h2>
+                <div class="shop-sub"></div>
+                <div class="shop-row-items">
+                    <div class="shop-grid" id="shop-dripbag-grid"></div>
+                    <p class="shop-dripbag-empty" id="shop-dripbag-empty" hidden>드립백 커피는 <a href="https://smartstore.naver.com/stretto_coffeefactory/" target="_blank" rel="noopener">네이버 스토어 ↗</a>에서 만나보실 수 있습니다.</p>
+                </div>
             </div>
-            <div class="shop-grid" id="shop-decaf-grid"></div>
-
-            <!-- 드립백 (메뉴 COFFEE > 드립백). 앱 데이터에서 category가 dripbag 인 상품 -->
-            <div id="shop-dripbag" style="margin-top: 80px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: baseline; gap: 10px;">
-                <h3 style="font-size: 1.5rem; color: var(--text-primary); margin: 0;">Drip Bag</h3>
-                <span style="color: var(--text-tertiary); font-size: 0.95rem;">어디서나 간편하게 즐기는 드립백 커피</span>
             </div>
-            <div class="shop-grid" id="shop-dripbag-grid"></div>
-            <p class="shop-dripbag-empty" id="shop-dripbag-empty" hidden>드립백 커피는 <a href="https://smartstore.naver.com/stretto_coffeefactory/" target="_blank" rel="noopener">네이버 스토어 ↗</a>에서 만나보실 수 있습니다.</p>
 
             <div style="text-align: center; margin-top: 60px;">
                 <a href="https://smartstore.naver.com/stretto_coffeefactory/" target="_blank" class="btn-primary" 

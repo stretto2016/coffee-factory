@@ -428,3 +428,27 @@ html #shop .btn-shop-link { font-size: 13px; }
 }
 /* 좁아진 원두 칸에서 단어 중간이 잘리지 않게 (예: '향 / 미') */
 html #shop .cup-note, html #shop .product-info h3 { word-break: keep-all; }
+
+/* 3) 원두 목록을 한 줄씩: [큰 분류] [세부 분류] [원두들]
+      원두는 모든 줄에서 같은 세로선에서 시작해 칸이 위아래로 맞는다.
+      같은 큰 분류(single origin) 안의 줄 사이 선은 큰 분류 칸을 건너뛰어 한 묶음으로 보이게 */
+html .shop-rows { border-bottom: 1px solid var(--og-line); }
+html .shop-row { position: relative; display: grid; grid-template-columns: 200px 170px minmax(0, 1fr); column-gap: 32px; border-top: 1px solid var(--og-line); }
+html .shop-row > * { padding: 28px 0 44px; margin: 0; }
+/* 같은 큰 분류의 두 번째 줄: 선이 세부 분류 칸부터 시작 */
+html .shop-row--cont { border-top: 0; }
+html .shop-row--cont::before { content: ""; position: absolute; top: 0; left: 232px; right: 0; border-top: 1px solid var(--og-line); }
+html .shop-group { font-size: 22px; line-height: 1.3; font-weight: 700; color: var(--og-text); }
+html .shop-sub h3 { font-size: 16px; line-height: 1.4; font-weight: 700; margin: 0 0 6px; }
+html .shop-sub p { font-size: 13px; line-height: 1.6; color: var(--og-muted); margin: 0; word-break: keep-all; }
+html #shop .shop-row .shop-grid { margin: 0; }
+html #shop .shop-row .shop-dripbag-empty { margin: 0; }
+@media (max-width: 900px) {
+    html .shop-row { display: block; border-top: 1px solid var(--og-line); padding: 24px 0 36px; }
+    html .shop-row > * { padding: 0; }
+    html .shop-row--cont { border-top: 1px solid var(--og-line); }
+    html .shop-row--cont::before { display: none; }
+    html .shop-row > span.shop-group { display: none; }
+    html .shop-group { margin-bottom: 8px; }
+    html .shop-sub { margin-bottom: 16px; }
+}
