@@ -18,7 +18,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap">
     <style>
         /* === 0. 폰트 파일 등록 === */
         @font-face {
@@ -1094,9 +1094,10 @@ nav {
 /* ---------- 3. 히어로 ---------- */
 #hero { height: auto; min-height: 88vh; }
 .hero-title { font-size: clamp(2rem, 6.2vw, 4rem); letter-spacing: -0.035em; font-weight: 700; }
-/* 'Absolute Precision.' : 슬로건 글씨체(Rage Italic)로 만든 그림. 가운데/왼쪽 정렬을 글자처럼 따라감 */
-.hero-script { display: inline-block; vertical-align: bottom; height: 64px; width: auto; max-width: 100%; margin-bottom: 18px; }
-@media (max-width: 768px) { .hero-script { height: 42px; margin-bottom: 10px; } }
+/* 'Absolute Precision.' : 가는 글씨(Archivo Light). 좌우 길이를 아래 '압도적인 일관성.'과 같게
+   (0.818em 이 두 줄 폭이 같아지는 비율. 글꼴을 불러온 뒤 스크립트가 한 번 더 정확히 맞춘다) */
+.hero-title .hero-en { display: inline-block; font-family: 'Archivo', 'Noto Sans KR', sans-serif; font-weight: 300; font-size: 0.818em; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 6px; white-space: nowrap; }
+.hero-title .hero-ko { display: inline-block; white-space: nowrap; }
 .hero-desc { font-size: clamp(1rem, 2.2vw, 1.35rem); color: rgba(255,255,255,0.74); }
 /* 주 CTA 는 어느 배경에서도 브랜드 민트 + 검정 글씨로 통일 */
 .btn-primary {
@@ -1629,6 +1630,8 @@ footer, .contact-info-list, #contact { word-break: keep-all; }
 /* 34. 히어로 CTA: 글자가 박스 위쪽으로 2px 치우쳐 보이므로 위/아래 여백을 2px 옮겨
       글자 높이를 박스 정중앙에 맞춘다 (박스 전체 높이는 그대로) */
 #hero .btn-primary { padding-top: 18px; padding-bottom: 14px; }
+/* 한글 글자가 위로 1.5px 떠 보여서 아래로 내려 버튼 정가운데에 맞춤 */
+html #hero .btn-primary { padding-top: 13.5px !important; padding-bottom: 10.5px !important; }
 
 /* 파트너십 조건 안내 — 위 인용문보다 항상 한 단계씩 작게 (모바일 포함) */
 .partner-cond { font-size: 0.95rem; }
@@ -2034,12 +2037,50 @@ a.manual-page:hover { transform: translateY(-3px); }
         </div>
 
         <div class="nav-links" id="navLinks">
-            <a href="/brand" data-route="brand" onclick="toggleMenu()">브랜드스토리</a>
-            <a href="/beans" data-route="beans" onclick="toggleMenu()">원두</a>
-            <a href="/wholesale" data-route="wholesale" onclick="toggleMenu()">원두납품안내</a>
-            <a href="/consulting" data-route="consulting" onclick="toggleMenu()">창업컨설팅</a>
-            <a href="/care" data-route="care" onclick="toggleMenu()">머신케어</a>
-            <a href="#contact" onclick="toggleMenu()">문의하기</a>
+            <!-- 메뉴 5묶음: 제목을 누르면 아래 항목이 펼쳐지고 다시 누르면 접힌다 -->
+            <div class="nav-group" data-routes="beans">
+                <button type="button" class="nav-group-title" aria-expanded="false" aria-controls="navSub-coffee">COFFEE<span class="nav-caret" aria-hidden="true"></span></button>
+                <div class="nav-sub" id="navSub-coffee">
+                    <a href="/beans#finder" data-route="beans" data-anchor="finder">커피 취향 찾기</a>
+                    <a href="/beans#shop" data-route="beans" data-anchor="shop">원두</a>
+                    <a href="/beans#shop-dripbag" data-route="beans" data-anchor="shop-dripbag">드립백</a>
+                    <a href="https://smartstore.naver.com/stretto_coffeefactory/" target="_blank" rel="noopener">원두 쇼핑몰 바로가기 <span class="nav-ext" aria-hidden="true">↗</span></a>
+                </div>
+            </div>
+            <div class="nav-group" data-routes="wholesale care">
+                <button type="button" class="nav-group-title" aria-expanded="false" aria-controls="navSub-partnership">PARTNERSHIP<span class="nav-caret" aria-hidden="true"></span></button>
+                <div class="nav-sub" id="navSub-partnership">
+                    <a href="/wholesale" data-route="wholesale">원두 납품</a>
+                    <a href="/care" data-route="care">머신 케어</a>
+                    <a href="/consulting#cs-qc" data-route="consulting" data-anchor="cs-qc">바리스타 교육 &amp; QC</a>
+                    <a href="https://forms.gle/5UyaH3M9RWvmNfEb6" target="_blank" rel="noopener">샘플 테이스팅 문의하기 <span class="nav-ext" aria-hidden="true">↗</span></a>
+                </div>
+            </div>
+            <div class="nav-group" data-routes="consulting">
+                <button type="button" class="nav-group-title" aria-expanded="false" aria-controls="navSub-consulting">CONSULTING<span class="nav-caret" aria-hidden="true"></span></button>
+                <div class="nav-sub" id="navSub-consulting">
+                    <a href="/consulting" data-route="consulting">창업 컨설팅</a>
+                    <a href="https://forms.gle/pgg9RTXiWA1t7NPG6" target="_blank" rel="noopener">컨설팅 문의하기 <span class="nav-ext" aria-hidden="true">↗</span></a>
+                </div>
+            </div>
+            <div class="nav-group" data-routes="">
+                <button type="button" class="nav-group-title" aria-expanded="false" aria-controls="navSub-contact">CONTACT<span class="nav-caret" aria-hidden="true"></span></button>
+                <div class="nav-sub" id="navSub-contact">
+                    <a href="http://pf.kakao.com/_dCuKC/chat" target="_blank" rel="noopener">카카오톡으로 상담하기</a>
+                    <a href="https://forms.gle/5UyaH3M9RWvmNfEb6" target="_blank" rel="noopener">원두 테이스팅 신청</a>
+                    <a href="https://forms.gle/pgg9RTXiWA1t7NPG6" target="_blank" rel="noopener">창업 컨설팅 신청</a>
+                    <a href="https://forms.gle/KGLnCZmeeydRtSKS8" target="_blank" rel="noopener">머신 케어 신청</a>
+                </div>
+            </div>
+            <div class="nav-group" data-routes="brand">
+                <button type="button" class="nav-group-title" aria-expanded="false" aria-controls="navSub-about">ABOUT STRETTO<span class="nav-caret" aria-hidden="true"></span></button>
+                <div class="nav-sub" id="navSub-about">
+                    <a href="/brand" data-route="brand">브랜드 소개</a>
+                    <a href="/brand#brand-history" data-route="brand" data-anchor="brand-history">히스토리</a>
+                    <a href="/brand#brand-greeting" data-route="brand" data-anchor="brand-greeting">대표 인사말</a>
+                    <a href="/brand#brand-vision" data-route="brand" data-anchor="brand-vision">비전</a>
+                </div>
+            </div>
             <!-- 파트너십 주문 버튼: 잠시 숨김 (나중에 다시 넣기)
             <a href="partner.html" target="_blank" style="color: var(--accent-blue); font-weight: bold;" onclick="toggleMenu()">파트너십 주문</a>
             -->
@@ -2058,8 +2099,8 @@ a.manual-page:hover { transform: translateY(-3px); }
         <div class="hero-video-overlay"></div>
 
         <h1 class="hero-title">
-            <img class="hero-script" src="img/hero-absolute-precision.png" width="1606" height="191" alt="Absolute Precision."><br>
-            압도적인 일관성.
+            <span class="hero-en">Absolute Precision.</span><br>
+            <span class="hero-ko">압도적인 일관성.</span>
         </h1>
         
         <p class="hero-desc">
@@ -2250,7 +2291,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                     </p>
                 </div>
 
-                <div class="story-right">
+                <div class="story-right" id="brand-history">
                     <span class="section-subtitle">OUR HISTORY</span>
                     <div class="history-list">
                         <div class="history-item">
@@ -2274,6 +2315,13 @@ a.manual-page:hover { transform: translateY(-3px); }
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- 대표 인사말 (메뉴 ABOUT STRETTO > 대표 인사말). 내용 받으면 채우기 -->
+            <div class="brand-greeting" id="brand-greeting">
+                <span class="section-subtitle">GREETING</span>
+                <h3>대표 인사말</h3>
+                <p class="brand-greeting-todo">대표 인사말을 준비하고 있습니다.</p>
             </div>
 
             <div class="vision-box vision-box--photo" id="brand-vision">
@@ -2385,6 +2433,14 @@ a.manual-page:hover { transform: translateY(-3px); }
                 <span style="color: var(--text-tertiary); font-size: 0.95rem;">카페인 부담 없이 즐기는 본연의 맛</span>
             </div>
             <div class="shop-grid" id="shop-decaf-grid"></div>
+
+            <!-- 드립백 (메뉴 COFFEE > 드립백). 앱 데이터에서 category가 dripbag 인 상품 -->
+            <div id="shop-dripbag" style="margin-top: 80px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: baseline; gap: 10px;">
+                <h3 style="font-size: 1.5rem; color: var(--text-primary); margin: 0;">Drip Bag</h3>
+                <span style="color: var(--text-tertiary); font-size: 0.95rem;">어디서나 간편하게 즐기는 드립백 커피</span>
+            </div>
+            <div class="shop-grid" id="shop-dripbag-grid"></div>
+            <p class="shop-dripbag-empty" id="shop-dripbag-empty" hidden>드립백 커피는 <a href="https://smartstore.naver.com/stretto_coffeefactory/" target="_blank" rel="noopener">네이버 스토어 ↗</a>에서 만나보실 수 있습니다.</p>
 
             <div style="text-align: center; margin-top: 60px;">
                 <a href="https://smartstore.naver.com/stretto_coffeefactory/" target="_blank" class="btn-primary" 
@@ -2935,7 +2991,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                     </div>
                 </article>
 
-                <article class="svc-item svc-item--flip">
+                <article class="svc-item svc-item--flip" id="cs-qc">
                     <figure data-label="Quality control" class="svc-photo svc-photo--todo"><span>사진 준비 중<small>추출을 점검하거나 기록하는 사진</small></span></figure>
                     <div class="svc-body">
                         <span class="svc-num">04</span>
@@ -3178,6 +3234,53 @@ a.manual-page:hover { transform: translateY(-3px); }
         }
     </script>
     <script>
+    /* 맨 위 메뉴: 묶음 제목(COFFEE 등)을 누르면 아래 항목이 펼쳐지고, 다시 누르면 접힌다.
+       한 번에 한 묶음만 열고, 바깥을 누르거나 Esc 를 누르거나 항목을 고르면 닫는다. */
+    (function () {
+        const nav = document.getElementById('navLinks');
+        if (!nav) return;
+        const groups = Array.prototype.slice.call(nav.querySelectorAll('.nav-group'));
+        function setOpen(g, open) {
+            g.classList.toggle('open', open);
+            const t = g.querySelector('.nav-group-title'); if (t) t.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+        function closeAll(except) { groups.forEach(g => { if (g !== except) setOpen(g, false); }); }
+        groups.forEach(g => {
+            const t = g.querySelector('.nav-group-title');
+            t.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const willOpen = !g.classList.contains('open');
+                closeAll(g); setOpen(g, willOpen);
+            });
+        });
+        // 항목을 고르면 묶음과 휴대폰 메뉴를 닫는다 (페이지 이동은 라우터가 맡음)
+        nav.addEventListener('click', function (e) {
+            if (e.target.closest('.nav-sub a')) { closeAll(); nav.classList.remove('active'); }
+        });
+        document.addEventListener('click', function (e) { if (!e.target.closest('.nav-group')) closeAll(); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAll(); });
+    })();
+    </script>
+    <script>
+    /* 메인 첫 화면: 'Absolute Precision.' 좌우 길이를 '압도적인 일관성.'과 똑같이 맞춘다 */
+    (function () {
+        function fit() {
+            const en = document.querySelector('#hero .hero-en');
+            const ko = document.querySelector('#hero .hero-ko');
+            if (!en || !ko) return;
+            en.style.fontSize = '';
+            const we = en.getBoundingClientRect().width, wk = ko.getBoundingClientRect().width;
+            if (!we || !wk) return;
+            const base = parseFloat(getComputedStyle(en).fontSize);
+            en.style.fontSize = (base * wk / we).toFixed(2) + 'px';
+        }
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit); else window.addEventListener('load', fit);
+        let t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(fit, 120); });
+        // 다른 페이지에 있다가 메인으로 돌아오면 다시 맞춘다 (숨겨져 있을 땐 폭을 잴 수 없음)
+        new MutationObserver(fit).observe(document.body, { attributes: true, attributeFilter: ['data-route'] });
+    })();
+    </script>
+    <script>
     /* ===== 페이지 라우터 =====
        /brand, /beans 같은 주소마다 해당 섹션만 보여준다. 실제 파일은 index.html 하나이고,
        Vercel(vercel.json rewrites)이 이 주소들을 index.html 로 돌려준다.
@@ -3216,8 +3319,11 @@ a.manual-page:hover { transform: translateY(-3px); }
             document.body.dataset.route = route;
             document.title = ROUTES[route].title;
             if (canonical) canonical.href = 'https://www.stretto.co.kr' + ROUTES[route].path;
-            document.querySelectorAll('.nav-links a[data-route]').forEach(a => {
-                a.classList.toggle('is-active', a.dataset.route === route);
+            // 지금 보고 있는 페이지가 속한 메뉴 묶음(COFFEE · PARTNERSHIP ...) 제목에 밑줄
+            document.querySelectorAll('.nav-group').forEach(g => {
+                g.classList.toggle('is-active', (g.dataset.routes || '').split(' ').indexOf(route) !== -1);
+                g.classList.remove('open');
+                const t = g.querySelector('.nav-group-title'); if (t) t.setAttribute('aria-expanded', 'false');
             });
             const nav = document.getElementById('navLinks');
             if (nav) nav.classList.remove('active');
@@ -3498,12 +3604,14 @@ a.manual-page:hover { transform: translateY(-3px); }
                 const nuttyGrid = document.getElementById('shop-nutty-grid');
                 const fruityGrid = document.getElementById('shop-fruity-grid');
                 const decafGrid = document.getElementById('shop-decaf-grid'); // [추가] 디카페인 그리드
+                const dripGrid = document.getElementById('shop-dripbag-grid'); // 드립백 그리드
                 
                 // 초기화
                 if(blendGrid) blendGrid.innerHTML = '';
                 if(nuttyGrid) nuttyGrid.innerHTML = '';
                 if(fruityGrid) fruityGrid.innerHTML = '';
                 if(decafGrid) decafGrid.innerHTML = '';
+                if(dripGrid) dripGrid.innerHTML = '';
 
                 // 메인 '지금 스트레토가 볶는 원두' — 관리자 지정 순서 앞쪽 4개
                 const homeGrid = document.getElementById('home-product-grid');
@@ -3562,6 +3670,10 @@ a.manual-page:hover { transform: translateY(-3px); }
                         // [추가] 디카페인 전용 그리드에 넣기
                         if(decafGrid) decafGrid.innerHTML += html;
                     }
+                    else if (cat === 'dripbag') {
+                        // 드립백은 원두 목록이 아니라 드립백 칸에
+                        if(dripGrid) dripGrid.innerHTML += html;
+                    }
                     else if (cat === 'single_fruity') {
                         if(fruityGrid) fruityGrid.innerHTML += html;
                     }
@@ -3570,6 +3682,9 @@ a.manual-page:hover { transform: translateY(-3px); }
                         if(nuttyGrid) nuttyGrid.innerHTML += html;
                     }
                 });
+                // 드립백 상품이 없으면 네이버 스토어 안내 한 줄을 보여준다
+                const dripEmpty = document.getElementById('shop-dripbag-empty');
+                if (dripEmpty) dripEmpty.hidden = !!(dripGrid && dripGrid.children.length);
 
             } catch (error) {
                 console.error("Shop Load Error:", error);

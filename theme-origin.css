@@ -69,6 +69,58 @@ html .nav-links a[href="partner.html"] {
 }
 html .nav-links a[href="partner.html"]:hover { text-decoration: none; background: var(--og-brand-hover); }
 html .hamburger span { background: var(--og-text); }
+/* ---------- 메뉴 5묶음 (COFFEE · PARTNERSHIP · CONSULTING · CONTACT · ABOUT STRETTO) ----------
+   제목을 누르면 아래 항목 상자가 펼쳐진다. 상자 안 글자의 왼쪽 시작선 = 제목 글자 시작선 */
+html .nav-links { align-items: center; }
+html .nav-group { position: relative; }
+html .nav-group-title {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: none; border: 0; cursor: pointer; margin: 0;
+    padding: 22px 14px; white-space: nowrap;
+    font-family: 'Ciutadella', 'Archivo', sans-serif; font-size: 14px; letter-spacing: 0.06em; color: var(--og-text);
+}
+html .nav-group-title:hover, html .nav-group.is-active > .nav-group-title { text-decoration: underline; text-underline-offset: 6px; }
+html .nav-caret {
+    width: 5px; height: 5px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+    transform: translateY(-2px) rotate(45deg); transition: transform .18s ease;
+}
+html .nav-group.open .nav-caret { transform: translateY(1px) rotate(-135deg); }
+html .nav-sub {
+    position: absolute; top: calc(100% - 6px); left: -5px; z-index: 1002;
+    min-width: 210px; padding: 10px 0; box-sizing: border-box;
+    background: #ffffff; border: 1px solid var(--og-line); border-radius: 12px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.08);
+    opacity: 0; visibility: hidden; transform: translateY(-4px);
+    transition: opacity .18s ease, transform .18s ease, visibility .18s;
+}
+html .nav-group.open .nav-sub { opacity: 1; visibility: visible; transform: none; }
+html .nav-links .nav-sub a {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    margin: 0; padding: 10px 18px; white-space: nowrap;
+    font-size: 14.5px; font-weight: 400; color: var(--og-text); text-decoration: none;
+}
+html .nav-links .nav-sub a:hover { background: var(--og-panel); text-decoration: none; }
+html .nav-ext { font-size: 12px; color: var(--og-muted); }
+@media (max-width: 1100px) and (min-width: 769px) {
+    html .nav-group-title { padding: 22px 9px; font-size: 13px; letter-spacing: 0.04em; }
+    html .nav-sub { left: -10px; }
+}
+@media (max-width: 768px) {
+    /* 휴대폰: 옆에서 나오는 메뉴 안에서 제목을 누르면 바로 아래로 펼쳐진다 */
+    html .nav-links { align-items: stretch; padding: 84px 28px 40px; box-sizing: border-box; overflow-y: auto; }
+    html .nav-group { border-bottom: 1px solid var(--og-line); }
+    html .nav-group-title { width: 100%; justify-content: space-between; padding: 18px 0; font-size: 15px; }
+    html .nav-group-title:hover { text-decoration: none; }
+    html .nav-sub {
+        position: static; display: none; min-width: 0; padding: 0 0 14px;
+        border: 0; border-radius: 0; box-shadow: none; background: transparent;
+        opacity: 1; visibility: visible; transform: none; transition: none;
+    }
+    html .nav-group.open .nav-sub { display: block; }
+    html .nav-links .nav-sub a { padding: 9px 0; font-size: 15px; color: #555555 !important; }
+    html .nav-links .nav-sub a:hover { background: transparent; }
+}
+
 
 /* ---------- 폭 · 여백 ---------- */
 html .container { max-width: 1440px; padding: 0 var(--og-pad); box-sizing: border-box; }
@@ -77,7 +129,7 @@ html .home-block { padding: 64px 0; }
 html .home-block--alt, html #maintenance, html #consulting, html #finder, html #story, html #shop, html #wholesale { background: #ffffff !important; }
 html #maintenance > div[style*="radial-gradient"] { display: none; }
 html .page-first { padding-top: 64px !important; }
-html section[id], html [id^="wh-"], html [id^="care-"], html [id^="cs-"], html [id^="brand-"] { scroll-margin-top: calc(var(--og-top) + var(--og-nav) + 24px); }
+html section[id], html [id^="wh-"], html [id^="care-"], html [id^="cs-"], html [id^="brand-"], html #shop-dripbag { scroll-margin-top: calc(var(--og-top) + var(--og-nav) + 24px); }
 
 /* ---------- 페이지 첫 배너 (사진 + 가운데 흰 제목) ---------- */
 html body[data-route="brand"] .page-hero--brand,
@@ -302,3 +354,13 @@ html .sf-logo--wide .logo-img { height: auto; width: 100%; max-width: 240px; }
 @media (max-width: 768px) {
     html .logo .logo-img { height: 13px; transform: translateY(-1px); }
 }
+
+/* 브랜드 페이지: 대표 인사말 (히스토리와 비전 사이). 위 'stretto'? 제목과 같은 크기 · 같은 왼쪽 시작선 */
+html .brand-greeting { margin: 96px 0; max-width: 760px; }
+html .brand-greeting h3 { font-size: 2rem; margin: 0 0 20px; }
+html .brand-greeting-todo { color: var(--og-muted); }
+@media (max-width: 768px) { html .brand-greeting { margin: 64px 0; } html .brand-greeting h3 { font-size: 1.6rem; } }
+
+/* 원두 페이지: 드립백 상품이 없을 때 안내 한 줄 */
+html .shop-dripbag-empty { margin: 8px 0 0; color: var(--og-muted); font-size: 15px; }
+html .shop-dripbag-empty a { color: var(--og-text); text-decoration: underline; text-underline-offset: 4px; }
