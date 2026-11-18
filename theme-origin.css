@@ -20,7 +20,7 @@
     --og-line: #E6E6E6;
     --og-pad: 32px;          /* 화면 양옆 */
     --og-inner: 48px;        /* 판 안쪽 글 여백 */
-    --og-top: 30px;          /* 상단 띠 */
+    --og-top: 0px;           /* 상단 띠 (없앰) */
     --og-nav: 64px;          /* 메뉴 */
 
     --bg-color: #ffffff;
@@ -43,7 +43,7 @@ html p { color: #3a3a3a; font-size: 16px; line-height: 1.6; }
 html h1, html h2, html h3, html h4, html strong { color: var(--og-text); }
 
 /* ---------- 상단 띠 + 흰 메뉴 ---------- */
-html .topbar {
+html .topbar { display: none !important;
     display: flex; justify-content: center; align-items: center;
     position: fixed; top: 0; left: 0; right: 0; z-index: 1001;
     height: var(--og-top); background: var(--og-ink); color: #ffffff; font-size: 12px;
@@ -225,7 +225,7 @@ html #stChatFab { background: var(--og-brand); color: var(--og-brand-ink); borde
 
 /* ---------- 모바일 ---------- */
 @media (max-width: 768px) {
-    :root { --og-pad: 16px; --og-inner: 24px; --og-top: 28px; --og-nav: 56px; }
+    :root { --og-pad: 16px; --og-inner: 24px; --og-top: 0px; --og-nav: 56px; }
     html nav { padding: 0 16px; justify-content: space-between; }
     html .nav-links { position: fixed; flex: none; margin: 0; background: #ffffff !important; }
     html .nav-links a { color: var(--og-text) !important; font-size: 1.1rem; padding: 12px 0; margin: 0; }
