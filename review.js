@@ -62,16 +62,16 @@ const SECTION_NAMES = {
   'brand-naming': '이름과 연혁', 'brand-vision': '비전',
   'wh-quality': '품질', 'wh-promise': '파트너십 약속', 'wh-process': '진행 절차',
   'care-intro': '수리 항목', 'care-process': '수리 절차', 'care-benefit': '파트너 혜택',
-  'cs-services': '컨설팅 내용', 'cs-manual': '창업 매뉴얼', 'cs-steps': '창업 10단계'
+  'cs-services': '컨설팅 내용', education: '바리스타 교육', 'edu-course': '교육 내용', 'edu-process': '교육 진행', 'cs-manual': '창업 매뉴얼', 'cs-steps': '창업 10단계'
 };
 
 /* 홈페이지가 /brand, /wholesale 같은 페이지로 나뉜 뒤로는 코멘트마다 어느 페이지인지 기록한다 */
 const ROUTE_NAMES = {
   home: '메인', brand: '브랜드 스토리', beans: '원두', wholesale: '원두 납품',
-  care: '머신 케어', consulting: '창업 컨설팅'
+  care: '머신 케어', consulting: '창업 컨설팅', education: '바리스타 교육'
 };
 const ROUTE_PATHS = {
-  home: '/', brand: '/brand', beans: '/beans', wholesale: '/wholesale', care: '/care', consulting: '/consulting'
+  home: '/', brand: '/brand', beans: '/beans', wholesale: '/wholesale', care: '/care', consulting: '/consulting', education: '/education'
 };
 const currentRoute = () => document.body.dataset.route || 'home';
 

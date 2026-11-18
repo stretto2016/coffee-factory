@@ -131,14 +131,15 @@ html .home-block { padding: 64px 0; }
 html .home-block--alt, html #maintenance, html #consulting, html #finder, html #story, html #shop, html #wholesale { background: #ffffff !important; }
 html #maintenance > div[style*="radial-gradient"] { display: none; }
 html .page-first { padding-top: 64px !important; }
-html section[id], html [id^="wh-"], html [id^="care-"], html [id^="cs-"], html [id^="brand-"], html #shop-dripbag { scroll-margin-top: calc(var(--og-top) + var(--og-nav) + 24px); }
+html section[id], html [id^="wh-"], html [id^="care-"], html [id^="edu-"], html [id^="cs-"], html [id^="brand-"], html #shop-dripbag { scroll-margin-top: calc(var(--og-top) + var(--og-nav) + 24px); }
 
 /* ---------- 페이지 첫 배너 (사진 + 가운데 흰 제목) ---------- */
 html body[data-route="brand"] .page-hero--brand,
 html body[data-route="beans"] .page-hero--beans,
 html body[data-route="wholesale"] .page-hero--wholesale,
 html body[data-route="care"] .page-hero--care,
-html body[data-route="consulting"] .page-hero--consulting {
+html body[data-route="consulting"] .page-hero--consulting,
+html body[data-route="education"] .page-hero--education {
     display: flex; align-items: center; justify-content: center; text-align: center;
     position: relative; overflow: hidden;
     height: clamp(320px, 42vw, 560px);
