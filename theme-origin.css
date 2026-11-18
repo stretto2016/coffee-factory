@@ -372,3 +372,5 @@ html body { text-transform: lowercase; }
 html input, html textarea, html select,
 html #stChat, html #stChat *,
 html [id^="rv-"], html [id^="rv-"] * { text-transform: none; }
+/* 예외: 대문자 그대로 두는 글자 (QC · OEM · G1 · A부터 Z까지 · 첫 화면 Absolute Precision.) */
+html .keep-case, html #hero .hero-en { text-transform: none; }
