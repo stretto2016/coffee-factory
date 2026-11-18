@@ -485,3 +485,20 @@ html #shop .shop-row .shop-dripbag-empty { margin: 0; }
     html .vision-box--photo .vision-text p { text-align: left; }
     html .vision-box--photo .vision-text br { display: none; }  /* 칸이 좁아져 억지 줄바꿈이 "날을 꿈꾸며,"처럼 짧은 줄을 만든다 */
 }
+
+/* 컨설팅 01~06: 작은 사진 왼쪽 · 글 상자 오른쪽 (상자 안은 설명 | 체크 목록 두 단) */
+@media (min-width: 901px) {
+    html .svc-list--compact { gap: 24px; }
+    html .svc-list--compact .svc-item { grid-template-columns: 280px minmax(0, 1fr); gap: 24px; background: transparent; }
+    html .svc-list--compact .svc-photo { min-height: 240px; height: 100%; order: 0 !important; }
+    html .svc-list--compact .svc-body { background: var(--og-panel); max-width: none; align-self: stretch; padding: 32px 40px; }
+    html .svc-list--compact .svc-body:has(> .svc-check) { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); column-gap: 40px; align-content: center; }
+    html .svc-list--compact .svc-body > * { grid-column: 1; }
+    html .svc-list--compact .svc-body > .svc-check { grid-column: 2; grid-row: 1 / span 4; align-self: center; margin: 0; padding: 0 0 0 32px; border-top: 0; border-left: 1px solid #DDDDDD; }
+    html .svc-list--compact .svc-body h3 { font-size: 21px; margin: 4px 0 12px; }
+    html .svc-list--compact .svc-body p { font-size: 15px; line-height: 1.7; word-break: keep-all; }
+    html .svc-list--compact .svc-body p.svc-lead { font-size: 16px; }
+    html .svc-list--compact .svc-body p:last-of-type { margin-bottom: 0; }
+}
+/* 매뉴얼 '한 페이지' 인용을 뺀 뒤 실제 매뉴얼 페이지와 창업 준비 10단계 사이를 넉넉히 */
+html #cs-manual .manual-rail-title { margin-top: 96px; }
