@@ -1094,6 +1094,9 @@ nav {
 /* ---------- 3. 히어로 ---------- */
 #hero { height: auto; min-height: 88vh; }
 .hero-title { font-size: clamp(2rem, 6.2vw, 4rem); letter-spacing: -0.035em; font-weight: 700; }
+/* 'Absolute Precision.' : 슬로건 글씨체(Rage Italic)로 만든 그림. 가운데/왼쪽 정렬을 글자처럼 따라감 */
+.hero-script { display: inline-block; vertical-align: bottom; height: 64px; width: auto; max-width: 100%; margin-bottom: 18px; }
+@media (max-width: 768px) { .hero-script { height: 42px; margin-bottom: 10px; } }
 .hero-desc { font-size: clamp(1rem, 2.2vw, 1.35rem); color: rgba(255,255,255,0.74); }
 /* 주 CTA 는 어느 배경에서도 브랜드 민트 + 검정 글씨로 통일 */
 .btn-primary {
@@ -2055,7 +2058,7 @@ a.manual-page:hover { transform: translateY(-3px); }
         <div class="hero-video-overlay"></div>
 
         <h1 class="hero-title">
-            Absolute Precision.<br>
+            <img class="hero-script" src="img/hero-absolute-precision.png" width="1606" height="191" alt="Absolute Precision."><br>
             압도적인 일관성.
         </h1>
         
