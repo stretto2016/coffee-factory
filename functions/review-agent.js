@@ -356,18 +356,34 @@ async function reply(text, extra = {}) {
 }
 
 /* Vercel 이 이 커밋으로 미리보기를 다 만들면 답장에 "✅ 이제 보여요"를 붙인다 (보통 20초 안팎) */
+// Vercel CLI 로그인 토큰은 몇 시간마다 만료된다 → CLI 명령을 한 번 돌리면 새 토큰으로 갱신된다
+function vercelToken(refresh) {
+  if (refresh) {
+    try {
+      execFileSync(process.env.ComSpec || "cmd.exe", ["/d", "/s", "/c", "vercel whoami"],
+        { cwd: path.dirname(VERCEL_AUTH), stdio: "ignore", timeout: 60000, windowsHide: true });
+    } catch (e) { log("Vercel 로그인 갱신 실패", e.message.slice(0, 120)); }
+  }
+  try {
+    const j = JSON.parse(fs.readFileSync(VERCEL_AUTH, "utf8"));
+    if (!refresh && j.expiresAt && j.expiresAt * 1000 < Date.now() + 60000) return vercelToken(true);
+    return j.token;
+  } catch (_) { return null; }
+}
+
 async function watchDeploy(shortSha, ref) {
-  let token;
-  try { token = JSON.parse(fs.readFileSync(VERCEL_AUTH, "utf8")).token; } catch (_) { return; }
+  let token = vercelToken(false);
   if (!token) return;
   let full = shortSha;
   try { full = git("rev-parse", shortSha); } catch (_) {}
   const until = Date.now() + 8 * 60 * 1000;
+  let refreshed = false;
   while (Date.now() < until) {
     await new Promise((r) => setTimeout(r, 6000));
     try {
       const res = await fetch(`https://api.vercel.com/v6/deployments?projectId=${VERCEL_PROJECT}&slug=${VERCEL_TEAM}&limit=20`,
         { headers: { Authorization: `Bearer ${token}` } });
+      if ((res.status === 401 || res.status === 403) && !refreshed) { refreshed = true; token = vercelToken(true) || token; continue; }
       if (!res.ok) { log("Vercel 확인 실패", res.status); return; }
       const d = ((await res.json()).deployments || []).find((x) => x.meta && x.meta.githubCommitSha === full);
       const st = d && (d.state || d.readyState);

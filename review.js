@@ -100,6 +100,7 @@ let showDone = false;
 const pinEls = new Map();
 const origStore = new Map(); // 미리 보여 주려고 바꾼 요소의 원래 모습 (el → { html } 또는 { src })
 let chatMsgs = [], chatReady = false, agent = null;
+let agentSeenAt = 0, wokeAt = Date.now();   // agentOnline() 참고
 let attach = [];           // 보낼 메시지에 붙인 것들 (📍 위치 · 🖍 그림 · 📎 사진)
 let pickForChat = false;   // 📍 위치 버튼을 누른 뒤 화면을 누르면 그 자리를 대화에 붙인다
 let tab = CHAT_ON ? 'chat' : 'list';
@@ -1303,10 +1304,18 @@ async function askRevert(m) {
 }
 
 /* 사장님 컴퓨터(리뷰 도우미)가 켜져 있는지 */
+// 도우미는 30초마다 lastSeen 을 새로 쓴다. 두 가지로 확인해서 하나라도 맞으면 켜진 것으로 본다.
+//  1) 이 화면이 서버에서 마지막으로 소식을 받은 지 100초 안 — 아내분 컴퓨터 시계가 틀려도 정확하다
+//  2) lastSeen 시각이 100초 안 (예전 방식)
+// 화면을 다른 창 뒤에 두었다가 돌아오면 다시 연결되는 동안 잠깐 기다려 준다.
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { wokeAt = Date.now(); renderAgent(); } });
+window.addEventListener('online', () => { wokeAt = Date.now(); });
 function agentOnline() {
   if (!agent || agent.state === 'off' || !agent.lastSeen) return false;
+  if (Date.now() - agentSeenAt < 100 * 1000) return true;
   const t = agent.lastSeen.toMillis ? agent.lastSeen.toMillis() : 0;
-  return Date.now() - t < 100 * 1000;
+  if (Date.now() - t < 100 * 1000) return true;
+  return Date.now() - wokeAt < 20 * 1000 && agentSeenAt > 0;   // 막 돌아온 직후엔 판단 보류
 }
 
 function renderAgent() {
@@ -1322,7 +1331,11 @@ function renderAgent() {
       : '<i></i>Claude 사용량이 잠시 꽉 찼어요. 조금 뒤 이어서 반영해요.')
     : working ? '<i></i>Claude가 고치는 중이에요…'
     : on ? '<i></i>Claude 연결됨 · 말을 걸면 바로 고쳐요'
-    : '<i></i>사장님 컴퓨터가 꺼져 있어요. 남긴 말은 저장되고, 켜지면 처리돼요.';
+    : (navigator.onLine === false
+      ? '<i></i>이 컴퓨터의 인터넷 연결이 끊겼어요. 다시 연결되면 이어져요.'
+      : !agentSeenAt && Date.now() - LOADED_AT < 40 * 1000
+      ? '<i></i>연결하는 중이에요…'
+      : '<i></i>사장님 컴퓨터와 연결이 안 돼요. 남긴 말은 저장되고, 연결되면 바로 처리돼요.');
   const typing = $('#rv-typing');
   if (typing) {
     typing.style.display = working ? '' : 'none';
@@ -1430,7 +1443,11 @@ function listenChat() {
     renderChat();
   }, (err) => { console.error(err); toast('대화를 불러오지 못했어요.'); });
 
-  onSnapshot(doc(db, AGENT_COL, SITE), (d) => { agent = d.exists() ? d.data() : null; renderAgent(); },
+  onSnapshot(doc(db, AGENT_COL, SITE), { includeMetadataChanges: true }, (d) => {
+    agent = d.exists() ? d.data() : null;
+    if (!d.metadata.fromCache) agentSeenAt = Date.now();   // 서버에서 새 소식을 받은 때 (이 컴퓨터 시계 기준)
+    renderAgent();
+  },
     (err) => console.error(err));
 }
 
