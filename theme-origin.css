@@ -313,6 +313,8 @@ html .home-service-row .home-text { padding: 28px 28px 32px; max-width: none; al
 html .home-service-row h3 { font-size: 20px; margin: 0 0 12px; }
 html .home-service-row .home-text p { font-size: 15px; line-height: 1.7; word-break: keep-all; }
 html .home-service-row .home-text p br { display: none; }
+/* 줄을 직접 나눈 문단(home-keep-br)은 줄바꿈을 살린다 */
+html .home-service-row .home-text p.home-keep-br br { display: inline; }
 html .home-service-row .home-steps { margin: 16px 0 22px; gap: 6px; }
 /* 원두납품 · 창업컨설팅 · 머신케어 세 칸: '자세히 보기 ↗' 를 각 칸 오른쪽 아래 같은 높이에 */
 html .home-service-row .home-text { display: flex; flex-direction: column; flex: 1; }
