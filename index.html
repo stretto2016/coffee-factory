@@ -2501,52 +2501,36 @@ a.manual-page:hover { transform: translateY(-3px); }
             </div>
 
             <!-- 품질 근거: 예전 4칸 아이콘 카드를 사진 + 풀어 쓴 설명으로 -->
-            <div class="svc-list svc-list--cols svc-list--cols3" id="wh-quality">
-                <article class="svc-item">
-                    <figure data-label="Licensed roastery" class="svc-photo svc-photo--todo"><span>사진 준비 중<small>파주 로스팅 공장 외관 또는 생산 공간</small></span></figure>
-                    <div class="svc-body">
-                        <span class="svc-num">QUALITY 01</span>
-                        <h3>믿고 받아 쓰실 수 있는 원두</h3>
-                        <p class="svc-lead">스트레토 커피 팩토리는 식품제조·가공업 정식 인허가를 받은 로스팅 공장입니다.</p>
-                        <p>
-                            그래서 스트레토의 원두를 구매하신 뒤 매장에서 소분해 다시 판매하실 수도 있습니다(식품소분업 허가 필요).
-                            또 3개월마다 자가품질검사를 받아 안전성을 꾸준히 확인하고 있어, 손님께 내어드리는 원두를
-                            안심하고 쓰실 수 있습니다.
-                        </p>
-                        <ul class="svc-check">
-                            <li>식품제조·가공업 정식 인허가</li>
-                            <li>원두 재가공 판매 가능 (식품소분업 허가 필요)</li>
-                            <li>3개월 주기 자가품질검사</li>
-                        </ul>
+            <!-- 품질 4가지 (예전 홈페이지 문구 그대로) -->
+            <div class="why-grid" id="wh-quality">
+                <div class="why-card">
+                    <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21v-12l5 4v-4l5 4h4"/><path d="M19 21v-8l-1.436 -9.574a.5 .5 0 0 0 -.495 -.426h-1.145a.5 .5 0 0 0 -.494 .418l-1.43 8.582"/><path d="M9 17h1"/><path d="M14 17h1"/></svg></div>
+                    <div class="why-text">
+                        <h3>식품제조·가공업 정식 인허가</h3>
+                        <p>스트레토의 원두를 구매하신 후 재가공하여 판매할 수 있습니다. (식품소분업 허가 필요)</p>
                     </div>
-                </article>
-
-                <article class="svc-item svc-item--flip">
-                    <figure data-label="Roasting" class="svc-photo svc-photo--todo"><span>사진 준비 중<small>프로밧 · 스트롱홀드 로스터기</small></span></figure>
-                    <div class="svc-body">
-                        <span class="svc-num">QUALITY 02</span>
-                        <h3>매번 같은 맛으로 볶습니다</h3>
-                        <p class="svc-lead">납품 원두에서 가장 중요한 건 지난달과 이번 달의 맛이 같은 것입니다.</p>
-                        <p>
-                            재현성과 안정성이 뛰어난 프로밧 로스터기와 스트롱홀드 로스터기를 사용하고,
-                            로스팅할 때마다 데이터를 기록하고 분석합니다. 기록이 쌓일수록 재현성이 높아지고,
-                            여기에 로스터의 노하우가 더해져 언제 받아도 변함없는 맛을 만듭니다.
-                        </p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"/><path d="M21 21l-6 -6"/><path d="M7 10l2 2l4 -4"/></svg></div>
+                    <div class="why-text">
+                        <h3>3개월 주기 자가품질검사</h3>
+                        <p>정기적인 품질 검사를 통해 안전성을 검증받은, 믿고 구매할 수 있는 스트레토 원두입니다.</p>
                     </div>
-                </article>
-
-                <article class="svc-item">
-                    <figure data-label="Cupping" class="svc-photo svc-photo--todo"><span>사진 준비 중<small>출고 전 커핑하는 장면</small></span></figure>
-                    <div class="svc-body">
-                        <span class="svc-num">QUALITY 03</span>
-                        <h3>보내기 전에 한 번 더 맛봅니다</h3>
-                        <p class="svc-lead">로스팅 대회의 승패는 0.1점 차이의 디테일에서 갈립니다.</p>
-                        <p>
-                            2019년부터 국가대표 선발전 심사위원으로 활동해 온 그 기준으로, 원두를 발송하기 전에
-                            커핑을 해서 맛과 향을 확인합니다. 기준에 맞지 않는 원두는 매장으로 보내지 않습니다.
-                        </p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 10.941c2.333 -3.308 .167 -7.823 -1 -8.941c0 3.395 -2.235 5.299 -3.667 6.706c-1.43 1.408 -2.333 3.621 -2.333 5.588c0 3.704 3.134 6.706 7 6.706s7 -3.002 7 -6.706c0 -1.712 -1.232 -4.403 -2.333 -5.588c-2.084 3.353 -3.257 3.353 -4.667 2.235"/></svg></div>
+                    <div class="why-text">
+                        <h3>High-End Roasting</h3>
+                        <p>재현성과 안정성이 뛰어난 프로밧 로스터기와 스트롱홀드 로스터기를 사용하여 일관성 있는 고품질 원두를 생산합니다.</p>
                     </div>
-                </article>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14c.83 .642 2.077 1.017 3.5 1c1.423 .017 2.67 -.358 3.5 -1c.83 -.642 2.077 -1.017 3.5 -1c1.423 -.017 2.67 .358 3.5 1"/><path d="M8 3a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2"/><path d="M12 3a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2"/><path d="M3 10h14v5a6 6 0 0 1 -6 6h-2a6 6 0 0 1 -6 -6v-5z"/><path d="M16.746 16.726a3 3 0 1 0 .252 -5.555"/></svg></div>
+                    <div class="why-text">
+                        <h3>QC & Cupping</h3>
+                        <p>원두 발송 전 커핑을 통해 맛과 향을 확인하며, 언제나 동일한 품질을 약속합니다.</p>
+                    </div>
+                </div>
             </div>
 
             <hr style="border: 0; border-top: 1px solid var(--hairline); margin: 80px 0;">
