@@ -786,3 +786,8 @@ html #home-brand .home-text .section-subtitle { color: rgba(255, 255, 255, 0.75)
 html #home-brand .home-facts li { border-top-color: rgba(255, 255, 255, 0.85); }
 html #home-brand .home-more { border-color: #ffffff; color: #ffffff; }
 html #home-brand .home-more:hover { background: #ffffff; color: var(--og-ink); }
+/* 메인 브랜드 판: 세 단어를 한 줄에 하나씩 [영어 | 한국어 설명] 두 열로, 총 3줄 (11/21 아내분 요청) */
+html #home-brand .home-facts--words { grid-template-columns: minmax(0, 1fr); gap: 0; }
+html #home-brand .home-facts--words li { display: grid; grid-template-columns: 9.5em minmax(0, 1fr); column-gap: 16px; align-items: baseline; padding: 10px 0; }
+html #home-brand .home-facts--words li strong { display: block; }
+html #home-brand .home-lead strong { font-weight: 700; }
