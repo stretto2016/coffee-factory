@@ -1126,7 +1126,7 @@ function chatPanelHtml() {
         <div class="rv-compose-btns">
           <button class="rv-cbtn" id="rv-pick-btn" title="화면에서 고칠 곳을 눌러 알려 주기">📍 위치</button>
           <button class="rv-cbtn" id="rv-cdraw-btn" title="화면에 동그라미 · 화살표 그리기">🖍 그리기</button>
-          <button class="rv-cbtn" id="rv-file-btn" title="사진 · 캡처 붙이기">📎 사진</button>
+          <button class="rv-cbtn" id="rv-file-btn" title="사진 · 캡처 · 엑셀 · PDF 붙이기">📎 첨부</button>
           <button class="rv-btn rv-primary" id="rv-send">보내기</button>
         </div>
       </div>
@@ -1164,7 +1164,7 @@ function bindChat() {
   });
   // 캡처한 그림을 붙여넣기 · 끌어다 놓기
   input.addEventListener('paste', (e) => {
-    const files = [...(e.clipboardData?.files || [])].filter((f) => f.type.startsWith('image/'));
+    const files = [...(e.clipboardData?.files || [])].filter(okFile);
     if (files.length) { e.preventDefault(); addFiles(files); }
   });
   const comp = p.querySelector('.rv-compose');
@@ -1172,7 +1172,7 @@ function bindChat() {
   comp.addEventListener('dragleave', () => comp.classList.remove('rv-drop'));
   comp.addEventListener('drop', (e) => {
     e.preventDefault(); comp.classList.remove('rv-drop');
-    const files = [...(e.dataTransfer?.files || [])].filter((f) => f.type.startsWith('image/'));
+    const files = [...(e.dataTransfer?.files || [])].filter(okFile);
     if (files.length) addFiles(files);
   });
 
@@ -1180,7 +1180,7 @@ function bindChat() {
   $('#rv-cdraw-btn').addEventListener('click', startDraw);
   $('#rv-file-btn').addEventListener('click', () => {
     const f = document.createElement('input');
-    f.type = 'file'; f.accept = 'image/*'; f.multiple = true; f.style.display = 'none';
+    f.type = 'file'; f.accept = DOC_ACCEPT; f.multiple = true; f.style.display = 'none';
     document.body.appendChild(f);
     f.addEventListener('change', () => { const files = [...(f.files || [])]; f.remove(); if (files.length) addFiles(files); });
     f.click();
@@ -1222,9 +1222,31 @@ function attachEl(el) {
   $('#rv-input').focus();
 }
 
+// 사진 말고 붙일 수 있는 파일 (엑셀 · PDF · 워드 · 한글 · CSV · 파워포인트 · 텍스트 · 압축)
+const DOC_EXT = /\.(pdf|xlsx|xlsm|xls|csv|tsv|doc|docx|hwp|hwpx|ppt|pptx|txt|zip)$/i;
+const DOC_ACCEPT = 'image/*,.pdf,.xlsx,.xlsm,.xls,.csv,.tsv,.doc,.docx,.hwp,.hwpx,.ppt,.pptx,.txt,.zip';
+const okFile = (f) => f.type.startsWith('image/') || DOC_EXT.test(f.name || '');
+async function uploadDoc(file) {
+  const safe = (file.name || 'file').replace(/[^\w.\-가-힣]+/g, '_').slice(-80);
+  const path = `${UPLOAD_DIR}/chat-${uid()}-${safe}`;
+  const r = sRef(storage, path);
+  await uploadBytes(r, file, { contentType: file.type || 'application/octet-stream' });
+  return { path, url: await getDownloadURL(r) };
+}
 async function addFiles(files) {
   for (const file of files.slice(0, 6)) {
-    if (!file.type.startsWith('image/')) continue;
+    if (!file.type.startsWith('image/')) {
+      if (!DOC_EXT.test(file.name || '')) { toast('이 종류의 파일은 붙일 수 없어요.'); continue; }
+      if (file.size > 25 * 1024 * 1024) { toast('25MB보다 큰 파일은 붙일 수 없어요.'); continue; }
+      toast('파일을 올리는 중이에요…', true);
+      try {
+        const up = await uploadDoc(file);
+        attach.push({ type: 'file', url: up.url, path: up.path, name: (file.name || '').slice(0, 120), size: file.size });
+        renderAtt();
+        toast('파일을 붙였어요.');
+      } catch (err) { console.error(err); toast('파일을 올리지 못했어요.'); }
+      continue;
+    }
     toast('사진을 올리는 중이에요…', true);
     try {
       const blob = await shrinkImage(file);
@@ -1247,6 +1269,7 @@ function attLabel(a) {
   }
   if (a.type === 'draw') return `<img src="${esc(a.url)}" alt="">🖍 그림`;
   if (a.type === 'image') return `<img src="${esc(a.url)}" alt="">📎 사진`;
+  if (a.type === 'file') return `📄 ${esc((a.name || '파일').slice(0, 24))}`;
   if (a.type === 'link') return `🔗 ${esc(a.url.replace(/^https?:\/\//, '').slice(0, 28))}`;
   return '';
 }
@@ -1359,6 +1382,8 @@ function msgHtml(m) {
   const attHtml = atts.length ? `<div class="rv-msg-atts">${atts.map((a) =>
     (a.type === 'draw' || a.type === 'image')
       ? `<img src="${esc(a.url)}" data-zoom="${esc(a.url)}" alt="">`
+      : a.type === 'file'
+      ? `<a class="rv-att rv-att-s" href="${esc(a.url)}" target="_blank" rel="noopener">📄 ${esc((a.name || '파일').slice(0, 40))}</a>`
       : `<span class="rv-att rv-att-s" data-locate='${esc(JSON.stringify({ selector: a.info.selector, text: a.info.text, imgSrc: a.info.imgSrc, route: a.info.route }))}'>${attLabel(a)}</span>`
   ).join('')}</div>` : '';
 
@@ -1375,6 +1400,7 @@ function msgHtml(m) {
       acts = m.reverted ? '<div class="rv-msg-acts"><span class="rv-reverted">↩ 되돌림</span></div>'
         : `<div class="rv-msg-acts">${note}${undo}</div>`;
     }
+    if (m.handoff && m.handoff.length) acts += '<div class="rv-msg-acts"><span class="rv-msg-note rv-ready">📨 곤돌보스님 · 클실장에게 전달했어요</span></div>';
     return `<div class="rv-msg rv-ai${m.error ? ' rv-err' : ''}"><div class="rv-msg-who">Claude</div><div class="rv-msg-text">${fmtText(m.text)}</div>${acts}</div>`;
   }
   const st = { pending: '전송됨 · 곧 확인해요', working: 'Claude가 보고 있어요…', error: '반영하지 못했어요', done: '' }[m.status] || '';

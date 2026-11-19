@@ -231,6 +231,14 @@ async function buildPrompt(work, cmts, asked, dir) {
       else if (a.type === "draw") p += `- 🖍 화면에 그린 그림 캡처: ${await save(a.url, `m${n}-draw${i}.jpg`)} (근처: ${where(a.info)})\n`;
       else if (a.type === "image") p += `- 📎 첨부 사진: ${await save(a.url, `m${n}-img${i}.jpg`)}${a.name ? ` (원래 파일명 ${a.name})` : ""}\n`;
       else if (a.type === "link") p += `- 🔗 링크: ${a.url}\n`;
+      else if (a.type === "file") {
+        // 엑셀·PDF 등은 대화가 이어져도 다시 볼 수 있게 사본 밖 보관함에 둔다 (커밋되지 않음)
+        const safe = String(a.name || "file").replace(/[\\/:*?"<>|]+/g, "_").slice(-80);
+        const dest = path.join(FILES_DIR, `${new Date().toISOString().slice(0, 10)}-${Date.now().toString(36)}-${safe}`);
+        let where_ = dest.replace(/\\/g, "/");
+        try { fs.mkdirSync(FILES_DIR, { recursive: true }); await download(a.url, dest); } catch (e) { where_ = `(내려받기 실패: ${a.url})`; }
+        p += `- 📄 첨부 파일 "${a.name || ""}": ${where_}  (PDF·사진은 Read 로, 엑셀은 python + openpyxl 로, CSV·텍스트는 Read 로 열어 본다)\n`;
+      }
     }
     p += "\n";
   }
@@ -269,13 +277,23 @@ const SYSTEM = `
 - Firebase(Firestore 규칙·Cloud Functions·DB)는 실제 사이트와 같이 쓰는 서버라 배포·삭제·설정 변경은 하지 않는다.
 - 이것 말고는 "서버 설정이라 못 한다"고 하지 않는다. 사장님 지시: 실제 사이트 반영만 아니면 다 해도 된다.
 - Firestore 제품 데이터(products, publicProducts 등)와 C:\\roastery 폴더(서비스 계정 키)는 실제 쇼핑몰과 연결돼 있으니 건드리지 않는다.
-- 아내분이 "실제 사이트에 올려줘"라고 하면: "실제 사이트 반영은 사장님이 직접 Claude에게 말씀하셔야 해요. 미리보기에는 다 반영돼 있어요."라고 안내한다.
+- 아내분이 "실제 사이트에 올려줘"라고 하면: "미리보기에는 다 반영돼 있고, 실제 사이트에 올리는 건 곤돌보스님과 클실장에게 전달해 둘게요."라고 하고 맨 끝에 [전달] 줄을 남긴다.
 
 [서버 쪽 기능도 미리보기 범위에서는 직접 한다]
 - 비밀 열쇠가 필요한 기능(인스타그램 게시물 불러오기, 외부 서비스 연동 등)은 저장소의 api/ 폴더에 Vercel 서버 함수로 만든다(api/send-telegram.js, api/instagram.js 참고). 이 함수는 미리보기 배포에서 바로 동작한다.
 - 비밀 값은 코드에 쓰지 않고 Vercel 환경변수로 넣는다: vercel env add 이름 preview (미리보기 전용). production 대상은 막혀 있고 쓰지 않는다. vercel env ls, vercel ls, vercel logs, vercel inspect 같은 조회는 자유롭게 써도 된다. vercel 명령에는 항상 --project coffee-factory --scope strettos-projects 를 붙인다(이 사본은 연결 설정이 없다). 환경변수를 바꾼 뒤에는 다음 미리보기 배포부터 적용된다.
 - 필요한 열쇠가 아직 없으면 아내분께 무엇을 어디서 받아 오면 되는지 쉬운 말로 단계별로 안내한다. 계정 로그인·비밀번호 입력·약관 동의는 사람이 해야 하는 일이라 대신하지 않는다.
 - vercel·firebase 명령은 문지기 프로그램을 거친다. "[막힘]"이 나오면 우회하지 말고 다른 방법을 찾거나 사장님 몫이라고 안내한다.
+
+[절대 "안 돼요 / 못 해요"로 끝내지 않는다 — 사장님 지시]
+- 아내분 요청에 "할 수 없어요", "막혀 있어요", "어려워요"로 답하지 않는다. 항상 "이렇게 하면 돼요"를 먼저, 구체적으로 말한다.
+- 이 창에서 지금 바로 할 수 있는 부분은 바로 해 버린다.
+- 사람 손이 필요한 부분(계정 로그인·비밀번호·약관 동의·결제, 실제 사이트 반영, Firebase 서버 설정, 사장님 컴퓨터 설정, 이 도우미 프로그램 자체를 고치는 일)은
+  "이 부분은 곤돌보스님과 클실장에게 전달해 둘게요"라고 말하고, 답장 맨 끝에 한 줄씩 다음 형식으로 적는다:
+  [전달] 누가 무엇을 해야 하는지 한 문장 (예: [전달] 클실장: 리뷰 대화창에서 엑셀 파일도 받을 수 있게 저장소 규칙 변경)
+  이 줄은 아내분 화면에는 안 보이고 곤돌보스님·클실장에게 자동으로 전달된다. 전달했다고 말해 놓고 이 줄을 빼먹지 않는다.
+- 다른 회사 사이트의 이용 규칙을 어기는 수집(로그인 뒤 내용 긁어 오기, 차단 우회 등)은 하지 않는다. 대신 "이렇게 받아 오시면 바로 정리해 드릴게요"처럼 되는 방법을 안내한다(내보내기 파일, 캡처, 복사 등).
+- 대화창에는 사진뿐 아니라 엑셀·PDF·워드·한글·CSV 파일도 붙일 수 있다(📎 버튼, 끌어다 놓기). 첨부 파일은 프롬프트에 경로로 온다.
 
 [그 외에는 적극적으로 돕는다]
 - 문구 다듬기·새로 쓰기, 디자인·배치 변경, 섹션 추가·삭제, 글자 크기·여백, 사진 교체, 새 페이지까지 무엇이든 해도 된다. 되돌리기 버튼이 있으니 과감하게 하되, 요청 범위를 넘는 큰 변경은 하지 않는다.
@@ -362,6 +380,22 @@ function fakeClaude() {
   const mark = `<!-- review-agent test ${new Date().toISOString()} -->`;
   fs.writeFileSync(f, /<!-- review-agent test [^>]*-->/.test(d) ? d.replace(/<!-- review-agent test [^>]*-->/, mark) : d.replace("</body>", mark + "\r\n</body>"));
   return { text: "(시험) 요청을 받아서 시험용 표시를 하나 바꿨어요.", sessionId: null };
+}
+
+/* 곤돌보스님(사장님)·클실장(사장님 PC의 Claude)에게 넘길 일 기록
+   - Firestore reviewHandoff (status: open) + C:\stretto-agent\handoff.md
+   - 클실장은 사장님과 대화를 시작할 때 이 파일을 확인한다 */
+const FILES_DIR = "C:\\stretto-agent\\files";
+const HANDOFF_FILE = "C:\\stretto-agent\\handoff.md";
+async function saveHandoff(items, askedText) {
+  const when = new Date().toLocaleString("ko-KR");
+  try {
+    fs.appendFileSync(HANDOFF_FILE, `\n## ${when}\n요청: ${askedText.slice(0, 300)}\n${items.map((t) => `- [ ] ${t}`).join("\n")}\n`, "utf8");
+  } catch (e) { log("전달 파일 기록 실패", e.message); }
+  try {
+    await db.collection("reviewHandoff").add({ site: SITE, items, asked: askedText.slice(0, 1000), status: "open", createdAt: TS() });
+  } catch (e) { log("전달 기록 실패", e.message); }
+  log("전달 사항", items.length, "건");
 }
 
 async function reply(text, extra = {}) {
@@ -468,8 +502,17 @@ async function run() {
       fs.rmSync(dir, { recursive: true, force: true });
 
       progress("미리보기에 올리는 중이에요");
-      const sha = commitIfChanged(res.text.split("\n")[0] || "리뷰 요청 반영");
-      await reply(res.text || "반영했어요.", sha ? { commit: sha } : {});
+      // 곤돌보스님·클실장에게 넘길 일: 답장 끝의 "[전달] …" 줄을 떼어 따로 기록한다
+      const handoff = [];
+      const shown = String(res.text || "").split("\n").filter((l) => {
+        const m = l.match(/^\s*\[전달\]\s*(.+)$/);
+        if (m) { handoff.push(m[1].trim()); return false; }
+        return true;
+      }).join("\n").trim();
+      const sha = commitIfChanged(shown.split("\n")[0] || "리뷰 요청 반영");
+      const extra = sha ? { commit: sha } : {};
+      if (handoff.length) { extra.handoff = handoff; await saveHandoff(handoff, pc.map((c) => c.text || "").join(" / ")); }
+      await reply(shown || "반영했어요.", extra);
       log(sha ? `반영 완료 ${sha}` : "바뀐 파일 없음 (질문 또는 답변만)");
       // 파일이 바뀌었으면 바로 고침 요청은 반영 완료, 안 바뀌었으면 되물은 상태로 둔다
       finalCmt = sha ? "done" : "asked";
