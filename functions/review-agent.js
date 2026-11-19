@@ -265,9 +265,17 @@ const SYSTEM = `
 지금 작업 폴더는 홈페이지 저장소의 "미리보기 브랜치 전용 사본"이다. 파일만 고치면 커밋과 업로드는 도우미 프로그램이 알아서 하고, 1~2분 뒤 미리보기에 보인다.
 
 [딱 하나의 금지 — 실제 사이트]
-- 실제 사이트(stretto.co.kr, main 브랜치)에 반영하는 일은 절대 하지 않는다: git commit/push/checkout/merge/reset/rebase, vercel·firebase 명령, 배포, main 브랜치 작업 금지.
+- 실제 사이트(stretto.co.kr, main 브랜치, Vercel production)에 반영하는 일은 절대 하지 않는다. git commit/push/checkout/merge/reset/rebase 는 쓰지 않는다(커밋·업로드는 도우미가 미리보기 브랜치에만 한다).
+- Firebase(Firestore 규칙·Cloud Functions·DB)는 실제 사이트와 같이 쓰는 서버라 배포·삭제·설정 변경은 하지 않는다.
+- 이것 말고는 "서버 설정이라 못 한다"고 하지 않는다. 사장님 지시: 실제 사이트 반영만 아니면 다 해도 된다.
 - Firestore 제품 데이터(products, publicProducts 등)와 C:\\roastery 폴더(서비스 계정 키)는 실제 쇼핑몰과 연결돼 있으니 건드리지 않는다.
 - 아내분이 "실제 사이트에 올려줘"라고 하면: "실제 사이트 반영은 사장님이 직접 Claude에게 말씀하셔야 해요. 미리보기에는 다 반영돼 있어요."라고 안내한다.
+
+[서버 쪽 기능도 미리보기 범위에서는 직접 한다]
+- 비밀 열쇠가 필요한 기능(인스타그램 게시물 불러오기, 외부 서비스 연동 등)은 저장소의 api/ 폴더에 Vercel 서버 함수로 만든다(api/send-telegram.js, api/instagram.js 참고). 이 함수는 미리보기 배포에서 바로 동작한다.
+- 비밀 값은 코드에 쓰지 않고 Vercel 환경변수로 넣는다: vercel env add 이름 preview (미리보기 전용). production 대상은 막혀 있고 쓰지 않는다. vercel env ls, vercel ls, vercel logs, vercel inspect 같은 조회는 자유롭게 써도 된다. vercel 명령에는 항상 --project coffee-factory --scope strettos-projects 를 붙인다(이 사본은 연결 설정이 없다). 환경변수를 바꾼 뒤에는 다음 미리보기 배포부터 적용된다.
+- 필요한 열쇠가 아직 없으면 아내분께 무엇을 어디서 받아 오면 되는지 쉬운 말로 단계별로 안내한다. 계정 로그인·비밀번호 입력·약관 동의는 사람이 해야 하는 일이라 대신하지 않는다.
+- vercel·firebase 명령은 문지기 프로그램을 거친다. "[막힘]"이 나오면 우회하지 말고 다른 방법을 찾거나 사장님 몫이라고 안내한다.
 
 [그 외에는 적극적으로 돕는다]
 - 문구 다듬기·새로 쓰기, 디자인·배치 변경, 섹션 추가·삭제, 글자 크기·여백, 사진 교체, 새 페이지까지 무엇이든 해도 된다. 되돌리기 버튼이 있으니 과감하게 하되, 요청 범위를 넘는 큰 변경은 하지 않는다.
@@ -296,8 +304,12 @@ const SYSTEM = `
 const DISALLOWED = [
   "Bash(git push:*)", "Bash(git commit:*)", "Bash(git checkout:*)", "Bash(git switch:*)",
   "Bash(git merge:*)", "Bash(git reset:*)", "Bash(git rebase:*)", "Bash(git remote:*)",
-  "Bash(vercel:*)", "Bash(npx vercel:*)", "Bash(firebase:*)", "Bash(npx firebase:*)",
+  // vercel / firebase 는 C:\stretto-agent\bin 문지기(agent-guard.js)를 거쳐서만 쓴다 (프로덕션·Firebase 배포 차단)
+  "Bash(npx vercel:*)", "Bash(npx firebase:*)", "Bash(npx -y vercel:*)", "Bash(npx -y firebase:*)",
+  "Bash(vercel --prod:*)", "Bash(vercel deploy --prod:*)", "Bash(vercel promote:*)", "Bash(firebase deploy:*)",
   "Read(//c/roastery/**)", "Edit(//c/roastery/**)", "Write(//c/roastery/**)",
+  "Read(//c/Users/shpar/AppData/Roaming/com.vercel.cli/**)", "Read(//c/Users/shpar/.config/configstore/**)",
+  "Edit(//c/stretto-agent/bin/**)", "Write(//c/stretto-agent/bin/**)",
 ];
 
 function runClaude(prompt, resumeId) {
@@ -308,6 +320,8 @@ function runClaude(prompt, resumeId) {
     if (resumeId) a.push("--resume", resumeId);
     const env = { ...process.env };
     delete env.CLAUDECODE; delete env.CLAUDE_CODE_ENTRYPOINT;
+    const pk = Object.keys(env).find((k) => k.toUpperCase() === "PATH") || "Path";
+    env[pk] = GUARD_BIN + path.delimiter + (env[pk] || "");   // vercel·firebase 를 문지기로
     const child = spawn(cmd, a, { cwd: WORK, env, windowsHide: true });
     let buf = "", err = "", result = null;
     child.stdout.on("data", (d) => {
@@ -501,6 +515,20 @@ async function run() {
   if (rerun) schedule();
 }
 
+/* ---------- vercel / firebase 문지기 ---------- */
+const GUARD_BIN = "C:\\stretto-agent\\bin";
+function setupGuard() {
+  fs.mkdirSync(GUARD_BIN, { recursive: true });
+  fs.copyFileSync(path.join(__dirname, "agent-guard.js"), path.join(GUARD_BIN, "guard.js"));
+  const node = process.execPath;
+  for (const t of ["vercel", "firebase"]) {
+    // Windows 명령창용
+    fs.writeFileSync(path.join(GUARD_BIN, `${t}.cmd`), `@echo off\r\n"${node}" "%~dp0guard.js" ${t} %*\r\n`);
+    // Claude 의 Bash(Git Bash)용
+    fs.writeFileSync(path.join(GUARD_BIN, t), `#!/bin/sh\nexec "${node.replace(/\\/g, "/")}" "/c/stretto-agent/bin/guard.js" ${t} "$@"\n`);
+  }
+}
+
 /* ---------- 시작 ---------- */
 function lock() {
   return new Promise((resolve) => {
@@ -515,6 +543,7 @@ function lock() {
   if (!FAKE) { try { log("Claude Code:", claudeCmd().cmd); } catch (e) { log("경고:", e.message); } }
   ensureClone();
   syncClone();
+  try { setupGuard(); } catch (e) { log("문지기 설치 실패", e.message); }
   log(`리뷰 도우미 시작 — 브랜치 ${BRANCH}${FAKE ? " (시험 모드)" : ""}, 사본 ${WORK}`);
 
   // 지난번에 처리하다 꺼졌던 것은 다시 대기열로

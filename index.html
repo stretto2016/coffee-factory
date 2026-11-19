@@ -3443,7 +3443,8 @@ a.manual-page:hover { transform: translateY(-3px); }
     <!-- ===================== [인스타그램] =====================
          맨 위 메뉴 faq 오른쪽 'instagram' (/instagram). 최근 게시물을 바둑판으로.
          지금은 자리표시(ig-tile--todo). 게시물 사진 + 링크를 받으면 <a class="ig-tile" href="게시물 주소"><img ...></a> 로 바꾼다.
-         자동으로 최신 게시물을 불러오려면 사장님 인스타그램 계정 연결(로그인 허락)이 필요 -->
+         자동 연결: /api/instagram (api/instagram.js, Vercel 환경변수 INSTAGRAM_TOKEN) 이 최신 게시물 9개를 주면
+         아래 스크립트가 자리표시를 게시물로 바꾼다. 열쇠가 없거나 실패하면 자리표시 그대로. -->
     <div class="page-hero page-hero--instagram">
         <img src="img/consult-staff-training.jpg" alt="" loading="eager" style="object-position: 50% 50%;">
         <div class="page-hero-text"><h1>인스타그램</h1></div>
@@ -3460,7 +3461,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                 <a href="https://www.instagram.com/coffee_stretto/" target="_blank" rel="noopener" class="home-btn ig-follow">인스타그램 방문 ↗</a>
             </div>
 
-            <div class="ig-grid">
+            <div class="ig-grid" id="ig-grid">
                 <div class="ig-tile ig-tile--todo"><span>게시물 준비 중</span></div>
                 <div class="ig-tile ig-tile--todo"><span>게시물 준비 중</span></div>
                 <div class="ig-tile ig-tile--todo"><span>게시물 준비 중</span></div>
@@ -3473,6 +3474,29 @@ a.manual-page:hover { transform: translateY(-3px); }
             </div>
         </div>
     </section>
+    <script>
+    /* 인스타그램 최신 게시물 → /instagram 바둑판 (열쇠가 없으면 자리표시 그대로) */
+    (function () {
+        var grid = document.getElementById('ig-grid');
+        if (!grid || !window.fetch) return;
+        var loaded = false;
+        function load() {
+            if (loaded) return; loaded = true;
+            fetch('/api/instagram?limit=9').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+                if (!j || !j.posts || !j.posts.length) return;
+                var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+                grid.innerHTML = j.posts.slice(0, 9).map(function (p) {
+                    var alt = esc((p.caption || '스트레토 인스타그램 게시물').split(String.fromCharCode(10))[0].slice(0, 80));
+                    return '<a class="ig-tile" href="' + esc(p.url) + '" target="_blank" rel="noopener"><img src="' + esc(p.img) + '" alt="' + alt + '" loading="lazy"></a>';
+                }).join('');
+            }).catch(function () {});
+        }
+        // 인스타그램 페이지를 열 때 불러온다
+        if (document.body.dataset.route === 'instagram') load();
+        new MutationObserver(function () { if (document.body.dataset.route === 'instagram') load(); })
+            .observe(document.body, { attributes: true, attributeFilter: ['data-route'] });
+    })();
+    </script>
     <!-- ===================== [푸터 · 문의하기] =====================
          Origin Coffee 푸터 구성: 위(소셜 · 문의 문구 · 상담 버튼) → 가운데(링크 4단) → 아래(회사 정보) -->
     <footer id="contact" class="site-footer">
