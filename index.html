@@ -2012,7 +2012,7 @@ a.manual-page:hover { transform: translateY(-3px); }
 }
     </style>
     <!-- Origin 풍 테마 (미리보기 검토 중). 아래 한 줄을 지우면 예전 모습으로, theme-lacabra.css 로 바꾸면 La Cabra 시안으로 -->
-    <link rel="stylesheet" href="theme-origin.css?v=20261120w"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
+    <link rel="stylesheet" href="theme-origin.css?v=20261120x"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
 </head>
 <body>
 <script>
@@ -3486,40 +3486,60 @@ a.manual-page:hover { transform: translateY(-3px); }
                 <h2 class="rv-title">원두 리뷰</h2>
                 <a href="https://smartstore.naver.com/stretto_coffeefactory/" target="_blank" rel="noopener" class="home-btn">네이버 스토어 방문 ↗</a>
             </div>
-            <div class="rv-grid">
-                <article class="rv-card rv-card--todo">
-                    <div class="rv-stars" aria-label="별점">★★★★★</div>
-                    <p class="rv-text">리뷰 준비 중</p>
-                    <div class="rv-meta"><span class="rv-product">원두 이름</span><span class="rv-who">작성자 · 날짜</span></div>
-                </article>
-                <article class="rv-card rv-card--todo">
-                    <div class="rv-stars" aria-label="별점">★★★★★</div>
-                    <p class="rv-text">리뷰 준비 중</p>
-                    <div class="rv-meta"><span class="rv-product">원두 이름</span><span class="rv-who">작성자 · 날짜</span></div>
-                </article>
-                <article class="rv-card rv-card--todo">
-                    <div class="rv-stars" aria-label="별점">★★★★★</div>
-                    <p class="rv-text">리뷰 준비 중</p>
-                    <div class="rv-meta"><span class="rv-product">원두 이름</span><span class="rv-who">작성자 · 날짜</span></div>
-                </article>
-                <article class="rv-card rv-card--todo">
-                    <div class="rv-stars" aria-label="별점">★★★★★</div>
-                    <p class="rv-text">리뷰 준비 중</p>
-                    <div class="rv-meta"><span class="rv-product">원두 이름</span><span class="rv-who">작성자 · 날짜</span></div>
-                </article>
-                <article class="rv-card rv-card--todo">
-                    <div class="rv-stars" aria-label="별점">★★★★★</div>
-                    <p class="rv-text">리뷰 준비 중</p>
-                    <div class="rv-meta"><span class="rv-product">원두 이름</span><span class="rv-who">작성자 · 날짜</span></div>
-                </article>
-                <article class="rv-card rv-card--todo">
-                    <div class="rv-stars" aria-label="별점">★★★★★</div>
-                    <p class="rv-text">리뷰 준비 중</p>
-                    <div class="rv-meta"><span class="rv-product">원두 이름</span><span class="rv-who">작성자 · 날짜</span></div>
-                </article>
+            <!-- 리뷰는 reviews-data.js 의 목록에서 9개씩(휴대폰 4개씩) 한 장으로 나눠 그린다. 옆으로 끌거나 화살표로 넘긴다 -->
+            <div class="rv-pager" id="rv-pager" aria-label="원두 리뷰"></div>
+            <div class="rv-nav">
+                <button type="button" class="rv-arrow" id="rv-prev" aria-label="이전 리뷰">‹</button>
+                <span class="rv-count" id="rv-count">1 / 1</span>
+                <button type="button" class="rv-arrow" id="rv-next" aria-label="다음 리뷰">›</button>
+            </div>
             </div>
         </div>
     </section>
+    <script src="reviews-data.js?v=1"></script>
+    <script>
+    /* 원두 리뷰: 여러 장으로 나눠 옆으로 넘기기 (손가락으로 밀기 · 마우스로 끌기 · 화살표) */
+    (function () {
+        var pager = document.getElementById('rv-pager'); if (!pager) return;
+        var prev = document.getElementById('rv-prev'), next = document.getElementById('rv-next'), count = document.getElementById('rv-count');
+        var esc = function (x) { return String(x == null ? '' : x).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+        var data = (window.STRETTO_REVIEWS || []).slice();
+        var todo = !data.length;
+        if (todo) for (var i = 0; i < 18; i++) data.push({ stars: 5, text: '리뷰 준비 중', product: '원두 이름', who: '작성자 · 날짜' });
+        function card(r) {
+            var n = Math.max(0, Math.min(5, Math.round(r.stars || 5)));
+            return '<article class="rv-card' + (todo ? ' rv-card--todo' : '') + '"><div class="rv-stars" aria-label="별점 ' + n + '점">' + '★★★★★'.slice(0, n) + '<span class="rv-star-off">' + '★★★★★'.slice(0, 5 - n) + '</span></div>'
+                + '<p class="rv-text">' + esc(r.text) + '</p><div class="rv-meta"><span class="rv-product">' + esc(r.product) + '</span><span class="rv-who">' + esc(r.who) + '</span></div></article>';
+        }
+        var perPage = 0;
+        function render() {
+            var pp = window.innerWidth <= 900 ? 4 : 9;
+            if (pp === perPage) return; perPage = pp;
+            var html = '';
+            for (var i = 0; i < data.length; i += pp) html += '<div class="rv-page">' + data.slice(i, i + pp).map(card).join('') + '</div>';
+            pager.innerHTML = html; pager.scrollLeft = 0; update();
+        }
+        function pages() { return pager.children.length || 1; }
+        function cur() { return Math.round(pager.scrollLeft / (pager.clientWidth || 1)); }
+        function go(i) { i = Math.max(0, Math.min(pages() - 1, i)); pager.scrollTo({ left: i * pager.clientWidth, behavior: 'smooth' }); }
+        function update() { var c = cur(); count.textContent = (c + 1) + ' / ' + pages(); prev.disabled = c <= 0; next.disabled = c >= pages() - 1; }
+        prev.addEventListener('click', function () { go(cur() - 1); });
+        next.addEventListener('click', function () { go(cur() + 1); });
+        pager.addEventListener('scroll', function () { window.requestAnimationFrame(update); }, { passive: true });
+        // 마우스로 끌어서 넘기기 (손가락 밀기는 브라우저가 알아서 한다)
+        var down = false, sx = 0, sl = 0, moved = false;
+        pager.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse') return; down = true; moved = false; sx = e.clientX; sl = pager.scrollLeft; pager.classList.add('is-drag'); });
+        window.addEventListener('pointermove', function (e) { if (!down) return; var dx = e.clientX - sx; if (Math.abs(dx) > 3) moved = true; pager.scrollLeft = sl - dx; });
+        window.addEventListener('pointerup', function (e) {
+            if (!down) return; down = false; pager.classList.remove('is-drag');
+            var dx = e.clientX - sx, start = Math.round(sl / (pager.clientWidth || 1));
+            go(Math.abs(dx) > pager.clientWidth * 0.12 ? start + (dx < 0 ? 1 : -1) : start);
+        });
+        pager.addEventListener('click', function (e) { if (moved) { e.preventDefault(); e.stopPropagation(); } }, true);
+        window.addEventListener('resize', render);
+        render();
+    })();
+    </script>
     <!-- ===================== [푸터 · 문의하기] =====================
          Origin Coffee 푸터 구성: 위(소셜 · 문의 문구 · 상담 버튼) → 가운데(링크 4단) → 아래(회사 정보) -->
     <footer id="contact" class="site-footer">

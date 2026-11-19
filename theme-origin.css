@@ -686,3 +686,14 @@ html .rv-meta { display: flex; justify-content: space-between; gap: 12px; font-s
 html .rv-product { color: var(--og-text); font-weight: 500; }
 html .rv-card--todo .rv-stars, html .rv-card--todo .rv-text, html .rv-card--todo .rv-meta span { color: #BBBBBB; }
 @media (max-width: 900px) { html .rv-grid { grid-template-columns: minmax(0, 1fr); } html .rv-head { flex-direction: column; align-items: flex-start; } }
+/* 원두 리뷰: 한 장에 9개(휴대폰 4개)씩, 옆으로 넘기는 여러 장 */
+html .rv-pager { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-top: 1.5px solid var(--og-text); cursor: grab; user-select: none; }
+html .rv-pager::-webkit-scrollbar { display: none; }
+html .rv-pager.is-drag { cursor: grabbing; scroll-snap-type: none; }
+html .rv-page { flex: 0 0 100%; scroll-snap-align: start; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 32px; align-content: start; }
+html .rv-star-off { color: #DDDDDD; }
+html .rv-nav { display: flex; justify-content: center; align-items: center; gap: 18px; margin: 28px 0 96px; }
+html .rv-arrow { width: 36px; height: 36px; border: 1px solid #CCCCCC; border-radius: 50%; background: #fff; font-size: 20px; line-height: 1; color: var(--og-text); cursor: pointer; }
+html .rv-arrow:disabled { opacity: .3; cursor: default; }
+html .rv-count { font-size: 13px; color: var(--og-muted); min-width: 52px; text-align: center; }
+@media (max-width: 900px) { html .rv-page { grid-template-columns: minmax(0, 1fr); } }
