@@ -656,3 +656,16 @@ html .svc-check li::before {
     html .manual-docs--rows .manual-doc-body > h4 { grid-row: 1; margin-top: 2px; line-height: 38px; }
     html .manual-docs--rows .manual-doc-body > p { grid-row: 1 / span 2; }
 }
+/* 매뉴얼 칸 목록: 앞 줄표 대신 작은 글씨로 한 줄에 이어서, 항목 사이를 얇은 세로선( | )으로 구분 */
+html .manual-docs--rows .manual-doc-list { gap: 4px 0 !important; }
+html .manual-docs--rows .manual-doc-list li { padding-left: 0; font-size: 13.5px; color: #3a3a3a; }
+html .manual-docs--rows .manual-doc-list li::before { content: none; }
+html .manual-docs--rows .manual-doc-list li + li::before {
+    content: ""; position: static; display: inline-block; width: 1px; height: 11px; background: #BBBBBB;
+    margin: 0 14px; vertical-align: -1px;
+}
+/* 줄이 넘어갈 때 다음 줄 맨 앞에 세로선이 오지 않도록, 세로선을 항목 '뒤'에 붙인다 */
+html .manual-docs--rows .manual-doc-list li + li::before { content: none; }
+html .manual-docs--rows .manual-doc-list li:not(:last-child)::after {
+    content: ""; display: inline-block; width: 1px; height: 11px; background: #BBBBBB; margin: 0 12px; vertical-align: -1px;
+}
