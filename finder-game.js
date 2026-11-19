@@ -1,0 +1,390 @@
+/* 원두 찾기 게임 (개인 고객 5라운드) — index.html 원두 페이지 #fg
+   ROUND 1 향미 월드컵 · 2 맛 스와이프 · 3 직접 로스팅 · 4 장비 진열장 · 5 뽑기 한 판 → 결과
+   - 카드·뽑기 그림: finder-designs.js (window.FD) / 모양: finder-game.css
+   - 원두 데이터: 사이트가 불러온 window.__publicProducts (공개용 미러). 아직 안 왔으면 아래 스냅숏으로 먼저 보여 준다.
+   - 카페 · 사업자는 기존 질문(.finder-shell)으로 넘긴다. 기존 질문의 '처음으로'는 window.FG.home() 으로 이 시작 화면에 돌아온다.
+   시안 원본: .review-inbox/finder-game.html */
+(function () {
+  const ROOT = document.getElementById('fg');
+  if (!ROOT || !window.FD) return;
+  const SHELL = document.querySelector('#finder .finder-shell');
+  const DESIGN = { aroma: 'illus', swipe: 'illus', gacha: 'machine' };
+
+  /* ================= 데이터 ================= */
+  // 원두 스냅숏 (publicProducts, 2026-11-19) — 실제 데이터가 오기 전 · 못 받았을 때만 쓴다
+  const SNAP = [{"name":"알토 블렌드 (Alto)","category":"blend","roastingLevel":"Dark","cupNote":"다크초콜릿 · 아몬드 · 묵직한 바디","description":"스트레토 대표 강배전 커피로 스모키함 속에서도 구수한 향미, 단맛, 좋은 밸런스를 가진 커피","imageUrl":"alto_blend.jpg","price":10000,"shopLink":"https://smartstore.naver.com/stretto_coffeefactory/products/7703485371","profile":{"acidity":1.6,"body":5,"sweetness":3.7,"roastScore":5}},{"name":"스트레토 블렌드 (Stretto)","category":"blend","roastingLevel":"Medium Dark","cupNote":"고소함 · 밸런스 · 복합적 향미","description":"단맛과 고소함의 완벽한 밸런스. 호불호 없이 누구나 즐길 수 있는 데일리 블렌드.","imageUrl":"stretto_blend.jpg","price":11000,"shopLink":"https://smartstore.naver.com/stretto_coffeefactory/products/4741890835","profile":{"acidity":2.3,"body":3.6,"sweetness":3.4,"roastScore":4}},{"name":"구스토 블렌드 (Gusto)","category":"blend","roastingLevel":"Medium Light","cupNote":"피치 · 플로럴 · 살구 · 시트러스 · 베리","description":"에티오피아와 케냐의 조화. 입안 가득 퍼지는 풍성한 향미와 산뜻한 산미.","imageUrl":"gusto_blend.jpg","price":14000,"shopLink":"https://smartstore.naver.com/stretto_coffeefactory/products/4743046576","profile":{"acidity":4.6,"body":2.4,"sweetness":3,"roastScore":2}},{"name":"디카페인 콜롬비아 엑셀소","category":"decaf","roastingLevel":"Medium Dark","cupNote":"군고구마 · 카라멜 · 브라운슈거 · 오렌지","description":"군고구마의 향미와 카라멜향, 좋은 단맛과 오렌지 같은 상큼함을 지닌 커피","imageUrl":"decaffeine.jpg","price":15500,"shopLink":"https://smartstore.naver.com/stretto_coffeefactory/products/8420400655","profile":{"acidity":2.6,"body":3.6,"sweetness":4.1,"roastScore":4}},{"name":"에티오피아 G1 예가체프 코케 내추럴","category":"single_fruity","roastingLevel":"Medium Light","cupNote":"딸기 · 살구 · 꿀 · 레몬","description":"딸기와 살구의 선명한 과일향이 느껴지고 꿀의 부드러운 단맛과 쥬시한 바디감이 매력적인 커피","imageUrl":"rwanda_busanze.jpg","price":17000,"shopLink":"https://smartstore.naver.com/stretto_coffeefactory/products/12455597683","profile":{"acidity":5,"body":2.4,"sweetness":3.7,"roastScore":2}},{"name":"케냐 응고라노 AA","category":"single_fruity","roastingLevel":"Medium Light","cupNote":"자두 · 블랙커런트 · 히비스커스","description":"히비스커스의 플로럴함과 베리류의 풍미. 과하지 않은 밝은 산미와 마일드한 바디의 조화.","imageUrl":"kenya_ngorano.jpg","price":20000,"shopLink":"https://smartstore.naver.com/stretto_coffeefactory/products/7805124250","profile":{"acidity":5,"body":2.4,"sweetness":3,"roastScore":2}},{"name":"케냐 카구모 AA","category":"single_fruity","roastingLevel":"Medium Light","cupNote":"블랙커런트 · 토마토 · 자몽 · 오렌지· 황설탕","description":"블랙커런트, 자몽, 오렌지의 밝고 쥬시한 산미에 황설탕의 묵직한 단맛이 인상적인 커피","imageUrl":"kenya_kagumo1.jpg","price":22000,"shopLink":"https://smartstore.naver.com/stretto_coffeefactory/products/7805158072","profile":{"acidity":5,"body":2.7,"sweetness":3.7,"roastScore":2}},{"name":"과테말라 엘소코로 옐로우 카투라","category":"single_nutty","roastingLevel":"Medium Dark","cupNote":"밀크초콜릿 · 캐러맬 · 오렌지 · 청사과","description":"은은한 오렌지, 청사과의 뉘앙스에 밀크초콜릿, 캐러멜의 깊은 단맛이 느껴지는 커피","imageUrl":"guatemala_el_soc.jpg","price":15500,"shopLink":"https://smartstore.naver.com/stretto_coffeefactory/products/8480420344","profile":{"acidity":1.9,"body":4.1,"sweetness":3.7,"roastScore":4}},{"name":"과테말라 안티구아 SHB","category":"single_nutty","roastingLevel":"Medium Dark","cupNote":"마카다미아 · 아몬드 · 밀크초콜릿","description":"한국인이 가장 선호하는 맛. 묵직하고 부드러운 바디와 견과류의 고소함, 좋은 밸런스.","imageUrl":"guatemala_antigua.jpg","price":11000,"shopLink":"https://smartstore.naver.com/stretto_coffeefactory/products/5342064375","profile":{"acidity":1.3,"body":5,"sweetness":3.4,"roastScore":4}},{"name":"에티오피아 예가체프 게뎁 초르소","category":"single_fruity","roastingLevel":"Medium Light","cupNote":"아카시아 · 베르가못 · 살구 · 사과 · 레몬","description":"과일향이 가득하고, 밝은 산미와 부드러운 바디가 어우러진 매력적인 커피.","imageUrl":"ethiopia_guji.jpg","price":22000,"shopLink":"https://smartstore.naver.com/stretto_coffeefactory/products/13698590259","profile":{"acidity":5,"body":2.4,"sweetness":3,"roastScore":2}}];
+  const STORE = 'https://smartstore.naver.com/stretto_coffeefactory';
+  function beans() {
+    const live = (window.__publicProducts || []).filter((p) => p.profile && p.recommendB2C !== false && p.shopVisible !== false);
+    const list = live.length ? live : SNAP;
+    return list.map((p) => ({
+      name: p.name, cat: p.category || '', roast: p.roastingLevel || '', notes: p.cupNote || '', desc: p.description || '',
+      img: p.imageUrl ? (/^(https?:)?\/\//.test(p.imageUrl) || p.imageUrl.startsWith('/') ? p.imageUrl : '/' + p.imageUrl) : '',
+      price: p.price || 0, link: p.shopLink || STORE,
+      pr: { acidity: p.profile.acidity || 3, body: p.profile.body || 3, sweetness: p.profile.sweetness || 3, roastScore: p.profile.roastScore || 3 },
+    }));
+  }
+
+  // 향미 8종 [산미, 바디, 단맛, 배전] 보정값 — 이름·그림은 FD.AROMA
+  const AROMAS = {
+    berry:   { v: [0.6, -0.3, 0.1, -0.4], bright: true },
+    citrus:  { v: [0.8, -0.4, -0.1, -0.5], bright: true },
+    floral:  { v: [0.5, -0.6, 0.1, -0.7], bright: true },
+    wine:    { v: [0.3, 0.3, 0.3, 0.0], bright: true },
+    caramel: { v: [-0.2, 0.2, 0.8, 0.2] },
+    choco:   { v: [-0.6, 0.4, 0.5, 0.5] },
+    nutty:   { v: [-0.6, 0.3, 0.4, 0.4] },
+    smoky:   { v: [-0.9, 0.9, -0.2, 1.0] },
+  };
+  const AN = (k) => FD.AROMA[k].ko;
+  const FIRST_ROUND = [['berry', 'choco'], ['floral', 'nutty'], ['citrus', 'caramel'], ['wine', 'smoky']];
+  const SWIPES = FD.SWIPE;
+
+  const STAGES = [
+    { to: 0.17, k: 'UNDER ROASTED', n: '풀 내음 · 생땅콩 · 아직 커피가 아니에요', rs: 0 },
+    { to: 0.34, k: 'LIGHT',         n: '꽃 · 레몬 껍질 · 홍차', rs: 1 },
+    { to: 0.49, k: 'MEDIUM LIGHT',  n: '베리 · 살구 · 꿀', rs: 2 },
+    { to: 0.64, k: 'MEDIUM',        n: '캐러멜 · 밀크초콜릿 · 둥근 단맛', rs: 3 },
+    { to: 0.80, k: 'MEDIUM DARK',   n: '다크초콜릿 · 구운 견과 · 흑설탕', rs: 4 },
+    { to: 1.00, k: 'DARK',          n: '카카오 닙 · 훈연 · 긴 여운', rs: 5 },
+    { to: 9,    k: 'BEYOND DARK',   n: '숯 · 쓴맛 · 이건 좀 과했어요', rs: 5 },
+  ];
+  const CRACK1 = 0.40, CRACK2 = 0.73;
+  const BEAN_STOPS = [[0, '#8FA05A'], [0.16, '#C9B66B'], [0.34, '#B98A4E'], [0.5, '#8E5A33'], [0.65, '#6B3F24'], [0.8, '#4A2A18'], [0.94, '#2A1A10'], [1.08, '#0e0906']];
+
+  const GEARS = {
+    drip:     { n: '드리퍼',     s: '핸드드립',   v: [0.3, -0.2, -0.4], i: '<path d="M10 14h28l-8 14H18z"/><path d="M24 28v5M16 40h16M24 4v4M20 8h8"/>' },
+    espresso: { n: '에스프레소', s: '머신',       v: [-0.2, 0.4, 0.7],  i: '<rect x="9" y="5" width="30" height="12" rx="2"/><path d="M17 17v4M31 17v4M15 27h18v6a6 6 0 0 1-6 6h-6a6 6 0 0 1-6-6z"/><path d="M33 29h3a3 3 0 0 1 0 6h-3"/>' },
+    moka:     { n: '모카포트',   s: '가정용 압력', v: [-0.1, 0.4, 0.5], i: '<path d="M16 6h16l-2 12H18zM18 18l-4 22h20l-4-22M32 9h4v8"/><path d="M24 2v4"/>' },
+    cold:     { n: '콜드브루',   s: '차갑게 오래', v: [-0.2, 0.5, 0.6], i: '<path d="M14 8h20l-3 32H17z"/><path d="M18 18h12M20 26l2 2M26 24l2 2M21 32l2 1"/>' },
+    capsule:  { n: '캡슐 · 드립백', s: '간편 추출', v: [0, 0.1, 0.3],   i: '<path d="M13 14h22l-4 22H17z"/><path d="M11 14h26"/><circle cx="24" cy="9" r="2"/>' },
+  };
+
+  /* ================= 판 만들기 ================= */
+  ROOT.innerHTML = `<div class="board">
+      <div class="hud" id="fg-hud" style="display:none">
+        <div class="hud-left"><span class="hud-round" id="fg-hud-round"></span><span class="hud-name" id="fg-hud-name"></span></div>
+        <div class="hud-beans" id="fg-hud-beans"></div>
+        <button type="button" class="hud-home" id="fg-hud-home">처음으로</button>
+      </div>
+      <div class="stage" id="fg-stage"></div>
+    </div><div class="toast" id="fg-toast"></div>`;
+  const $ = (s, r = ROOT) => r.querySelector(s);
+  const stage = $('#fg-stage');
+
+  const ROUNDS = ['향미 월드컵', '맛 스와이프', '직접 로스팅', '장비 진열장', '뽑기 한 판'];
+  let S;
+  function reset() { S = { round: 0, champ: null, runner: null, taste: { a: 0, b: 0, s: 0 }, likes: [], roast: null, roastKey: '', fails: 0, gears: [], none: false, adventure: null }; }
+  const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
+  const won = (n) => Number(n || 0).toLocaleString('ko-KR');
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  function toast(t) { const el = $('#fg-toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove('show'), 2200); }
+  function mix(c1, c2, t) { const a = parseInt(c1.slice(1), 16), b = parseInt(c2.slice(1), 16); const r = (x, s) => (x >> s) & 255; const m = (s) => Math.round(r(a, s) + (r(b, s) - r(a, s)) * t); return `rgb(${m(16)},${m(8)},${m(0)})`; }
+  function beanColor(p) { for (let i = 1; i < BEAN_STOPS.length; i++) { if (p <= BEAN_STOPS[i][0]) { const [p0, c0] = BEAN_STOPS[i - 1], [p1, c1] = BEAN_STOPS[i]; return mix(c0, c1, (p - p0) / (p1 - p0)); } } return BEAN_STOPS[BEAN_STOPS.length - 1][1]; }
+  const beanSvg = (fill, stroke = 'rgba(0,0,0,.25)') => `<svg viewBox="0 0 40 50"><ellipse cx="20" cy="25" rx="16" ry="21" fill="${fill}" stroke="${stroke}" stroke-width="1"/><path d="M21 6c-6 8 4 14-1 19s-5 12 1 19" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+
+  // 키보드 (스와이프 화살표 · 로스팅 스페이스바) — 화면에 게임이 보일 때만
+  const KEY = { down: null, up: null };
+  const visible = () => ROOT.offsetParent !== null && ROOT.style.display !== 'none';
+  document.addEventListener('keydown', (e) => { if (KEY.down && visible()) KEY.down(e); });
+  document.addEventListener('keyup', (e) => { if (KEY.up && visible()) KEY.up(e); });
+
+  function hud() {
+    const h = $('#fg-hud');
+    if (S.round < 1 || S.round > 5) { h.style.display = 'none'; return; }
+    h.style.display = '';
+    $('#fg-hud-round').textContent = `ROUND ${S.round} / 5`;
+    $('#fg-hud-name').textContent = ROUNDS[S.round - 1];
+    const cols = ['#8FA05A', '#C9B66B', '#B98A4E', '#8E5A33', '#4A2A18'];
+    $('#fg-hud-beans').innerHTML = [0, 1, 2, 3, 4].map((i) => {
+      const done = i < S.round - 1, cur = i === S.round - 1;
+      return beanSvg(done ? cols[i] : (cur ? '#fff' : '#f2f2f2'), cur ? '#202020' : (done ? 'rgba(0,0,0,.2)' : '#ddd')).replace('<svg', `<svg class="${cur ? 'cur' : ''}"`);
+    }).join('');
+  }
+  $('#fg-hud-home').addEventListener('click', () => { reset(); go(0); });
+  function go(r, noScroll) {
+    KEY.down = KEY.up = null;
+    S.round = r; hud(); [entry, r1, r2, r3, r4, r5, result][r]();
+    if (!noScroll) { const y = ROOT.getBoundingClientRect().top + window.scrollY - 84; if (Math.abs(window.scrollY - y) > 40) window.scrollTo({ top: y, behavior: 'smooth' }); }
+  }
+  function screen(html) { stage.innerHTML = `<div class="screen">${html}</div>`; return stage.firstElementChild; }
+
+  /* ================= 시작 ================= */
+  function entry() {
+    const el = screen(`<div class="entry">
+      <button type="button" class="entry-card" data-m="b2c"><img src="/img/hero-beans-2.jpg" alt=""><div class="in"><small>FOR YOU</small><b>개인 고객</b><span>다섯 판의 게임으로<br>내 취향의 원두를 찾아요.</span><div class="meta"><span>5 ROUNDS</span><span>약 1분</span></div></div><span class="go">게임 시작</span></button>
+      <button type="button" class="entry-card" data-m="b2b"><img src="/img/wh-sample-tasting.jpg" alt=""><div class="in"><small>FOR CAFÉ</small><b>카페 · 사업자</b><span>매장에 맞는<br>납품용 블렌드를 찾아요.</span><div class="meta"><span>7 QUESTIONS</span><span>약 2분</span></div></div><span class="go">시작하기</span></button>
+    </div>`);
+    el.querySelector('[data-m="b2c"]').onclick = () => go(1);
+    el.querySelector('[data-m="b2b"]').onclick = toCafe;
+  }
+  // 카페 · 사업자 → 기존 질문
+  function toCafe() {
+    const btn = document.querySelector('#finder .finder-mode[data-mode="b2b"]');
+    if (!SHELL || !btn) return;
+    ROOT.style.display = 'none'; SHELL.style.display = '';
+    btn.click();
+  }
+
+  /* ================= ROUND 1 향미 월드컵 ================= */
+  function r1() {
+    let round = FIRST_ROUND.map((p) => p.slice()), next = [], idx = 0, picks = 0, lastLoser = null;
+    const label = () => round.length === 4 ? `8강 · ${idx + 1} / 4` : round.length === 2 ? `4강 · ${idx + 1} / 2` : '결승';
+    function show() {
+      const [a, b] = round[idx];
+      const card = (k) => `<button type="button" class="wc-card" data-k="${k}">${FD.aromaCard(DESIGN.aroma, k)}</button>`;
+      const el = screen(`<h3 class="q-title">더 끌리는 향을 골라 주세요</h3><p class="q-hint">끝까지 살아남은 향이 당신의 취향이에요</p>
+        <div class="wc-stage">${label()}</div>
+        <div class="wc">${card(a)}<div class="wc-vs">VS</div>${card(b)}</div>
+        <div class="bracket">${Array.from({ length: 7 }, (_, i) => `<span class="${i < picks ? 'on' : ''}"></span>`).join('')}</div>`);
+      el.querySelectorAll('.wc-card').forEach((c) => c.onclick = () => {
+        if (el.dataset.lock) return; el.dataset.lock = 1;
+        const w = c.dataset.k, l = w === a ? b : a;
+        c.classList.add('win'); el.querySelector(`.wc-card[data-k="${l}"]`).classList.add('lose');
+        picks++; next.push(w); lastLoser = l;
+        setTimeout(() => {
+          idx++;
+          if (idx < round.length) return show();
+          if (next.length === 1) { S.champ = next[0]; S.runner = lastLoser; return champion(); }
+          const r = []; for (let i = 0; i < next.length; i += 2) r.push([next[i], next[i + 1]]);
+          round = r; next = []; idx = 0; show();
+        }, 520);
+      });
+    }
+    function champion() {
+      const el = screen(`<div class="champ"><small>CHAMPION</small><div class="trophy">${FD.aromaCard(DESIGN.aroma, S.champ)}</div>
+        <p style="margin-top:16px">준우승 · ${AN(S.runner)}</p></div>
+        <div class="foot"><button type="button" class="btn-text" id="fg-again">다시 하기</button><button type="button" class="btn-ink" id="fg-nx">다음 라운드 →</button></div>`);
+      el.querySelector('#fg-nx').onclick = () => go(2);
+      el.querySelector('#fg-again').onclick = () => r1();
+    }
+    show();
+  }
+
+  /* ================= ROUND 2 맛 스와이프 ================= */
+  function r2() {
+    S.taste = { a: 0, b: 0, s: 0 }; S.likes = [];
+    let i = 0, busy = false;
+    const el = screen(`<h3 class="q-title">이 맛, 좋아요? 별로예요?</h3><p class="q-hint">카드를 오른쪽(좋아요) · 왼쪽(별로예요)으로 넘겨 주세요</p>
+      <div class="sw-area" id="fg-sw"></div>
+      <div class="sw-btns"><button type="button" class="sw-btn" id="fg-no">← 별로예요</button><button type="button" class="sw-btn like" id="fg-yes">좋아요 →</button></div>
+      <div class="sw-count" id="fg-cnt"></div>`);
+    const area = el.querySelector('#fg-sw');
+    function render() {
+      busy = false;
+      if (i >= SWIPES.length) return summary();
+      el.querySelector('#fg-cnt').textContent = `${i + 1} / ${SWIPES.length}`;
+      area.innerHTML = SWIPES.slice(i, i + 3).map((c, k) => `<div class="sw-card ${k ? 'back' + k : 'top'}" style="z-index:${3 - k}">
+        <span class="stamp like">좋아요</span><span class="stamp nope">별로예요</span>${FD.swipeCard(DESIGN.swipe, c, i + k)}</div>`).reverse().join('');
+      bindDrag(area.querySelector('.top'));
+    }
+    function decide(like) {
+      if (busy || i >= SWIPES.length) return; busy = true;
+      const c = SWIPES[i], top = area.querySelector('.top');
+      const f = like ? 1 : -0.5;
+      S.taste.a += (c.a || 0) * f; S.taste.b += (c.b || 0) * f; S.taste.s += (c.s || 0) * f;
+      if (like) S.likes.push(c.ko);
+      top.style.transition = 'transform .35s ease, opacity .35s';
+      top.style.transform = `translateX(${like ? 140 : -140}%) rotate(${like ? 18 : -18}deg)`;
+      top.style.opacity = 0;
+      i++; setTimeout(render, 260);
+    }
+    function bindDrag(card) {
+      let x0 = null, dx = 0;
+      const like = card.querySelector('.stamp.like'), nope = card.querySelector('.stamp.nope');
+      card.addEventListener('pointerdown', (e) => { x0 = e.clientX; dx = 0; card.setPointerCapture(e.pointerId); card.style.transition = 'none'; });
+      card.addEventListener('pointermove', (e) => { if (x0 === null) return; dx = e.clientX - x0; card.style.transform = `translateX(${dx}px) rotate(${dx / 18}deg)`; like.style.opacity = clamp(dx / 90, 0, 1); nope.style.opacity = clamp(-dx / 90, 0, 1); });
+      const end = () => { if (x0 === null) return; x0 = null; if (Math.abs(dx) > 90) decide(dx > 0); else { card.style.transition = 'transform .3s'; card.style.transform = ''; like.style.opacity = nope.style.opacity = 0; } };
+      card.addEventListener('pointerup', end); card.addEventListener('pointercancel', end);
+    }
+    el.querySelector('#fg-yes').onclick = () => decide(true);
+    el.querySelector('#fg-no').onclick = () => decide(false);
+    KEY.down = (e) => { if (e.key === 'ArrowRight') { e.preventDefault(); decide(true); } if (e.key === 'ArrowLeft') { e.preventDefault(); decide(false); } };
+    function summary() {
+      KEY.down = null;
+      const acid = clamp(3 + S.taste.a * 0.9, 1, 5), body = clamp(3 + S.taste.b * 0.9, 1, 5);
+      const word = (v, w) => w[Math.round(v) - 1];
+      const s2 = screen(`<div class="sw-sum"><small>YOUR TASTE</small>
+        <div class="meter"><span>산미</span><div class="bar"><i style="width:0"></i></div><em>${word(acid, ['거의 없이', '은은하게', '균형 있게', '산뜻하게', '화사하게'])}</em></div>
+        <div class="meter"><span>바디</span><div class="bar"><i style="width:0"></i></div><em>${word(body, ['아주 가볍게', '가볍게', '적당히', '묵직하게', '아주 묵직하게'])}</em></div>
+        <p class="q-hint" style="margin-top:22px">${S.likes.length ? '좋아요 · ' + S.likes.slice(0, 4).join(', ') + (S.likes.length > 4 ? ' 외' : '') : '좋아요를 하나도 안 누르셨네요. 까다로운 입맛도 환영이에요.'}</p></div>
+        <div class="foot"><button type="button" class="btn-text" id="fg-again">다시 하기</button><button type="button" class="btn-ink" id="fg-nx">다음 라운드 →</button></div>`);
+      requestAnimationFrame(() => { const b = s2.querySelectorAll('.bar i'); b[0].style.width = (acid - 1) / 4 * 100 + '%'; b[1].style.width = (body - 1) / 4 * 100 + '%'; });
+      s2.querySelector('#fg-nx').onclick = () => go(3);
+      s2.querySelector('#fg-again').onclick = () => r2();
+    }
+    render();
+  }
+
+  /* ================= ROUND 3 직접 로스팅 ================= */
+  function r3() {
+    S.roast = null;
+    const el = screen(`<h3 class="q-title">원하는 만큼 직접 볶아 보세요</h3><p class="q-hint">버튼을 꾹 누르는 동안 볶아지고, 손을 떼는 순간 로스팅이 끝나요</p>
+      <div class="roast">
+        <div><div class="drum" id="fg-drum"><div class="smoke" id="fg-smoke"></div><div class="bean" id="fg-bean">${beanSvg(beanColor(0))}</div><div class="crack" id="fg-crack"></div><div class="temp" id="fg-temp">120°C</div></div></div>
+        <div>
+          <div class="note" id="fg-note"><small>GREEN BEAN</small><b>아직 생두예요. 꾹 눌러 볶아 보세요</b></div>
+          <div class="gauges"><div class="gauge"><span>산미</span><div><i id="fg-ga" style="width:100%"></i></div></div><div class="gauge"><span>바디</span><div><i id="fg-gb" style="width:0"></i></div></div></div>
+          <div class="band" id="fg-band"><span class="zone" style="left:${0.34 * 100 / 1.08}%;width:${(0.80 - 0.34) * 100 / 1.08}%"></span><span class="mk" id="fg-mk" style="left:0"></span>
+            <span class="ck" style="left:${CRACK1 * 100 / 1.08}%">1st crack</span><span class="ck" style="left:${CRACK2 * 100 / 1.08}%">2nd crack</span></div>
+          <div class="band-ends"><span>LIGHT</span><span>DARK</span></div>
+          <div id="fg-ctrl"><button type="button" class="hold" id="fg-hold">꾹 눌러서 볶기</button><div class="hold-sub" id="fg-hsub">PC는 스페이스바를 눌러도 돼요</div></div>
+        </div>
+      </div>`);
+    const q = (id) => el.querySelector('#fg-' + id);
+    const bean = q('bean'), note = q('note'), temp = q('temp'), ga = q('ga'), gb = q('gb'), mk = q('mk'), crack = q('crack');
+    const drum = q('drum'), smoke = q('smoke'), hold = q('hold'), band = q('band');
+    if (S.fails >= 2) band.classList.add('helped');
+    let p = 0, holding = false, raf = 0, last = 0, stageKey = 'GREEN', c1 = false, c2 = false, smoked = false;
+    const SPEED = 1 / 8.5;
+    const stageOf = (v) => STAGES.find((s) => v <= s.to);
+    function paint() {
+      bean.innerHTML = beanSvg(beanColor(Math.min(p, 1.08)));
+      temp.textContent = Math.round(120 + Math.min(p, 1.08) * 118) + '°C';
+      ga.style.width = Math.max(0, (1 - p) * 100) + '%';
+      gb.style.width = Math.min(100, p * 100) + '%';
+      mk.style.left = Math.min(p, 1.08) / 1.08 * 100 + '%';
+      const s = stageOf(p);
+      if (p > 0.02 && s.k !== stageKey) {
+        stageKey = s.k; note.classList.add('fade');
+        setTimeout(() => { note.innerHTML = `<small>${s.k}</small><b>${s.n}</b>`; note.classList.remove('fade'); }, 160);
+      }
+      if (!c1 && p >= CRACK1) { c1 = true; pop('1st crack'); }
+      if (!c2 && p >= CRACK2) { c2 = true; pop('2nd crack'); }
+      if (!smoked && p > 1.0) { smoked = true; smoke.innerHTML = [-30, 10, 34, -8].map((dx, k) => `<i style="--dx:${dx}px;animation-delay:${k * .45}s"></i>`).join(''); }
+    }
+    function pop(t) { crack.textContent = t; crack.classList.remove('show'); void crack.offsetWidth; crack.classList.add('show'); bean.classList.remove('shake'); void bean.offsetWidth; bean.classList.add('shake'); }
+    // 시간 기준으로 진행 (화면이 잠깐 가려져도 누른 시간만큼 정확히 볶인다)
+    function tick() { if (!holding) return; const now = performance.now(); const dt = Math.min(1.5, (now - last) / 1000); last = now; p = Math.min(1.25, p + dt * SPEED); paint(); }
+    function start(e) { if (e && e.cancelable) e.preventDefault(); if (holding || S.roast) return; holding = true; last = performance.now(); hold.classList.add('on'); hold.textContent = '볶는 중… 손을 떼면 끝나요'; drum.classList.add('spin'); q('hsub').textContent = ''; raf = setInterval(tick, 16); }
+    function stop() {
+      if (!holding) return; tick(); holding = false; clearInterval(raf); hold.classList.remove('on'); drum.classList.remove('spin');
+      const s = stageOf(p);
+      if (p < 0.02) { hold.textContent = '꾹 눌러서 볶기'; return; }
+      if (s.rs === 0) {
+        S.fails++;
+        q('ctrl').innerHTML = `<div class="lock"><small>UNDER ROASTED</small><div class="lock-row"><button type="button" class="btn-ink" id="fg-re">조금 더 볶아 볼까요?</button></div>${S.fails >= 2 ? '<div class="tip">로스터는 원래 타이밍 싸움이에요. 띠 위의 민트색 구간에서 손을 떼 보세요.</div>' : ''}</div>`;
+        q('re').onclick = () => r3();
+        return;
+      }
+      if (s.k === 'BEYOND DARK') S.fails++;
+      S.roast = s.rs; S.roastKey = s.k === 'BEYOND DARK' ? 'DARK' : s.k;
+      q('ctrl').innerHTML = `<div class="lock"><small>YOUR ROAST</small><b style="display:block;font-size:22px;font-weight:500;margin-top:8px">${S.roastKey}</b>
+        ${s.k === 'BEYOND DARK' ? `<div class="tip">살짝 태웠지만 괜찮아요. 가장 진한 맛을 좋아하시는 걸로 기억할게요.${S.fails >= 2 ? ' 로스터는 원래 타이밍 싸움이에요.' : ''}</div>` : ''}
+        <div class="lock-row"><button type="button" class="btn-line" id="fg-re">다시 볶기</button><button type="button" class="btn-ink" id="fg-nx">다음 라운드 →</button></div></div>`;
+      q('re').onclick = () => r3();
+      q('nx').onclick = () => go(4);
+    }
+    hold.addEventListener('pointerdown', start);
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach((t) => hold.addEventListener(t, stop));
+    hold.addEventListener('contextmenu', (e) => e.preventDefault());
+    KEY.down = (e) => { if (e.code === 'Space') { e.preventDefault(); if (!e.repeat) start(); } };
+    KEY.up = (e) => { if (e.code === 'Space') { e.preventDefault(); stop(); } };
+  }
+
+  /* ================= ROUND 4 장비 진열장 ================= */
+  function r4() {
+    S.gears = []; S.none = false;
+    const el = screen(`<h3 class="q-title">우리 집 커피 장비를 담아 주세요</h3><p class="q-hint">있는 걸 모두 눌러 주세요 · 여러 개 골라도 돼요</p>
+      <div class="shelf"><div class="shelf-row">${Object.entries(GEARS).map(([k, g]) => `<button type="button" class="gear" data-k="${k}"><svg viewBox="0 0 48 48">${g.i}</svg><b>${g.n}</b><small>${g.s}</small></button>`).join('')}</div>
+      <button type="button" class="gear-none" id="fg-none">장비는 없어요, 주로 카페에서 사 마셔요</button></div>
+      <div class="foot"><span></span><button type="button" class="btn-ink" id="fg-nx" disabled>다음 라운드 →</button></div>`);
+    const nx = el.querySelector('#fg-nx'), none = el.querySelector('#fg-none');
+    const sync = () => { nx.disabled = !(S.gears.length || S.none); };
+    el.querySelectorAll('.gear').forEach((b) => b.onclick = () => {
+      const k = b.dataset.k; b.classList.toggle('sel');
+      S.gears = b.classList.contains('sel') ? [...S.gears, k] : S.gears.filter((x) => x !== k);
+      S.none = false; none.classList.remove('sel'); sync();
+    });
+    none.onclick = () => { S.none = !S.none; none.classList.toggle('sel', S.none); if (S.none) { S.gears = []; el.querySelectorAll('.gear').forEach((g) => g.classList.remove('sel')); } sync(); };
+    nx.onclick = () => go(5);
+  }
+
+  /* ================= ROUND 5 뽑기 한 판 ================= */
+  function r5() {
+    const el = screen(`<h3 class="q-title">마지막 판, 어느 쪽에 걸어 볼까요?</h3><p class="q-hint">추천의 방향이 달라져요</p>
+      <div class="gacha-pick">
+        <button type="button" class="gp" data-v="0"><small>SAFE</small><b>늘 마시던 그 맛</b><span>실패 없는 편안한 커피.<br>익숙하고 균형 잡힌 쪽으로 추천해요.</span><svg viewBox="0 0 48 48"><path d="M10 22l14-12 14 12v16H10z"/><path d="M20 38V28h8v10"/></svg></button>
+        <button type="button" class="gp" data-v="1"><small>ADVENTURE</small><b>랜덤 뽑기에 도전!</b><span>처음 만나는 개성 있는 맛.<br>한 산지의 싱글 오리진에 가산점을 줘요.</span><svg viewBox="0 0 48 48"><circle cx="24" cy="18" r="12"/><path d="M15 30l-3 10h24l-3-10"/><circle cx="24" cy="36" r="2"/></svg></button>
+      </div>`);
+    el.querySelectorAll('.gp').forEach((b) => b.onclick = () => { S.adventure = b.dataset.v === '1'; play(S.adventure); });
+    function play(adv) {
+      const s2 = screen(`<div style="margin:auto 0;padding-top:6px" id="fg-gbox"></div>
+        <div class="foot"><button type="button" class="btn-text" id="fg-back">다시 고르기</button><button type="button" class="btn-ink" id="fg-nx" disabled>결과 보기 →</button></div>`);
+      const box = s2.querySelector('#fg-gbox'), nx = s2.querySelector('#fg-nx');
+      const ready = () => { nx.disabled = false; };
+      if (adv) FD.gacha[DESIGN.gacha](box, ready); else FD.safe(box, ready);
+      nx.onclick = () => go(6); s2.querySelector('#fg-back').onclick = () => r5();
+    }
+  }
+
+  /* ================= 추천 계산 (사이트 기존 방식과 같은 점수표) ================= */
+  function target() {
+    const t = { acidity: clamp(3 + S.taste.a * 0.9, 1, 5), body: clamp(3 + S.taste.b * 0.9, 1, 5), sweetness: clamp(3 + S.taste.s * 0.9, 1, 5), roast: 3 };
+    const A = AROMAS[S.champ].v, R = AROMAS[S.runner].v;
+    t.acidity += A[0] + R[0] * 0.4; t.body += A[1] + R[1] * 0.4; t.sweetness += A[2] + R[2] * 0.4; t.roast += A[3] + R[3] * 0.4;
+    if (S.roast) { t.roast = t.roast * 0.25 + S.roast * 0.75; t.body += (S.roast - 3) * 0.3; t.acidity -= (S.roast - 3) * 0.3; }
+    if (S.gears.length) { const v = [0, 0, 0]; S.gears.forEach((k) => GEARS[k].v.forEach((x, i) => v[i] += x / S.gears.length)); t.acidity += v[0]; t.body += v[1]; t.roast += v[2] * 0.4; }
+    if (AROMAS[S.champ].bright && t.acidity <= 2.2) { t.acidity = 2.2; t.sweetness += 0.6; }
+    ['acidity', 'body', 'sweetness', 'roast'].forEach((k) => t[k] = clamp(t[k], 1, 5));
+    return t;
+  }
+  function score(p, t) {
+    const pr = p.pr;
+    let s = 100 - (Math.abs(pr.acidity - t.acidity) * 12 + Math.abs(pr.body - t.body) * 10 + Math.abs(pr.sweetness - t.sweetness) * 5 + Math.abs(pr.roastScore - t.roast) * 8);
+    if (S.adventure === true) s += /^single/.test(p.cat) ? 6 : -3;
+    if (S.adventure === false) s += p.cat === 'blend' ? 6 : 0;
+    return s;
+  }
+
+  /* ================= 결과 ================= */
+  function result() {
+    S.round = 6; hud();
+    const t = target();
+    const all = beans();
+    const ranked = all.filter((b) => b.cat !== 'decaf').map((b) => ({ b, s: score(b, t) })).sort((x, y) => y.s - x.s);
+    if (!ranked.length) { screen(`<div class="loading"><p class="q-hint">원두 정보를 불러오지 못했어요. 잠시 뒤 다시 해 주세요.</p></div>`); return; }
+    const top = ranked[0].b, pct = clamp(Math.round(ranked[0].s), 58, 98);
+    const decaf = all.find((b) => b.cat === 'decaf');
+    screen(`<div class="loading"><small>FINAL ROAST</small><div style="width:70px;margin:22px auto 0">${beanSvg(beanColor(0.6))}</div><div class="bar"><i></i></div><p class="q-hint" style="margin-top:16px">다섯 판의 결과를 섞어 볶는 중이에요</p></div>`);
+    setTimeout(() => {
+      const pos = (v) => ((v - 1) / 4 * 100).toFixed(1) + '%';
+      const row = (lbl, you, bean) => `<div class="cmp-row"><span>${lbl}</span><div class="cmp-track"><span class="you" style="left:${pos(you)}"></span><span class="bean" style="left:${pos(bean)}"></span></div></div>`;
+      const why = [`우승 향미 <b style="color:#000;font-weight:500">${AN(S.champ)}</b>`, `직접 볶은 <b style="color:#000;font-weight:500">${S.roastKey}</b>`, S.adventure ? '모험 모드' : '안심 모드'].join(' · ');
+      const chips = top.notes.split(/[·,]/).map((n) => n.trim()).filter(Boolean).slice(0, 4).map((n) => `<span>${esc(n)}</span>`).join('');
+      const el = screen(`<div class="flip"><div class="flip-in">
+        <div class="res">
+          <div class="res-img">${top.img ? `<img src="${esc(top.img)}" alt="${esc(top.name)}">` : ''}<span>BEST MATCH</span></div>
+          <div class="res-body">
+            <small>YOUR BEAN</small>
+            <div class="res-name">${esc(top.name)}</div>
+            <div class="res-sub">${esc(top.roast)}${top.price ? ` · ${won(top.price)}원 / 200g` : ''}</div>
+            <div class="chips">${chips}</div>
+            <div class="match"><span>취향 일치</span><div><i id="fg-mt"></i></div><b>${pct}%</b></div>
+            <div class="cmp">${row('산미', t.acidity, top.pr.acidity)}${row('바디', t.body, top.pr.body)}${row('단맛', t.sweetness, top.pr.sweetness)}${row('배전', t.roast, top.pr.roastScore)}
+              <div class="cmp-legend"><span><i style="border:1.5px solid #202020"></i>내 취향</span><span><i style="background:#202020"></i>이 원두</span></div></div>
+            <p class="res-desc">${esc(top.desc)}</p>
+            <p class="res-why">${why}</p>
+            <div class="res-cta"><a class="btn-mint" href="${esc(top.link)}" target="_blank" rel="noopener">이 원두 보기</a><button type="button" class="btn-line" id="fg-share">결과 공유</button><button type="button" class="btn-text" id="fg-again" style="margin-left:auto">다시 하기</button></div>
+          </div>
+        </div>
+        <div class="more">${ranked.slice(1, 3).map((r, k) => `<a href="${esc(r.b.link)}" target="_blank" rel="noopener">${r.b.img ? `<img src="${esc(r.b.img)}" alt="">` : '<span></span>'}<div><small>${k ? '의외의 케미' : '다음으로 잘 맞는'}</small><b>${esc(r.b.name)}</b><span>${esc(r.b.notes)}</span></div></a>`).join('')}</div>
+        ${decaf ? `<div class="decaf">늦은 밤에도 커피를 즐기신다면 · <a href="${esc(decaf.link)}" target="_blank" rel="noopener">${esc(decaf.name)}</a></div>` : ''}
+      </div></div>`);
+      requestAnimationFrame(() => setTimeout(() => { const m = el.querySelector('#fg-mt'); if (m) m.style.width = pct + '%'; }, 50));
+      el.querySelector('#fg-again').onclick = () => { reset(); go(1); };
+      el.querySelector('#fg-share').onclick = async () => {
+        const text = `나의 커피는 ${top.name} (취향 일치 ${pct}%) · 스트레토 원두 찾기`;
+        const url = location.origin + '/beans';
+        try { if (navigator.share) await navigator.share({ text, url }); else { await navigator.clipboard.writeText(text + ' ' + url); toast('결과를 복사했어요'); } } catch (_) {}
+      };
+    }, 1800);
+  }
+
+  /* ================= 시작 ================= */
+  window.FG = {
+    home() { if (SHELL) SHELL.style.display = 'none'; ROOT.style.display = ''; reset(); go(0, true); },
+  };
+  if (SHELL) SHELL.style.display = 'none';
+  reset(); go(0, true);
+})();

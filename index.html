@@ -2012,6 +2012,7 @@ a.manual-page:hover { transform: translateY(-3px); }
 }
     </style>
     <!-- Origin 풍 테마 (미리보기 검토 중). 아래 한 줄을 지우면 예전 모습으로, theme-lacabra.css 로 바꾸면 La Cabra 시안으로 -->
+    <link rel="stylesheet" href="finder-game.css?v=1">
     <link rel="stylesheet" href="theme-origin.css?v=20261121c"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
 </head>
 <body>
@@ -2438,6 +2439,9 @@ a.manual-page:hover { transform: translateY(-3px); }
                 <h2 class="section-title">나에게 맞는 원두 찾기</h2>
                 <p>스트레토가 취향에 맞는 원두를 추천해 드립니다.</p>
             </div>
+
+            <!-- 개인 고객: 5라운드 원두 찾기 게임 (finder-game.js · finder-designs.js · finder-game.css). 카페 · 사업자는 아래 기존 질문 -->
+            <div id="fg"></div>
 
             <div class="finder-shell">
                 <div id="finder-intro">
@@ -4751,7 +4755,7 @@ a.manual-page:hover { transform: translateY(-3px); }
     if (step === 0) {
       quiz.style.display = 'none';
       resultBox.style.display = 'none';
-      intro.style.display = 'block';
+      intro.style.display = 'block'; if (window.FG) window.FG.home(); // 게임 시작 화면으로
       return;
     }
     step--;
@@ -5015,7 +5019,7 @@ a.manual-page:hover { transform: translateY(-3px); }
     const r = $('finder-restart');
     if (r) r.addEventListener('click', () => {
       resultBox.style.display = 'none';
-      intro.style.display = 'block';
+      intro.style.display = 'block'; if (window.FG) window.FG.home(); // 게임 시작 화면으로
       step = 0; answers = {}; mode = null;
       document.getElementById('finder').scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
@@ -5161,5 +5165,8 @@ if (/(^|[?&])review(=|&|$)/.test(location.search)) {
     }))).observe(document.body, { childList: true, subtree: true });
 })();
 </script>
+<!-- 원두 찾기 게임 (기존 원두 추천 스크립트 뒤에 와야 한다) -->
+<script src="finder-designs.js?v=1"></script>
+<script src="finder-game.js?v=1"></script>
 </body>
 </html>
