@@ -6,6 +6,7 @@
     { "source": "/care", "destination": "/index.html" },
     { "source": "/consulting", "destination": "/index.html" },
     { "source": "/education", "destination": "/index.html" },
-    { "source": "/faq", "destination": "/index.html" }
+    { "source": "/faq", "destination": "/index.html" },
+    { "source": "/instagram", "destination": "/index.html" }
   ]
 }

@@ -140,7 +140,8 @@ html body[data-route="wholesale"] .page-hero--wholesale,
 html body[data-route="care"] .page-hero--care,
 html body[data-route="consulting"] .page-hero--consulting,
 html body[data-route="education"] .page-hero--education,
-html body[data-route="faq"] .page-hero--faq {
+html body[data-route="faq"] .page-hero--faq,
+html body[data-route="instagram"] .page-hero--instagram {
     display: flex; align-items: center; justify-content: center; text-align: center;
     position: relative; overflow: hidden;
     height: clamp(320px, 42vw, 560px);
@@ -553,3 +554,17 @@ html .faq-more { font-size: 14px; color: var(--og-text); text-decoration: underl
 @media (min-width: 901px) {
     html #wh-quality { grid-template-columns: repeat(2, max-content); justify-content: center; column-gap: 120px; }
 }
+/* 인스타그램 (/instagram): 계정 이름 + 방문 버튼, 아래 3칸 바둑판 */
+html .ig-wrap { max-width: 1080px; margin: 0 auto; text-align: left; }
+html .ig-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin: 0 0 32px; }
+html .ig-head .section-subtitle { display: block; }
+html .ig-title { font-size: 26px; margin: 0 0 8px; color: var(--og-text); text-transform: none; }
+html .ig-desc { margin: 0; font-size: 16px; color: #3a3a3a; text-align: left; }
+html .ig-follow { flex: 0 0 auto; }
+html .ig-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 96px; }
+html .ig-tile { display: block; aspect-ratio: 1 / 1; overflow: hidden; background: #ECECEC; }
+html .ig-tile img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s ease; }
+html a.ig-tile:hover img { transform: scale(1.03); }
+html .ig-tile--todo { display: flex; align-items: center; justify-content: center; color: var(--og-muted); font-size: 14px;
+    background: repeating-linear-gradient(-45deg, #f0f0f1 0 12px, #e9e9eb 12px 24px); }
+@media (max-width: 760px) { html .ig-head { flex-direction: column; align-items: flex-start; } html .ig-grid { gap: 6px; margin-bottom: 64px; } }
