@@ -526,3 +526,5 @@ html .cs-steps-top { margin: 0 0 96px; }
 }
 /* 창업 준비 10단계 숫자 동그라미: 한 단계 진하고 완전히 불투명하게 — 뒤를 지나는 연결선이 비치지 않게 */
 html #consulting .manual-num { background: #d2e7eb !important; border: 1px solid #a8d2d9 !important; color: #14555f; position: relative; z-index: 2; }
+/* 작은 회색 소제목은 단어 첫 글자만 대문자 (11/19 아내분 요청: Wholesale Partnership, Step 01). 글자는 html에 그렇게 적어 두고 소문자 바꾸기를 끈다 */
+html .section-subtitle, html .svc-num, html .manual-doc-tag, html .manual-badge, html .home-benefit-label { text-transform: none !important; }
