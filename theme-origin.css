@@ -611,3 +611,26 @@ html .svc-check li::before {
     html .manual-docs--rows .manual-doc-body { display: flex; flex-direction: column; padding: 30px 40px; }
     html .manual-docs--rows .manual-doc-list { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 14px 0 0; padding: 14px 0 0; border-left: 0; border-top: 1px solid #DDDDDD; align-self: stretch; }
 }
+/* 창업 매뉴얼 네 칸: 회색 상자 대신 '노트' 느낌 (11/20 아내분 요청)
+   - 위아래 얇은 줄로 칸을 나누고, 왼쪽 좁은 칸에 이름 · 오른쪽에 설명 (노트의 여백 선처럼 민트 세로줄) */
+@media (min-width: 901px) {
+    html .manual-docs--rows { gap: 0; border-top: 1.5px solid var(--og-text); border-bottom: 1.5px solid var(--og-text); }
+    html .manual-docs--rows .manual-doc { background: transparent !important; padding: 0; border-bottom: 1px solid #DDDDDD; }
+    html .manual-docs--rows .manual-doc:last-child { border-bottom: 0; }
+    html .manual-docs--rows .manual-doc-body {
+        background: transparent; display: grid; grid-template-columns: 240px minmax(0, 1fr); grid-template-rows: auto auto 1fr;
+        column-gap: 0; padding: 30px 0;
+    }
+    html .manual-docs--rows .manual-doc-body > .manual-doc-tag { grid-column: 1; grid-row: 1; padding-right: 24px; }
+    html .manual-docs--rows .manual-doc-body > h4 { grid-column: 1; grid-row: 2; margin: 4px 0 0; padding-right: 24px; font-size: 20px; }
+    html .manual-docs--rows .manual-doc-body > p,
+    html .manual-docs--rows .manual-doc-body > .manual-doc-list { grid-column: 2; border-left: 1.5px solid #AAD5DB; padding-left: 36px; }
+    html .manual-docs--rows .manual-doc-body > p { grid-row: 1 / span 2; align-self: start; margin: 0; padding-bottom: 4px; }
+    html .manual-docs--rows .manual-doc-body > .manual-doc-list { grid-row: 3; margin: 0; padding-top: 12px; border-top: 0; display: flex; flex-wrap: wrap; gap: 6px 28px; }
+}
+@media (min-width: 901px) {
+    /* 민트 세로줄을 한 줄로 끊김 없이 */
+    html .manual-docs--rows .manual-doc-body > p,
+    html .manual-docs--rows .manual-doc-body > .manual-doc-list { border-left: 0; }
+    html .manual-docs--rows .manual-doc-body { background: linear-gradient(#AAD5DB, #AAD5DB) no-repeat 240px 30px / 1.5px calc(100% - 60px); }
+}
