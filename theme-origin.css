@@ -605,3 +605,9 @@ html .svc-check li::before {
     border: 0; transform: none;
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='0.75' y='0.75' width='14.5' height='14.5' rx='2.5' fill='none' stroke='%23222' stroke-width='1.5'/%3E%3Cpath d='M4.2 8.3l2.5 2.4 5-5.3' fill='none' stroke='%23222' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center / contain;
 }
+/* 창업 매뉴얼 네 칸: 페이지 사진 없이 글 상자만. 위 '컨설팅의 핵심'처럼 위아래 한 단, 목록은 가로 줄 아래 나란히 */
+@media (min-width: 901px) {
+    html .manual-docs--rows .manual-doc { grid-template-columns: minmax(0, 1fr); }
+    html .manual-docs--rows .manual-doc-body { display: flex; flex-direction: column; padding: 30px 40px; }
+    html .manual-docs--rows .manual-doc-list { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 14px 0 0; padding: 14px 0 0; border-left: 0; border-top: 1px solid #DDDDDD; align-self: stretch; }
+}
