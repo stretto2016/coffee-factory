@@ -738,3 +738,5 @@ html #cs-services .svc-check li::before {
 
 /* 푸터 신청서 링크: 오른쪽 위 화살표(↗)를 브랜드 블루로 */
 html .sf-arrow { color: var(--accent-blue); }
+/* 자주 묻는 질문: 위 배너 사진 없이 바로 질문 (배너가 하던 '메뉴 아래로 띄우기'를 섹션이 대신) */
+html body[data-route="faq"] #faq { margin-top: calc(var(--og-top) + var(--og-nav)); }
