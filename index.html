@@ -3428,7 +3428,7 @@ a.manual-page:hover { transform: translateY(-3px); }
     <!-- ===================== [인스타그램] =====================
          맨 위 메뉴 faq 오른쪽 'instagram' (/instagram). 최근 게시물을 바둑판으로.
          지금은 자리표시(ig-tile--todo). 게시물 사진 + 링크를 받으면 <a class="ig-tile" href="게시물 주소"><img ...></a> 로 바꾼다.
-         자동 연결: /api/instagram (api/instagram.js, Vercel 환경변수 INSTAGRAM_TOKEN) 이 최신 게시물 9개를 주면
+         자동 연결: /api/instagram (api/instagram.js, Vercel 환경변수 INSTAGRAM_TOKEN) 이 최신 게시물 24개를 주면
          아래 스크립트가 자리표시를 게시물로 바꾼다. 열쇠가 없거나 실패하면 자리표시 그대로. -->
     <section id="instagram" data-page="instagram" class="page-first">
         <div class="container ig-wrap">
@@ -3460,10 +3460,10 @@ a.manual-page:hover { transform: translateY(-3px); }
         var loaded = false;
         function load() {
             if (loaded) return; loaded = true;
-            fetch('/api/instagram?limit=9').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+            fetch('/api/instagram?limit=24').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
                 if (!j || !j.posts || !j.posts.length) return;
                 var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
-                grid.innerHTML = j.posts.slice(0, 9).map(function (p) {
+                grid.innerHTML = j.posts.slice(0, 24).map(function (p) {
                     var alt = esc((p.caption || '스트레토 인스타그램 게시물').split(String.fromCharCode(10))[0].slice(0, 80));
                     return '<a class="ig-tile" href="' + esc(p.url) + '" target="_blank" rel="noopener"><img src="' + esc(p.img) + '" alt="' + alt + '" loading="lazy"></a>';
                 }).join('');
