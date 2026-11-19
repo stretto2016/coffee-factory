@@ -1781,7 +1781,8 @@ body[data-route="care"] [data-page="care"],
 body[data-route="consulting"] [data-page="consulting"],
 body[data-route="education"] [data-page="education"],
 body[data-route="faq"] [data-page="faq"],
-body[data-route="instagram"] [data-page="instagram"] { display: block; }
+body[data-route="instagram"] [data-page="instagram"],
+body[data-route="reviews"] [data-page="reviews"] { display: block; }
 /* #hero 는 id 규칙으로 display:flex 를 갖고 있어 [data-page] 숨김보다 강하다 — 따로 숨긴다 */
 body[data-route]:not([data-route="home"]) #hero { display: none; }
 /* 히어로가 없는 페이지는 고정 네비에 첫 줄이 가리지 않게 위 여백을 더 준다 */
@@ -2011,14 +2012,14 @@ a.manual-page:hover { transform: translateY(-3px); }
 }
     </style>
     <!-- Origin 풍 테마 (미리보기 검토 중). 아래 한 줄을 지우면 예전 모습으로, theme-lacabra.css 로 바꾸면 La Cabra 시안으로 -->
-    <link rel="stylesheet" href="theme-origin.css?v=20261120v"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
+    <link rel="stylesheet" href="theme-origin.css?v=20261120w"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
 </head>
 <body>
 <script>
 /* 첫 화면 깜빡임 방지: 본문이 그려지기 전에 주소로 페이지를 정해 둔다 (자세한 처리는 아래 라우터) */
 (function () {
     var n = location.pathname.replace(/^\/+|\/+$/g, '').replace(/\.html$/, '');
-    if (['brand', 'beans', 'wholesale', 'care', 'consulting', 'education', 'faq', 'instagram'].indexOf(n) !== -1) document.body.dataset.route = n;
+    if (['brand', 'beans', 'wholesale', 'care', 'consulting', 'education', 'faq', 'instagram', 'reviews'].indexOf(n) !== -1) document.body.dataset.route = n;
     if ('IntersectionObserver' in window) document.documentElement.classList.add('js-reveal');
 })();
 </script>
@@ -2043,12 +2044,13 @@ a.manual-page:hover { transform: translateY(-3px); }
 
         <div class="nav-links" id="navLinks">
             <!-- 메뉴 5묶음: 제목을 누르면 아래 항목이 펼쳐지고 다시 누르면 접힌다 -->
-            <div class="nav-group" data-routes="beans">
+            <div class="nav-group" data-routes="beans reviews">
                 <button type="button" class="nav-group-title" aria-expanded="false" aria-controls="navSub-coffee">Coffee<span class="nav-caret" aria-hidden="true"></span></button>
                 <div class="nav-sub" id="navSub-coffee">
                     <a href="/beans#finder" data-route="beans" data-anchor="finder">커피 취향 찾기</a>
                     <a href="/beans#shop" data-route="beans" data-anchor="shop">원두</a>
                     <a href="/beans#shop-dripbag" data-route="beans" data-anchor="shop-dripbag">드립백</a>
+                    <a href="/reviews" data-route="reviews">원두 리뷰</a>
                     <a href="https://smartstore.naver.com/stretto_coffeefactory/" target="_blank" rel="noopener">원두 쇼핑몰 바로가기 <span class="nav-ext" aria-hidden="true">↗</span></a>
                 </div>
             </div>
@@ -3475,6 +3477,49 @@ a.manual-page:hover { transform: translateY(-3px); }
             .observe(document.body, { attributes: true, attributeFilter: ['data-route'] });
     })();
     </script>
+    <!-- ===================== [원두 리뷰] =====================
+         Coffee 메뉴 '원두 리뷰' (/reviews). 네이버 스마트스토어 전체 리뷰(엑셀)를 받으면 rv-card 로 채운다.
+         작성자 이름 · 아이디는 가려서 넣는다. 지금은 자리표시(rv-card--todo) -->
+    <section id="reviews" data-page="reviews" class="page-first">
+        <div class="container rv-wrap">
+            <div class="rv-head">
+                <h2 class="rv-title">원두 리뷰</h2>
+                <a href="https://smartstore.naver.com/stretto_coffeefactory/" target="_blank" rel="noopener" class="home-btn">네이버 스토어 방문 ↗</a>
+            </div>
+            <div class="rv-grid">
+                <article class="rv-card rv-card--todo">
+                    <div class="rv-stars" aria-label="별점">★★★★★</div>
+                    <p class="rv-text">리뷰 준비 중</p>
+                    <div class="rv-meta"><span class="rv-product">원두 이름</span><span class="rv-who">작성자 · 날짜</span></div>
+                </article>
+                <article class="rv-card rv-card--todo">
+                    <div class="rv-stars" aria-label="별점">★★★★★</div>
+                    <p class="rv-text">리뷰 준비 중</p>
+                    <div class="rv-meta"><span class="rv-product">원두 이름</span><span class="rv-who">작성자 · 날짜</span></div>
+                </article>
+                <article class="rv-card rv-card--todo">
+                    <div class="rv-stars" aria-label="별점">★★★★★</div>
+                    <p class="rv-text">리뷰 준비 중</p>
+                    <div class="rv-meta"><span class="rv-product">원두 이름</span><span class="rv-who">작성자 · 날짜</span></div>
+                </article>
+                <article class="rv-card rv-card--todo">
+                    <div class="rv-stars" aria-label="별점">★★★★★</div>
+                    <p class="rv-text">리뷰 준비 중</p>
+                    <div class="rv-meta"><span class="rv-product">원두 이름</span><span class="rv-who">작성자 · 날짜</span></div>
+                </article>
+                <article class="rv-card rv-card--todo">
+                    <div class="rv-stars" aria-label="별점">★★★★★</div>
+                    <p class="rv-text">리뷰 준비 중</p>
+                    <div class="rv-meta"><span class="rv-product">원두 이름</span><span class="rv-who">작성자 · 날짜</span></div>
+                </article>
+                <article class="rv-card rv-card--todo">
+                    <div class="rv-stars" aria-label="별점">★★★★★</div>
+                    <p class="rv-text">리뷰 준비 중</p>
+                    <div class="rv-meta"><span class="rv-product">원두 이름</span><span class="rv-who">작성자 · 날짜</span></div>
+                </article>
+            </div>
+        </div>
+    </section>
     <!-- ===================== [푸터 · 문의하기] =====================
          Origin Coffee 푸터 구성: 위(소셜 · 문의 문구 · 상담 버튼) → 가운데(링크 4단) → 아래(회사 정보) -->
     <footer id="contact" class="site-footer">
@@ -3579,7 +3624,8 @@ a.manual-page:hover { transform: translateY(-3px); }
             consulting: { path: '/consulting', title: '카페 창업 컨설팅 | stretto coffee factory' },
             education:  { path: '/education',  title: '바리스타 교육 | stretto coffee factory' },
             faq:        { path: '/faq',        title: '자주 묻는 질문 | stretto coffee factory' },
-            instagram:  { path: '/instagram',  title: '인스타그램 | stretto coffee factory' }
+            instagram:  { path: '/instagram',  title: '인스타그램 | stretto coffee factory' },
+            reviews:    { path: '/reviews',    title: '원두 리뷰 | stretto coffee factory' }
         };
         // 예전 한 페이지 시절의 섹션 앵커 → [페이지, 그 안에서 스크롤할 섹션]
         const LEGACY = {
@@ -5043,7 +5089,7 @@ if (/(^|[?&])review(=|&|$)/.test(location.search)) {
     document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="/review.css?v=20261119">');
     var rv = document.createElement('script');
     rv.type = 'module';
-    rv.src = '/review.js?v=20261126'; // 파일을 고치면 v= 뒤 숫자를 바꿔 옛 파일 캐시를 막는다
+    rv.src = '/review.js?v=20261127'; // 파일을 고치면 v= 뒤 숫자를 바꿔 옛 파일 캐시를 막는다
     document.body.appendChild(rv);
 }
 </script>

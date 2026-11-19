@@ -673,3 +673,16 @@ html .manual-docs--rows .manual-doc-list li:not(:last-child)::after {
 html body[data-route="instagram"] #instagram { margin-top: calc(var(--og-top) + var(--og-nav)); }
 /* 피드 칸: 인스타그램 프로필과 같은 세로 직사각형(3:4) */
 html .ig-tile { aspect-ratio: 3 / 4; }
+/* 원두 리뷰 (/reviews): 제목 + 스토어 버튼, 아래 리뷰 카드 3칸 */
+html body[data-route="reviews"] #reviews { margin-top: calc(var(--og-top) + var(--og-nav)); }
+html .rv-wrap { max-width: 1080px; margin: 0 auto; text-align: left; }
+html .rv-head { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin: 0 0 28px; }
+html .rv-title { font-size: 24px; margin: 0; color: var(--og-text); }
+html .rv-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 32px; margin-bottom: 96px; border-top: 1.5px solid var(--og-text); }
+html .rv-card { padding: 26px 0; border-bottom: 1px solid #DDDDDD; display: flex; flex-direction: column; gap: 12px; }
+html .rv-stars { font-size: 14px; letter-spacing: 2px; color: var(--og-text); }
+html .rv-text { margin: 0; font-size: 15px; line-height: 1.75; color: #3a3a3a; text-align: left; word-break: keep-all; }
+html .rv-meta { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--og-muted); margin-top: auto; }
+html .rv-product { color: var(--og-text); font-weight: 500; }
+html .rv-card--todo .rv-stars, html .rv-card--todo .rv-text, html .rv-card--todo .rv-meta span { color: #BBBBBB; }
+@media (max-width: 900px) { html .rv-grid { grid-template-columns: minmax(0, 1fr); } html .rv-head { flex-direction: column; align-items: flex-start; } }
