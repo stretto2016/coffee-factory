@@ -556,9 +556,9 @@ html .faq-more { font-size: 14px; color: var(--og-text); text-decoration: underl
 }
 /* 인스타그램 (/instagram): 계정 이름 + 방문 버튼, 아래 3칸 바둑판 */
 html .ig-wrap { max-width: 1080px; margin: 0 auto; text-align: left; }
-html .ig-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin: 0 0 32px; }
+html .ig-head { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin: 0 0 32px; }
 html .ig-head .section-subtitle { display: block; }
-html .ig-title { font-size: 26px; margin: 0 0 8px; color: var(--og-text); text-transform: none; }
+html .ig-title { font-size: 13px; margin: 0; color: var(--og-text); text-transform: none; }
 html .ig-desc { margin: 0; font-size: 16px; color: #3a3a3a; text-align: left; }
 html .ig-follow { flex: 0 0 auto; }
 html .ig-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 96px; }
