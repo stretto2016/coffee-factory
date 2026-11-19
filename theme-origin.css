@@ -710,3 +710,5 @@ html .gc-group strong { font-size: 15px; color: var(--og-text); font-weight: 600
 html .gc-group span { font-size: 13.5px; line-height: 1.6; color: var(--og-muted); }
 /* 대표 이력: 대문자 · 소문자는 받은 자료 그대로 (소문자 원칙 예외) */
 html .greeting-career, html .greeting-career * { text-transform: none !important; }
+/* 리뷰 글의 줄바꿈은 손님이 쓴 그대로 */
+html .brv-text { white-space: pre-line; }
