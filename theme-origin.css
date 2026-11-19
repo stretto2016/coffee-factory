@@ -727,8 +727,8 @@ html .brv-arrow:disabled { opacity: .25; cursor: default; }
 @media (max-width: 900px) { html .brv-page { grid-template-columns: minmax(0, 1fr); } }
 
 /* 컨설팅 머리말: '실전형 카페 컨설팅'은 다른 큰 제목과 같은 크기 · 굵기 */
-html .cs-head-title { display: inline-block; font-size: 30px; font-weight: 700; line-height: 1.35; letter-spacing: -0.03em; color: var(--og-text); margin-bottom: 6px; }
-@media (max-width: 760px) { html .cs-head-title { font-size: 24px; } }
+html .cs-head-title { display: inline-block; font-size: 1.4rem; font-weight: 700; line-height: 1.35; letter-spacing: normal; color: var(--og-text); margin-bottom: 6px; }
+/* 컨설팅 제목들은 모두 '스트레토 컨설팅의 핵심'(1.4rem)과 같은 크기 */
 
 /* 컨설팅 핵심 다섯 칸 목록: 체크 대신 가운데 점 */
 html #cs-services .svc-check li::before {
