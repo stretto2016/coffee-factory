@@ -1785,6 +1785,8 @@ body[data-route="instagram"] [data-page="instagram"],
 body[data-route="reviews"] [data-page="reviews"] { display: block; }
 /* #hero 는 id 규칙으로 display:flex 를 갖고 있어 [data-page] 숨김보다 강하다 — 따로 숨긴다 */
 body[data-route]:not([data-route="home"]) #hero { display: none; }
+/* 원두 찾기(#finder)는 메인에서도 영상 바로 아래에 보인다 — 아래 스크립트가 메인일 때 영상 뒤로 옮긴다 */
+body:not([data-route]) #finder, body[data-route="home"] #finder { display: block; padding-top: var(--section-spacing) !important; }
 /* 히어로가 없는 페이지는 고정 네비에 첫 줄이 가리지 않게 위 여백을 더 준다 */
 .page-first { padding-top: calc(var(--section-spacing) + 64px) !important; }
 section[id] { scroll-margin-top: 80px; }
@@ -3649,6 +3651,20 @@ a.manual-page:hover { transform: translateY(-3px); }
         let t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(fit, 120); });
         // 다른 페이지에 있다가 메인으로 돌아오면 다시 맞춘다 (숨겨져 있을 땐 폭을 잴 수 없음)
         new MutationObserver(fit).observe(document.body, { attributes: true, attributeFilter: ['data-route'] });
+    })();
+    </script>
+    <script>
+    /* 원두 찾기를 메인에서는 영상 바로 아래, 원두 페이지에서는 원래 자리(원두 목록 위)에 둔다 */
+    (function () {
+        const f = document.getElementById('finder'), hero = document.getElementById('hero'), shop = document.getElementById('shop');
+        if (!f || !hero || !shop) return;
+        function place() {
+            const r = document.body.dataset.route;
+            if (!r || r === 'home') { if (hero.nextElementSibling !== f) hero.after(f); }
+            else if (shop.previousElementSibling !== f) shop.before(f);
+        }
+        place();
+        new MutationObserver(place).observe(document.body, { attributes: true, attributeFilter: ['data-route'] });
     })();
     </script>
     <script>
