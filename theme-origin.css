@@ -758,3 +758,10 @@ html body[data-route="faq"] #faq { margin-top: calc(var(--og-top) + var(--og-nav
 }
 /* 브랜드: 'brand identity' 글자 ~ 아래 상자 간격 = 'brand slogan' 글자 ~ '스트레토 원두가' 간격(22px)과 같게 (11/21 아내분 요청) */
 html #story .section-header { margin-bottom: 0; }
+/* 브랜드 · our vision: 무지개 사진은 두 칸(위 인사말의 사진+인사말 칸 너비), 글은 오른쪽 한 칸(자격 칸과 같은 열)에 모아서 (11/21 아내분 요청) */
+@media (min-width: 901px) {
+    html .vision-box--photo { grid-template-rows: 1fr auto auto 1fr; }
+    html .vision-box--photo .vision-photo { grid-column: 1 / span 2; grid-row: 1 / -1; }
+    html .vision-box--photo .vision-inner { grid-column: 3; grid-row: 2; padding: 48px 40px 0; }
+    html .vision-box--photo .vision-side { grid-column: 3; grid-row: 3; padding: 0 40px 48px; }
+}
