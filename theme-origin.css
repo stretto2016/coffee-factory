@@ -708,3 +708,5 @@ html .greeting-career { margin-top: 26px; padding-top: 22px; border-top: 1px sol
 html .gc-group { display: flex; flex-direction: column; gap: 4px; text-align: left; }
 html .gc-group strong { font-size: 15px; color: var(--og-text); font-weight: 600; margin-bottom: 2px; }
 html .gc-group span { font-size: 13.5px; line-height: 1.6; color: var(--og-muted); }
+/* 대표 이력: 대문자 · 소문자는 받은 자료 그대로 (소문자 원칙 예외) */
+html .greeting-career, html .greeting-career * { text-transform: none !important; }
