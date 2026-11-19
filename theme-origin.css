@@ -756,3 +756,5 @@ html body[data-route="faq"] #faq { margin-top: calc(var(--og-top) + var(--og-nav
     html .vision-box--photo .vision-inner { padding-bottom: 0; }
     html .greeting-inner { padding-bottom: 0; }
 }
+/* 브랜드: 'brand identity' 글자 ~ 아래 상자 간격 = 'brand slogan' 글자 ~ '스트레토 원두가' 간격(22px)과 같게 (11/21 아내분 요청) */
+html #story .section-header { margin-bottom: 0; }
