@@ -1779,7 +1779,8 @@ body[data-route="beans"] [data-page="beans"],
 body[data-route="wholesale"] [data-page="wholesale"],
 body[data-route="care"] [data-page="care"],
 body[data-route="consulting"] [data-page="consulting"],
-body[data-route="education"] [data-page="education"] { display: block; }
+body[data-route="education"] [data-page="education"],
+body[data-route="faq"] [data-page="faq"] { display: block; }
 /* #hero 는 id 규칙으로 display:flex 를 갖고 있어 [data-page] 숨김보다 강하다 — 따로 숨긴다 */
 body[data-route]:not([data-route="home"]) #hero { display: none; }
 /* 히어로가 없는 페이지는 고정 네비에 첫 줄이 가리지 않게 위 여백을 더 준다 */
@@ -2009,14 +2010,14 @@ a.manual-page:hover { transform: translateY(-3px); }
 }
     </style>
     <!-- Origin 풍 테마 (미리보기 검토 중). 아래 한 줄을 지우면 예전 모습으로, theme-lacabra.css 로 바꾸면 La Cabra 시안으로 -->
-    <link rel="stylesheet" href="theme-origin.css?v=20261120b"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
+    <link rel="stylesheet" href="theme-origin.css?v=20261120c"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
 </head>
 <body>
 <script>
 /* 첫 화면 깜빡임 방지: 본문이 그려지기 전에 주소로 페이지를 정해 둔다 (자세한 처리는 아래 라우터) */
 (function () {
     var n = location.pathname.replace(/^\/+|\/+$/g, '').replace(/\.html$/, '');
-    if (['brand', 'beans', 'wholesale', 'care', 'consulting', 'education'].indexOf(n) !== -1) document.body.dataset.route = n;
+    if (['brand', 'beans', 'wholesale', 'care', 'consulting', 'education', 'faq'].indexOf(n) !== -1) document.body.dataset.route = n;
     if ('IntersectionObserver' in window) document.documentElement.classList.add('js-reveal');
 })();
 </script>
@@ -2074,6 +2075,10 @@ a.manual-page:hover { transform: translateY(-3px); }
                     <a href="https://forms.gle/pgg9RTXiWA1t7NPG6" target="_blank" rel="noopener">창업 컨설팅 신청</a>
                     <a href="https://forms.gle/KGLnCZmeeydRtSKS8" target="_blank" rel="noopener">머신 케어 신청</a>
                 </div>
+            </div>
+            <!-- 자주 묻는 질문: 펼침 없이 바로 이동하는 메뉴 -->
+            <div class="nav-group nav-group--link" data-routes="faq">
+                <a href="/faq" data-route="faq" class="nav-group-title">faq</a>
             </div>
             <div class="nav-group" data-routes="brand">
                 <button type="button" class="nav-group-title" aria-expanded="false" aria-controls="navSub-about">about stretto<span class="nav-caret" aria-hidden="true"></span></button>
@@ -3315,6 +3320,122 @@ a.manual-page:hover { transform: translateY(-3px); }
 
         </div>
     </section>
+    <!-- ===================== [자주 묻는 질문] =====================
+         맨 위 메뉴 contact 다음 'faq' (/faq). 답은 홈페이지에 이미 적힌 내용만 바탕으로 썼다. 새 질문은 faq-item 하나씩 추가 -->
+    <div class="page-hero page-hero--faq">
+        <img src="img/wh-sample-cards.jpg" alt="" loading="eager" style="object-position: 50% 55%;">
+        <div class="page-hero-text"><h1>자주 묻는 질문</h1></div>
+    </div>
+
+    <section id="faq" data-page="faq" class="page-first">
+        <div class="container faq-wrap">
+
+            <div class="faq-group" id="faq-wholesale">
+                <span class="section-subtitle">Wholesale</span>
+                <h2 class="faq-group-title">원두 납품</h2>
+                <details class="faq-item">
+                    <summary>원두 납품은 어떻게 시작하나요?</summary>
+                    <div class="faq-answer">
+                        <p>샘플 테이스팅 신청서를 남겨 주시면 일정을 잡아 연락드립니다.<br>운영하시는 매장 또는 스트레토 커피 팩토리에서 직접 만나 원두를 테이스팅한 뒤,<br>단가 협의와 계약을 거쳐 첫 납품 때 매장에 방문해 추출 교육을 진행합니다.</p>
+                        <a href="/wholesale#wh-process" data-route="wholesale" data-anchor="wh-process" class="faq-more">파트너십 진행 절차 보기 →</a>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>납품 단가는 어떻게 정해지나요?</summary>
+                    <div class="faq-answer">
+                        <p>사용하실 원두와 월 사용량을 바탕으로 협의합니다.<br>사용량에 따라 제공되는 혜택이 달라지며, 세부 조건은 상담을 통해 상세히 안내해 드립니다.</p>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>우리 매장만의 블렌드를 만들 수 있나요?</summary>
+                    <div class="faq-answer">
+                        <p>네, 매장 컨셉에 어울리는 시그니처 블렌드 개발이 가능합니다.<br>(비용/단가 별도 협의)</p>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>싱글오리진도 소량으로 구매할 수 있나요?</summary>
+                    <div class="faq-answer">
+                        <p>에스프레소 원두를 주문하시는 파트너 매장은<br>싱글오리진을 200g부터 납품가로 구매하실 수 있습니다.</p>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>원두를 구매해 소분하거나 재가공해서 판매해도 되나요?</summary>
+                    <div class="faq-answer">
+                        <p>스트레토는 식품제조·가공업 정식 인허가를 받은 공장에서 원두를 생산합니다.<br>구매하신 원두를 재가공하여 판매하실 수 있습니다.<br>(식품소분업 허가 필요)</p>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>원두 품질은 어떻게 관리하나요?</summary>
+                    <div class="faq-answer">
+                        <p>3개월 주기로 자가품질검사를 받고, 원두 발송 전 커핑으로 맛과 향을 확인합니다.<br>언제나 같은 품질의 원두를 보내 드립니다.</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="faq-group" id="faq-care">
+                <span class="section-subtitle">Machine Care</span>
+                <h2 class="faq-group-title">머신 케어</h2>
+                <details class="faq-item">
+                    <summary>머신 수리는 어떻게 접수하나요?</summary>
+                    <div class="faq-answer">
+                        <p>머신 케어 신청서에 매장 정보와 머신 모델명, 증상, 방문 희망 일정을 남겨 주세요.<br>전문 용어를 모르셔도 괜찮습니다. 느끼신 증상 그대로 적어 주시면 엔지니어가 확인하고 연락드립니다.</p>
+                        <a href="https://forms.gle/KGLnCZmeeydRtSKS8" target="_blank" rel="noopener" class="faq-more">머신 케어 신청 ↗</a>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>수리비는 미리 알 수 있나요?</summary>
+                    <div class="faq-answer">
+                        <p>네, 1차 진단 후 수리 계획과 예상 견적을 먼저 안내해 드립니다.<br>견적에 동의하시기 전에는 수리를 시작하지 않습니다.</p>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>원두 파트너 매장은 어떤 혜택이 있나요?</summary>
+                    <div class="faq-answer">
+                        <p>긴급 상황이 생기면 다른 일정을 조정해서라도 가장 먼저 방문하고,<br>출장비와 기술료를 할인해 드립니다.</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="faq-group" id="faq-consulting">
+                <span class="section-subtitle">Consulting &amp; Training</span>
+                <h2 class="faq-group-title">창업 컨설팅 · 바리스타 교육</h2>
+                <details class="faq-item">
+                    <summary>창업 컨설팅은 어디까지 도와주나요?</summary>
+                    <div class="faq-answer">
+                        <p>머신과 그라인더 선정, 맞춤형 원두, 바 레이아웃, 품질 관리, 직원 교육까지 함께합니다.<br>컨설팅이 끝나면 매장에 맞춘 운영 매뉴얼도 직접 써 드립니다.</p>
+                        <a href="/consulting" data-route="consulting" class="faq-more">창업 컨설팅 보기 →</a>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>바리스타 교육은 어디서 진행하나요?</summary>
+                    <div class="faq-answer">
+                        <p>매장에 직접 찾아가, 매장에서 쓰는 머신과 원두로 1:1 실습 위주로 진행합니다.</p>
+                        <a href="/education" data-route="education" class="faq-more">바리스타 교육 보기 →</a>
+                    </div>
+                </details>
+            </div>
+
+            <div class="faq-group" id="faq-etc">
+                <span class="section-subtitle">Etc.</span>
+                <h2 class="faq-group-title">기타</h2>
+                <details class="faq-item">
+                    <summary>원두는 어디서 구매할 수 있나요?</summary>
+                    <div class="faq-answer">
+                        <p>네이버 스마트스토어에서 구매하실 수 있습니다.</p>
+                        <a href="https://smartstore.naver.com/stretto_coffeefactory/" target="_blank" rel="noopener" class="faq-more">네이버 스토어 방문 ↗</a>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>문의는 어떻게 하나요?</summary>
+                    <div class="faq-answer">
+                        <p>카카오톡으로 편하게 문의해 주세요.<br>평일 09:00 – 17:00에 답변드립니다.</p>
+                        <a href="http://pf.kakao.com/_dCuKC/chat" target="_blank" rel="noopener" class="faq-more">카카오톡으로 상담하기 ↗</a>
+                    </div>
+                </details>
+            </div>
+
+        </div>
+    </section>
     <!-- ===================== [푸터 · 문의하기] =====================
          Origin Coffee 푸터 구성: 위(소셜 · 문의 문구 · 상담 버튼) → 가운데(링크 4단) → 아래(회사 정보) -->
     <footer id="contact" class="site-footer">
@@ -3370,6 +3491,7 @@ a.manual-page:hover { transform: translateY(-3px); }
         function closeAll(except) { groups.forEach(g => { if (g !== except) setOpen(g, false); }); }
         groups.forEach(g => {
             const t = g.querySelector('.nav-group-title');
+            if (t.tagName === 'A') return; // faq 처럼 바로 가는 메뉴는 라우터가 처리
             t.addEventListener('click', function (e) {
                 e.stopPropagation();
                 const willOpen = !g.classList.contains('open');
@@ -3416,7 +3538,8 @@ a.manual-page:hover { transform: translateY(-3px); }
             wholesale:  { path: '/wholesale',  title: '원두 납품 안내 | stretto coffee factory' },
             care:       { path: '/care',       title: '머신 케어 | stretto coffee factory' },
             consulting: { path: '/consulting', title: '카페 창업 컨설팅 | stretto coffee factory' },
-            education:  { path: '/education',  title: '바리스타 교육 | stretto coffee factory' }
+            education:  { path: '/education',  title: '바리스타 교육 | stretto coffee factory' },
+            faq:        { path: '/faq',        title: '자주 묻는 질문 | stretto coffee factory' }
         };
         // 예전 한 페이지 시절의 섹션 앵커 → [페이지, 그 안에서 스크롤할 섹션]
         const LEGACY = {
@@ -4866,7 +4989,7 @@ if (/(^|[?&])review(=|&|$)/.test(location.search)) {
     document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="/review.css?v=20261119">');
     var rv = document.createElement('script');
     rv.type = 'module';
-    rv.src = '/review.js?v=20261124'; // 파일을 고치면 v= 뒤 숫자를 바꿔 옛 파일 캐시를 막는다
+    rv.src = '/review.js?v=20261125'; // 파일을 고치면 v= 뒤 숫자를 바꿔 옛 파일 캐시를 막는다
     document.body.appendChild(rv);
 }
 </script>
