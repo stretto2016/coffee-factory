@@ -1444,8 +1444,12 @@ function listenChat() {
   }, (err) => { console.error(err); toast('대화를 불러오지 못했어요.'); });
 
   onSnapshot(doc(db, AGENT_COL, SITE), { includeMetadataChanges: true }, (d) => {
+    const prevBeat = agent && agent.lastSeen && agent.lastSeen.toMillis ? agent.lastSeen.toMillis() : 0;
     agent = d.exists() ? d.data() : null;
-    if (!d.metadata.fromCache) agentSeenAt = Date.now();   // 서버에서 새 소식을 받은 때 (이 컴퓨터 시계 기준)
+    const beatNow = agent && agent.lastSeen && agent.lastSeen.toMillis ? agent.lastSeen.toMillis() : 0;
+    // 도우미가 새 신호(lastSeen)를 보냈을 때만 "방금 살아 있음"으로 본다.
+    // (처음 받은 값이나, 재연결로 같은 값이 다시 온 것은 세지 않는다 — 꺼진 도우미를 '연결됨'으로 보이게 하던 문제)
+    if (!d.metadata.fromCache && prevBeat && beatNow > prevBeat) agentSeenAt = Date.now();
     renderAgent();
   },
     (err) => console.error(err));
