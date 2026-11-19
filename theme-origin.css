@@ -574,3 +574,10 @@ html .nav-group-title { text-transform: none !important; }
 html .cs-service-head { text-align: left; margin: 0 0 28px; }
 html .cs-service-head .section-subtitle { display: block; }
 html .cs-service-head .manual-rail-title { margin: 0; }
+/* 컨설팅 핵심 6칸: 모두 같은 높이 (11/20 아내분 요청). 사진은 280 정사각형, 글 상자도 같은 280 높이.
+   글이 넘치면 잘리니 글을 상자에 맞게 줄인다 */
+@media (min-width: 901px) {
+    html .svc-list--compact .svc-item { height: 280px; }
+    html .svc-list--compact .svc-photo { width: 280px; height: 280px; min-height: 0; aspect-ratio: 1 / 1; }
+    html .svc-list--compact .svc-body { height: 280px; box-sizing: border-box; overflow: hidden; padding: 28px 40px; align-content: center; }
+}
