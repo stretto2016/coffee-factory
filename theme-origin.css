@@ -531,11 +531,9 @@ html #consulting .manual-num { background: #d2e7eb !important; border: 1px solid
 html .section-subtitle, html .svc-num, html .manual-doc-tag, html .manual-badge, html .home-benefit-label { text-transform: none !important; }
 /* 진행 절차 ※ 안내: 둘째 줄 "세부"가 첫 줄 "원두" 바로 아래에서 시작 (※ 만큼 내어쓰기) */
 html .note-hang { display: inline-block; text-align: left; padding-left: 1.08em; text-indent: -1.08em; }
-/* 페이지 첫 배너 제목: 얇은 글씨 · 왼쪽 위 (11/20 아내분 요청) */
-html .page-hero { align-items: flex-start !important; justify-content: flex-start !important; text-align: left !important; }
-html .page-hero-text { padding: 48px var(--og-pad) 0; width: 100%; max-width: 1440px; margin: 0 auto; box-sizing: border-box; }
-html .page-hero-text h1 { font-weight: 300; letter-spacing: -0.01em; }
-@media (max-width: 760px) { html .page-hero-text { padding-top: 28px; } }
+/* 페이지 첫 배너: 글씨 없이 사진만 (11/20 아내분 요청). 제목은 화면에서만 숨기고 검색·화면읽기용으로 남긴다. 사진 위 어둡게 깔던 막도 뺀다 */
+html .page-hero-text { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+html .page-hero::after { display: none; }
 /* 자주 묻는 질문 (/faq): 묶음 제목 + 누르면 펼쳐지는 질문 */
 html .faq-wrap { max-width: 880px; margin: 0 auto; text-align: left; }
 html .faq-group { margin: 0 0 72px; }
