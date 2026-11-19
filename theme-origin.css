@@ -549,3 +549,7 @@ html .faq-answer { padding: 0 44px 24px 0; }
 html .faq-answer p { font-size: 15.5px; line-height: 1.8; color: #3a3a3a; margin: 0 0 12px; word-break: keep-all; text-align: left; }
 html .faq-more { font-size: 14px; color: var(--og-text); text-decoration: underline; text-underline-offset: 4px; }
 @media (max-width: 760px) { html .faq-item summary { font-size: 15.5px; padding: 18px 36px 18px 0; } html .faq-group { margin-bottom: 52px; } }
+/* 원두 납품 · 품질 네 칸: 두 줄 묶음 전체를 화면 가운데로 (칸 안 글은 왼쪽 정렬 그대로) */
+@media (min-width: 901px) {
+    html #wh-quality { grid-template-columns: repeat(2, max-content); justify-content: center; column-gap: 120px; }
+}
