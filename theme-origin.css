@@ -740,3 +740,19 @@ html #cs-services .svc-check li::before {
 html .sf-arrow { color: var(--accent-blue); }
 /* 자주 묻는 질문: 위 배너 사진 없이 바로 질문 (배너가 하던 '메뉴 아래로 띄우기'를 섹션이 대신) */
 html body[data-route="faq"] #faq { margin-top: calc(var(--og-top) + var(--og-nav)); }
+
+/* 브랜드: 대표 인사말 · our vision 두 칸 모두 3등분 (사진 | 제목·글 | 자격·설명) — 두 상자의 세로 열이 같은 자리에 오게 (11/21 아내분 요청) */
+@media (min-width: 901px) {
+    html .greeting-box, html .vision-box--photo { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    html .greeting-inner, html .vision-box--photo .vision-inner { padding: 48px 40px; }
+    html .greeting-side, html .vision-box--photo .vision-side { display: flex; flex-direction: column; justify-content: center; padding: 48px 40px 48px 0; }
+    html .vision-box--photo .vision-side { max-width: none; margin: 0; }
+    html .vision-box--photo .vision-side p { text-align: left; }
+    html .greeting-side .greeting-career { margin-top: 0; padding-top: 0; border-top: 0; }
+}
+@media (max-width: 900px) {
+    html .greeting-side { padding: 0 20px 28px; }
+    html .vision-box--photo .vision-side { padding: 0 20px 28px; }
+    html .vision-box--photo .vision-inner { padding-bottom: 0; }
+    html .greeting-inner { padding-bottom: 0; }
+}
