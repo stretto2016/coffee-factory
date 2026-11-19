@@ -598,3 +598,10 @@ html .cs-service-head .manual-rail-title { margin: 0; }
 /* 원두 목록을 끝내 못 불러왔을 때 안내 한 줄 */
 html .shop-load-fail { grid-column: 1 / -1; font-size: 15px; color: var(--og-muted); text-align: left; margin: 0; }
 html .shop-load-fail a { color: var(--og-text); text-decoration: underline; text-underline-offset: 3px; }
+/* 목록 표시: 비스듬한 체크 선 대신 '네모 칸 안 체크(☑)' (11/20 아내분 요청). 글 첫 줄 높이 한가운데에 고정 */
+html .svc-check li { display: flex; align-items: flex-start; gap: 9px; padding-left: 0; }
+html .svc-check li::before {
+    content: ""; position: static; flex: 0 0 15px; width: 15px; height: 15px; margin-top: calc((1lh - 15px) / 2);
+    border: 0; transform: none;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='0.75' y='0.75' width='14.5' height='14.5' rx='2.5' fill='none' stroke='%23222' stroke-width='1.5'/%3E%3Cpath d='M4.2 8.3l2.5 2.4 5-5.3' fill='none' stroke='%23222' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center / contain;
+}
