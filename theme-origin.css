@@ -765,3 +765,13 @@ html #story .section-header { margin-bottom: 0; }
     html .vision-box--photo .vision-inner { grid-column: 3; grid-row: 2; padding: 48px 40px 0; }
     html .vision-box--photo .vision-side { grid-column: 3; grid-row: 3; padding: 0 40px 48px; }
 }
+/* 컨설팅: 작은 영문 글자 ~ 굵은 제목 간격을 모두 같게 ('our service ~ 스트레토 컨설팅의 핵심' 기준에서 조금 더 좁게) (11/21 아내분 요청)
+   cafe consulting ~ 실전형 카페 컨설팅 / our service ~ 스트레토 컨설팅의 핵심 / exclusive benefit ~ 카페 창업 마스터 매뉴얼 */
+html #consulting .section-header > .section-subtitle,
+html #consulting .cs-service-head .section-subtitle,
+html #consulting #cs-manual > .manual-badge { display: block; margin: 0 0 10px !important; line-height: 1.5; }
+html #consulting .section-header > p:first-of-type { margin-top: 0; }
+html #consulting .section-header > p:first-of-type .cs-head-title { display: block; }
+html #consulting .section-header > p:first-of-type .cs-head-title,
+html #consulting .cs-service-head .manual-rail-title,
+html #consulting #cs-manual > h3 { margin-top: 0; line-height: 1.35; }
