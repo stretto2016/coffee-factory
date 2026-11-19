@@ -669,3 +669,7 @@ html .manual-docs--rows .manual-doc-list li + li::before { content: none; }
 html .manual-docs--rows .manual-doc-list li:not(:last-child)::after {
     content: ""; display: inline-block; width: 1px; height: 11px; background: #BBBBBB; margin: 0 12px; vertical-align: -1px;
 }
+/* 인스타그램 페이지: 위 배너 사진 없이 바로 피드 (배너가 하던 '메뉴 아래로 띄우기'를 섹션이 대신) */
+html body[data-route="instagram"] #instagram { margin-top: calc(var(--og-top) + var(--og-nav)); }
+/* 피드 칸: 인스타그램 프로필과 같은 세로 직사각형(3:4) */
+html .ig-tile { aspect-ratio: 3 / 4; }
