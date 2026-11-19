@@ -2012,7 +2012,7 @@ a.manual-page:hover { transform: translateY(-3px); }
 }
     </style>
     <!-- Origin 풍 테마 (미리보기 검토 중). 아래 한 줄을 지우면 예전 모습으로, theme-lacabra.css 로 바꾸면 La Cabra 시안으로 -->
-    <link rel="stylesheet" href="theme-origin.css?v=20261120x"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
+    <link rel="stylesheet" href="theme-origin.css?v=20261120y"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
 </head>
 <body>
 <script>
@@ -3486,20 +3486,20 @@ a.manual-page:hover { transform: translateY(-3px); }
     })();
     </script>
     <!-- ===================== [원두 리뷰] =====================
-         Coffee 메뉴 '원두 리뷰' (/reviews). 네이버 스마트스토어 전체 리뷰(엑셀)를 받으면 rv-card 로 채운다.
-         작성자 이름 · 아이디는 가려서 넣는다. 지금은 자리표시(rv-card--todo) -->
+         Coffee 메뉴 '원두 리뷰' (/reviews). 네이버 스마트스토어 전체 리뷰(엑셀)를 받으면 brv-card 로 채운다.
+         작성자 이름 · 아이디는 가려서 넣는다. 지금은 자리표시(brv-card--todo) -->
     <section id="reviews" data-page="reviews" class="page-first">
-        <div class="container rv-wrap">
-            <div class="rv-head">
-                <h2 class="rv-title">원두 리뷰</h2>
+        <div class="container brv-wrap">
+            <div class="brv-head">
+                <h2 class="brv-title">원두 리뷰</h2>
                 <a href="https://smartstore.naver.com/stretto_coffeefactory/" target="_blank" rel="noopener" class="home-btn">네이버 스토어 방문 ↗</a>
             </div>
             <!-- 리뷰는 reviews-data.js 의 목록에서 9개씩(휴대폰 4개씩) 한 장으로 나눠 그린다. 옆으로 끌거나 화살표로 넘긴다 -->
-            <div class="rv-pager" id="rv-pager" aria-label="원두 리뷰"></div>
-            <div class="rv-nav">
-                <button type="button" class="rv-arrow" id="rv-prev" aria-label="이전 리뷰">‹</button>
-                <span class="rv-count" id="rv-count">1 / 1</span>
-                <button type="button" class="rv-arrow" id="rv-next" aria-label="다음 리뷰">›</button>
+            <div class="brv-pager" id="brv-pager" aria-label="원두 리뷰"></div>
+            <div class="brv-nav">
+                <button type="button" class="brv-arrow" id="brv-prev" aria-label="이전 리뷰">‹</button>
+                <span class="brv-count" id="brv-count">1 / 1</span>
+                <button type="button" class="brv-arrow" id="brv-next" aria-label="다음 리뷰">›</button>
             </div>
             </div>
         </div>
@@ -3508,23 +3508,23 @@ a.manual-page:hover { transform: translateY(-3px); }
     <script>
     /* 원두 리뷰: 여러 장으로 나눠 옆으로 넘기기 (손가락으로 밀기 · 마우스로 끌기 · 화살표) */
     (function () {
-        var pager = document.getElementById('rv-pager'); if (!pager) return;
-        var prev = document.getElementById('rv-prev'), next = document.getElementById('rv-next'), count = document.getElementById('rv-count');
+        var pager = document.getElementById('brv-pager'); if (!pager) return;
+        var prev = document.getElementById('brv-prev'), next = document.getElementById('brv-next'), count = document.getElementById('brv-count');
         var esc = function (x) { return String(x == null ? '' : x).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
         var data = (window.STRETTO_REVIEWS || []).slice();
         var todo = !data.length;
         if (todo) for (var i = 0; i < 18; i++) data.push({ stars: 5, text: '리뷰 준비 중', product: '원두 이름', who: '작성자 · 날짜' });
         function card(r) {
             var n = Math.max(0, Math.min(5, Math.round(r.stars || 5)));
-            return '<article class="rv-card' + (todo ? ' rv-card--todo' : '') + '"><div class="rv-stars" aria-label="별점 ' + n + '점">' + '★★★★★'.slice(0, n) + '<span class="rv-star-off">' + '★★★★★'.slice(0, 5 - n) + '</span></div>'
-                + '<p class="rv-text">' + esc(r.text) + '</p><div class="rv-meta"><span class="rv-product">' + esc(r.product) + '</span><span class="rv-who">' + esc(r.who) + '</span></div></article>';
+            return '<article class="brv-card' + (todo ? ' brv-card--todo' : '') + '"><div class="brv-stars" aria-label="별점 ' + n + '점">' + '★★★★★'.slice(0, n) + '<span class="brv-star-off">' + '★★★★★'.slice(0, 5 - n) + '</span></div>'
+                + '<p class="brv-text">' + esc(r.text) + '</p><div class="brv-meta"><span class="brv-product">' + esc(r.product) + '</span><span class="brv-who">' + esc(r.who) + '</span></div></article>';
         }
         var perPage = 0;
         function render() {
             var pp = window.innerWidth <= 900 ? 4 : 9;
             if (pp === perPage) return; perPage = pp;
             var html = '';
-            for (var i = 0; i < data.length; i += pp) html += '<div class="rv-page">' + data.slice(i, i + pp).map(card).join('') + '</div>';
+            for (var i = 0; i < data.length; i += pp) html += '<div class="brv-page">' + data.slice(i, i + pp).map(card).join('') + '</div>';
             pager.innerHTML = html; pager.scrollLeft = 0; update();
         }
         function pages() { return pager.children.length || 1; }

@@ -675,25 +675,31 @@ html body[data-route="instagram"] #instagram { margin-top: calc(var(--og-top) + 
 html .ig-tile { aspect-ratio: 3 / 4; }
 /* 원두 리뷰 (/reviews): 제목 + 스토어 버튼, 아래 리뷰 카드 3칸 */
 html body[data-route="reviews"] #reviews { margin-top: calc(var(--og-top) + var(--og-nav)); }
-html .rv-wrap { max-width: 1080px; margin: 0 auto; text-align: left; }
-html .rv-head { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin: 0 0 28px; }
-html .rv-title { font-size: 24px; margin: 0; color: var(--og-text); }
-html .rv-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 32px; margin-bottom: 96px; border-top: 1.5px solid var(--og-text); }
-html .rv-card { padding: 26px 0; border-bottom: 1px solid #DDDDDD; display: flex; flex-direction: column; gap: 12px; }
-html .rv-stars { font-size: 14px; letter-spacing: 2px; color: var(--og-text); }
-html .rv-text { margin: 0; font-size: 15px; line-height: 1.75; color: #3a3a3a; text-align: left; word-break: keep-all; }
-html .rv-meta { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--og-muted); margin-top: auto; }
-html .rv-product { color: var(--og-text); font-weight: 500; }
-html .rv-card--todo .rv-stars, html .rv-card--todo .rv-text, html .rv-card--todo .rv-meta span { color: #BBBBBB; }
-@media (max-width: 900px) { html .rv-grid { grid-template-columns: minmax(0, 1fr); } html .rv-head { flex-direction: column; align-items: flex-start; } }
+html .brv-wrap { max-width: 1080px; margin: 0 auto; text-align: left; }
+html .brv-head { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin: 0 0 28px; }
+html .brv-title { font-size: 24px; margin: 0; color: var(--og-text); }
+html .brv-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 32px; margin-bottom: 96px; border-top: 1.5px solid var(--og-text); }
+html .brv-card { padding: 26px 0; border-bottom: 1px solid #DDDDDD; display: flex; flex-direction: column; gap: 12px; }
+html .brv-stars { font-size: 14px; letter-spacing: 2px; color: var(--og-text); }
+html .brv-text { margin: 0; font-size: 15px; line-height: 1.75; color: #3a3a3a; text-align: left; word-break: keep-all; }
+html .brv-meta { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--og-muted); margin-top: auto; }
+html .brv-product { color: var(--og-text); font-weight: 500; }
+html .brv-card--todo .brv-stars, html .brv-card--todo .brv-text, html .brv-card--todo .brv-meta span { color: #BBBBBB; }
+@media (max-width: 900px) { html .brv-grid { grid-template-columns: minmax(0, 1fr); } html .brv-head { flex-direction: column; align-items: flex-start; } }
 /* 원두 리뷰: 한 장에 9개(휴대폰 4개)씩, 옆으로 넘기는 여러 장 */
-html .rv-pager { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-top: 1.5px solid var(--og-text); cursor: grab; user-select: none; }
-html .rv-pager::-webkit-scrollbar { display: none; }
-html .rv-pager.is-drag { cursor: grabbing; scroll-snap-type: none; }
-html .rv-page { flex: 0 0 100%; scroll-snap-align: start; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 32px; align-content: start; }
-html .rv-star-off { color: #DDDDDD; }
-html .rv-nav { display: flex; justify-content: center; align-items: center; gap: 18px; margin: 28px 0 96px; }
-html .rv-arrow { width: 36px; height: 36px; border: 1px solid #CCCCCC; border-radius: 50%; background: #fff; font-size: 20px; line-height: 1; color: var(--og-text); cursor: pointer; }
-html .rv-arrow:disabled { opacity: .3; cursor: default; }
-html .rv-count { font-size: 13px; color: var(--og-muted); min-width: 52px; text-align: center; }
-@media (max-width: 900px) { html .rv-page { grid-template-columns: minmax(0, 1fr); } }
+html .brv-pager { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-top: 1.5px solid var(--og-text); cursor: grab; user-select: none; }
+html .brv-pager::-webkit-scrollbar { display: none; }
+html .brv-pager.is-drag { cursor: grabbing; scroll-snap-type: none; }
+html .brv-page { flex: 0 0 100%; scroll-snap-align: start; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 32px; align-content: start; }
+html .brv-star-off { color: #DDDDDD; }
+html .brv-nav { display: flex; justify-content: center; align-items: center; gap: 18px; margin: 28px 0 96px; }
+html .brv-arrow { width: 36px; height: 36px; border: 1px solid #CCCCCC; border-radius: 50%; background: #fff; font-size: 20px; line-height: 1; color: var(--og-text); cursor: pointer; }
+html .brv-arrow:disabled { opacity: .3; cursor: default; }
+html .brv-count { font-size: 13px; color: var(--og-muted); min-width: 52px; text-align: center; }
+@media (max-width: 900px) { html .brv-page { grid-template-columns: minmax(0, 1fr); } }
+/* 맨 위 메뉴: 로고와 띄우고 화면 정가운데에 (로고 칸 · 아이콘 칸을 같은 너비로 나눠 가운데 메뉴가 중앙에 오게) */
+@media (min-width: 1101px) {
+    html nav .logo-group { flex: 1 1 0; }
+    html .nav-links { flex: 0 0 auto; margin-left: 0; justify-content: center; }
+    html nav .nav-social { flex: 1 1 0; justify-content: flex-end; }
+}
