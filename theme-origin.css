@@ -634,3 +634,20 @@ html .svc-check li::before {
     html .manual-docs--rows .manual-doc-body > .manual-doc-list { border-left: 0; }
     html .manual-docs--rows .manual-doc-body { background: linear-gradient(#AAD5DB, #AAD5DB) no-repeat 240px 30px / 1.5px calc(100% - 60px); }
 }
+/* 창업 매뉴얼 네 칸: 이름 왼쪽에 줄 노트(스프링 노트) 아이콘 */
+@media (min-width: 901px) {
+    html .manual-docs--rows .manual-doc-body { position: relative; }
+    html .manual-docs--rows .manual-doc-body::before {
+        content: ""; position: absolute; left: 0; top: 30px; width: 34px; height: 34px;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36' fill='none' stroke='%23222' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='8' y='4' width='22' height='28' rx='2'/%3E%3Cpath d='M5 9h6M5 15h6M5 21h6M5 27h6'/%3E%3Cpath d='M15 11h10M15 16h10M15 21h6'/%3E%3C/svg%3E") no-repeat center / contain;
+    }
+    html .manual-docs--rows .manual-doc-body > .manual-doc-tag,
+    html .manual-docs--rows .manual-doc-body > h4 { padding-left: 50px !important; }
+}
+@media (max-width: 900px) {
+    html .manual-docs--rows .manual-doc-body { position: relative; padding-left: 50px; }
+    html .manual-docs--rows .manual-doc-body::before {
+        content: ""; position: absolute; left: 0; top: 4px; width: 30px; height: 30px;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36' fill='none' stroke='%23222' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='8' y='4' width='22' height='28' rx='2'/%3E%3Cpath d='M5 9h6M5 15h6M5 21h6M5 27h6'/%3E%3Cpath d='M15 11h10M15 16h10M15 21h6'/%3E%3C/svg%3E") no-repeat center / contain;
+    }
+}
