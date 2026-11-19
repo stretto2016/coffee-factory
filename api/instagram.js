@@ -8,6 +8,7 @@
 // 실제 사이트(Production)에는 열쇠가 없으므로 503 → 화면은 "게시물 준비 중" 그대로.
 const GRAPH = 'https://graph.facebook.com/v21.0';
 const FIELDS = 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp';
+const PAGE_ID = process.env.INSTAGRAM_PAGE_ID || '106159851462028'; // 페이스북 페이지 '스트레토 커피 팩토리'
 let cachedUserId = null;
 
 async function getJson(url) {
@@ -22,10 +23,23 @@ async function findUserId(token) {
   if (process.env.INSTAGRAM_USER_ID) return process.env.INSTAGRAM_USER_ID;
   if (cachedUserId) return cachedUserId;
   const t = encodeURIComponent(token);
-  const pages = await getJson(`${GRAPH}/me/accounts?fields=name,instagram_business_account{id,username}&limit=50&access_token=${t}`);
-  const accts = (pages.data || []).map((p) => p.instagram_business_account).filter(Boolean);
+  const tried = [];
+  let accts = [];
+  try {
+    const pages = await getJson(`${GRAPH}/me/accounts?fields=name,instagram_business_account{id,username}&limit=50&access_token=${t}`);
+    tried.push(`me/accounts: ${(pages.data || []).map((p) => p.name + (p.instagram_business_account ? '(ig)' : '')).join(',') || '없음'}`);
+    accts = (pages.data || []).map((p) => p.instagram_business_account).filter(Boolean);
+  } catch (e) { tried.push('me/accounts 실패 ' + e.message.slice(0, 120)); }
+  // 스트레토 커피 팩토리 페이지 (공개 ID)
+  if (!accts.length) {
+    try {
+      const pg = await getJson(`${GRAPH}/${PAGE_ID}?fields=name,instagram_business_account{id,username}&access_token=${t}`);
+      tried.push(`page: ${pg.name}${pg.instagram_business_account ? '(ig)' : ' ig없음'}`);
+      if (pg.instagram_business_account) accts = [pg.instagram_business_account];
+    } catch (e) { tried.push('page 실패 ' + e.message.slice(0, 160)); }
+  }
   const pick = accts.find((a) => a.username === 'coffee_stretto') || accts[0];
-  if (!pick) throw new Error('no_instagram_account_linked');
+  if (!pick) throw new Error('no_instagram_account_linked | ' + tried.join(' | '));
   cachedUserId = pick.id;
   return cachedUserId;
 }
