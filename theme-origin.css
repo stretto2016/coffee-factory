@@ -568,3 +568,5 @@ html a.ig-tile:hover img { transform: scale(1.03); }
 html .ig-tile--todo { display: flex; align-items: center; justify-content: center; color: var(--og-muted); font-size: 14px;
     background: repeating-linear-gradient(-45deg, #f0f0f1 0 12px, #e9e9eb 12px 24px); }
 @media (max-width: 760px) { html .ig-head { flex-direction: column; align-items: flex-start; } html .ig-grid { gap: 6px; margin-bottom: 64px; } }
+/* 맨 위 메뉴 제목: 첫 글자 대문자 (Coffee · Partnership · … · About stretto). html 원문대로 보이게 소문자 바꾸기를 끈다 */
+html .nav-group-title { text-transform: none !important; }
