@@ -570,3 +570,7 @@ html .ig-tile--todo { display: flex; align-items: center; justify-content: cente
 @media (max-width: 760px) { html .ig-head { flex-direction: column; align-items: flex-start; } html .ig-grid { gap: 6px; margin-bottom: 64px; } }
 /* 맨 위 메뉴 제목: 첫 글자 대문자 (Coffee · Partnership · … · About stretto). html 원문대로 보이게 소문자 바꾸기를 끈다 */
 html .nav-group-title { text-transform: none !important; }
+/* 컨설팅 01~06 묶음 제목 "스트레토 컨설팅의 핵심" (10단계 제목과 같은 모양 · 왼쪽 시작선) */
+html .cs-service-head { text-align: left; margin: 0 0 28px; }
+html .cs-service-head .section-subtitle { display: block; }
+html .cs-service-head .manual-rail-title { margin: 0; }
