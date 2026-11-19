@@ -791,3 +791,7 @@ html #home-brand .home-facts--words { grid-template-columns: minmax(0, 1fr); gap
 html #home-brand .home-facts--words li { display: grid; grid-template-columns: 9.5em minmax(0, 1fr); column-gap: 16px; align-items: baseline; padding: 10px 0; }
 html #home-brand .home-facts--words li strong { display: block; }
 html #home-brand .home-lead strong { font-weight: 700; }
+/* 메인 브랜드 판 세 단어: 줄(가로선) 없이 "영어 | 한국어 설명" 한 줄씩 그냥 나열 (11/21 아내분 요청) */
+html #home-brand .home-facts--words li { display: block; border-top: 0; padding: 3px 0; }
+html #home-brand .home-facts--words li strong { display: inline; }
+html #home-brand .home-facts--words li span::before { content: "|"; margin: 0 10px; }
