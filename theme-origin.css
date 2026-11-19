@@ -703,3 +703,8 @@ html .brv-count { font-size: 13px; color: var(--og-muted); min-width: 52px; text
     html .nav-links { flex: 0 0 auto; margin-left: 0; justify-content: center; }
     html nav .nav-social { flex: 1 1 0; justify-content: flex-end; }
 }
+/* 대표 인사말 칸: 서명 아래 대표 이력 (가로 줄 아래, 묶음 제목 굵게 · 항목 작은 회색 글씨) */
+html .greeting-career { margin-top: 26px; padding-top: 22px; border-top: 1px solid #DDDDDD; display: flex; flex-direction: column; gap: 18px; }
+html .gc-group { display: flex; flex-direction: column; gap: 4px; text-align: left; }
+html .gc-group strong { font-size: 15px; color: var(--og-text); font-weight: 600; margin-bottom: 2px; }
+html .gc-group span { font-size: 13.5px; line-height: 1.6; color: var(--og-muted); }
