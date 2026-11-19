@@ -2011,7 +2011,7 @@ a.manual-page:hover { transform: translateY(-3px); }
 }
     </style>
     <!-- Origin 풍 테마 (미리보기 검토 중). 아래 한 줄을 지우면 예전 모습으로, theme-lacabra.css 로 바꾸면 La Cabra 시안으로 -->
-    <link rel="stylesheet" href="theme-origin.css?v=20261120j"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
+    <link rel="stylesheet" href="theme-origin.css?v=20261120k"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
 </head>
 <body>
 <script>
@@ -3885,7 +3885,11 @@ a.manual-page:hover { transform: translateY(-3px); }
             }
         };
 
-        async function loadShopProducts() {
+        // 원두 목록을 못 불러오는 경우(인터넷이 잠깐 끊기거나 느릴 때)를 위해 몇 번 다시 시도한다
+        let shopLoaded = false, shopLoading = false;
+        async function loadShopProducts(attempt = 1) {
+            if (shopLoaded || (shopLoading && attempt === 1)) return;
+            shopLoading = true;
             try {
                 // publicProducts = 공개용 미러 컬렉션. 원가·실제 배합비가 없는 안전한 사본만 읽는다.
                 // (products 원본은 보안 규칙에서 거래처/관리자 전용으로 잠겨 있다)
@@ -3992,12 +3996,22 @@ a.manual-page:hover { transform: translateY(-3px); }
                 // 드립백 상품이 없으면 네이버 스토어 안내 한 줄을 보여준다
                 const dripEmpty = document.getElementById('shop-dripbag-empty');
                 if (dripEmpty) dripEmpty.hidden = !!(dripGrid && dripGrid.children.length);
+                shopLoaded = true; shopLoading = false;
 
             } catch (error) {
                 console.error("Shop Load Error:", error);
+                if (attempt < 4) {
+                    setTimeout(() => loadShopProducts(attempt + 1), attempt * 1500);
+                } else {
+                    shopLoading = false;
+                    const msg = '<p class="shop-load-fail">원두 목록을 불러오지 못했습니다. 잠시 후 새로고침해 주시거나 <a href="https://smartstore.naver.com/stretto_coffeefactory/" target="_blank" rel="noopener">네이버 스토어</a>에서 확인해 주세요.</p>';
+                    ['home-product-grid', 'shop-blend-grid'].forEach(id => { const g = document.getElementById(id); if (g && !g.children.length) g.innerHTML = msg; });
+                }
             }
         }
         loadShopProducts();
+        // 다른 창에 있다가 돌아왔을 때 아직 못 불러왔으면 다시 시도
+        document.addEventListener('visibilitychange', () => { if (!document.hidden && !shopLoaded) loadShopProducts(); });
         
     </script>
 <div id="repairModal" class="modal-overlay">

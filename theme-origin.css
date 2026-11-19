@@ -595,3 +595,6 @@ html .cs-service-head .manual-rail-title { margin: 0; }
     html .svc-list--compact .svc-body p { line-height: 1.65; margin-bottom: 6px; }
     html .svc-list--compact .svc-body > .svc-check { margin-top: 10px; padding-top: 10px; }
 }
+/* 원두 목록을 끝내 못 불러왔을 때 안내 한 줄 */
+html .shop-load-fail { grid-column: 1 / -1; font-size: 15px; color: var(--og-muted); text-align: left; margin: 0; }
+html .shop-load-fail a { color: var(--og-text); text-decoration: underline; text-underline-offset: 3px; }
