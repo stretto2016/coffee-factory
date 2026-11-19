@@ -581,3 +581,17 @@ html .cs-service-head .manual-rail-title { margin: 0; }
     html .svc-list--compact .svc-photo { width: 280px; height: 280px; min-height: 0; aspect-ratio: 1 / 1; }
     html .svc-list--compact .svc-body { height: 280px; box-sizing: border-box; overflow: hidden; padding: 28px 40px; align-content: center; }
 }
+/* 컨설팅 핵심 6칸 글 상자: 두 단(설명 | 목록) → 위아래 한 단으로. 설명이 상자 폭을 다 쓰고, 체크 목록은 가로 줄 아래에 한 줄로 나란히 */
+@media (min-width: 901px) {
+    html .svc-list--compact .svc-body,
+    html .svc-list--compact .svc-body:has(> .svc-check) { display: flex; flex-direction: column; justify-content: center; }
+    html .svc-list--compact .svc-body > .svc-check { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 14px 0 0; padding: 14px 0 0; border-left: 0; border-top: 1px solid #DDDDDD; align-self: stretch; }
+    html .svc-list--compact .svc-body > .svc-check li { font-size: 14px; }
+    html .svc-list--compact .svc-body h3 { margin: 0 0 10px; }
+    html .svc-list--compact .svc-body p.svc-lead { margin-bottom: 8px; }
+}
+@media (min-width: 901px) {
+    html .svc-list--compact .svc-body { padding: 22px 40px; }
+    html .svc-list--compact .svc-body p { line-height: 1.65; margin-bottom: 6px; }
+    html .svc-list--compact .svc-body > .svc-check { margin-top: 10px; padding-top: 10px; }
+}
