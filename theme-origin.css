@@ -837,3 +837,7 @@ html #cs-services .svc-check li::before { margin-top: calc((1lh - 4px) / 2 - 1px
 html .svc-check li { font-size: 13px !important; line-height: 1.6; }
 html .svc-check li::before { flex-basis: 13px; width: 13px; height: 13px; margin-top: calc((1lh - 13px) / 2 - 1.5px); }
 html #cs-services .svc-check li::before { flex-basis: 4px; width: 4px; height: 4px; margin-top: calc((1lh - 4px) / 2 - 0.5px); }
+/* 모든 체크 목록: 글씨 · 체크 네모를 처음(14px · 15px)의 80%로 — 글씨 11.2px, 네모 12px (11/21 아내분 요청) */
+html .svc-check li { font-size: 11.2px !important; }
+html .svc-check li::before { flex-basis: 12px; width: 12px; height: 12px; margin-top: calc((1lh - 12px) / 2 - 1.5px); }
+html #cs-services .svc-check li::before { margin-top: calc((1lh - 4px) / 2 - 0.5px); }
