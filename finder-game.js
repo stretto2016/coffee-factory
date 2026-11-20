@@ -80,7 +80,7 @@
   const $ = (s, r = ROOT) => r.querySelector(s);
   const stage = $('#fg-stage');
 
-  const ROUNDS = ['향미 월드컵', '맛 스와이프', '직접 로스팅', '장비 진열장', '뽑기 한 판'];
+  const ROUNDS = ['향미 월드컵', '맛 스와이프', '직접 로스팅', '장비 진열장', '내 원두 뽑기'];
   let S;
   function reset() { S = { round: 0, champ: null, runner: null, taste: { a: 0, b: 0, s: 0 }, likes: [], roast: null, roastKey: '', roastClash: '', fails: 0, gears: [], none: false, adventure: null }; }
   const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
@@ -101,7 +101,7 @@
     const h = $('#fg-hud');
     if (S.round < 1 || S.round > 5) { h.style.display = 'none'; return; }
     h.style.display = '';
-    $('#fg-hud-round').textContent = `ROUND ${S.round} / 5`;
+    $('#fg-hud-round').textContent = S.round <= 4 ? `ROUND ${S.round} / 4` : 'FINAL';
     $('#fg-hud-name').textContent = ROUNDS[S.round - 1];
     const cols = ['#8FA05A', '#C9B66B', '#B98A4E', '#8E5A33', '#4A2A18'];
     $('#fg-hud-beans').innerHTML = [0, 1, 2, 3, 4].map((i) => {
@@ -112,6 +112,7 @@
   $('#fg-hud-home').addEventListener('click', () => { reset(); go(0); });
   function go(r, noScroll) {
     KEY.down = KEY.up = null;
+    ROOT.querySelectorAll('.gx-open').forEach((x) => x.remove()); // 뽑기 캡슐 화면이 떠 있으면 닫기
     S.round = r; hud(); [entry, r1, r2, r3, r4, r5, result][r]();
     if (!noScroll) { const y = ROOT.getBoundingClientRect().top + window.scrollY - 84; if (Math.abs(window.scrollY - y) > 40) window.scrollTo({ top: y, behavior: 'smooth' }); }
   }
@@ -120,7 +121,7 @@
   /* ================= 시작 ================= */
   function entry() {
     const el = screen(`<div class="entry">
-      <button type="button" class="entry-card" data-m="b2c"><img src="/img/hero-beans-2.jpg" alt=""><div class="in"><small>FOR YOU</small><b>개인 고객</b><span>다섯 판의 게임으로<br>내 취향의 원두를 찾아요.</span><div class="meta"><span>5 ROUNDS</span><span>약 1분</span></div></div><span class="go">게임 시작</span></button>
+      <button type="button" class="entry-card" data-m="b2c"><img src="/img/hero-beans-2.jpg" alt=""><div class="in"><small>FOR YOU</small><b>개인 고객</b><span>네 판의 게임으로<br>내 취향의 원두를 찾아요.</span><div class="meta"><span>4 ROUNDS + 뽑기</span><span>약 1분</span></div></div><span class="go">게임 시작</span></button>
       <button type="button" class="entry-card" data-m="b2b"><img src="/img/wh-sample-tasting.jpg" alt=""><div class="in"><small>FOR CAFÉ</small><b>카페 · 사업자</b><span>다섯 판의 게임으로<br>매장 맞춤 처방전을 받아요.</span><div class="meta"><span>5 ROUNDS</span><span>약 2분</span></div></div><span class="go">게임 시작</span></button>
     </div>`);
     el.querySelector('[data-m="b2c"]').onclick = () => go(1);
@@ -349,22 +350,146 @@
     nx.onclick = () => go(5);
   }
 
-  /* ================= ROUND 5 뽑기 한 판 ================= */
+  /* ================= FINAL 내 원두 뽑기 (질문 없이 결과를 여는 장면) ================= */
+  // 손잡이를 반 바퀴 돌리면 캡슐이 떨어지고 → 크게 보이는 캡슐을 한 번 누르면 원두 카드 → 결과 화면
+  // 시안: .review-inbox/gacha-reveal.html
+  const GX_TURN = 180;
+  function gxCapsule(cx, cy, r, col, rot = 0) {
+    return `<g transform="rotate(${rot} ${cx} ${cy})">
+      <path d="M${cx - r} ${cy}a${r} ${r} 0 0 1 ${2 * r} 0z" fill="${col}"/><path d="M${cx - r} ${cy}a${r} ${r} 0 0 0 ${2 * r} 0z" fill="#fff"/>
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1.2"/><rect x="${cx - r}" y="${cy - 1.6}" width="${2 * r}" height="3.2" fill="rgba(0,0,0,.18)"/>
+      <ellipse cx="${cx - r * .35}" cy="${cy - r * .45}" rx="${r * .28}" ry="${r * .16}" fill="#fff" opacity=".6" transform="rotate(-30 ${cx - r * .35} ${cy - r * .45})"/></g>`;
+  }
+  function gxMachine() {
+    const I = '#202020', M = '#AAD5DB';
+    const cols = [M, '#8E5A33', '#E8D5B0', '#5c7f86', '#C9824F', '#202020', '#B5495B', M, '#8E5A33', '#E8D5B0', '#C9824F', M, '#5c7f86', '#8E5A33', '#E8D5B0'];
+    const pos = [[110, 178], [148, 186], [188, 182], [224, 170], [96, 146], [134, 152], [172, 150], [210, 140], [242, 136], [118, 116], [156, 118], [196, 108], [138, 86], [178, 80], [228, 104]];
+    const caps = pos.map(([x, y], i) => `<g class="cap">${gxCapsule(x, y, 17, cols[i], (i * 47) % 180)}</g>`).join('');
+    return `<svg viewBox="0 0 320 470" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="fg-glass" cx="38%" cy="30%" r="75%"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#bcd9de" stop-opacity=".45"/></radialGradient>
+        <linearGradient id="fg-body" x1="0" x2="1"><stop offset="0" stop-color="#9fcdd4"/><stop offset=".45" stop-color="#bde0e5"/><stop offset="1" stop-color="#8fc1c9"/></linearGradient>
+        <linearGradient id="fg-metal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fafafa"/><stop offset="1" stop-color="#cfcfcf"/></linearGradient>
+        <clipPath id="fg-dome"><circle cx="160" cy="136" r="106"/></clipPath>
+        <clipPath id="fg-chute"><rect x="118" y="392" width="84" height="46" rx="6"/></clipPath>
+      </defs>
+      <ellipse cx="160" cy="462" rx="120" ry="7" fill="rgba(0,0,0,.08)"/>
+      <rect x="132" y="14" width="56" height="16" rx="4" fill="${I}"/>
+      <circle cx="160" cy="136" r="108" fill="#f4fafb" stroke="${I}" stroke-width="2"/>
+      <g clip-path="url(#fg-dome)" class="gx-caps">${caps}</g>
+      <circle cx="160" cy="136" r="106" fill="url(#fg-glass)"/>
+      <path d="M86 92a90 90 0 0 1 60-52" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".85"/>
+      <path d="M80 118a90 90 0 0 1 3-12" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".7"/>
+      <rect x="98" y="232" width="124" height="22" rx="4" fill="${I}"/>
+      <path d="M70 254h180l10 196H60z" fill="url(#fg-body)" stroke="${I}" stroke-width="2" stroke-linejoin="round"/>
+      <rect x="96" y="262" width="128" height="18" rx="2" fill="#fff" stroke="${I}" stroke-width="1.2"/>
+      <text x="160" y="275" text-anchor="middle" font-size="9" letter-spacing="2" font-family="Archivo, sans-serif" fill="${I}">STRETTO BEAN</text>
+      <rect x="84" y="300" width="14" height="30" rx="3" fill="url(#fg-metal)" stroke="${I}" stroke-width="1.2"/><rect x="89" y="306" width="4" height="18" rx="1" fill="${I}"/>
+      <circle cx="160" cy="318" r="44" fill="url(#fg-metal)" stroke="${I}" stroke-width="1.6"/>
+      <circle class="gx-pulse" id="fg-gx-pulse" cx="160" cy="318" r="44" fill="none" stroke="${M}" stroke-width="5"/>
+      <circle cx="160" cy="318" r="52" fill="none" stroke="rgba(0,0,0,.08)" stroke-width="4"/>
+      <circle class="gx-ring" id="fg-gx-ring" cx="160" cy="318" r="52" fill="none" stroke="${I}" stroke-width="4" stroke-linecap="round" stroke-dasharray="${2 * Math.PI * 52}" stroke-dashoffset="${2 * Math.PI * 52}" transform="rotate(-90 160 318)"/>
+      <g class="gx-handle" id="fg-gx-handle"><rect x="148" y="278" width="24" height="80" rx="12" fill="#fff" stroke="${I}" stroke-width="2"/><circle cx="160" cy="318" r="9" fill="${I}"/><rect x="154" y="282" width="12" height="14" rx="6" fill="${M}" stroke="${I}" stroke-width="1.2"/></g>
+      <g id="fg-gx-arrow" opacity=".9"><path d="M214 290a62 62 0 0 1 6 52" fill="none" stroke="${I}" stroke-width="2.2" stroke-linecap="round"/><path d="M213 336l7 8 5-10" fill="none" stroke="${I}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <g class="gx-hand" id="fg-gx-hand"><g transform="translate(150 246)"><circle cx="10" cy="10" r="13" fill="${I}" opacity=".12"/><path d="M6 22V8a3 3 0 0 1 6 0v8l1-1a3 3 0 0 1 5 2v1a3 3 0 0 1 5 1v1a3 3 0 0 1 5 2v5c0 7-5 12-12 12h-1c-4 0-7-2-9-5l-5-7a3 3 0 0 1 4-4z" fill="#fff" stroke="${I}" stroke-width="1.6" stroke-linejoin="round"/></g></g>
+      <rect x="114" y="388" width="92" height="54" rx="8" fill="${I}"/><rect x="118" y="392" width="84" height="46" rx="6" fill="#333"/>
+      <g clip-path="url(#fg-chute)"><g class="gx-out" id="fg-gx-out" style="display:none">${gxCapsule(160, 416, 19, '#8E5A33', -20)}</g></g>
+      <path d="M118 392h84" stroke="#555" stroke-width="2"/>
+    </svg>`;
+  }
+  // 딸깍 소리 + 짧은 진동 (돌리는 맛)
+  let actx = null;
+  function click(strong) {
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = 'square'; o.frequency.value = strong ? 340 : 220 + Math.random() * 40;
+      g.gain.setValueAtTime(0.0001, actx.currentTime); g.gain.exponentialRampToValueAtTime(strong ? .12 : .06, actx.currentTime + .005); g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + .05);
+      o.connect(g).connect(actx.destination); o.start(); o.stop(actx.currentTime + .06);
+    } catch (_) {}
+    if (navigator.vibrate) try { navigator.vibrate(strong ? 25 : 6); } catch (_) {}
+  }
   function r5() {
-    const el = screen(`<h3 class="q-title">마지막 판, 어느 쪽에 걸어 볼까요?</h3><p class="q-hint">추천의 방향이 달라져요</p>
-      <div class="gacha-pick">
-        <button type="button" class="gp" data-v="0"><small>SAFE</small><b>늘 마시던 그 맛</b><span>실패 없는 편안한 커피.<br>익숙하고 균형 잡힌 쪽으로 추천해요.</span><svg viewBox="0 0 48 48"><path d="M10 22l14-12 14 12v16H10z"/><path d="M20 38V28h8v10"/></svg></button>
-        <button type="button" class="gp" data-v="1"><small>ADVENTURE</small><b>랜덤 뽑기에 도전!</b><span>처음 만나는 개성 있는 맛.<br>한 산지의 싱글 오리진에 가산점을 줘요.</span><svg viewBox="0 0 48 48"><circle cx="24" cy="18" r="12"/><path d="M15 30l-3 10h24l-3-10"/><circle cx="24" cy="36" r="2"/></svg></button>
+    const R = analyze();
+    if (!R) { screen(`<div class="loading"><p class="q-hint">원두 정보를 불러오지 못했어요. 잠시 뒤 다시 해 주세요.</p></div>`); return; }
+    const el = screen(`<div class="gx">
+        <div class="gx-machine" id="fg-gx-m">${gxMachine()}</div>
+        <div class="gx-side">
+          <small>FINAL · 내 원두 뽑기</small>
+          <h4 id="fg-gx-h">네 판의 결과를 캡슐에 담았어요</h4>
+          <p id="fg-gx-p">손잡이를 잡고 화살표 방향으로 반 바퀴 돌려 주세요.</p>
+          <ol class="gx-steps"><li class="on" data-s="0"><i>1</i>손잡이를 반 바퀴 돌리기</li><li data-s="1"><i>2</i>캡슐 열기</li><li data-s="2"><i>3</i>내 원두 확인</li></ol>
+          <div class="gx-prog" id="fg-gx-prog"><div><i id="fg-gx-bar"></i></div><span id="fg-gx-pt">0%</span></div>
+          <button type="button" class="gx-auto" id="fg-gx-auto">돌리기 어렵다면 · 대신 돌려 주세요</button>
+        </div>
       </div>`);
-    el.querySelectorAll('.gp').forEach((b) => b.onclick = () => { S.adventure = b.dataset.v === '1'; play(S.adventure); });
-    function play(adv) {
-      const s2 = screen(`<div style="margin:auto 0;padding-top:6px" id="fg-gbox"></div>
-        <div class="foot"><button type="button" class="btn-text" id="fg-back">다시 고르기</button><button type="button" class="btn-ink" id="fg-nx" disabled>결과 보기 →</button></div>`);
-      const box = s2.querySelector('#fg-gbox'), nx = s2.querySelector('#fg-nx');
-      const ready = () => { nx.disabled = false; };
-      if (adv) FD.gacha[DESIGN.gacha](box, ready); else FD.safe(box, ready);
-      nx.onclick = () => go(6); s2.querySelector('#fg-back').onclick = () => r5();
+    const q = (id) => el.querySelector('#fg-gx-' + id);
+    const m = q('m'), svg = m.querySelector('svg'), handle = q('handle'), ring = q('ring');
+    const C = 2 * Math.PI * 52;
+    let total = 0, lastTick = 0, drag = null, done = false, idle;
+    const caps = [...svg.querySelectorAll('.gx-caps g.cap')];
+    const setStep = (n) => el.querySelectorAll('.gx-steps li').forEach((li) => { const s = +li.dataset.s; li.className = s < n ? 'done' : s === n ? 'on' : ''; });
+    const hints = (on) => { q('hand').style.display = on ? '' : 'none'; q('pulse').style.display = on ? '' : 'none'; };
+    const hintsLater = () => { clearTimeout(idle); idle = setTimeout(() => { if (!done && total < 20 && el.isConnected) hints(true); }, 2500); };
+    function paint() {
+      handle.style.transform = `rotate(${total}deg)`;
+      ring.style.strokeDashoffset = C * (1 - Math.min(total, GX_TURN) / GX_TURN);
+      q('bar').style.width = Math.min(100, total / GX_TURN * 100) + '%';
+      q('pt').textContent = total < GX_TURN ? `${Math.round(total / GX_TURN * 100)}%` : '드르륵!';
+      const step = Math.floor(total / 30);
+      if (step > lastTick) {
+        lastTick = step; click(false);
+        m.classList.remove('shake'); void m.offsetWidth; m.classList.add('shake');
+        caps.forEach((c) => { c.style.transform = `translate(${(Math.random() - .5) * 10}px, ${(Math.random() - .5) * 8 - 2}px) rotate(${(Math.random() - .5) * 30}deg)`; });
+        if (step === 3) { q('h').textContent = '좋아요, 그대로 계속!'; q('p').textContent = '조금만 더 돌리면 캡슐이 나와요.'; }
+      }
+      if (total >= GX_TURN && !done) finish();
     }
+    const center = () => { const r = svg.getBoundingClientRect(), s = r.width / 320; return { x: r.left + 160 * s, y: r.top + 318 * s, s }; };
+    const angleAt = (e) => { const c = center(); return Math.atan2(e.clientY - c.y, e.clientX - c.x) * 180 / Math.PI; };
+    const inKnob = (e) => { const c = center(); return Math.hypot(e.clientX - c.x, e.clientY - c.y) < 78 * c.s; };
+    svg.addEventListener('pointerdown', (e) => { if (done || !inKnob(e)) return; drag = angleAt(e); try { svg.setPointerCapture(e.pointerId); } catch (_) {} hints(false); clearTimeout(idle); e.preventDefault(); });
+    svg.addEventListener('pointermove', (e) => {
+      if (drag === null || done) return;
+      const a = angleAt(e); let d = a - drag; if (d > 180) d -= 360; if (d < -180) d += 360; drag = a;
+      if (d > 0) { total += Math.min(d, 40); paint(); } // 시계 방향만 (라쳇: 뒤로는 안 돌아가요)
+    });
+    const up = () => { if (drag === null) return; drag = null; if (!done && total < GX_TURN) { if (total < 20) q('p').textContent = '손잡이를 누른 채로 동그랗게 원을 그리듯 돌려 주세요.'; hintsLater(); } };
+    svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up);
+    q('auto').onclick = () => {
+      if (done) return; hints(false); clearTimeout(idle);
+      const from = total, t0 = performance.now(), dur = 1000;
+      const step = (now) => { const k = Math.min(1, (now - t0) / dur); total = from + (GX_TURN - from) * (1 - Math.pow(1 - k, 2)) + (k >= 1 ? 1 : 0); paint(); if (k < 1 && !done) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    };
+    function finish() {
+      done = true; click(true);
+      q('arrow').style.display = 'none'; q('auto').style.visibility = 'hidden';
+      const pick = caps[1]; pick.style.transition = 'transform .5s ease-in, opacity .3s .2s'; pick.style.transform = 'translate(10px, 90px)'; pick.style.opacity = 0;
+      setTimeout(() => {
+        const out = q('out'); out.style.display = ''; out.classList.add('drop'); click(true);
+        setStep(1); q('h').textContent = '캡슐이 나왔어요!'; q('p').textContent = ''; q('prog').style.display = 'none';
+        setTimeout(() => { if (el.isConnected) openCap(); }, 1100); // 떨어진 캡슐을 누르지 않아도 바로 여는 화면으로
+      }, 450);
+    }
+    function openCap() {
+      setStep(2);
+      const top = R.split ? null : R.ranked[0];
+      const card = R.split
+        ? `<div><small>YOUR BEANS</small><b>취향이 두 갈래예요</b>${R.split.map((x, i) => `<span class="gx-two">${'AB'[i]} · ${esc(x.b.name)}</span>`).join('')}<button type="button" class="btn-ink">결과 자세히 보기 →</button></div>`
+        : `${top.b.img ? `<img src="${esc(top.b.img)}" alt="">` : ''}<div><small>YOUR BEAN</small><b>${esc(top.b.name)}</b><span>${esc(top.b.notes)}</span><span class="gx-pct">취향 일치 ${clamp(Math.round(top.s), 58, 98)}%</span><button type="button" class="btn-ink">결과 자세히 보기 →</button></div>`;
+      const ov = document.createElement('div'); ov.className = 'gx-open';
+      ov.innerHTML = `<div class="gx-big"><div class="gx-rays"></div>
+        <svg viewBox="60 50 200 200"><g class="bot"><path d="M90 150a70 70 0 0 0 140 0z" fill="#fff" stroke="rgba(0,0,0,.35)" stroke-width="1.2"/><path d="M98 150h124" stroke="rgba(0,0,0,.15)" stroke-width="3"/></g>
+          <g class="top"><path d="M90 150a70 70 0 0 1 140 0z" fill="#8E5A33" stroke="rgba(0,0,0,.35)" stroke-width="1.2"/><rect x="90" y="146" width="140" height="6" fill="#AAD5DB"/><ellipse cx="135" cy="112" rx="18" ry="10" fill="#fff" opacity=".5" transform="rotate(-30 135 112)"/></g></svg>
+        <span class="gx-tap">눌러서 열기</span>
+        <div class="gx-card">${card}</div></div>`;
+      ROOT.querySelector('.board').appendChild(ov);
+      const big = ov.querySelector('.gx-big');
+      big.addEventListener('pointerdown', () => { if (big.classList.contains('opened')) return; big.classList.add('opened'); click(true); }); // 누르는 순간 바로 열린다
+      ov.querySelector('.gx-card button').onclick = (e) => { e.stopPropagation(); ov.remove(); go(6); };
+    }
+    paint(); hints(true); hintsLater();
   }
 
   /* ================= 추천 계산 (사이트 기존 방식과 같은 점수표) ================= */
@@ -383,41 +508,45 @@
   function score(p, t) {
     const pr = p.pr;
     let s = 100 - (Math.abs(pr.acidity - t.acidity) * 12 + Math.abs(pr.body - t.body) * 10 + Math.abs(pr.sweetness - t.sweetness) * 5 + Math.abs(pr.roastScore - t.roast) * (S.roast ? 11 : 8)); // 직접 볶은 정도는 조금 더 무겁게
-    if (S.adventure === true) s += /^single/.test(p.cat) ? 6 : -3;
-    if (S.adventure === false) s += p.cat === 'blend' ? 6 : 0;
     return s;
+  }
+
+  // 추천 결과 계산 (뽑기 카드와 결과 화면이 같이 쓴다)
+  function analyze() {
+    const t = target(), all = beans();
+    const ranked = all.filter((b) => b.cat !== 'decaf').map((b) => ({ b, s: score(b, t) })).sort((x, y) => y.s - x.s);
+    if (!ranked.length) return null;
+    // 서로 반대되는 선택 → 한쪽씩 따로 계산해서 각각 어울리는 원두를 추천
+    const tasteClash = !S.roastClash && AROMAS[S.champ].bright && S.taste.a < -0.6;
+    const sides = S.roastClash ? [{ o: { noRoast: true }, k: `${AN(S.champ)} 향을 살리면` }, { o: { noAroma: true }, k: `${S.roastKey} 로스팅을 살리면` }]
+      : tasteClash ? [{ o: { noTaste: true }, k: `${AN(S.champ)} 향을 살리면` }, { o: { noAroma: true }, k: '산미 적은 맛 취향을 살리면' }] : null;
+    let split = null;
+    if (sides) {
+      const pick = (o, not) => all.filter((b) => b.cat !== 'decaf' && b !== not).map((b) => ({ b, s: score(b, target(o)) })).sort((x, y) => y.s - x.s)[0];
+      const A = pick(sides[0].o), B = pick(sides[1].o, A.b);
+      split = [{ ...A, k: sides[0].k }, { ...B, k: sides[1].k }];
+    }
+    return { t, all, ranked, split, tasteClash };
   }
 
   /* ================= 결과 ================= */
   const ROAST_NAME = ['', '라이트', '미디엄 라이트', '미디엄', '미디엄 다크', '다크'];
   function result() {
     S.round = 6; hud();
-    const t = target();
-    const all = beans();
-    const ranked = all.filter((b) => b.cat !== 'decaf').map((b) => ({ b, s: score(b, t) })).sort((x, y) => y.s - x.s);
-    if (!ranked.length) { screen(`<div class="loading"><p class="q-hint">원두 정보를 불러오지 못했어요. 잠시 뒤 다시 해 주세요.</p></div>`); return; }
+    const R = analyze();
+    if (!R) { screen(`<div class="loading"><p class="q-hint">원두 정보를 불러오지 못했어요. 잠시 뒤 다시 해 주세요.</p></div>`); return; }
+    const { t, all, ranked, split, tasteClash } = R;
     const top = ranked[0].b, pct = clamp(Math.round(ranked[0].s), 58, 98);
     const decaf = all.find((b) => b.cat === 'decaf');
-    screen(`<div class="loading"><small>FINAL ROAST</small><div style="width:70px;margin:22px auto 0">${beanSvg(beanColor(0.6))}</div><div class="bar"><i></i></div><p class="q-hint" style="margin-top:16px">다섯 판의 결과를 섞어 볶는 중이에요</p></div>`);
-    setTimeout(() => {
+    (() => {
       const pos = (v) => ((v - 1) / 4 * 100).toFixed(1) + '%';
       const row = (lbl, you, bean) => `<div class="cmp-row"><span>${lbl}</span><div class="cmp-track"><span class="you" style="left:${pos(you)}"></span><span class="bean" style="left:${pos(bean)}"></span></div></div>`;
-      const why = [`우승 향미 <b style="color:#000;font-weight:500">${AN(S.champ)}</b>`, `직접 볶은 <b style="color:#000;font-weight:500">${S.roastKey}</b>`, S.adventure ? '모험 모드' : '안심 모드'].join(' · ');
+      const why = [`우승 향미 <b style="color:#000;font-weight:500">${AN(S.champ)}</b>`, `직접 볶은 <b style="color:#000;font-weight:500">${S.roastKey}</b>`].join(' · ');
       const chips = top.notes.split(/[·,]/).map((n) => n.trim()).filter(Boolean).slice(0, 4).map((n) => `<span>${esc(n)}</span>`).join('');
       const W5 = (v, w) => w[clamp(Math.round(v), 1, 5) - 1];
       const acidW = W5(t.acidity, ['거의 없고', '은은하고', '적당하고', '산뜻하고', '화사하고']);
       const bodyW = W5(t.body, ['아주 가벼운', '가벼운', '적당한', '묵직한', '아주 묵직한']);
       const roastW = ROAST_NAME[clamp(Math.round(t.roast), 1, 5)];
-      // 서로 반대되는 선택 → 한쪽씩 따로 계산해서 각각 어울리는 원두를 추천
-      const tasteClash = !S.roastClash && AROMAS[S.champ].bright && S.taste.a < -0.6;
-      const sides = S.roastClash ? [{ o: { noRoast: true }, k: `${AN(S.champ)} 향을 살리면` }, { o: { noAroma: true }, k: `${S.roastKey} 로스팅을 살리면` }]
-        : tasteClash ? [{ o: { noTaste: true }, k: `${AN(S.champ)} 향을 살리면` }, { o: { noAroma: true }, k: '산미 적은 맛 취향을 살리면' }] : null;
-      let split = null;
-      if (sides) {
-        const pick = (o, not) => all.filter((b) => b.cat !== 'decaf' && b !== not).map((b) => ({ b, s: score(b, target(o)) })).sort((x, y) => y.s - x.s)[0];
-        const A = pick(sides[0].o), B = pick(sides[1].o, A.b);
-        split = [{ ...A, k: sides[0].k }, { ...B, k: sides[1].k }];
-      }
       const conflict = S.roastClash ? `${AN(S.champ)} 향과 ${S.roastKey} 로스팅은 서로 반대 방향이에요. 어느 쪽이 더 끌리는지에 따라 맞는 원두가 달라서, 양쪽에 어울리는 원두를 하나씩 골랐어요.`
         : tasteClash ? `${AN(S.champ)} 향을 고르셨지만 맛 카드에서는 산미를 피하셨어요. 그래서 양쪽에 어울리는 원두를 하나씩 골랐어요.` : '';
       const rankPct = (r) => clamp(Math.round(r.s), 58, 98);
@@ -468,7 +597,7 @@
         const url = location.origin + '/beans';
         try { if (navigator.share) await navigator.share({ text, url }); else { await navigator.clipboard.writeText(text + ' ' + url); toast('결과를 복사했어요'); } } catch (_) {}
       };
-    }, 1800);
+    })();
   }
 
   /* ================= 시작 ================= */
