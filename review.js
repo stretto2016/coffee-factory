@@ -266,6 +266,7 @@ function applyChanges() {
     if (kindOf(c) === 'edit' && el.tagName !== 'IMG') {
       if (!origStore.has(el)) origStore.set(el, snap(el));
       el.innerText = c.newText || '';
+      el.style.whiteSpace = 'pre-wrap';   // 고친 글의 띄어쓰기를 그대로 보여 준다
       if (!done) el.classList.add('rv-edited');
     } else if (kindOf(c) === 'photo' && el.tagName === 'IMG' && c.newImageUrl) {
       if (!origStore.has(el)) origStore.set(el, snap(el));
@@ -761,11 +762,13 @@ async function finishEdit(save) {
   window.getSelection().removeAllRanges();
   el.innerHTML = ed.startHtml;   // 화면은 저장된 목록 기준으로 다시 그린다
 
-  const changed = save && norm(newText) !== norm(ed.startText);
+  // 띄어쓰기만 바꿔도 '고친 것'으로 본다 (예전엔 공백을 한 칸으로 뭉개서 비교해 띄어쓰기 수정이 저장되지 않았다 — 11/21 아내분 요청)
+  const sameExact = (a, b) => { const f = (x) => String(x || '').replace(/ /g, ' ').replace(/[ \t]+\n/g, '\n').trim(); return f(a) === f(b); };
+  const changed = save && !sameExact(newText, ed.startText);
   if (!changed) { flushMap(); return; }
 
   try {
-    if (norm(newText) === norm(ed.origText)) {
+    if (sameExact(newText, ed.origText)) {
       // 원래 문구로 되돌린 경우 — 고친 요청을 지운다
       if (ed.prevId) await deleteDoc(doc(db, COL, ed.prevId));
       toast('원래 문구로 되돌렸어요.');
