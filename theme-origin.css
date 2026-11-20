@@ -906,3 +906,5 @@ html .home-more, html #home-brand .home-more {
     font-weight: 600 !important;
 }
 html .home-more:hover, html #home-brand .home-more:hover { background: var(--og-brand-hover) !important; color: var(--og-brand-ink) !important; }
+/* 메인 비즈니스 칸 목록 앞 점: 글자 줄 정가운데로 (줄간격이 바뀌어 바닥에 붙어 보였음, 11/21 아내분 요청) */
+html .home-benefits li::before { top: calc(0.5lh - 3px); }
