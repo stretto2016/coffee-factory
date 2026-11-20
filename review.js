@@ -1459,11 +1459,11 @@ function listenChat() {
     const before = new Map(chatMsgs.map((m) => [m.id, m]));
     chatMsgs = snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((m) => m.site === SITE);
     if (chatReady && chatMsgs.some((m) => m.role === 'assistant' && !before.has(m.id))) {
-      toast('Claude가 답했어요.');
+      // 화면 아래 'Claude가 답했어요' 알림은 띄우지 않는다 (11/21 아내분 요청)
       if ($('#rv-panel').classList.contains('rv-collapsed')) $('#rv-handle').classList.add('rv-new');
     }
     if (chatReady && chatMsgs.some((m) => m.deployed && before.has(m.id) && !before.get(m.id).deployed)) {
-      toast('✅ 바뀐 화면이 준비됐어요. 새로고침하면 보여요.');
+      // '바뀐 화면이 준비됐어요' 알림도 띄우지 않는다 (11/21 아내분 요청)
     }
     chatReady = true;
     renderChat();
