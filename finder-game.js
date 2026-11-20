@@ -41,14 +41,22 @@
   const SWIPES = FD.SWIPE;
 
   const STAGES = [
-    { to: 0.17, k: 'UNDER ROASTED', n: '풀 내음 · 생땅콩 · 아직 커피가 아니에요', rs: 0 },
-    { to: 0.34, k: 'LIGHT',         n: '꽃 · 레몬 껍질 · 홍차', rs: 1 },
-    { to: 0.49, k: 'MEDIUM LIGHT',  n: '베리 · 살구 · 꿀', rs: 2 },
-    { to: 0.64, k: 'MEDIUM',        n: '캐러멜 · 밀크초콜릿 · 둥근 단맛', rs: 3 },
-    { to: 0.80, k: 'MEDIUM DARK',   n: '다크초콜릿 · 구운 견과 · 흑설탕', rs: 4 },
-    { to: 1.00, k: 'DARK',          n: '카카오 닙 · 훈연 · 긴 여운', rs: 5 },
-    { to: 9,    k: 'BEYOND DARK',   n: '숯 · 쓴맛 · 이건 좀 과했어요', rs: 5 },
+    { to: 0.17, k: 'UNDER ROASTED', n: '풀 내음 · 생땅콩 · 아직 커피가 아니에요', rs: 0, like: '아직 커피가 아니에요' },
+    { to: 0.34, k: 'LIGHT',         n: '꽃 · 레몬 껍질 · 홍차', rs: 1, like: '레몬에이드처럼 산뜻하고 가볍게', w: '꽃 · 레몬' },
+    { to: 0.49, k: 'MEDIUM LIGHT',  n: '베리 · 살구 · 꿀', rs: 2, like: '베리 잼처럼 상큼하고 달콤하게', w: '베리 · 꿀' },
+    { to: 0.64, k: 'MEDIUM',        n: '캐러멜 · 밀크초콜릿 · 둥근 단맛', rs: 3, like: '밀크초콜릿처럼 둥글고 편안하게', w: '캐러멜' },
+    { to: 0.80, k: 'MEDIUM DARK',   n: '다크초콜릿 · 구운 견과 · 흑설탕', rs: 4, like: '다크초콜릿처럼 진하고 고소하게', w: '다크초콜릿' },
+    { to: 1.00, k: 'DARK',          n: '카카오 닙 · 훈연 · 긴 여운', rs: 5, like: '에스프레소처럼 묵직하고 쌉싸름하게', w: '훈연 · 카카오' },
+    { to: 9,    k: 'BEYOND DARK',   n: '숯 · 쓴맛 · 이건 좀 과했어요', rs: 5, like: '앗, 탄 맛이 나기 시작해요' },
   ];
+  const STAGE_COL = ['#C9B66B', '#B98A4E', '#8E5A33', '#6B3F24', '#3a2416'];
+  // 향미와 로스팅이 서로 반대 방향인지 (밝은 향 + 진한 로스팅 / 진한 향 + 밝은 로스팅)
+  const BRIGHT = ['berry', 'citrus', 'floral'], DEEP = ['choco', 'nutty', 'smoky'];
+  function roastClash(champ, rs) {
+    if (BRIGHT.includes(champ) && rs >= 4) return `${AN(champ)} 향은 라이트 ~ 미디엄 라이트에서 가장 잘 살아나요. 이만큼 볶으면 ${AN(champ)} 향이 로스팅에 묻혀요.`;
+    if (DEEP.includes(champ) && rs <= 2) return `${AN(champ)} 향은 미디엄 이상 볶아야 나와요. 이 정도면 ${AN(champ)}보다 상큼한 맛이 먼저 느껴져요.`;
+    return '';
+  }
   const CRACK1 = 0.40, CRACK2 = 0.73;
   const BEAN_STOPS = [[0, '#8FA05A'], [0.16, '#C9B66B'], [0.34, '#B98A4E'], [0.5, '#8E5A33'], [0.65, '#6B3F24'], [0.8, '#4A2A18'], [0.94, '#2A1A10'], [1.08, '#0e0906']];
 
@@ -74,7 +82,7 @@
 
   const ROUNDS = ['향미 월드컵', '맛 스와이프', '직접 로스팅', '장비 진열장', '뽑기 한 판'];
   let S;
-  function reset() { S = { round: 0, champ: null, runner: null, taste: { a: 0, b: 0, s: 0 }, likes: [], roast: null, roastKey: '', fails: 0, gears: [], none: false, adventure: null }; }
+  function reset() { S = { round: 0, champ: null, runner: null, taste: { a: 0, b: 0, s: 0 }, likes: [], roast: null, roastKey: '', roastClash: '', fails: 0, gears: [], none: false, adventure: null }; }
   const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
   const won = (n) => Number(n || 0).toLocaleString('ko-KR');
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -128,7 +136,7 @@
 
   /* ================= ROUND 1 향미 월드컵 ================= */
   function r1() {
-    let round = FIRST_ROUND.map((p) => p.slice()), next = [], idx = 0, picks = 0, lastLoser = null;
+    let round = FIRST_ROUND.map((p) => p.slice()), next = [], idx = 0, picks = 0; const beatBy = {};
     const label = () => round.length === 4 ? `8강 · ${idx + 1} / 4` : round.length === 2 ? `4강 · ${idx + 1} / 2` : '결승';
     function show() {
       const [a, b] = round[idx];
@@ -141,19 +149,30 @@
         if (el.dataset.lock) return; el.dataset.lock = 1;
         const w = c.dataset.k, l = w === a ? b : a;
         c.classList.add('win'); el.querySelector(`.wc-card[data-k="${l}"]`).classList.add('lose');
-        picks++; next.push(w); lastLoser = l;
+        picks++; next.push(w); (beatBy[w] = beatBy[w] || []).push(l);
         setTimeout(() => {
           idx++;
           if (idx < round.length) return show();
-          if (next.length === 1) { S.champ = next[0]; S.runner = lastLoser; return champion(); }
+          if (next.length === 1) { S.champ = next[0]; return runnerUp(beatBy[S.champ]); }
           const r = []; for (let i = 0; i < next.length; i += 2) r.push([next[i], next[i + 1]]);
           round = r; next = []; idx = 0; show();
         }, 520);
       });
     }
+    // 2등 정하기: 우승 향에게 진 향들(8강·4강·결승 상대) 중에서 한 번 더 고른다.
+    // 1라운드에서 우승 향을 만나 일찍 떨어진 향도 2등이 될 수 있다.
+    function runnerUp(cands) {
+      const el = screen(`<h3 class="q-title">우승은 ${AN(S.champ)}! 그럼 2등은?</h3><p class="q-hint">${AN(S.champ)}에게 아깝게 진 향들이에요 · 이 중에 또 끌리는 걸 골라 주세요</p>
+        <div class="ru">${cands.map((k) => `<button type="button" class="ru-card" data-k="${k}">${FD.aromaCard(DESIGN.aroma, k)}</button>`).join('')}</div>`);
+      el.querySelectorAll('.ru-card').forEach((c) => c.onclick = () => {
+        if (el.dataset.lock) return; el.dataset.lock = 1;
+        c.classList.add('win'); el.querySelectorAll('.ru-card').forEach((o) => { if (o !== c) o.classList.add('lose'); });
+        S.runner = c.dataset.k; setTimeout(champion, 520);
+      });
+    }
     function champion() {
       const el = screen(`<div class="champ"><small>CHAMPION</small><div class="trophy">${FD.aromaCard(DESIGN.aroma, S.champ)}</div>
-        <p style="margin-top:16px">준우승 · ${AN(S.runner)}</p></div>
+        <p style="margin-top:16px">2등 · ${AN(S.runner)}</p></div>
         <div class="foot"><button type="button" class="btn-text" id="fg-again">다시 하기</button><button type="button" class="btn-ink" id="fg-nx">다음 라운드 →</button></div>`);
       el.querySelector('#fg-nx').onclick = () => go(2);
       el.querySelector('#fg-again').onclick = () => r1();
@@ -217,45 +236,64 @@
   }
 
   /* ================= ROUND 3 직접 로스팅 ================= */
+  // 진행도 p: 0 생두 → 1.0 다크 → 1.25 탄 맛. 생두 구간은 빠르게(2초), 맛이 갈리는 구간은 천천히(다크까지 11초 더)
+  const PMAX = 1.08;
+  const speedAt = (p) => p < 0.17 ? 0.17 / 2 : 0.83 / 11;
+  const tempAt = (p) => 120 + 126 * (1 - Math.pow(1 - Math.min(p, 1.25) / 1.3, 1.7));
   function r3() {
-    S.roast = null;
+    S.roast = null; S.roastClash = '';
+    const W = 320, H = 150, X = (p) => (Math.min(p, PMAX) / PMAX) * W, Y = (t) => H - ((t - 110) / 140) * H;
+    const bands = STAGES.slice(1, 6).map((st, i) => { const x0 = X(STAGES[i].to), x1 = X(st.to); return `<rect class="rb" data-i="${i}" x="${x0}" y="0" width="${x1 - x0}" height="${H}" fill="${STAGE_COL[i]}"/>`; }).join('');
+    const zone = `<rect class="rz" x="${X(0.34)}" y="0" width="${X(0.80) - X(0.34)}" height="${H}"/>`;
     const el = screen(`<h3 class="q-title">원하는 만큼 직접 볶아 보세요</h3><p class="q-hint">버튼을 꾹 누르는 동안 볶아지고, 손을 떼는 순간 로스팅이 끝나요</p>
       <div class="roast">
         <div><div class="drum" id="fg-drum"><div class="smoke" id="fg-smoke"></div><div class="bean" id="fg-bean">${beanSvg(beanColor(0))}</div><div class="crack" id="fg-crack"></div><div class="temp" id="fg-temp">120°C</div></div></div>
         <div>
-          <div class="note" id="fg-note"><small>GREEN BEAN</small><b>아직 생두예요. 꾹 눌러 볶아 보세요</b></div>
-          <div class="gauges"><div class="gauge"><span>산미</span><div><i id="fg-ga" style="width:100%"></i></div></div><div class="gauge"><span>바디</span><div><i id="fg-gb" style="width:0"></i></div></div></div>
-          <div class="band" id="fg-band"><span class="zone" style="left:${0.34 * 100 / 1.08}%;width:${(0.80 - 0.34) * 100 / 1.08}%"></span><span class="mk" id="fg-mk" style="left:0"></span>
-            <span class="ck" style="left:${CRACK1 * 100 / 1.08}%">1st crack</span><span class="ck" style="left:${CRACK2 * 100 / 1.08}%">2nd crack</span></div>
-          <div class="band-ends"><span>LIGHT</span><span>DARK</span></div>
+          <div class="note" id="fg-note"><small>GREEN BEAN</small><b>아직 생두예요. 꾹 눌러 볶아 보세요</b><em>볶을수록 맛이 어떻게 바뀌는지 아래에 보여 드려요</em></div>
+          <div class="rc"><svg viewBox="0 0 ${W} ${H + 18}">
+            <g class="rbs">${bands}</g>${S.fails >= 2 ? zone : ''}
+            <line class="rk" x1="${X(CRACK1)}" x2="${X(CRACK1)}" y1="0" y2="${H}"/><line class="rk" x1="${X(CRACK2)}" x2="${X(CRACK2)}" y1="0" y2="${H}"/>
+            <text class="rkt" x="${X(CRACK1) + 4}" y="13">1차 팝</text><text class="rkt" x="${X(CRACK2) + 4}" y="13">2차 팝</text>
+            <path class="rl" id="fg-curve" d="M0 ${Y(120)}"/><circle class="rd" id="fg-dot" cx="0" cy="${Y(120)}" r="4"/>
+            <text class="rax" x="0" y="${H + 14}">시간 →</text><text class="rax" x="${W}" y="${H + 14}" text-anchor="end">원두 온도 그래프</text>
+          </svg></div>
+          <div class="ladder">${STAGES.slice(1, 6).map((st, i) => `<div data-i="${i}" style="flex:${(st.to - STAGES[i].to).toFixed(2)}"><i style="background:${STAGE_COL[i]}"></i><b>${st.k.replace('MEDIUM ', 'M.')}</b><span>${st.w}</span></div>`).join('')}</div>
           <div id="fg-ctrl"><button type="button" class="hold" id="fg-hold">꾹 눌러서 볶기</button><div class="hold-sub" id="fg-hsub">PC는 스페이스바를 눌러도 돼요</div></div>
         </div>
       </div>`);
     const q = (id) => el.querySelector('#fg-' + id);
-    const bean = q('bean'), note = q('note'), temp = q('temp'), ga = q('ga'), gb = q('gb'), mk = q('mk'), crack = q('crack');
-    const drum = q('drum'), smoke = q('smoke'), hold = q('hold'), band = q('band');
-    if (S.fails >= 2) band.classList.add('helped');
+    const bean = q('bean'), note = q('note'), temp = q('temp'), crack = q('crack'), curve = q('curve'), dot = q('dot');
+    const drum = q('drum'), smoke = q('smoke'), hold = q('hold');
     let p = 0, holding = false, raf = 0, last = 0, stageKey = 'GREEN', c1 = false, c2 = false, smoked = false;
-    const SPEED = 1 / 8.5;
+    const pts = [[0, Y(120)]];
     const stageOf = (v) => STAGES.find((s) => v <= s.to);
     function paint() {
-      bean.innerHTML = beanSvg(beanColor(Math.min(p, 1.08)));
-      temp.textContent = Math.round(120 + Math.min(p, 1.08) * 118) + '°C';
-      ga.style.width = Math.max(0, (1 - p) * 100) + '%';
-      gb.style.width = Math.min(100, p * 100) + '%';
-      mk.style.left = Math.min(p, 1.08) / 1.08 * 100 + '%';
-      const s = stageOf(p);
+      bean.innerHTML = beanSvg(beanColor(Math.min(p, PMAX)));
+      const tc = tempAt(p);
+      temp.textContent = Math.round(tc) + '°C';
+      const x = X(p), y = Y(tc);
+      if (x - pts[pts.length - 1][0] > 1.5) pts.push([x, y]);
+      curve.setAttribute('d', 'M' + pts.map((pt) => pt[0].toFixed(1) + ' ' + pt[1].toFixed(1)).join(' L') + ` L${x.toFixed(1)} ${y.toFixed(1)}`);
+      dot.setAttribute('cx', x); dot.setAttribute('cy', y);
+      const s = stageOf(p), si = STAGES.indexOf(s) - 1;
+      el.querySelectorAll('.ladder > div').forEach((d) => d.classList.toggle('on', +d.dataset.i === si));
+      el.querySelectorAll('.rb').forEach((r) => r.classList.toggle('on', +r.dataset.i === si));
       if (p > 0.02 && s.k !== stageKey) {
         stageKey = s.k; note.classList.add('fade');
-        setTimeout(() => { note.innerHTML = `<small>${s.k}</small><b>${s.n}</b>`; note.classList.remove('fade'); }, 160);
+        setTimeout(() => { note.innerHTML = `<small>${s.k}</small><b>${s.like}</b><em>${s.n}</em>`; note.classList.remove('fade'); }, 160);
       }
-      if (!c1 && p >= CRACK1) { c1 = true; pop('1st crack'); }
-      if (!c2 && p >= CRACK2) { c2 = true; pop('2nd crack'); }
+      if (!c1 && p >= CRACK1) { c1 = true; pop('1차 팝 · 타닥'); }
+      if (!c2 && p >= CRACK2) { c2 = true; pop('2차 팝 · 타닥타닥'); }
       if (!smoked && p > 1.0) { smoked = true; smoke.innerHTML = [-30, 10, 34, -8].map((dx, k) => `<i style="--dx:${dx}px;animation-delay:${k * .45}s"></i>`).join(''); }
     }
     function pop(t) { crack.textContent = t; crack.classList.remove('show'); void crack.offsetWidth; crack.classList.add('show'); bean.classList.remove('shake'); void bean.offsetWidth; bean.classList.add('shake'); }
     // 시간 기준으로 진행 (화면이 잠깐 가려져도 누른 시간만큼 정확히 볶인다)
-    function tick() { if (!holding) return; const now = performance.now(); const dt = Math.min(1.5, (now - last) / 1000); last = now; p = Math.min(1.25, p + dt * SPEED); paint(); }
+    function tick() {
+      if (!holding) return;
+      const now = performance.now(); let dt = Math.min(1.5, (now - last) / 1000); last = now;
+      while (dt > 0 && p < 1.25) { const step = Math.min(dt, 0.02); p = Math.min(1.25, p + step * speedAt(p)); dt -= step; }
+      paint();
+    }
     function start(e) { if (e && e.cancelable) e.preventDefault(); if (holding || S.roast) return; holding = true; last = performance.now(); hold.classList.add('on'); hold.textContent = '볶는 중… 손을 떼면 끝나요'; drum.classList.add('spin'); q('hsub').textContent = ''; raf = setInterval(tick, 16); }
     function stop() {
       if (!holding) return; tick(); holding = false; clearInterval(raf); hold.classList.remove('on'); drum.classList.remove('spin');
@@ -263,17 +301,27 @@
       if (p < 0.02) { hold.textContent = '꾹 눌러서 볶기'; return; }
       if (s.rs === 0) {
         S.fails++;
-        q('ctrl').innerHTML = `<div class="lock"><small>UNDER ROASTED</small><div class="lock-row"><button type="button" class="btn-ink" id="fg-re">조금 더 볶아 볼까요?</button></div>${S.fails >= 2 ? '<div class="tip">로스터는 원래 타이밍 싸움이에요. 띠 위의 민트색 구간에서 손을 떼 보세요.</div>' : ''}</div>`;
+        q('ctrl').innerHTML = `<div class="lock"><small>UNDER ROASTED</small><div class="lock-row"><button type="button" class="btn-ink" id="fg-re">조금 더 볶아 볼까요?</button></div>${S.fails >= 2 ? '<div class="tip">로스터는 원래 타이밍 싸움이에요. 그래프의 민트색 구간에서 손을 떼 보세요.</div>' : ''}</div>`;
         q('re').onclick = () => r3();
         return;
       }
       if (s.k === 'BEYOND DARK') S.fails++;
-      S.roast = s.rs; S.roastKey = s.k === 'BEYOND DARK' ? 'DARK' : s.k;
-      q('ctrl').innerHTML = `<div class="lock"><small>YOUR ROAST</small><b style="display:block;font-size:22px;font-weight:500;margin-top:8px">${S.roastKey}</b>
-        ${s.k === 'BEYOND DARK' ? `<div class="tip">살짝 태웠지만 괜찮아요. 가장 진한 맛을 좋아하시는 걸로 기억할게요.${S.fails >= 2 ? ' 로스터는 원래 타이밍 싸움이에요.' : ''}</div>` : ''}
-        <div class="lock-row"><button type="button" class="btn-line" id="fg-re">다시 볶기</button><button type="button" class="btn-ink" id="fg-nx">다음 라운드 →</button></div></div>`;
+      const key = s.k === 'BEYOND DARK' ? 'DARK' : s.k;
+      const clash = roastClash(S.champ, s.rs);
+      const done = (keep) => {
+        S.roast = s.rs; S.roastKey = key; S.roastClash = keep ? clash : '';
+        q('ctrl').innerHTML = `<div class="lock"><small>YOUR ROAST</small><b class="lock-k">${key}</b>
+          ${s.k === 'BEYOND DARK' ? '<div class="tip">살짝 태웠지만 괜찮아요. 가장 진한 맛을 좋아하시는 걸로 기억할게요.</div>' : ''}
+          ${keep ? `<div class="tip">좋아요, ${AN(S.champ)} 향과 ${key} 로스팅 사이에서 균형을 찾아 추천할게요.</div>` : ''}
+          <div class="lock-row"><button type="button" class="btn-line" id="fg-re">다시 볶기</button><button type="button" class="btn-ink" id="fg-nx">다음 라운드 →</button></div></div>`;
+        q('re').onclick = () => r3();
+        q('nx').onclick = () => go(4);
+      };
+      if (!clash) return done(false);
+      q('ctrl').innerHTML = `<div class="lock warn"><small>잠깐만요</small><b class="lock-k">${key}로 볶으셨네요</b><p>${clash}</p>
+        <div class="lock-row"><button type="button" class="btn-ink" id="fg-re">다시 볶아 볼게요</button><button type="button" class="btn-line" id="fg-keep">이대로 갈게요</button></div></div>`;
       q('re').onclick = () => r3();
-      q('nx').onclick = () => go(4);
+      q('keep').onclick = () => done(true);
     }
     hold.addEventListener('pointerdown', start);
     ['pointerup', 'pointerleave', 'pointercancel'].forEach((t) => hold.addEventListener(t, stop));
@@ -331,13 +379,14 @@
   }
   function score(p, t) {
     const pr = p.pr;
-    let s = 100 - (Math.abs(pr.acidity - t.acidity) * 12 + Math.abs(pr.body - t.body) * 10 + Math.abs(pr.sweetness - t.sweetness) * 5 + Math.abs(pr.roastScore - t.roast) * 8);
+    let s = 100 - (Math.abs(pr.acidity - t.acidity) * 12 + Math.abs(pr.body - t.body) * 10 + Math.abs(pr.sweetness - t.sweetness) * 5 + Math.abs(pr.roastScore - t.roast) * (S.roast ? 11 : 8)); // 직접 볶은 정도는 조금 더 무겁게
     if (S.adventure === true) s += /^single/.test(p.cat) ? 6 : -3;
     if (S.adventure === false) s += p.cat === 'blend' ? 6 : 0;
     return s;
   }
 
   /* ================= 결과 ================= */
+  const ROAST_NAME = ['', '라이트', '미디엄 라이트', '미디엄', '미디엄 다크', '다크'];
   function result() {
     S.round = 6; hud();
     const t = target();
@@ -352,11 +401,29 @@
       const row = (lbl, you, bean) => `<div class="cmp-row"><span>${lbl}</span><div class="cmp-track"><span class="you" style="left:${pos(you)}"></span><span class="bean" style="left:${pos(bean)}"></span></div></div>`;
       const why = [`우승 향미 <b style="color:#000;font-weight:500">${AN(S.champ)}</b>`, `직접 볶은 <b style="color:#000;font-weight:500">${S.roastKey}</b>`, S.adventure ? '모험 모드' : '안심 모드'].join(' · ');
       const chips = top.notes.split(/[·,]/).map((n) => n.trim()).filter(Boolean).slice(0, 4).map((n) => `<span>${esc(n)}</span>`).join('');
+      const W5 = (v, w) => w[clamp(Math.round(v), 1, 5) - 1];
+      const acidW = W5(t.acidity, ['거의 없고', '은은하고', '적당하고', '산뜻하고', '화사하고']);
+      const bodyW = W5(t.body, ['아주 가벼운', '가벼운', '적당한', '묵직한', '아주 묵직한']);
+      const roastW = ROAST_NAME[clamp(Math.round(t.roast), 1, 5)];
+      const conflict = (S.roastClash ? `${AN(S.champ)} 향과 ${S.roastKey} 로스팅은 서로 반대 방향이라, 두 취향 사이 균형점에 가까운 원두부터 골랐어요. 순위를 내려가며 비교해 보세요.` : '') || (AROMAS[S.champ].bright && S.taste.a < -0.6 ? `${AN(S.champ)} 향을 고르셨지만 맛 카드에서는 산미를 피하셨어요. 그래서 산미는 은은하고 달콤한 과일 쪽으로 방향을 잡았어요.` : '');
+      const rankPct = (r) => clamp(Math.round(r.s), 58, 98);
       const el = screen(`<div class="flip"><div class="flip-in">
+        <div class="taste">
+          <small>YOUR COFFEE TASTE</small>
+          <h4>${esc(AN(S.champ))} · ${esc(AN(S.runner))} 향이 나고, 산미는 ${acidW} 바디는 ${bodyW} <b>${roastW} 로스팅</b> 커피가 잘 맞아요</h4>
+          <div class="taste-row">
+            <div><span>좋아하는 향</span><b>${esc(AN(S.champ))} · ${esc(AN(S.runner))}</b></div>
+            <div><span>산미</span><b>${W5(t.acidity, ['거의 없이', '은은하게', '균형 있게', '산뜻하게', '화사하게'])}</b></div>
+            <div><span>바디</span><b>${W5(t.body, ['아주 가볍게', '가볍게', '적당히', '묵직하게', '아주 묵직하게'])}</b></div>
+            <div><span>로스팅</span><b>${roastW}</b></div>
+          </div>
+          ${conflict ? `<p class="taste-note">💡 ${esc(conflict)}</p>` : ''}
+          <p class="taste-go">스트레토 원두 중에서 이 취향에 가까운 순서로 골랐어요 ↓</p>
+        </div>
         <div class="res">
-          <div class="res-img">${top.img ? `<img src="${esc(top.img)}" alt="${esc(top.name)}">` : ''}<span>BEST MATCH</span></div>
+          <div class="res-img">${top.img ? `<img src="${esc(top.img)}" alt="${esc(top.name)}">` : ''}<span>1위 · BEST MATCH</span></div>
           <div class="res-body">
-            <small>YOUR BEAN</small>
+            <small>NO.1 YOUR BEAN</small>
             <div class="res-name">${esc(top.name)}</div>
             <div class="res-sub">${esc(top.roast)}${top.price ? ` · ${won(top.price)}원 / 200g` : ''}</div>
             <div class="chips">${chips}</div>
@@ -368,7 +435,7 @@
             <div class="res-cta"><a class="btn-mint" href="${esc(top.link)}" target="_blank" rel="noopener">이 원두 보기</a><button type="button" class="btn-line" id="fg-share">결과 공유</button><button type="button" class="btn-text" id="fg-again" style="margin-left:auto">다시 하기</button></div>
           </div>
         </div>
-        <div class="more">${ranked.slice(1, 3).map((r, k) => `<a href="${esc(r.b.link)}" target="_blank" rel="noopener">${r.b.img ? `<img src="${esc(r.b.img)}" alt="">` : '<span></span>'}<div><small>${k ? '의외의 케미' : '다음으로 잘 맞는'}</small><b>${esc(r.b.name)}</b><span>${esc(r.b.notes)}</span></div></a>`).join('')}</div>
+        <div class="rank">${ranked.slice(1, 3).map((r, k) => `<a href="${esc(r.b.link)}" target="_blank" rel="noopener"><em>${k + 2}위</em>${r.b.img ? `<img src="${esc(r.b.img)}" alt="">` : '<span></span>'}<div><b>${esc(r.b.name)}</b><span>${esc(r.b.notes)}</span><small>${k ? '색다르게 즐기고 싶을 때' : '1위와 함께 비교해 보기 좋은'}</small></div><strong>${rankPct(r)}%</strong></a>`).join('')}</div>
         ${decaf ? `<div class="decaf">늦은 밤에도 커피를 즐기신다면 · <a href="${esc(decaf.link)}" target="_blank" rel="noopener">${esc(decaf.name)}</a></div>` : ''}
       </div></div>`);
       requestAnimationFrame(() => setTimeout(() => { const m = el.querySelector('#fg-mt'); if (m) m.style.width = pct + '%'; }, 50));
