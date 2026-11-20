@@ -367,13 +367,15 @@
   }
 
   /* ================= 추천 계산 (사이트 기존 방식과 같은 점수표) ================= */
-  function target() {
-    const t = { acidity: clamp(3 + S.taste.a * 0.9, 1, 5), body: clamp(3 + S.taste.b * 0.9, 1, 5), sweetness: clamp(3 + S.taste.s * 0.9, 1, 5), roast: 3 };
-    const A = AROMAS[S.champ].v, R = AROMAS[S.runner].v;
-    t.acidity += A[0] + R[0] * 0.4; t.body += A[1] + R[1] * 0.4; t.sweetness += A[2] + R[2] * 0.4; t.roast += A[3] + R[3] * 0.4;
-    if (S.roast) { t.roast = t.roast * 0.25 + S.roast * 0.75; t.body += (S.roast - 3) * 0.3; t.acidity -= (S.roast - 3) * 0.3; }
+  // o.noAroma / o.noRoast / o.noTaste: 서로 반대되는 선택이 있을 때 한쪽만 보고 계산 (각각에 어울리는 원두 추천용)
+  function target(o = {}) {
+    const ta = o.noTaste ? 0 : S.taste.a;
+    const t = { acidity: clamp(3 + ta * 0.9, 1, 5), body: clamp(3 + S.taste.b * 0.9, 1, 5), sweetness: clamp(3 + S.taste.s * 0.9, 1, 5), roast: 3 };
+    const A = AROMAS[S.champ].v, R = AROMAS[S.runner].v, f = o.noAroma ? 0 : (o.noRoast || o.noTaste ? 1.3 : 1);
+    t.acidity += (A[0] + R[0] * 0.4) * f; t.body += (A[1] + R[1] * 0.4) * f; t.sweetness += (A[2] + R[2] * 0.4) * f; t.roast += (A[3] + R[3] * 0.4) * f;
+    if (S.roast && !o.noRoast) { t.roast = t.roast * 0.25 + S.roast * 0.75; t.body += (S.roast - 3) * 0.3; t.acidity -= (S.roast - 3) * 0.3; }
     if (S.gears.length) { const v = [0, 0, 0]; S.gears.forEach((k) => GEARS[k].v.forEach((x, i) => v[i] += x / S.gears.length)); t.acidity += v[0]; t.body += v[1]; t.roast += v[2] * 0.4; }
-    if (AROMAS[S.champ].bright && t.acidity <= 2.2) { t.acidity = 2.2; t.sweetness += 0.6; }
+    if (!o.noAroma && !o.noTaste && AROMAS[S.champ].bright && t.acidity <= 2.2) { t.acidity = 2.2; t.sweetness += 0.6; }
     ['acidity', 'body', 'sweetness', 'roast'].forEach((k) => t[k] = clamp(t[k], 1, 5));
     return t;
   }
@@ -405,12 +407,23 @@
       const acidW = W5(t.acidity, ['거의 없고', '은은하고', '적당하고', '산뜻하고', '화사하고']);
       const bodyW = W5(t.body, ['아주 가벼운', '가벼운', '적당한', '묵직한', '아주 묵직한']);
       const roastW = ROAST_NAME[clamp(Math.round(t.roast), 1, 5)];
-      const conflict = (S.roastClash ? `${AN(S.champ)} 향과 ${S.roastKey} 로스팅은 서로 반대 방향이라, 두 취향 사이 균형점에 가까운 원두부터 골랐어요. 순위를 내려가며 비교해 보세요.` : '') || (AROMAS[S.champ].bright && S.taste.a < -0.6 ? `${AN(S.champ)} 향을 고르셨지만 맛 카드에서는 산미를 피하셨어요. 그래서 산미는 은은하고 달콤한 과일 쪽으로 방향을 잡았어요.` : '');
+      // 서로 반대되는 선택 → 한쪽씩 따로 계산해서 각각 어울리는 원두를 추천
+      const tasteClash = !S.roastClash && AROMAS[S.champ].bright && S.taste.a < -0.6;
+      const sides = S.roastClash ? [{ o: { noRoast: true }, k: `${AN(S.champ)} 향을 살리면` }, { o: { noAroma: true }, k: `${S.roastKey} 로스팅을 살리면` }]
+        : tasteClash ? [{ o: { noTaste: true }, k: `${AN(S.champ)} 향을 살리면` }, { o: { noAroma: true }, k: '산미 적은 맛 취향을 살리면' }] : null;
+      let split = null;
+      if (sides) {
+        const pick = (o, not) => all.filter((b) => b.cat !== 'decaf' && b !== not).map((b) => ({ b, s: score(b, target(o)) })).sort((x, y) => y.s - x.s)[0];
+        const A = pick(sides[0].o), B = pick(sides[1].o, A.b);
+        split = [{ ...A, k: sides[0].k }, { ...B, k: sides[1].k }];
+      }
+      const conflict = S.roastClash ? `${AN(S.champ)} 향과 ${S.roastKey} 로스팅은 서로 반대 방향이에요. 어느 쪽이 더 끌리는지에 따라 맞는 원두가 달라서, 양쪽에 어울리는 원두를 하나씩 골랐어요.`
+        : tasteClash ? `${AN(S.champ)} 향을 고르셨지만 맛 카드에서는 산미를 피하셨어요. 그래서 양쪽에 어울리는 원두를 하나씩 골랐어요.` : '';
       const rankPct = (r) => clamp(Math.round(r.s), 58, 98);
       const el = screen(`<div class="flip"><div class="flip-in">
         <div class="taste">
           <small>YOUR COFFEE TASTE</small>
-          <h4>${esc(AN(S.champ))} · ${esc(AN(S.runner))} 향이 나고, 산미는 ${acidW} 바디는 ${bodyW} <b>${roastW} 로스팅</b> 커피가 잘 맞아요</h4>
+          <h4>${split ? (S.roastClash ? `${esc(AN(S.champ))} · ${esc(AN(S.runner))} 향을 좋아하시는데, 직접 볶은 건 <b>${S.roastKey} 로스팅</b>이었어요` : `${esc(AN(S.champ))} · ${esc(AN(S.runner))} 향을 좋아하시는데, 맛은 <b>산미 적은 쪽</b>을 고르셨어요`) : `${esc(AN(S.champ))} · ${esc(AN(S.runner))} 향이 나고, 산미는 ${acidW} 바디는 ${bodyW} <b>${roastW} 로스팅</b> 커피가 잘 맞아요`}</h4>
           <div class="taste-row">
             <div><span>좋아하는 향</span><b>${esc(AN(S.champ))} · ${esc(AN(S.runner))}</b></div>
             <div><span>산미</span><b>${W5(t.acidity, ['거의 없이', '은은하게', '균형 있게', '산뜻하게', '화사하게'])}</b></div>
@@ -418,8 +431,17 @@
             <div><span>로스팅</span><b>${roastW}</b></div>
           </div>
           ${conflict ? `<p class="taste-note">💡 ${esc(conflict)}</p>` : ''}
-          <p class="taste-go">스트레토 원두 중에서 이 취향에 가까운 순서로 골랐어요 ↓</p>
+          <p class="taste-go">${split ? '취향이 두 갈래예요 · 끌리는 쪽을 골라 보세요 ↓' : '스트레토 원두 중에서 이 취향에 가까운 순서로 골랐어요 ↓'}</p>
         </div>
+        ${split ? `<div class="split2">${split.map((x, i) => `<div class="sp">
+            <div class="sp-img">${x.b.img ? `<img src="${esc(x.b.img)}" alt="">` : ''}<span>${'AB'[i]} · ${esc(x.k)}</span></div>
+            <div class="sp-body"><div class="res-name">${esc(x.b.name)}</div><div class="res-sub">${esc(x.b.roast)}${x.b.price ? ` · ${won(x.b.price)}원 / 200g` : ''}</div>
+              <div class="chips">${x.b.notes.split(/[·,]/).map((n) => n.trim()).filter(Boolean).slice(0, 4).map((n) => `<span>${esc(n)}</span>`).join('')}</div>
+              <p class="res-desc">${esc(x.b.desc)}</p>
+              <a class="btn-mint" href="${esc(x.b.link)}" target="_blank" rel="noopener">이 원두 보기</a></div></div>`).join('')}</div>
+          <div class="res-cta sp-cta"><button type="button" class="btn-line" id="fg-share">결과 공유</button><button type="button" class="btn-text" id="fg-again" style="margin-left:auto">다시 하기</button></div>
+          <p class="rank-t">두 취향을 함께 놓고 본 순위</p>
+          <div class="rank">${ranked.slice(0, 3).map((r, k) => `<a href="${esc(r.b.link)}" target="_blank" rel="noopener"><em>${k + 1}위</em>${r.b.img ? `<img src="${esc(r.b.img)}" alt="">` : '<span></span>'}<div><b>${esc(r.b.name)}</b><span>${esc(r.b.notes)}</span></div><strong>${rankPct(r)}%</strong></a>`).join('')}</div>` : `
         <div class="res">
           <div class="res-img">${top.img ? `<img src="${esc(top.img)}" alt="${esc(top.name)}">` : ''}<span>1위 · BEST MATCH</span></div>
           <div class="res-body">
@@ -435,13 +457,13 @@
             <div class="res-cta"><a class="btn-mint" href="${esc(top.link)}" target="_blank" rel="noopener">이 원두 보기</a><button type="button" class="btn-line" id="fg-share">결과 공유</button><button type="button" class="btn-text" id="fg-again" style="margin-left:auto">다시 하기</button></div>
           </div>
         </div>
-        <div class="rank">${ranked.slice(1, 3).map((r, k) => `<a href="${esc(r.b.link)}" target="_blank" rel="noopener"><em>${k + 2}위</em>${r.b.img ? `<img src="${esc(r.b.img)}" alt="">` : '<span></span>'}<div><b>${esc(r.b.name)}</b><span>${esc(r.b.notes)}</span><small>${k ? '색다르게 즐기고 싶을 때' : '1위와 함께 비교해 보기 좋은'}</small></div><strong>${rankPct(r)}%</strong></a>`).join('')}</div>
+        <div class="rank">${ranked.slice(1, 3).map((r, k) => `<a href="${esc(r.b.link)}" target="_blank" rel="noopener"><em>${k + 2}위</em>${r.b.img ? `<img src="${esc(r.b.img)}" alt="">` : '<span></span>'}<div><b>${esc(r.b.name)}</b><span>${esc(r.b.notes)}</span><small>${k ? '색다르게 즐기고 싶을 때' : '1위와 함께 비교해 보기 좋은'}</small></div><strong>${rankPct(r)}%</strong></a>`).join('')}</div>`}
         ${decaf ? `<div class="decaf">늦은 밤에도 커피를 즐기신다면 · <a href="${esc(decaf.link)}" target="_blank" rel="noopener">${esc(decaf.name)}</a></div>` : ''}
       </div></div>`);
       requestAnimationFrame(() => setTimeout(() => { const m = el.querySelector('#fg-mt'); if (m) m.style.width = pct + '%'; }, 50));
       el.querySelector('#fg-again').onclick = () => { reset(); go(1); };
       el.querySelector('#fg-share').onclick = async () => {
-        const text = `나의 커피는 ${top.name} (취향 일치 ${pct}%) · 스트레토 원두 찾기`;
+        const text = split ? `나의 커피는 ${split[0].b.name} 아니면 ${split[1].b.name} · 스트레토 원두 찾기` : `나의 커피는 ${top.name} (취향 일치 ${pct}%) · 스트레토 원두 찾기`;
         const url = location.origin + '/beans';
         try { if (navigator.share) await navigator.share({ text, url }); else { await navigator.clipboard.writeText(text + ' ' + url); toast('결과를 복사했어요'); } } catch (_) {}
       };

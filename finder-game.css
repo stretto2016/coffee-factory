@@ -325,3 +325,20 @@
 #fg .rank img, #fg .rank a > span {width: 56px; height: 56px;}
 #fg .rank b {font-size: 14px;}
 }
+/* 서로 반대되는 선택 → 두 갈래 추천 */
+#fg .split2 {display: grid; grid-template-columns: 1fr 1fr; gap: 12px;}
+#fg .sp {border: 1px solid var(--ink); background: #fff; display: flex; flex-direction: column;}
+#fg .sp-img {position: relative; height: 200px; background: #111;}
+#fg .sp-img img {position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;}
+#fg .sp-img span {position: absolute; left: 14px; top: 14px; background: var(--mint); color: var(--mint-ink); font-size: 12px; padding: 5px 10px; font-weight: 500;}
+#fg .sp-body {padding: 18px 20px 20px; display: flex; flex-direction: column; flex: 1;}
+#fg .sp-body .res-name {font-size: 22px; margin-top: 0;}
+#fg .sp-body .chips {margin: 12px 0;}
+#fg .sp-body .res-desc {font-size: 13px; margin-bottom: 14px;}
+#fg .sp-body .btn-mint {margin-top: auto; align-self: flex-start;}
+#fg .sp-cta {margin-top: 12px;}
+#fg .rank-t {font-size: 12.5px; color: var(--muted); margin: 22px 0 0;}
+@media (max-width: 760px) {
+#fg .split2 {grid-template-columns: 1fr;}
+#fg .sp-img {height: 160px;}
+}
