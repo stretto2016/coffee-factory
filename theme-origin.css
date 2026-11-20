@@ -795,3 +795,6 @@ html #home-brand .home-lead strong { font-weight: 700; }
 html #home-brand .home-facts--words li { display: block; border-top: 0; padding: 3px 0; }
 html #home-brand .home-facts--words li strong { display: inline; }
 html #home-brand .home-facts--words li span::before { content: "|"; margin: 0 10px; }
+/* 브랜드 대표 인사말 글: 위 history 작은 설명과 같은 글씨 크기 (11/21 아내분 요청) */
+html .greeting-inner p { font-size: 0.9rem; }
+@media (max-width: 768px) { html .greeting-inner p { font-size: 0.84rem; } }
