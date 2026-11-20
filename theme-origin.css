@@ -841,3 +841,7 @@ html #cs-services .svc-check li::before { flex-basis: 4px; width: 4px; height: 4
 html .svc-check li { font-size: 11.2px !important; }
 html .svc-check li::before { flex-basis: 12px; width: 12px; height: 12px; margin-top: calc((1lh - 12px) / 2 - 1.5px); }
 html #cs-services .svc-check li::before { margin-top: calc((1lh - 4px) / 2 - 0.5px); }
+/* 모든 페이지 제목 통일 (11/21 아내분 요청): 위 회색 영어 소제목 12px · 아래 검정 제목은 모두 '스트레토 컨설팅의 핵심'과 같은 1.4rem 굵게.
+   제외: 메인 화면 따옴표 문장(home-title), 브랜드 슬로건(carefully crafted coffee 손글씨 제목) */
+html .section-subtitle { font-size: 12px !important; }
+html .section-subtitle ~ :is(h2, h3, h4):not(.home-title):not(:has(.title-nowrap)) { font-size: 1.4rem !important; font-weight: 700 !important; line-height: 1.35 !important; }
