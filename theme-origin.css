@@ -888,3 +888,12 @@ html .care-benefit--v2 .cb-card strong { display: flex; justify-content: center;
 html .care-benefit--v2 .cb-icon { font-size: 16px; }
 html .care-benefit--v2 .cb-card p { font-size: 16px; line-height: 1.7; color: #3a3a3a; margin: 0; text-align: center; word-break: keep-all; }
 @media (max-width: 760px) { html .care-benefit--v2 .cb-grid { grid-template-columns: minmax(0, 1fr); } html .care-benefit--v2 .cb-card { padding: 24px 20px; } }
+/* 체크 네모를 15→13px로 줄이고 글자 줄 한가운데(살짝 위)에 — 글씨와 붙어 한 줄로 보이게 (11/21 아내분 요청) */
+html .svc-check li { gap: 7px; }
+html .svc-check li::before { flex-basis: 13px; width: 13px; height: 13px; margin-top: calc((1lh - 13px) / 2 - 2.2px); }
+/* 바리스타 교육 '교육은 이렇게 진행됩니다': 01 → 02 → 03 → 04 왼쪽에서 오른쪽으로 한 줄 (11/21 아내분 요청) */
+@media (min-width: 901px) {
+    html #edu-process .care-benefit-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px; }
+    html #edu-process .care-benefit-grid > div { position: relative; }
+    html #edu-process .care-benefit-grid > div:not(:last-child)::after { content: "→"; position: absolute; top: 0; right: -28px; font-size: 17px; line-height: 1.55; color: var(--og-muted); }
+}
