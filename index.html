@@ -2016,7 +2016,7 @@ a.manual-page:hover { transform: translateY(-3px); }
     <!-- Origin 풍 테마 (미리보기 검토 중). 아래 한 줄을 지우면 예전 모습으로, theme-lacabra.css 로 바꾸면 La Cabra 시안으로 -->
     <link rel="stylesheet" href="finder-game.css?v=6">
     <link rel="stylesheet" href="cafe-game.css?v=1">
-    <link rel="stylesheet" href="theme-origin.css?v=20261121x"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
+    <link rel="stylesheet" href="theme-origin.css?v=20261121y"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
     <!-- 미리보기 화면에 Vercel 도구(INP Issue 같은 알림 상자)가 뜨지 않게 숨김 — 실제 사이트에는 원래 없는 것 (11/21 아내분 요청) -->
     <style>vercel-live-feedback, #vercel-live-feedback, [data-vercel-toolbar], vercel-toolbar { display: none !important; }</style>
 </head>
@@ -2812,20 +2812,23 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </article>
             </div>
 
-            <div class="care-benefit" id="care-benefit">
-                <span class="section-subtitle">Partner Benefit</span>
-                <h3>원두 파트너 매장은 먼저 찾아갑니다</h3>
-                <div class="care-benefit-grid">
-                    <div>
-                        <strong>긴급 출동 우선권</strong>
-                        <p>머신 고장은 곧 매출 손실입니다. 파트너 매장에 긴급 상황이 생기면 다른 일정을 조정해서라도 가장 먼저 방문합니다.</p>
+            <!-- 파트너 혜택: 한 줄 머리말 + 가운데 정렬 두 칸 (11/21 아내분이 보낸 화면 그대로) -->
+            <div class="care-benefit care-benefit--v2" id="care-benefit">
+                <div class="cb-head">
+                    <span class="section-subtitle">Partner Benefit</span>
+                    <strong class="cb-title keep-case">Priority Dispatch &amp; Care</strong>
+                    <span class="cb-sub">긴급 상황 시 최우선 방문 지원</span>
+                </div>
+                <div class="cb-grid">
+                    <div class="cb-card">
+                        <strong><span class="cb-icon" aria-hidden="true">⚡</span><span class="keep-case">Fast-Track Response</span> | 긴급 출동 우선권 부여</strong>
+                        <p>머신 고장은 곧 매출 손실입니다. 파트너사의 긴급 상황 발생 시, 최우선적으로 스케줄을 조정하여 현장에 방문합니다.</p>
                     </div>
-                    <div>
-                        <strong>출장비 · 기술료 할인</strong>
-                        <p>시중 수리비보다 합리적인 가격으로, 출장비와 기술료를 할인해 케어 서비스를 제공합니다.</p>
+                    <div class="cb-card">
+                        <strong><span class="cb-icon" aria-hidden="true">🛠️</span><span class="keep-case">Exclusive Benefits</span> | 출장비 &amp; 기술료 할인</strong>
+                        <p>시중 수리비 대비 합리적인 가격(출장비/기술료 할인)으로 케어 서비스를 제공합니다.</p>
                     </div>
                 </div>
-                <a href="/wholesale" data-route="wholesale" class="home-more">원두 파트너십 알아보기 <span aria-hidden="true">→</span></a>
             </div>
 
         </div>

@@ -876,3 +876,15 @@ html :is(.section-header > p:not(.partner-cond-note):not(:has(.cs-head-title)), 
 html :is(.svc-check li, .manual-doc-list li, .home-benefits li) { font-size: 14px !important; line-height: 1.6 !important; }
 html .svc-check li::before { flex-basis: 15px; width: 15px; height: 15px; margin-top: calc((1lh - 15px) / 2 - 1.5px); }
 html #cs-services .svc-check li::before { flex-basis: 4px; width: 4px; height: 4px; margin-top: calc((1lh - 4px) / 2 - 0.5px); }
+/* 머신 케어 파트너 혜택 (새 모양): 머리말 한 줄 [회색 영문 | 굵은 영문 제목 | 회색 설명] + 회색 판 두 칸 가운데 정렬 */
+html .care-benefit--v2 { background: transparent !important; padding: 0 !important; text-align: left; }
+html .care-benefit--v2 .cb-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin: 0 0 28px; }
+html .care-benefit--v2 .cb-head .section-subtitle { margin: 0 !important; display: inline; }
+html .care-benefit--v2 .cb-title { font-size: 17px; font-weight: 600; color: var(--og-text); }
+html .care-benefit--v2 .cb-sub { font-size: 14px; color: var(--og-muted); }
+html .care-benefit--v2 .cb-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+html .care-benefit--v2 .cb-card { background: var(--og-panel); padding: 32px 36px; text-align: center; }
+html .care-benefit--v2 .cb-card strong { display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 17px; font-weight: 600; color: var(--og-text); margin: 0 0 10px; }
+html .care-benefit--v2 .cb-icon { font-size: 16px; }
+html .care-benefit--v2 .cb-card p { font-size: 16px; line-height: 1.7; color: #3a3a3a; margin: 0; text-align: center; word-break: keep-all; }
+@media (max-width: 760px) { html .care-benefit--v2 .cb-grid { grid-template-columns: minmax(0, 1fr); } html .care-benefit--v2 .cb-card { padding: 24px 20px; } }
