@@ -819,3 +819,6 @@ html .greeting-career--list span { display: block; font-size: 13.5px; line-heigh
 /* 브랜드 대표 인사말: 사진을 뺀 뒤 글이 상자 전체 너비 (11/21 아내분 요청) */
 html .greeting-box--nophoto { grid-template-columns: minmax(0, 1fr) !important; grid-template-rows: auto auto !important; }
 html .greeting-box--nophoto .greeting-inner, html .greeting-box--nophoto .greeting-side { grid-column: 1 / -1 !important; grid-row: auto !important; }
+/* 대표 인사말: 서명과 아래 경력 사이를 좁게 (11/21 아내분 요청) */
+@media (min-width: 901px) { html .greeting-box--nophoto .greeting-side { padding-top: 8px !important; } }
+@media (max-width: 900px) { html .greeting-box--nophoto .greeting-career { margin-top: 8px; padding-top: 0; border-top: 0; } }
