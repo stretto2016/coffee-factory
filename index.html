@@ -3667,6 +3667,7 @@ a.manual-page:hover { transform: translateY(-3px); }
             if (!r || r === 'home') { if (hero.nextElementSibling !== f) hero.after(f); }
             else if (shop.previousElementSibling !== f) shop.before(f);
         }
+        window.__placeFinder = place;  // 라우터가 앵커(#shop 등)로 스크롤하기 전에 먼저 자리를 옮긴다
         place();
         new MutationObserver(place).observe(document.body, { attributes: true, attributeFilter: ['data-route'] });
     })();
@@ -3712,6 +3713,7 @@ a.manual-page:hover { transform: translateY(-3px); }
 
         function render(route, anchor) {
             document.body.dataset.route = route;
+            if (window.__placeFinder) window.__placeFinder();
             document.title = ROUTES[route].title;
             if (canonical) canonical.href = 'https://www.stretto.co.kr' + ROUTES[route].path;
             // 지금 보고 있는 페이지가 속한 메뉴 묶음(coffee · partnership ...) 제목에 밑줄
