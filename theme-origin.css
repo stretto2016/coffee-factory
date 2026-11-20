@@ -798,3 +798,10 @@ html #home-brand .home-facts--words li span::before { content: "|"; margin: 0 10
 /* 브랜드 대표 인사말 글: 위 history 작은 설명과 같은 글씨 크기 (11/21 아내분 요청) */
 html .greeting-inner p { font-size: 0.9rem; }
 @media (max-width: 768px) { html .greeting-inner p { font-size: 0.84rem; } }
+/* 브랜드 대표 인사말: 인사말 칸 + 자격 칸을 한 칸으로 합침 — 사진 1칸 | 글 2칸(인사말 아래 자격) (11/21 아내분 요청) */
+@media (min-width: 901px) {
+    html .greeting-box { grid-template-rows: 1fr auto auto 1fr; }
+    html .greeting-photo { grid-column: 1; grid-row: 1 / -1; }
+    html .greeting-inner { grid-column: 2 / span 2; grid-row: 2; padding: 48px 40px 0; }
+    html .greeting-side { grid-column: 2 / span 2; grid-row: 3; padding: 26px 40px 48px; justify-content: flex-start; }
+}
