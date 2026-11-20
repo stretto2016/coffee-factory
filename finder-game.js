@@ -138,7 +138,7 @@
 
   /* ================= ROUND 1 향미 월드컵 ================= */
   function r1() {
-    let round = FIRST_ROUND.map((p) => p.slice()), next = [], idx = 0, picks = 0; const beatBy = {};
+    let round = FIRST_ROUND.map((p) => p.slice()), next = [], idx = 0, picks = 0;
     const label = () => round.length === 4 ? `8강 · ${idx + 1} / 4` : round.length === 2 ? `4강 · ${idx + 1} / 2` : '결승';
     function show() {
       const [a, b] = round[idx];
@@ -151,20 +151,19 @@
         if (el.dataset.lock) return; el.dataset.lock = 1;
         const w = c.dataset.k, l = w === a ? b : a;
         c.classList.add('win'); el.querySelector(`.wc-card[data-k="${l}"]`).classList.add('lose');
-        picks++; next.push(w); (beatBy[w] = beatBy[w] || []).push(l);
+        picks++; next.push(w);
         setTimeout(() => {
           idx++;
           if (idx < round.length) return show();
-          if (next.length === 1) { S.champ = next[0]; return runnerUp(beatBy[S.champ]); }
+          if (next.length === 1) { S.champ = next[0]; return runnerUp(FD.ORDER.filter((k) => k !== S.champ)); }
           const r = []; for (let i = 0; i < next.length; i += 2) r.push([next[i], next[i + 1]]);
           round = r; next = []; idx = 0; show();
         }, 520);
       });
     }
-    // 2등 정하기: 우승 향에게 진 향들(8강·4강·결승 상대) 중에서 한 번 더 고른다.
-    // 1라운드에서 우승 향을 만나 일찍 떨어진 향도 2등이 될 수 있다.
+    // 2등 정하기: 우승 향을 뺀 나머지 일곱 개 중에서 손님이 직접 하나 더 고른다 (월드컵에서 언제 떨어졌는지와 상관없이)
     function runnerUp(cands) {
-      const el = screen(`<h3 class="q-title">우승은 ${AN(S.champ)}! 그럼 2등은?</h3><p class="q-hint">${AN(S.champ)}에게 아깝게 진 향들이에요 · 이 중에 또 끌리는 걸 골라 주세요</p>
+      const el = screen(`<h3 class="q-title">우승은 ${AN(S.champ)}! 2등은 어떤 향일까요?</h3><p class="q-hint">${AN(S.champ)} 말고 또 좋아하는 향을 하나 더 골라 주세요</p>
         <div class="ru">${cands.map((k) => `<button type="button" class="ru-card" data-k="${k}">${FD.aromaCard(DESIGN.aroma, k)}</button>`).join('')}</div>`);
       el.querySelectorAll('.ru-card').forEach((c) => c.onclick = () => {
         if (el.dataset.lock) return; el.dataset.lock = 1;
