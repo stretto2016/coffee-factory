@@ -2016,7 +2016,7 @@ a.manual-page:hover { transform: translateY(-3px); }
     <!-- Origin 풍 테마 (미리보기 검토 중). 아래 한 줄을 지우면 예전 모습으로, theme-lacabra.css 로 바꾸면 La Cabra 시안으로 -->
     <link rel="stylesheet" href="finder-game.css?v=6">
     <link rel="stylesheet" href="cafe-game.css?v=1">
-    <link rel="stylesheet" href="theme-origin.css?v=20261121z"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
+    <link rel="stylesheet" href="theme-origin.css?v=20261122a"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
     <!-- 미리보기 화면에 Vercel 도구(INP Issue 같은 알림 상자)가 뜨지 않게 숨김 — 실제 사이트에는 원래 없는 것 (11/21 아내분 요청) -->
     <style>vercel-live-feedback, #vercel-live-feedback, [data-vercel-toolbar], vercel-toolbar { display: none !important; }</style>
 </head>
@@ -2033,7 +2033,7 @@ a.manual-page:hover { transform: translateY(-3px); }
     <!-- 상단 띠 (La Cabra 테마에서만 보인다. 기본 스타일에서는 숨김) -->
     <div class="topbar">
         <a href="partner.html" target="_blank">파트너 로그인</a>
-        <span>원두 납품 · 창업 컨설팅 · 머신 케어 상담 <a href="#contact">문의하기 →</a></span>
+        <span>원두 납품 · 창업 컨설팅 · 머신 케어 상담 <a href="#contact">문의하기 ↗</a></span>
         <span>평일 09:00 – 17:00</span>
     </div>
     <nav>
@@ -2153,7 +2153,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                     스트레토는 모든 과정을 세심하게 케어합니다.
                 </p>
                 <h2 class="home-title home-title--brand keep-case">Carefully Crafted Coffee</h2>
-                <a href="/brand" data-route="brand" class="home-more">브랜드 스토리 보기 <span aria-hidden="true">→</span></a>
+                <a href="/brand" data-route="brand" class="home-more">브랜드 스토리 보기 <span aria-hidden="true">↗</span></a>
             </div>
         </div>
     </section>
@@ -2165,7 +2165,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                     <span class="section-subtitle">Our Beans</span>
                     <h2 class="home-title home-title--quote">큐그레이더가 직접 로스팅하고 평가하여<br>매일 일관성 있는 고품질 원두를 생산합니다.</h2>
                 </div>
-                <a href="/beans" data-route="beans" class="home-more">원두 구매 <span aria-hidden="true">→</span></a>
+                <a href="/beans" data-route="beans" class="home-more">원두 구매 <span aria-hidden="true">↗</span></a>
             </div>
             <div class="home-product-grid reveal" id="home-product-grid"></div>
         </div>
@@ -3326,7 +3326,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                     <summary>원두 납품은 어떻게 시작하나요?</summary>
                     <div class="faq-answer">
                         <p>샘플 테이스팅 신청서를 남겨 주시면 일정을 잡아 연락드립니다.<br>운영하시는 매장 또는 스트레토 커피 팩토리에서 직접 만나 원두를 테이스팅한 뒤,<br>단가 협의와 계약을 거쳐 첫 납품 때 매장에 방문해 추출 교육을 진행합니다.</p>
-                        <a href="/wholesale#wh-process" data-route="wholesale" data-anchor="wh-process" class="faq-more">파트너십 진행 절차 보기 →</a>
+                        <a href="/wholesale#wh-process" data-route="wholesale" data-anchor="wh-process" class="faq-more">파트너십 진행 절차 보기 ↗</a>
                     </div>
                 </details>
                 <details class="faq-item">
@@ -3392,14 +3392,14 @@ a.manual-page:hover { transform: translateY(-3px); }
                     <summary>창업 컨설팅은 어디까지 도와주나요?</summary>
                     <div class="faq-answer">
                         <p>머신과 그라인더 선정, 맞춤형 원두, 바 레이아웃, 품질 관리, 직원 교육까지 함께합니다.<br>컨설팅이 끝나면 매장에 맞춘 운영 매뉴얼도 직접 써 드립니다.</p>
-                        <a href="/consulting" data-route="consulting" class="faq-more">창업 컨설팅 보기 →</a>
+                        <a href="/consulting" data-route="consulting" class="faq-more">창업 컨설팅 보기 ↗</a>
                     </div>
                 </details>
                 <details class="faq-item">
                     <summary>바리스타 교육은 어디서 진행하나요?</summary>
                     <div class="faq-answer">
                         <p>매장에 직접 찾아가, 매장에서 쓰는 머신과 원두로 1:1 실습 위주로 진행합니다.</p>
-                        <a href="/education" data-route="education" class="faq-more">바리스타 교육 보기 →</a>
+                        <a href="/education" data-route="education" class="faq-more">바리스타 교육 보기 ↗</a>
                     </div>
                 </details>
             </div>
@@ -4191,6 +4191,32 @@ a.manual-page:hover { transform: translateY(-3px); }
             }
         };
 
+        // publicProducts 를 Firestore 공개 REST 주소로 읽는다 (SDK 연결이 막힌 브라우저용 예비 길)
+        function fsValue(v) {
+            if (!v) return null;
+            if ('stringValue' in v) return v.stringValue;
+            if ('integerValue' in v) return Number(v.integerValue);
+            if ('doubleValue' in v) return Number(v.doubleValue);
+            if ('booleanValue' in v) return v.booleanValue;
+            if ('timestampValue' in v) return v.timestampValue;
+            if ('nullValue' in v) return null;
+            if ('mapValue' in v) { const o = {}; const f = v.mapValue.fields || {}; for (const k in f) o[k] = fsValue(f[k]); return o; }
+            if ('arrayValue' in v) return (v.arrayValue.values || []).map(fsValue);
+            return null;
+        }
+        async function loadPublicProductsRest() {
+            const base = 'https://firestore.googleapis.com/v1/projects/' + firebaseConfig.projectId + '/databases/(default)/documents/publicProducts?pageSize=300';
+            const out = []; let token = '';
+            do {
+                const res = await fetch(base + (token ? '&pageToken=' + encodeURIComponent(token) : ''));
+                if (!res.ok) throw new Error('REST ' + res.status);
+                const j = await res.json();
+                (j.documents || []).forEach(d => { const o = { id: d.name.split('/').pop() }; const f = d.fields || {}; for (const k in f) o[k] = fsValue(f[k]); out.push(o); });
+                token = j.nextPageToken || '';
+            } while (token);
+            return out;
+        }
+
         // 원두 목록을 못 불러오는 경우(인터넷이 잠깐 끊기거나 느릴 때)를 위해 몇 번 다시 시도한다
         let shopLoaded = false, shopLoading = false;
         async function loadShopProducts(attempt = 1) {
@@ -4199,9 +4225,18 @@ a.manual-page:hover { transform: translateY(-3px); }
             try {
                 // publicProducts = 공개용 미러 컬렉션. 원가·실제 배합비가 없는 안전한 사본만 읽는다.
                 // (products 원본은 보안 규칙에서 거래처/관리자 전용으로 잠겨 있다)
-                const snapshot = await getDocs(collection(db, "publicProducts"));
-
-                const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // 1순위: Firebase 연결로 읽기 (5초 안에). 연결이 막히거나 늦으면(회사망 · 일부 브라우저 확장 등) 공개 주소(REST)로 바로 읽는다 (11/21)
+                let products;
+                try {
+                    const snapshot = await Promise.race([
+                        getDocs(collection(db, "publicProducts")),
+                        new Promise((_, rej) => setTimeout(() => rej(new Error('firestore timeout')), 5000))
+                    ]);
+                    products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                } catch (sdkErr) {
+                    console.warn('publicProducts: SDK 실패 → REST로 다시 읽음', sdkErr);
+                    products = await loadPublicProductsRest();
+                }
                 // 원두 추천 기능도 같은 데이터를 쓴다 (중복 조회 방지)
                 window.__publicProducts = products;
                 document.dispatchEvent(new CustomEvent('products-ready'));

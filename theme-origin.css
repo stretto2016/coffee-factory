@@ -897,3 +897,6 @@ html .svc-check li::before { flex-basis: 13px; width: 13px; height: 13px; margin
     html #edu-process .care-benefit-grid > div { position: relative; }
     html #edu-process .care-benefit-grid > div:not(:last-child)::after { content: "→"; position: absolute; top: 0; right: -28px; font-size: 17px; line-height: 1.55; color: var(--og-muted); }
 }
+/* 링크 버튼 화살표는 모두 우상향(↗) — 올려 두면 오른쪽 위로 살짝 (11/21 아내분 요청) */
+html .home-more span { transition: transform .2s ease; }
+html .home-more:hover span { transform: translate(2px, -2px); }
