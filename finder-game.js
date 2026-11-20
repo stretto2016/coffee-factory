@@ -121,13 +121,15 @@
   function entry() {
     const el = screen(`<div class="entry">
       <button type="button" class="entry-card" data-m="b2c"><img src="/img/hero-beans-2.jpg" alt=""><div class="in"><small>FOR YOU</small><b>개인 고객</b><span>다섯 판의 게임으로<br>내 취향의 원두를 찾아요.</span><div class="meta"><span>5 ROUNDS</span><span>약 1분</span></div></div><span class="go">게임 시작</span></button>
-      <button type="button" class="entry-card" data-m="b2b"><img src="/img/wh-sample-tasting.jpg" alt=""><div class="in"><small>FOR CAFÉ</small><b>카페 · 사업자</b><span>매장에 맞는<br>납품용 블렌드를 찾아요.</span><div class="meta"><span>7 QUESTIONS</span><span>약 2분</span></div></div><span class="go">시작하기</span></button>
+      <button type="button" class="entry-card" data-m="b2b"><img src="/img/wh-sample-tasting.jpg" alt=""><div class="in"><small>FOR CAFÉ</small><b>카페 · 사업자</b><span>다섯 판의 게임으로<br>매장 맞춤 처방전을 받아요.</span><div class="meta"><span>5 ROUNDS</span><span>약 2분</span></div></div><span class="go">게임 시작</span></button>
     </div>`);
     el.querySelector('[data-m="b2c"]').onclick = () => go(1);
     el.querySelector('[data-m="b2b"]').onclick = toCafe;
   }
   // 카페 · 사업자 → 기존 질문
+  // 카페 · 사업자 → 카페용 게임(cafe-game.js, #cg). 없으면 기존 질문으로
   function toCafe() {
+    if (window.CG) { ROOT.style.display = 'none'; window.CG.start(); return; }
     const btn = document.querySelector('#finder .finder-mode[data-mode="b2b"]');
     if (!SHELL || !btn) return;
     ROOT.style.display = 'none'; SHELL.style.display = '';
@@ -472,7 +474,7 @@
 
   /* ================= 시작 ================= */
   window.FG = {
-    home() { if (SHELL) SHELL.style.display = 'none'; ROOT.style.display = ''; reset(); go(0, true); },
+    home() { if (SHELL) SHELL.style.display = 'none'; if (window.CG) window.CG.hide(); ROOT.style.display = ''; reset(); go(0, true); },
   };
   if (SHELL) SHELL.style.display = 'none';
   reset(); go(0, true);

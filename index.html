@@ -2014,7 +2014,8 @@ a.manual-page:hover { transform: translateY(-3px); }
 }
     </style>
     <!-- Origin 풍 테마 (미리보기 검토 중). 아래 한 줄을 지우면 예전 모습으로, theme-lacabra.css 로 바꾸면 La Cabra 시안으로 -->
-    <link rel="stylesheet" href="finder-game.css?v=3">
+    <link rel="stylesheet" href="finder-game.css?v=4">
+    <link rel="stylesheet" href="cafe-game.css?v=1">
     <link rel="stylesheet" href="theme-origin.css?v=20261121m"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
     <!-- 미리보기 화면에 Vercel 도구(INP Issue 같은 알림 상자)가 뜨지 않게 숨김 — 실제 사이트에는 원래 없는 것 (11/21 아내분 요청) -->
     <style>vercel-live-feedback, #vercel-live-feedback, [data-vercel-toolbar], vercel-toolbar { display: none !important; }</style>
@@ -2436,6 +2437,8 @@ a.manual-page:hover { transform: translateY(-3px); }
 
             <!-- 개인 고객: 5라운드 원두 찾기 게임 (finder-game.js · finder-designs.js · finder-game.css). 카페 · 사업자는 아래 기존 질문 -->
             <div id="fg"></div>
+            <!-- 카페 · 사업자: 5라운드 게임 → 매장 맞춤 처방전 (cafe-game.js · cafe-game.css) -->
+            <div id="cg" style="display:none"></div>
 
             <div class="finder-shell">
                 <div id="finder-intro">
@@ -5087,6 +5090,7 @@ a.manual-page:hover { transform: translateY(-3px); }
       }
     }, 300);
   }
+  window.__finderConsult = openConsultWith; // 카페용 게임(cafe-game.js) 처방전의 '납품 상담 신청'
 })();
 </script>
 <!-- ===================== [원두 추천 끝] ===================== -->
@@ -5178,6 +5182,6 @@ if (/(^|[?&])review(=|&|$)/.test(location.search)) {
 </script>
 <!-- 원두 찾기 게임 (기존 원두 추천 스크립트 뒤에 와야 한다) -->
 <script src="finder-designs.js?v=1"></script>
-<script src="finder-game.js?v=3"></script>
+<script src="finder-game.js?v=4"></script><script src="cafe-game.js?v=1"></script>
 </body>
 </html>
