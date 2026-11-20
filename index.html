@@ -2016,7 +2016,7 @@ a.manual-page:hover { transform: translateY(-3px); }
     <!-- Origin 풍 테마 (미리보기 검토 중). 아래 한 줄을 지우면 예전 모습으로, theme-lacabra.css 로 바꾸면 La Cabra 시안으로 -->
     <link rel="stylesheet" href="finder-game.css?v=5">
     <link rel="stylesheet" href="cafe-game.css?v=1">
-    <link rel="stylesheet" href="theme-origin.css?v=20261121m"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
+    <link rel="stylesheet" href="theme-origin.css?v=20261121n"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
     <!-- 미리보기 화면에 Vercel 도구(INP Issue 같은 알림 상자)가 뜨지 않게 숨김 — 실제 사이트에는 원래 없는 것 (11/21 아내분 요청) -->
     <style>vercel-live-feedback, #vercel-live-feedback, [data-vercel-toolbar], vercel-toolbar { display: none !important; }</style>
 </head>
@@ -3419,6 +3419,159 @@ a.manual-page:hover { transform: translateY(-3px); }
                     <div class="faq-answer">
                         <p>매장에 직접 찾아가, 매장에서 쓰는 머신과 원두로 1:1 실습 위주로 진행합니다.</p>
                         <a href="/education" data-route="education" class="faq-more">바리스타 교육 보기 →</a>
+                    </div>
+                </details>
+            </div>
+
+            <div class="faq-group" id="faq-brewing">
+                <span class="section-subtitle">Brewing</span>
+                <h2 class="faq-group-title">커피 추출</h2>
+                <details class="faq-item">
+                    <summary>커피 맛이 이상할 때는 어떻게 조정하나요?</summary>
+                    <div class="faq-answer">
+                        <p>한 가지 방법으로 해결되지 않는 경우가 많습니다.<br>아래 질문에서 맛에 맞는 항목을 찾아 위에서부터 차례로 시도하고, 한 번 바꿀 때마다 두 잔으로 확인해 주세요.<br>도징량 · 추출량 · 온도는 한 번에 하나씩만 바꿉니다.</p>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>시다 · 짜다 · 끝맛이 짧아요 (과소추출)</summary>
+                    <div class="faq-answer">
+                        <p class="faq-sub">차례로 시도</p>
+                        <ol class="faq-list">
+                            <li>추출 시간이 기준보다 짧다 → 분쇄도를 가늘게</li>
+                            <li>시간은 기준인데 시다 → 추출량을 2~3g 늘려 성분을 더 끌어내기</li>
+                            <li>그래도 시다 → 도징량을 0.5g 줄이고 추출량은 유지 · 증가 (원두 1g당 물이 많아져 추출이 늘어납니다. 빨라진 시간은 분쇄도로 보정)</li>
+                            <li>그래도 시다 → 머신 온도를 1℃ 올려 보기</li>
+                        </ol>
+                        <p class="faq-sub">함께 확인</p>
+                        <ul class="faq-list">
+                            <li>원두 디개싱 기간 (가스)</li>
+                            <li>라이트 로스트 원두의 원래 산미는 아닌지</li>
+                        </ul>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>쓰다 · 떫다 · 입안이 마르는 느낌이에요 (과다추출)</summary>
+                    <div class="faq-answer">
+                        <p class="faq-sub">차례로 시도</p>
+                        <ol class="faq-list">
+                            <li>추출 시간이 기준보다 길다 → 분쇄도를 굵게</li>
+                            <li>시간은 기준인데 쓰다 → 추출량을 2~3g 줄이기</li>
+                            <li>그래도 쓰다 → 도징량을 0.5g 늘리고 분쇄도를 살짝 굵게 (원두 1g당 물이 줄어 추출이 줄어듭니다)</li>
+                            <li>그래도 쓰다 → 머신 온도를 1℃ 내려 보기</li>
+                        </ol>
+                        <p class="faq-sub">함께 확인</p>
+                        <ul class="faq-list">
+                            <li>그룹헤드 · 샤워스크린 · 바스켓에 찌든 커피 기름이 없는지</li>
+                            <li>추출량을 기준보다 많이 뽑지 않았는지</li>
+                        </ul>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>시면서 동시에 써요 (고르지 않은 추출)</summary>
+                    <div class="faq-answer">
+                        <p class="faq-sub">차례로 시도</p>
+                        <ol class="faq-list">
+                            <li>도징 시 탭핑으로 원두가 고르게 담겼는지 확인하고, 분배 · 탬핑을 다시 하기 (바스켓 벽과 가장자리 가루도 함께 확인)</li>
+                            <li>다른 바리스타가 같은 조건으로 뽑아 비교하기 (사람 문제인지 장비 문제인지)</li>
+                            <li>도징량이 많아 샤워스크린에 닿지 않는지 확인 (퍽 위에 스크린 자국)</li>
+                            <li>호퍼 잔량을 확인하고, 그래도 계속되면 그라인더 날 상태 점검</li>
+                        </ol>
+                        <p class="faq-sub">함께 확인</p>
+                        <ul class="faq-list">
+                            <li>분쇄도는 먼저 건드리지 않기</li>
+                        </ul>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>연하고 물 같아요</summary>
+                    <div class="faq-answer">
+                        <p class="faq-sub">차례로 시도</p>
+                        <ol class="faq-list">
+                            <li>추출량을 2~3g 줄이기</li>
+                            <li>그래도 연하다 → 도징량을 0.5g 늘리고 분쇄도로 시간 보정</li>
+                        </ol>
+                        <p class="faq-sub">함께 확인</p>
+                        <ul class="faq-list">
+                            <li>아메리카노라면 물 양을 20g 단위로 먼저 조정</li>
+                            <li>바스켓 크기에 맞는 도징량인지</li>
+                            <li>추출량을 기준보다 많이 뽑지 않았는지</li>
+                        </ul>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>진하고 무겁다 · 텁텁해요</summary>
+                    <div class="faq-answer">
+                        <p class="faq-sub">차례로 시도</p>
+                        <ol class="faq-list">
+                            <li>추출량을 2~3g 늘리기</li>
+                            <li>그래도 무겁다 → 도징량을 0.5g 줄이고 분쇄도로 시간 보정</li>
+                        </ol>
+                        <p class="faq-sub">함께 확인</p>
+                        <ul class="faq-list">
+                            <li>아메리카노라면 물 양을 20g 단위로 먼저 조정</li>
+                            <li>쓴맛까지 강하면 위 "쓰다" 항목을 먼저</li>
+                        </ul>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>밋밋하다 · 향이 없다 · 단맛이 없어요</summary>
+                    <div class="faq-answer">
+                        <p class="faq-sub">차례로 시도</p>
+                        <ol class="faq-list">
+                            <li>로스팅 경과일을 확인하고, 오래됐으면 분쇄도를 가늘게</li>
+                            <li>호퍼에 오래 방치된 원두는 갈아 버리고 새로 채우기</li>
+                            <li>바디가 부족하면 도징량을 0.5g 늘리기</li>
+                        </ol>
+                        <p class="faq-sub">함께 확인</p>
+                        <ul class="faq-list">
+                            <li>원두 보관 상태 (밀봉)</li>
+                            <li>샷을 오래 두었다가 쓰지 않았는지</li>
+                        </ul>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>떫은데 추출 시간은 짧아요 (채널링)</summary>
+                    <div class="faq-answer">
+                        <p class="faq-sub">차례로 시도</p>
+                        <ol class="faq-list">
+                            <li>분배 · 탬핑부터 다시</li>
+                            <li>그래도 떫으면 분쇄도를 가늘게</li>
+                        </ol>
+                        <p class="faq-sub">함께 확인</p>
+                        <ul class="faq-list">
+                            <li>과소추출에서도 떫은맛이 날 수 있습니다</li>
+                        </ul>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>맛이 날마다 · 사람마다 달라요</summary>
+                    <div class="faq-answer">
+                        <p class="faq-sub">차례로 시도</p>
+                        <ol class="faq-list">
+                            <li>기록지를 비교해 무엇이 달라졌는지 찾기</li>
+                            <li>같은 원두로 바리스타별 한 잔씩 비교하기</li>
+                        </ol>
+                        <p class="faq-sub">함께 확인</p>
+                        <ul class="faq-list">
+                            <li>원두 배치 (로스팅일) 변경 여부</li>
+                            <li>그라인더 청소 · 날 교체 이력</li>
+                        </ul>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>추출할 때 이런 모습이 보이면 어떻게 하나요?</summary>
+                    <div class="faq-answer">
+                        <ul class="faq-list faq-signs">
+                            <li><strong>처음부터 옅은 색으로 콸콸 쏟아진다</strong><span>분쇄도가 굵다, 도징량 부족 → 도징량 확인 후 분쇄도 가늘게</span></li>
+                            <li><strong>방울만 똑똑, 추출량이 차지 않는다</strong><span>분쇄도가 가늘다, 도징량 초과 → 도징량 확인 후 분쇄도 굵게</span></li>
+                            <li><strong>한쪽 스파우트에서 먼저 · 더 많이 나온다</strong><span>탬핑이 기울었다, 분배 불균형 → 수평 탬핑으로 다시 추출</span></li>
+                            <li><strong>중간에 갑자기 빨라지고 색이 옅어진다</strong><span>채널링 → 분배 · 탬핑 · 바스켓 물기 점검</span></li>
+                            <li><strong>크레마에 흰 점이나 얼룩이 있다</strong><span>채널링, 그룹 온도 불안정 → 그룹헤드로 3~5초 물을 흘려 온도를 안정시킨 뒤 재추출</span></li>
+                            <li><strong>크레마가 얇고 색이 옅으며 금방 꺼진다</strong><span>흐름이 빠르거나 로스팅 후 경과일이 길다 → 추출 시간 확인 → 기준보다 짧으면 분쇄도를 가늘게, 시간이 기준이면 로스팅 경과일과 보관 상태 점검</span></li>
+                            <li><strong>크레마가 짙고 거칠며 얼룩덜룩하다</strong><span>과다추출 (흐름이 너무 느림) → 분쇄도 굵게</span></li>
+                            <li><strong>크레마가 과하게 부풀고 거품이 크다</strong><span>너무 신선한 원두 (가스) → 로스팅일 확인</span></li>
+                        </ul>
+                        <p>기준에서 벗어난 샷은 제공하지 않고 폐기합니다.</p>
                     </div>
                 </details>
             </div>

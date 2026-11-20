@@ -805,3 +805,11 @@ html .greeting-inner p { font-size: 0.9rem; }
     html .greeting-inner { grid-column: 2 / span 2; grid-row: 2; padding: 48px 40px 0; }
     html .greeting-side { grid-column: 2 / span 2; grid-row: 3; padding: 26px 40px 48px; justify-content: flex-start; }
 }
+/* faq 커피 추출: 답 안의 '차례로 시도 · 함께 확인' 목록과 '이런 모습 → 원인 → 조치' 목록 (11/21 아내분 요청) */
+html .faq-answer .faq-sub { font-size: 14px; font-weight: 600; color: var(--og-text); margin: 14px 0 6px; }
+html .faq-answer .faq-list { margin: 0 0 8px; padding-left: 20px; }
+html .faq-answer .faq-list li { font-size: 15.5px; line-height: 1.8; color: #3a3a3a; word-break: keep-all; }
+html .faq-answer .faq-signs { list-style: none; padding-left: 0; }
+html .faq-answer .faq-signs li { padding: 6px 0; }
+html .faq-answer .faq-signs strong { display: block; font-weight: 600; color: var(--og-text); }
+html .faq-answer .faq-signs span { display: block; }
