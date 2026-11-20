@@ -833,3 +833,7 @@ html .brand-film { max-width: 50%; margin-left: auto; margin-right: auto; }
 /* 네모 체크 표시가 글자보다 3px쯤 낮아 보여서 위로 올림 — 체크와 글자가 한 줄에 놓여 보이게 (11/21 아내분 요청) */
 html .svc-check li::before { margin-top: calc((1lh - 15px) / 2 - 3px); }
 html #cs-services .svc-check li::before { margin-top: calc((1lh - 4px) / 2 - 1px); }
+/* 모든 페이지 체크 목록: 체크 네모 15→13px, 글씨는 위 설명 글(14.5~16px)보다 작게 13px, 체크는 글자 줄 한가운데에서 1.5px만 위로 (11/21 아내분 요청 — 3px 올렸더니 너무 위) */
+html .svc-check li { font-size: 13px !important; line-height: 1.6; }
+html .svc-check li::before { flex-basis: 13px; width: 13px; height: 13px; margin-top: calc((1lh - 13px) / 2 - 1.5px); }
+html #cs-services .svc-check li::before { flex-basis: 4px; width: 4px; height: 4px; margin-top: calc((1lh - 4px) / 2 - 0.5px); }
