@@ -2016,6 +2016,8 @@ a.manual-page:hover { transform: translateY(-3px); }
     <!-- Origin 풍 테마 (미리보기 검토 중). 아래 한 줄을 지우면 예전 모습으로, theme-lacabra.css 로 바꾸면 La Cabra 시안으로 -->
     <link rel="stylesheet" href="finder-game.css?v=2">
     <link rel="stylesheet" href="theme-origin.css?v=20261121m"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
+    <!-- 미리보기 화면에 Vercel 도구(INP Issue 같은 알림 상자)가 뜨지 않게 숨김 — 실제 사이트에는 원래 없는 것 (11/21 아내분 요청) -->
+    <style>vercel-live-feedback, #vercel-live-feedback, [data-vercel-toolbar], vercel-toolbar { display: none !important; }</style>
 </head>
 <body>
 <script>
@@ -5139,6 +5141,7 @@ if (/(^|[?&])review(=|&|$)/.test(location.search)) {
     document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="/review.css?v=20261119">');
     var rv = document.createElement('script');
     rv.type = 'module';
+    // 미리보기 화면의 Vercel 도구 알림(INP Issue 등)은 Vercel 미리보기 설정 VERCEL_PREVIEW_FEEDBACK_ENABLED=0 으로 끔 (11/21)
     rv.src = '/review.js?v=20261129'; // 파일을 고치면 v= 뒤 숫자를 바꿔 옛 파일 캐시를 막는다
     document.body.appendChild(rv);
 }
