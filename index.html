@@ -4077,6 +4077,8 @@ a.manual-page:hover { transform: translateY(-3px); }
                 // 드립백 상품이 없으면 네이버 스토어 안내 한 줄을 보여준다
                 const dripEmpty = document.getElementById('shop-dripbag-empty');
                 if (dripEmpty) dripEmpty.hidden = !!(dripGrid && dripGrid.children.length);
+                // 메인 원두 4개를 기억해 둔다 — 리뷰 도구가 화면을 되돌리며 이 칸을 비워 버려도 다시 채운다 (11/21)
+                window.__homeGridHtml = homeGrid ? homeGrid.innerHTML : '';
                 shopLoaded = true; shopLoading = false;
 
             } catch (error) {
@@ -4091,6 +4093,16 @@ a.manual-page:hover { transform: translateY(-3px); }
             }
         }
         loadShopProducts();
+        (function () {
+            const hb = document.getElementById('home-beans');
+            if (!hb) return;
+            const refill = () => {
+                const g = document.getElementById('home-product-grid');
+                if (g && !g.children.length && window.__homeGridHtml) g.innerHTML = window.__homeGridHtml;
+            };
+            new MutationObserver(refill).observe(hb, { childList: true, subtree: true });
+            new MutationObserver(refill).observe(document.body, { attributes: true, attributeFilter: ['data-route'] });
+        })();
         // 다른 창에 있다가 돌아왔을 때 아직 못 불러왔으면 다시 시도
         document.addEventListener('visibilitychange', () => { if (!document.hidden && !shopLoaded) loadShopProducts(); });
         
