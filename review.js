@@ -251,6 +251,7 @@ function putBack(el, o) {
   if ('html' in o) el.innerHTML = o.html;
   else el.setAttribute('src', o.src);
   el.classList.remove('rv-edited', 'rv-replaced');
+  if (el.style) el.style.whiteSpace = '';   // 미리 보기에서 켠 '띄어쓰기 그대로'를 원래대로 (안 끄면 원본 들여쓰기가 화면에 보인다)
 }
 
 function restoreAll() {
