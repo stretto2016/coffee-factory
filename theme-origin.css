@@ -845,3 +845,34 @@ html #cs-services .svc-check li::before { margin-top: calc((1lh - 4px) / 2 - 0.5
    제외: 메인 화면 따옴표 문장(home-title), 브랜드 슬로건(carefully crafted coffee 손글씨 제목) */
 html .section-subtitle { font-size: 12px !important; }
 html .section-subtitle ~ :is(h2, h3, h4):not(.home-title):not(:has(.title-nowrap)) { font-size: 1.4rem !important; font-weight: 700 !important; line-height: 1.35 !important; }
+
+/* ================================================================
+   홈페이지 전체 글자 원칙 (11/21 아내분 요청 — 머신 케어 페이지 기준으로 이름을 정함)
+   1. 회색 영문 타이틀 : Total Care Solution · Certified Engineer · Step 01 …   12px · 500 · 회색 · 단어 첫 글자 대문자
+   2. 한글 메인 타이틀 : 엔지니어의 눈으로~ · 인증 엔지니어가 직접~ · 증상 상담 및 접수 …   1.4rem(22.4px) · 700
+   3. 서브 한글 제목   : 머신이 멈추면~ · 각 단계 굵은 한 줄 · 혜택 칸 검정 제목 …   17px · 600
+   4. 메인 문장        : 제목 아래 설명 글   16px · 400 · 줄간격 1.7
+   5. 서브 문장        : 체크 목록   14px (원래 크기) · 체크 네모 15px
+   제외: 메인 화면 따옴표 문장 · 메인 브랜드 판(사진 위 흰 글씨) · 브랜드 슬로건 · 브랜드 인사말/history/비전 글(따로 맞춘 크기)
+   ================================================================ */
+/* 1. 회색 영문 타이틀 */
+html :is(.section-subtitle, .svc-num, .home-service-label, .manual-doc-tag, .pb-label, .manual-badge, .home-benefit-label) {
+    font-size: 12px !important; font-weight: 500 !important; letter-spacing: 0.06em !important;
+    color: var(--og-muted) !important; text-transform: capitalize !important;
+}
+/* 2. 한글 메인 타이틀 */
+html :is(.section-subtitle ~ :is(h2, h3, h4):not(.home-title):not(:has(.title-nowrap)), .svc-body > h3, .home-service h3, .care-benefit > h3, .faq-group-title, .cs-head-title) {
+    font-size: 1.4rem !important; font-weight: 700 !important; line-height: 1.35 !important;
+}
+/* 3. 서브 한글 제목 */
+html :is(.svc-body > p.svc-lead, .care-benefit-grid strong, .promise-card h4, .manual-doc-body > h4) {
+    font-size: 17px !important; font-weight: 600 !important; line-height: 1.55 !important; color: var(--og-text) !important;
+}
+/* 4. 메인 문장 */
+html :is(.section-header > p:not(.partner-cond-note):not(:has(.cs-head-title)), .wholesale-intro p, .svc-body > p:not(.svc-lead), .home-service .home-text > p, .care-benefit-grid p, .promise-card p, .manual-doc-body > p, .faq-answer p, .faq-answer .faq-list li) {
+    font-size: 16px !important; font-weight: 400 !important; line-height: 1.7 !important;
+}
+/* 5. 서브 문장 — 체크 목록 (원래 크기로) */
+html :is(.svc-check li, .manual-doc-list li, .home-benefits li) { font-size: 14px !important; line-height: 1.6 !important; }
+html .svc-check li::before { flex-basis: 15px; width: 15px; height: 15px; margin-top: calc((1lh - 15px) / 2 - 1.5px); }
+html #cs-services .svc-check li::before { flex-basis: 4px; width: 4px; height: 4px; margin-top: calc((1lh - 4px) / 2 - 0.5px); }
