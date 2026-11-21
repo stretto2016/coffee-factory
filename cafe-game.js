@@ -123,7 +123,7 @@
     </div><div class="toast" id="cg-toast"></div>`;
   const $ = (s, r = ROOT) => r.querySelector(s);
   const stage = $('#cg-stage');
-  const ROUNDS = ['가게 차리기', '판매 TOP 3', '듣고 싶은 리뷰', '블렌딩 랩', '창고 채우기'];
+  const ROUNDS = ['카페 오픈', '판매 TOP 3', '듣고 싶은 리뷰', '블렌딩 랩', '창고 채우기'];
   const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   function toast(t) { const el = $('#cg-toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove('show'), 2200); }
@@ -160,8 +160,8 @@
   function intro() {
     const el = screen(`<div class="cg-intro">
       <small>STRETTO · FOR CAFÉ</small>
-      <h3>다섯 번이면,<br>우리 매장 원두가 나와요</h3>
-      <p>가게를 차리고, 메뉴를 고르고, 원두를 직접 섞어 보세요.<br>마지막에 로스터가 <b>매장 맞춤 처방전</b>을 써 드려요.</p>
+      <h3>다섯 번의 선택으로<br>우리 매장 원두를 찾을 수 있어요!</h3>
+      <p>가게를 오픈하고, 메뉴를 고르고, 원두를 직접 섞어 보세요.<br>마지막에 로스터가 <b>매장 맞춤 처방전</b>을 써 드려요.</p>
       <ol class="cg-steps">${ROUNDS.map((n, i) => `<li><span>${i + 1}</span>${n}</li>`).join('')}</ol>
       <button type="button" class="btn-ink" id="cg-start">게임 시작 →</button>
       <small class="cg-time">약 2분 · 답한 내용은 상담할 때만 쓰여요</small>
