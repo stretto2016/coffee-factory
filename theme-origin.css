@@ -353,10 +353,34 @@ html .section-header > p.partner-cond-note { font-size: 14px; }
 /* 브랜드: 슬로건 아래 작은 제목 */
 html .brand-identity-label { display: block; margin: 48px 0 0; }
 
-/* 브랜드: 세 가지 기준을 서로 맞물린 동그라미 세 개로 (11/22 아내분 참고 그림) */
-html .identity-rings { display: block; width: 100%; max-width: 380px; height: auto; margin: 8px auto 56px; }
-html .identity-rings text { font-family: "Ciutadella", sans-serif; font-weight: 700; font-size: 16px; fill: var(--text-primary); text-anchor: middle; }
-@media (max-width: 768px) { html .identity-rings { max-width: 290px; margin-bottom: 36px; } }
+/* 브랜드: 세 가지 기준 인포그래픽 시안 3종 (11/22, 고르면 하나만 남기기) */
+html .idc-options { margin: 24px 0 72px; }
+html .idc-label { font-size: 12px; color: var(--og-muted); text-align: center; margin: 56px 0 18px; }
+html .idc-options .idc-label:first-child { margin-top: 0; }
+html .idc-row { display: flex; justify-content: center; align-items: center; }
+html .idc-circle { flex: 0 0 auto; width: 360px; height: 360px; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; }
+html .idc-inner { width: 250px; text-align: center; }
+html .idc-title { font-family: "Ciutadella", sans-serif; font-weight: 700; font-size: 20px; margin: 0 0 8px; color: var(--text-primary); }
+html .idc-sub { display: block; font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px; }
+html .idc-desc { font-size: 13px; line-height: 1.65; color: var(--text-secondary); margin: 0; word-break: keep-all; }
+/* 시안 1: 얇은 선이 맞물림 */
+html .idc-row--a .idc-circle { border: 2px solid #D6D6D6; }
+html .idc-row--a .idc-circle + .idc-circle { margin-left: -34px; }
+/* 시안 2: 옅은 회색 면, 사이에 + */
+html .idc-row--b .idc-circle { background: #F2F2F2; width: 340px; height: 340px; }
+html .idc-plus { font-size: 28px; font-weight: 300; color: #BDBDBD; margin: 0 14px; line-height: 1; }
+/* 시안 3: 반투명 회색 면이 겹침 */
+html .idc-row--c .idc-circle { background: rgba(0, 0, 0, 0.045); }
+html .idc-row--c .idc-circle + .idc-circle { margin-left: -50px; }
+@media (max-width: 1100px) {
+    html .idc-row { flex-direction: column; }
+    html .idc-circle, html .idc-row--b .idc-circle { width: 320px; height: 320px; }
+    html .idc-inner { width: 230px; }
+    html .idc-row--a .idc-circle + .idc-circle { margin-left: 0; margin-top: -30px; }
+    html .idc-row--c .idc-circle + .idc-circle { margin-left: 0; margin-top: -44px; }
+    html .idc-plus { margin: 10px 0; }
+    html .idc-desc { font-size: 12.5px; }
+}
 
 /* 푸터: 가로형 로고 */
 html .sf-logo--wide { white-space: nowrap; font-size: 26px; line-height: 1; }
