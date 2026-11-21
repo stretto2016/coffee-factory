@@ -424,3 +424,12 @@
 #fg .foot {justify-content: center; gap: 14px;}
 #fg .foot > span:empty {display: none;}
 #fg .lock-row {justify-content: center;}
+/* 게임 첫 화면 카드: 사진 대신 옅은 회색 판 + 회색 선 그림, 글씨는 검정 (11/22 아내분 요청 — 사진 위 흰 글씨가 잘 안 보여서) */
+#fg .entry-card {background: var(--panel); color: var(--text); transition: background .2s;}
+#fg .entry-card + .entry-card {border-left: 1px solid var(--line);}
+#fg .entry-card:hover {background: #EFEFEF;}
+#fg .entry-card .entry-ico {position: absolute; left: 40px; top: 40px; width: 88px; height: 88px; fill: none; stroke: #BDBDBD; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;}
+#fg .entry-card small, #fg .entry-card .meta {color: var(--muted); opacity: 1;}
+#fg .entry-card span {opacity: 1;}
+#fg .entry-card .go {border-bottom-color: var(--text);}
+@media (max-width: 760px) { #fg .entry-card .entry-ico {left: 22px; top: 24px; width: 64px; height: 64px;} #fg .entry-card + .entry-card {border-left: 0; border-top: 1px solid var(--line);} }
