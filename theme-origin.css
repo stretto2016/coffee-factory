@@ -900,11 +900,7 @@ html .svc-check li::before { flex-basis: 13px; width: 13px; height: 13px; margin
 /* 링크 버튼 화살표는 모두 우상향(↗) — 올려 두면 오른쪽 위로 살짝 (11/21 아내분 요청) */
 html .home-more span { transition: transform .2s ease; }
 html .home-more:hover span { transform: translate(2px, -2px); }
-/* '자세히 보기 ↗' 같은 테두리 버튼도 모두 브랜드 블루(민트) 버튼으로 통일 — 다른 민트 버튼과 같은 모양 (11/21 아내분 요청) */
-html .home-more, html #home-brand .home-more {
-    background: var(--og-brand) !important; color: var(--og-brand-ink) !important; border: 0 !important;
-    font-weight: 600 !important;
-}
-html .home-more:hover, html #home-brand .home-more:hover { background: var(--og-brand-hover) !important; color: var(--og-brand-ink) !important; }
+/* 테두리 버튼은 원래 모양 그대로, 화살표(↗)만 브랜드 블루(민트) (11/21 아내분 요청: 칸 채우기 말고 화살표만) */
+html .home-more span, html #home-brand .home-more span { color: var(--og-brand); }
 /* 메인 비즈니스 칸 목록 앞 점: 글자 줄 정가운데로 (줄간격이 바뀌어 바닥에 붙어 보였음, 11/21 아내분 요청) */
 html .home-benefits li::before { top: calc(0.5lh - 3px); }
