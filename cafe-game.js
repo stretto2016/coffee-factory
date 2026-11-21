@@ -160,7 +160,7 @@
   function intro() {
     const el = screen(`<div class="cg-intro">
       <small>STRETTO · FOR CAFÉ</small>
-      <h3>다섯 판이면,<br>우리 매장 원두가 나와요</h3>
+      <h3>다섯 번이면,<br>우리 매장 원두가 나와요</h3>
       <p>가게를 차리고, 메뉴를 고르고, 원두를 직접 섞어 보세요.<br>마지막에 로스터가 <b>매장 맞춤 처방전</b>을 써 드려요.</p>
       <ol class="cg-steps">${ROUNDS.map((n, i) => `<li><span>${i + 1}</span>${n}</li>`).join('')}</ol>
       <button type="button" class="btn-ink" id="cg-start">게임 시작 →</button>

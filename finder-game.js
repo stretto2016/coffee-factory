@@ -121,8 +121,8 @@
   /* ================= 시작 ================= */
   function entry() {
     const el = screen(`<div class="entry">
-      <button type="button" class="entry-card" data-m="b2c"><img src="/img/hero-beans-2.jpg" alt=""><div class="in"><small>FOR YOU</small><b>개인 고객</b><span>네 판의 게임으로<br>내 취향의 원두를 찾아요.</span><div class="meta"><span>4 ROUNDS + 뽑기</span><span>약 1분</span></div></div><span class="go">게임 시작</span></button>
-      <button type="button" class="entry-card" data-m="b2b"><img src="/img/wh-sample-tasting.jpg" alt=""><div class="in"><small>FOR CAFÉ</small><b>카페 · 사업자</b><span>다섯 판의 게임으로<br>매장 맞춤 처방전을 받아요.</span><div class="meta"><span>5 ROUNDS</span><span>약 2분</span></div></div><span class="go">게임 시작</span></button>
+      <button type="button" class="entry-card" data-m="b2c"><img src="/img/hero-beans-2.jpg" alt=""><div class="in"><small>FOR YOU</small><b>개인 고객</b><span>네 번의 게임으로<br>내 취향의 원두를 찾아요.</span><div class="meta"><span>4 ROUNDS + 뽑기</span><span>약 1분</span></div></div><span class="go">게임 시작</span></button>
+      <button type="button" class="entry-card" data-m="b2b"><img src="/img/wh-sample-tasting.jpg" alt=""><div class="in"><small>FOR CAFÉ</small><b>카페 · 사업자</b><span>다섯 번의 게임으로<br>매장 맞춤 처방전을 받아요.</span><div class="meta"><span>5 ROUNDS</span><span>약 2분</span></div></div><span class="go">게임 시작</span></button>
     </div>`);
     el.querySelector('[data-m="b2c"]').onclick = () => go(1);
     el.querySelector('[data-m="b2b"]').onclick = toCafe;
@@ -416,7 +416,7 @@
         <div class="gx-machine" id="fg-gx-m">${gxMachine()}</div>
         <div class="gx-side">
           <small>FINAL · 내 원두 뽑기</small>
-          <h4 id="fg-gx-h">네 판의 결과를 캡슐에 담았어요</h4>
+          <h4 id="fg-gx-h">네 번의 결과를 캡슐에 담았어요</h4>
           <p id="fg-gx-p">손잡이를 잡고 화살표 방향으로 반 바퀴 돌려 주세요.</p>
           <ol class="gx-steps"><li class="on" data-s="0"><i>1</i>손잡이를 반 바퀴 돌리기</li><li data-s="1"><i>2</i>캡슐 열기</li><li data-s="2"><i>3</i>내 원두 확인</li></ol>
           <div class="gx-prog" id="fg-gx-prog"><div><i id="fg-gx-bar"></i></div><span id="fg-gx-pt">0%</span></div>
