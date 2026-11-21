@@ -946,3 +946,14 @@ html .qd-career { font-size: 12.5px; line-height: 1.6; color: var(--og-muted); m
     html .qd-text br { display: none; }
     html .qd-mark { font-size: 72px; height: 32px; }
 }
+
+/* 브랜드 · our vision: 회색 박스 없이 흰 바탕에 사진 | 글 (11/22 아내분 요청) */
+html #story #brand-vision { background: transparent !important; box-shadow: none !important; border: 0 !important; }
+@media (min-width: 901px) {
+    html #story #brand-vision .vision-inner { padding: 0 0 0 48px; }
+    html #story #brand-vision .vision-side { padding: 0 0 0 48px; }
+}
+@media (max-width: 900px) {
+    html #story #brand-vision .vision-inner { padding: 24px 0 0; }
+    html #story #brand-vision .vision-side { padding: 0; }
+}
