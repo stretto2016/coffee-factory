@@ -2019,7 +2019,7 @@ a.manual-page:hover { transform: translateY(-3px); }
     <!-- Origin 풍 테마 (미리보기 검토 중). 아래 한 줄을 지우면 예전 모습으로, theme-lacabra.css 로 바꾸면 La Cabra 시안으로 -->
     <link rel="stylesheet" href="finder-game.css?v=9">
     <link rel="stylesheet" href="cafe-game.css?v=4">
-    <link rel="stylesheet" href="theme-origin.css?v=20261122w"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
+    <link rel="stylesheet" href="theme-origin.css?v=20261122x"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
     <!-- 미리보기 화면에 Vercel 도구(INP Issue 같은 알림 상자)가 뜨지 않게 숨김 — 실제 사이트에는 원래 없는 것 (11/21 아내분 요청) -->
     <style>vercel-live-feedback, #vercel-live-feedback, [data-vercel-toolbar], vercel-toolbar { display: none !important; }</style>
 </head>
@@ -2383,6 +2383,46 @@ a.manual-page:hover { transform: translateY(-3px); }
             <div id="fg"></div>
             <!-- 카페 · 사업자: 5라운드 게임 → 매장 맞춤 처방전 (cafe-game.js · cafe-game.css) -->
             <div id="cg" style="display:none"></div>
+
+            <!-- 원두 찾기 첫 화면 "게임처럼" 시안 3종 (11/22 아내분이 고르면 위 첫 화면과 바꾸고 이 블록은 지우기) -->
+            <div class="gs-drafts">
+                <p class="gs-label">시안 1 · 스테이지 지도 — 다섯 칸을 지나 마지막에 원두 뽑기</p>
+                <div class="gs gs--map">
+                    <div class="gs-map-head"><span class="gs-badge">1분 게임</span><h3>네 번 고르면,<br>마지막에 내 원두를 뽑아요!</h3></div>
+                    <ol class="gs-path"><li><span class="gs-node">1</span><em>향미 월드컵</em></li><li><span class="gs-node">2</span><em>맛 스와이프</em></li><li><span class="gs-node">3</span><em>직접 로스팅</em></li><li><span class="gs-node">4</span><em>장비 진열장</em></li><li><span class="gs-node gs-node--prize">🎁</span><em>원두 뽑기</em></li></ol>
+                    <div class="gs-cta"><button type="button" class="gs-start" data-go="b2c">▶ 게임 시작</button><button type="button" class="gs-sub" data-go="b2b">카페 · 사업자라면 →</button></div>
+                </div>
+
+                <p class="gs-label">시안 2 · 뽑기 기계 — 레버를 돌리면 게임이 시작돼요</p>
+                <div class="gs gs--gacha">
+                    <svg class="gs-machine" viewBox="0 0 224 250" aria-hidden="true"><circle cx="112" cy="80" r="62" fill="#fff" stroke="#202020" stroke-width="3"/><circle cx="88" cy="70" r="11" fill="#AAD5DB" class="gs-cap" style="animation-delay:0s"/><circle cx="112" cy="62" r="11" fill="#D9D9D9" class="gs-cap" style="animation-delay:0.2s"/><circle cx="136" cy="72" r="11" fill="#8E5A33" class="gs-cap" style="animation-delay:0.4s"/><circle cx="100" cy="92" r="11" fill="#E9E9E9" class="gs-cap" style="animation-delay:0.6s"/><circle cx="124" cy="90" r="11" fill="#AAD5DB" class="gs-cap" style="animation-delay:0.8s"/><circle cx="148" cy="94" r="11" fill="#C9C9C9" class="gs-cap" style="animation-delay:0.3s"/><circle cx="76" cy="94" r="11" fill="#8E5A33" class="gs-cap" style="animation-delay:0.5s"/><rect x="46" y="138" width="132" height="92" rx="10" fill="#AAD5DB" stroke="#202020" stroke-width="3"/><text x="112" y="164" text-anchor="middle" font-size="11" letter-spacing="2" fill="#202020" class="keep-case">stretto bean</text><circle cx="84" cy="196" r="14" fill="#fff" stroke="#202020" stroke-width="3"/><path d="M84 186v20" stroke="#202020" stroke-width="3" stroke-linecap="round" class="gs-knob"/><rect x="122" y="184" width="36" height="26" rx="4" fill="#202020"/><rect x="60" y="230" width="104" height="10" rx="3" fill="#202020"/></svg>
+                    <div class="gs-gacha-txt"><span class="gs-badge">오늘의 원두 뽑기</span><h3>1분이면,<br>내 취향 원두가 굴러 나와요</h3><p>향 고르기 · 맛 스와이프 · 직접 로스팅 · 장비 고르기<br>네 번의 선택이 끝나면 캡슐이 하나 떨어져요.</p>
+                    <div class="gs-cta gs-cta--left"><button type="button" class="gs-start" data-go="b2c">레버 돌리기 ↻</button><button type="button" class="gs-sub" data-go="b2b">카페 · 사업자라면 →</button></div></div>
+                </div>
+
+                <p class="gs-label">시안 3 · 플레이어 고르기 — 게임 캐릭터를 고르듯 두 카드 중 하나</p>
+                <div class="gs gs--select">
+                    <h3 class="gs-sel-h">누구로 플레이할까요?</h3>
+                    <div class="gs-sel">
+                        <button type="button" class="gs-player" data-go="b2c"><span class="gs-p-tag">Player 1</span><b>개인 고객</b>
+                            <dl><dt>라운드</dt><dd><i style="--v:80%"></i>4 + 뽑기</dd><dt>시간</dt><dd><i style="--v:35%"></i>약 1분</dd><dt>보상</dt><dd><i style="--v:100%"></i>내 원두 캡슐</dd></dl>
+                            <span class="gs-pick">선택 ▶</span></button>
+                        <button type="button" class="gs-player gs-player--b" data-go="b2b"><span class="gs-p-tag">Player 2</span><b>카페 · 사업자</b>
+                            <dl><dt>라운드</dt><dd><i style="--v:100%"></i>5</dd><dt>시간</dt><dd><i style="--v:60%"></i>약 2분</dd><dt>보상</dt><dd><i style="--v:100%"></i>매장 맞춤 처방전</dd></dl>
+                            <span class="gs-pick">선택 ▶</span></button>
+                    </div>
+                </div>
+            </div>
+            <script>
+            /* 시안의 버튼을 누르면 위의 실제 게임이 시작된다 */
+            document.querySelectorAll('.gs-drafts [data-go]').forEach(function (b) {
+                b.addEventListener('click', function () {
+                    if (window.FG) window.FG.home();
+                    var c = document.querySelector('#fg [data-m="' + b.dataset.go + '"]');
+                    if (c) { c.click(); document.getElementById('fg').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+                });
+            });
+            </script>
 
             <div class="finder-shell">
                 <div id="finder-intro">
