@@ -2005,7 +2005,10 @@ a.manual-page:hover { transform: translateY(-3px); }
     .site-footer { padding: 0 20px 70px; }
     .sf-pitch h2 { font-size: 21px; }
     .sf-pitch { flex-direction: column; align-items: flex-start; gap: 16px; }
-    .sf-forms { flex-direction: row; flex-wrap: wrap; gap: 8px 24px; padding-left: 0; border-left: 0; }
+    /* 모바일: 신청서 세 개를 한 줄에 나란히 — 칸이 좁아 각 이름을 두 줄로 (11/21 아내분 요청) */
+    .sf-forms { display: grid; grid-template-columns: repeat(3, auto); justify-content: space-between; align-self: stretch; gap: 0 12px; padding-left: 0; border-left: 0; }
+    .sf-forms a { white-space: normal; line-height: 1.45; }
+    .sf-forms .sf-l2 { display: block; }
     .sf-cta { width: 100%; box-sizing: border-box; justify-content: space-between; gap: 12px; padding-left: 20px; font-size: 14px; }
     .sf-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 10px; }
     .sf-illust { padding-top: 32px; }
@@ -3777,9 +3780,9 @@ a.manual-page:hover { transform: translateY(-3px); }
                     <h2>궁금한 점은 언제든 편하게 문의해 주세요.</h2>
                 </div>
                 <div class="sf-forms">
-                    <a href="https://forms.gle/5UyaH3M9RWvmNfEb6" target="_blank" rel="noopener">원두 테이스팅 신청서 작성 <span class="sf-arrow" aria-hidden="true">↗</span></a>
-                    <a href="https://forms.gle/pgg9RTXiWA1t7NPG6" target="_blank" rel="noopener">카페 컨설팅 신청서 작성 <span class="sf-arrow" aria-hidden="true">↗</span></a>
-                    <a href="https://forms.gle/KGLnCZmeeydRtSKS8" target="_blank" rel="noopener">머신 수리 신청서 작성 <span class="sf-arrow" aria-hidden="true">↗</span></a>
+                    <a href="https://forms.gle/5UyaH3M9RWvmNfEb6" target="_blank" rel="noopener">원두 테이스팅 <span class="sf-l2">신청서 작성 <span class="sf-arrow" aria-hidden="true">↗</span></span></a>
+                    <a href="https://forms.gle/pgg9RTXiWA1t7NPG6" target="_blank" rel="noopener">카페 컨설팅 <span class="sf-l2">신청서 작성 <span class="sf-arrow" aria-hidden="true">↗</span></span></a>
+                    <a href="https://forms.gle/KGLnCZmeeydRtSKS8" target="_blank" rel="noopener">머신 수리 <span class="sf-l2">신청서 작성 <span class="sf-arrow" aria-hidden="true">↗</span></span></a>
                 </div>
             </div>
             <a class="sf-cta" href="http://pf.kakao.com/_dCuKC/chat" target="_blank" rel="noopener">
