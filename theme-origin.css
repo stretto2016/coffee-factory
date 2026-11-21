@@ -823,7 +823,7 @@ html .faq-answer .faq-signs strong { display: block; font-weight: 600; color: va
 html .faq-answer .faq-signs span { display: block; }
 /* 대표 자격: 묶음 없이 한 줄씩 나열 (11/21 아내분 요청) */
 html .greeting-career--list { gap: 4px; }
-html .greeting-career--list span { display: block; font-size: 13.5px; line-height: 1.6; color: var(--og-muted); text-align: left; }
+html .greeting-career--list span { display: block; font-size: 12.5px; line-height: 1.6; color: var(--og-muted); text-align: left; }
 /* 브랜드 대표 인사말: 사진을 뺀 뒤 글이 상자 전체 너비 (11/21 아내분 요청) */
 html .greeting-box--nophoto { grid-template-columns: minmax(0, 1fr) !important; grid-template-rows: auto auto !important; }
 html .greeting-box--nophoto .greeting-inner, html .greeting-box--nophoto .greeting-side { grid-column: 1 / -1 !important; grid-row: auto !important; }
