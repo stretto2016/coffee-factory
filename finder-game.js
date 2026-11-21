@@ -552,7 +552,7 @@
       const rankPct = (r) => clamp(Math.round(r.s), 58, 98);
       const el = screen(`<div class="flip"><div class="flip-in">
         <div class="taste">
-          <small>YOUR COFFEE TASTE</small>
+          <small>Your coffee taste</small>
           <h4>${split ? (S.roastClash ? `${esc(AN(S.champ))} · ${esc(AN(S.runner))} 향을 좋아하시는데, 직접 볶은 건 <b>${S.roastKey} 로스팅</b>이었어요` : `${esc(AN(S.champ))} · ${esc(AN(S.runner))} 향을 좋아하시는데, 맛은 <b>산미 적은 쪽</b>을 고르셨어요`) : `${esc(AN(S.champ))} · ${esc(AN(S.runner))} 향이 나고, 산미는 ${acidW} 바디는 ${bodyW} <b>${roastW} 로스팅</b> 커피가 잘 맞아요`}</h4>
           <div class="taste-row">
             <div><span>좋아하는 향</span><b>${esc(AN(S.champ))} · ${esc(AN(S.runner))}</b></div>
