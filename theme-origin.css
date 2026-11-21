@@ -838,6 +838,9 @@ html .brand-film-frame iframe { position: absolute; inset: 0; width: 100%; heigh
 /* 브랜드 영상: 지금의 4분의 1 크기(가로 · 세로 각각 절반)로 작게, 가운데 (11/21 아내분 요청) */
 html .brand-film { max-width: 50%; margin-left: auto; margin-right: auto; }
 @media (max-width: 760px) { html .brand-film { max-width: 100%; } }
+/* 브랜드 영상: 위 칸(우리의 비전)과 너무 붙어 있어서 앞 세 칸 사이와 같은 여백 — PC 96px · 모바일 64px, 가로 정가운데 (11/21 아내분 요청) */
+html #story .brand-film { margin: 96px auto 24px; }
+@media (max-width: 900px) { html #story .brand-film { margin-top: 64px; } }
 /* 네모 체크 표시가 글자보다 3px쯤 낮아 보여서 위로 올림 — 체크와 글자가 한 줄에 놓여 보이게 (11/21 아내분 요청) */
 html .svc-check li::before { margin-top: calc((1lh - 15px) / 2 - 3px); }
 html #cs-services .svc-check li::before { margin-top: calc((1lh - 4px) / 2 - 1px); }
