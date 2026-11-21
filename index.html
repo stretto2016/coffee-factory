@@ -2019,7 +2019,7 @@ a.manual-page:hover { transform: translateY(-3px); }
     <!-- Origin 풍 테마 (미리보기 검토 중). 아래 한 줄을 지우면 예전 모습으로, theme-lacabra.css 로 바꾸면 La Cabra 시안으로 -->
     <link rel="stylesheet" href="finder-game.css?v=6">
     <link rel="stylesheet" href="cafe-game.css?v=1">
-    <link rel="stylesheet" href="theme-origin.css?v=20261122k"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
+    <link rel="stylesheet" href="theme-origin.css?v=20261122l"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
     <!-- 미리보기 화면에 Vercel 도구(INP Issue 같은 알림 상자)가 뜨지 않게 숨김 — 실제 사이트에는 원래 없는 것 (11/21 아내분 요청) -->
     <style>vercel-live-feedback, #vercel-live-feedback, [data-vercel-toolbar], vercel-toolbar { display: none !important; }</style>
 </head>
@@ -2322,9 +2322,9 @@ a.manual-page:hover { transform: translateY(-3px); }
 
             <!-- 대표 인사말 (메뉴 ABOUT STRETTO > 대표 인사말). 내용 받으면 채우기 -->
             <!-- 사진 왼쪽 · 글 오른쪽 (아래 our vision 칸과 같은 모양). 사진·글 받으면 자리표시를 바꾸기 -->
+            <span class="section-subtitle box-label">CEO · Head Roaster Message</span>
             <div class="vision-box greeting-box greeting-box--nophoto" id="brand-greeting">
                 <div class="greeting-inner">
-                    <span class="section-subtitle">CEO · Head Roaster Message</span>
                     <p>스페셜티 커피의 본고장 시카고에서 15년여간 생활하며 커피 문화를 가까이에서 경험하고, 좋은 커피의 기준을 세웠습니다.<br>
                         이후 한국에서 로스팅, 센서리, 그리고 다수의 커피 대회 심사위원으로 활동하는 동시에 카페 운영, 원두 납품을 해오며 폭넓은 현장 전문성을 쌓아왔습니다.<br>
                         스트레토는 이러한 커피 전문가와 광고·브랜드 분야에서 오랜 전문성을 지닌 파트너가 함께하며 10여 년간 천천히, 단단하게 성장해온 브랜드입니다.</p>
@@ -2340,11 +2340,11 @@ a.manual-page:hover { transform: translateY(-3px); }
                 </div>
             </div>
 
+            <span class="section-subtitle box-label">Our Vision</span>
             <div class="vision-box vision-box--photo" id="brand-vision">
                 <img class="vision-photo" src="ov-final.jpg" width="2160" height="1100"
                      alt="커피 산지의 들판 위로 무지개가 뜬 풍경">
                 <div class="vision-inner">
-                <span class="section-subtitle">Our Vision</span>
 
                 <div class="vision-text">
                     <p style="color: var(--text-primary); margin-bottom: 25px; font-weight: 500;">
@@ -2367,9 +2367,12 @@ a.manual-page:hover { transform: translateY(-3px); }
     </section>
 
     <!-- 브랜드 영상: 브랜드 이야기를 다 읽은 뒤 맨 끝에 메인 화면처럼 가로 가득, 소리 없이 저절로 재생 (11/22 아내분 요청) -->
-    <section class="brand-film-hero" id="brand-film" data-page="brand">
-        <iframe class="brand-film-video" id="brandFilmVideo" title="스트레토 커피 팩토리 브랜드 영상"
-                allow="autoplay; encrypted-media" frameborder="0" tabindex="-1" aria-hidden="true"></iframe>
+    <section class="brand-film-wrap" id="brand-film" data-page="brand">
+        <div class="container"><span class="section-subtitle box-label">Brand Film</span></div>
+        <div class="brand-film-hero" id="brandFilmBox">
+            <iframe class="brand-film-video" id="brandFilmVideo" title="스트레토 커피 팩토리 브랜드 영상"
+                    allow="autoplay; encrypted-media" frameborder="0" tabindex="-1" aria-hidden="true"></iframe>
+        </div>
     </section>
 
     <!-- 페이지 첫 배너 + 바로가기 (Origin 테마에서만 보인다) -->
@@ -5371,7 +5374,7 @@ a.manual-page:hover { transform: translateY(-3px); }
 (function () {
     const VIDEO_ID = '3I9XxKZX6fo';
     const CUT = 0.6;
-    const box = document.getElementById('brand-film');
+    const box = document.getElementById('brandFilmBox');
     const frame = document.getElementById('brandFilmVideo');
     if (!box || !frame || !('IntersectionObserver' in window)) return;
     const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

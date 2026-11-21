@@ -850,7 +850,8 @@ html .greeting-box--nophoto .greeting-inner, html .greeting-box--nophoto .greeti
 @media (min-width: 901px) { html .greeting-box--nophoto .greeting-side { padding-top: 8px !important; } }
 @media (max-width: 900px) { html .greeting-box--nophoto .greeting-career { margin-top: 8px; padding-top: 0; border-top: 0; } }
 /* 브랜드 페이지 맨 끝 영상: 메인 화면 맨 위 영상과 같은 크기(가로 가득 · 같은 높이), 제목 없이 저절로 재생 (11/22 아내분 요청) */
-html .brand-film-hero { padding: 0 !important; position: relative; overflow: hidden; width: 100%; height: clamp(460px, 56vw, 760px); background: #111; }
+html .brand-film-wrap { padding: 0 !important; }
+html .brand-film-hero { position: relative; overflow: hidden; width: 100%; height: clamp(460px, 56vw, 760px); background: #111; }
 html .brand-film-video { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: max(100%, calc(clamp(460px, 56vw, 760px) * 16 / 9)); height: max(56.25vw, clamp(460px, 56vw, 760px)); border: 0; pointer-events: none; opacity: 0; transition: opacity .8s ease; }
 html .brand-film-hero.video-on .brand-film-video { opacity: 1; }
 /* 네모 체크 표시가 글자보다 3px쯤 낮아 보여서 위로 올림 — 체크와 글자가 한 줄에 놓여 보이게 (11/21 아내분 요청) */
@@ -927,3 +928,9 @@ html .home-more:hover span { transform: translate(2px, -2px); }
 html .home-more span, html #home-brand .home-more span { color: var(--og-brand); }
 /* 메인 비즈니스 칸 목록 앞 점: 글자 줄 정가운데로 (줄간격이 바뀌어 바닥에 붙어 보였음, 11/21 아내분 요청) */
 html .home-benefits li::before { top: calc(0.5lh - 3px); }
+
+/* 브랜드: CEO · Our Vision · Brand Film 작은 제목을 박스 밖(위)으로 — 세 제목 모두 같은 크기 (11/22 아내분 요청) */
+html .box-label { display: block; margin: 96px 0 12px; }
+html #story .box-label + .vision-box { margin-top: 0 !important; }
+html .brand-film-wrap .box-label { margin-top: 0; }
+@media (max-width: 900px) { html .box-label { margin-top: 64px; } html .brand-film-wrap .box-label { margin-top: 0; } }
