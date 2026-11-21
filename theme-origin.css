@@ -988,3 +988,6 @@ html .vd-cycle li:last-child .vd-dot::after { content: "↺"; position: absolute
     html .vd-p br { display: none; }
     html .vd-big { font-size: 72px; }
 }
+html .vd-icon { display: block; width: 92px; height: 92px; margin: 0 0 22px -6px; padding-bottom: 0; }
+html .vd--1 .vd-icon + .vd-head { padding-top: 22px; border-top: 1px solid #E6E6E6; }
+@media (max-width: 900px) { html .vd-icon { width: 76px; height: 76px; } }
