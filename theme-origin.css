@@ -669,6 +669,14 @@ html .manual-docs--rows .manual-doc-list li + li::before { content: none; }
 html .manual-docs--rows .manual-doc-list li:not(:last-child)::after {
     content: ""; display: inline-block; width: 1px; height: 11px; background: #BBBBBB; margin: 0 12px; vertical-align: -1px;
 }
+/* 매뉴얼 칸 목록 — 모바일: 한 줄에 하나씩이라 세로선( | )은 빼고 항목마다 맨 앞에 가운데 점. PC는 세로선 그대로 (11/21 아내분 요청) */
+@media (max-width: 900px) {
+    html .manual-docs--rows .manual-doc-list li:not(:last-child)::after { content: none; }
+    html .manual-docs--rows .manual-doc-list li { position: relative; padding-left: 11px; }
+    html .manual-docs--rows .manual-doc-list li::before {
+        content: ""; position: absolute; left: 0; top: calc((1lh - 3px) / 2); width: 3px; height: 3px; border-radius: 50%; background: #3a3a3a;
+    }
+}
 /* 인스타그램 페이지: 위 배너 사진 없이 바로 피드 (배너가 하던 '메뉴 아래로 띄우기'를 섹션이 대신) */
 html body[data-route="instagram"] #instagram { margin-top: calc(var(--og-top) + var(--og-nav)); }
 /* 피드 칸: 인스타그램 프로필과 같은 세로 직사각형(3:4) */
