@@ -173,7 +173,7 @@
 
   /* ================= ROUND 1 가게 차리기 ================= */
   function r1() {
-    const el = screen(`<h3 class="q-title">어떤 가게를 차릴까요?</h3><p class="q-hint">간판을 달고, 바 위에 머신을 올려 주세요</p>
+    const el = screen(`<h3 class="q-title">어떤 카페를 열까요?</h3><p class="q-hint">간판을 달고, 바 위에 머신을 올려 주세요</p>
       <div class="cg-shop">
         <div class="cg-front-wrap" id="cg-front"></div>
         <div class="cg-picks">
