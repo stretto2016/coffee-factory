@@ -957,3 +957,34 @@ html #story #brand-vision { background: transparent !important; box-shadow: none
     html #story #brand-vision .vision-inner { padding: 24px 0 0; }
     html #story #brand-vision .vision-side { padding: 0; }
 }
+
+/* our vision 사진 옆 글 디자인 시안 3종 (11/22, 고르면 하나만 남기기) */
+html .vd-label { font-size: 12px; color: var(--og-muted); margin: 80px 0 14px; }
+html .vd { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 48px; align-items: center; }
+html .vd-photo { width: 100%; height: 100%; min-height: 440px; object-fit: cover; object-position: 55% 50%; display: block; }
+html .vd-head { font-size: 17px; font-weight: 700; line-height: 1.5; color: var(--text-primary); margin: 0 0 18px; word-break: keep-all; }
+html .vd-p { font-size: 0.9rem; line-height: 1.8; color: var(--og-text); margin: 0 0 14px; word-break: keep-all; }
+html .vd-p:last-child { margin-bottom: 0; }
+/* 시안 1: 큰 숫자 */
+html .vd-big { font-family: "Ciutadella", sans-serif; font-weight: 700; font-size: 88px; line-height: 0.9; color: #D3D3D3; letter-spacing: -0.02em; }
+html .vd-big span { font-size: 44px; margin-left: 2px; }
+html .vd-cap { font-size: 12px; color: var(--og-muted); margin: 8px 0 26px; padding-bottom: 22px; border-bottom: 1px solid #E6E6E6; }
+/* 시안 2: 큰 제목 + 숫자 두 개 */
+html .vd-head--big { font-size: 22.4px; line-height: 1.45; padding-left: 18px; border-left: 2px solid #D6D6D6; margin-bottom: 26px; }
+html .vd-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 26px; }
+html .vd-stat { background: #F4F4F4; padding: 18px 16px; }
+html .vd-stat strong { display: block; font-family: "Ciutadella", sans-serif; font-size: 30px; line-height: 1; color: #9A9A9A; margin-bottom: 8px; }
+html .vd-stat span { display: block; font-size: 12px; line-height: 1.5; color: var(--og-muted); word-break: keep-all; }
+/* 시안 3: 순환 그림 */
+html .vd-cycle { list-style: none; margin: 4px 0 28px; padding: 0; display: flex; justify-content: space-between; position: relative; }
+html .vd-cycle::before { content: ""; position: absolute; top: 22px; left: 12%; right: 12%; height: 1px; background: #D6D6D6; }
+html .vd-cycle li { position: relative; flex: 1; text-align: center; font-size: 12.5px; color: var(--og-text); }
+html .vd-dot { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin: 0 auto 10px; border-radius: 50%; background: #F2F2F2; font-family: "Ciutadella", sans-serif; font-size: 15px; color: #9A9A9A; position: relative; }
+html .vd-cycle li:last-child .vd-dot::after { content: "↺"; position: absolute; right: -16px; top: -10px; font-size: 14px; color: #BDBDBD; }
+@media (max-width: 900px) {
+    html .vd-label { margin-top: 56px; }
+    html .vd { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    html .vd-photo { min-height: 0; height: auto; }
+    html .vd-p br { display: none; }
+    html .vd-big { font-size: 72px; }
+}
