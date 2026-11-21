@@ -1122,3 +1122,5 @@ html .gm6--d .gm-menu li + li { border-top-color: rgba(255,255,255,.14); }
 html .gm-menu button { grid-template-columns: 44px 110px 1fr auto; }
 html .gm-cur { font-size: 36px; line-height: 1; }  /* 플레이어 고르는 ▸ 표시를 예전의 2배로 (11/22) */
 @media (max-width: 760px) { html .gm-menu button { grid-template-columns: 34px 80px 1fr; } html .gm-cur { font-size: 28px; } }
+/* 휴대폰 메뉴: 바로 가는 메뉴(FAQ · Instagram)도 다른 카테고리 제목과 같은 크기 · 간격 (11/22 아내분 요청) */
+@media (max-width: 768px) { html .nav-links a.nav-group-title { font-size: 15px !important; margin: 0 !important; padding: 18px 0 !important; line-height: normal; } }
