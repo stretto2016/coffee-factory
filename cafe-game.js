@@ -209,7 +209,7 @@
         <div class="cg-ratio-ends"><span>아메리카노 위주</span><span>라떼 위주</span></div>
         <p>TOP 3로 계산했어요. 실제와 다르면 살짝 옮겨 주세요.</p>
       </div>
-      <div class="foot"><button type="button" class="btn-text" id="cg-clr">다시 고르기</button><button type="button" class="btn-ink" id="cg-nx" disabled>다음 라운드 →</button></div>`);
+      <div class="foot"><button type="button" class="btn-text" id="cg-clr">다시 고르기</button><button type="button" class="btn-ink" id="cg-nx" disabled>다음 라운드로 가기 →</button></div>`);
     const nx = el.querySelector('#cg-nx'), rr = el.querySelector('#cg-rr');
     const calc = () => Math.round(S.top.reduce((a, k, i) => a + MENU[k].milk * RANK_W[i], 0) * 10) * 10;
     function paint() {
@@ -284,7 +284,7 @@
         <p class="cg-tone-d">${TONE_TXT[tn][1]}</p>
         <div class="cg-acid"><span>산미 반응</span><b>${ACID_TXT[at]}</b></div>
         <p class="q-hint" style="margin-top:20px">${S.likes.length ? `받고 싶은 리뷰 ${S.likes.length}개` : '하나도 안 고르셨네요. 리뷰보다 맛으로 말하는 가게군요.'}</p></div>
-        <div class="foot"><button type="button" class="btn-text" id="cg-re">다시 넘기기</button><button type="button" class="btn-ink" id="cg-nx">다음 라운드 →</button></div>`);
+        <div class="foot"><button type="button" class="btn-text" id="cg-re">다시 넘기기</button><button type="button" class="btn-ink" id="cg-nx">다음 라운드로 가기 →</button></div>`);
       s2.querySelector('#cg-re').onclick = () => r3();
       s2.querySelector('#cg-nx').onclick = () => go(4);
     }

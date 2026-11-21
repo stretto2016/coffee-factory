@@ -249,3 +249,6 @@
 #cg .cg-intro .cg-back { display: block; margin: 18px auto 0; }
 /* 시작 화면 5단계(카페 오픈 ~ 창고 채우기)를 컴퓨터 화면에서 한 줄로 (11/22 아내분 요청) */
 @media (min-width: 761px) { #cg .cg-steps {flex-wrap: nowrap; gap: 6px; width: max-content; position: relative; left: 50%; transform: translateX(-50%);} #cg .cg-steps li {white-space: nowrap; padding: 8px 10px 8px 8px;} }
+/* 카페 게임: 아래 버튼 줄(다시 넘기기 · 다음 라운드로 가기 등)을 양 끝이 아니라 정가운데에 나란히 (11/22 아내분 요청) */
+#cg .foot {justify-content: center; gap: 14px;}
+#cg .foot > span:empty {display: none;}
