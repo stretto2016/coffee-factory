@@ -849,17 +849,10 @@ html .greeting-box--nophoto .greeting-inner, html .greeting-box--nophoto .greeti
 /* 대표 인사말: 서명과 아래 경력 사이를 좁게 (11/21 아내분 요청) */
 @media (min-width: 901px) { html .greeting-box--nophoto .greeting-side { padding-top: 8px !important; } }
 @media (max-width: 900px) { html .greeting-box--nophoto .greeting-career { margin-top: 8px; padding-top: 0; border-top: 0; } }
-/* 브랜드 페이지 맨 아래 브랜드 영상 (16:9, 상자 너비 가득) */
-html .brand-film { margin: 0 0 24px; text-align: left; }
-html .brand-film .section-subtitle { display: block; margin-bottom: 12px; }
-html .brand-film-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; overflow: hidden; }
-html .brand-film-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-/* 브랜드 영상: 지금의 4분의 1 크기(가로 · 세로 각각 절반)로 작게, 가운데 (11/21 아내분 요청) */
-html .brand-film { max-width: 50%; margin-left: auto; margin-right: auto; }
-@media (max-width: 760px) { html .brand-film { max-width: 100%; } }
-/* 브랜드 영상: 위 칸(우리의 비전)과 너무 붙어 있어서 앞 세 칸 사이와 같은 여백 — PC 96px · 모바일 64px, 가로 정가운데 (11/21 아내분 요청) */
-html #story .brand-film { margin: 96px auto 24px; }
-@media (max-width: 900px) { html #story .brand-film { margin-top: 64px; } }
+/* 브랜드 페이지 맨 끝 영상: 메인 화면 맨 위 영상과 같은 크기(가로 가득 · 같은 높이), 제목 없이 저절로 재생 (11/22 아내분 요청) */
+html .brand-film-hero { padding: 0 !important; position: relative; overflow: hidden; width: 100%; height: clamp(460px, 56vw, 760px); background: #111; }
+html .brand-film-video { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: max(100%, calc(clamp(460px, 56vw, 760px) * 16 / 9)); height: max(56.25vw, clamp(460px, 56vw, 760px)); border: 0; pointer-events: none; opacity: 0; transition: opacity .8s ease; }
+html .brand-film-hero.video-on .brand-film-video { opacity: 1; }
 /* 네모 체크 표시가 글자보다 3px쯤 낮아 보여서 위로 올림 — 체크와 글자가 한 줄에 놓여 보이게 (11/21 아내분 요청) */
 html .svc-check li::before { margin-top: calc((1lh - 15px) / 2 - 3px); }
 html #cs-services .svc-check li::before { margin-top: calc((1lh - 4px) / 2 - 1px); }
