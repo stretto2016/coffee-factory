@@ -1005,3 +1005,7 @@ html .vda-row { display: flex; flex-wrap: wrap; gap: 40px; }
 html .vda { margin: 0; width: 150px; text-align: center; }
 html .vda .vd-icon { width: 110px; height: 110px; margin: 0 auto 10px; }
 html .vda figcaption { font-size: 12px; line-height: 1.5; color: var(--og-muted); word-break: keep-all; }
+/* 인스타그램: 불러오는 동안 글씨 없는 옅은 회색 칸이 살짝 숨 쉬듯 (11/22) */
+html .ig-tile--wait { animation: igWait 1.4s ease-in-out infinite alternate; }
+@keyframes igWait { from { background: #EFEFEF; } to { background: #E4E4E4; } }
+@media (prefers-reduced-motion: reduce) { html .ig-tile--wait { animation: none; } }

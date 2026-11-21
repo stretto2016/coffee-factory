@@ -2019,7 +2019,7 @@ a.manual-page:hover { transform: translateY(-3px); }
     <!-- Origin 풍 테마 (미리보기 검토 중). 아래 한 줄을 지우면 예전 모습으로, theme-lacabra.css 로 바꾸면 La Cabra 시안으로 -->
     <link rel="stylesheet" href="finder-game.css?v=6">
     <link rel="stylesheet" href="cafe-game.css?v=1">
-    <link rel="stylesheet" href="theme-origin.css?v=20261122v"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
+    <link rel="stylesheet" href="theme-origin.css?v=20261122w"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
     <!-- 미리보기 화면에 Vercel 도구(INP Issue 같은 알림 상자)가 뜨지 않게 숨김 — 실제 사이트에는 원래 없는 것 (11/21 아내분 요청) -->
     <style>vercel-live-feedback, #vercel-live-feedback, [data-vercel-toolbar], vercel-toolbar { display: none !important; }</style>
 </head>
@@ -3633,39 +3633,57 @@ a.manual-page:hover { transform: translateY(-3px); }
             </div>
 
             <div class="ig-grid" id="ig-grid">
-                <div class="ig-tile ig-tile--todo"><span>게시물 준비 중</span></div>
-                <div class="ig-tile ig-tile--todo"><span>게시물 준비 중</span></div>
-                <div class="ig-tile ig-tile--todo"><span>게시물 준비 중</span></div>
-                <div class="ig-tile ig-tile--todo"><span>게시물 준비 중</span></div>
-                <div class="ig-tile ig-tile--todo"><span>게시물 준비 중</span></div>
-                <div class="ig-tile ig-tile--todo"><span>게시물 준비 중</span></div>
-                <div class="ig-tile ig-tile--todo"><span>게시물 준비 중</span></div>
-                <div class="ig-tile ig-tile--todo"><span>게시물 준비 중</span></div>
-                <div class="ig-tile ig-tile--todo"><span>게시물 준비 중</span></div>
+                <div class="ig-tile ig-tile--wait"></div>
+                <div class="ig-tile ig-tile--wait"></div>
+                <div class="ig-tile ig-tile--wait"></div>
+                <div class="ig-tile ig-tile--wait"></div>
+                <div class="ig-tile ig-tile--wait"></div>
+                <div class="ig-tile ig-tile--wait"></div>
+                <div class="ig-tile ig-tile--wait"></div>
+                <div class="ig-tile ig-tile--wait"></div>
+                <div class="ig-tile ig-tile--wait"></div>
             </div>
         </div>
     </section>
     <script>
-    /* 인스타그램 최신 게시물 → /instagram 바둑판 (열쇠가 없으면 자리표시 그대로) */
+    /* 인스타그램 최신 게시물 → /instagram 바둑판
+       - 사이트를 열면 어느 페이지에서든 미리 불러와 두고, 지난번 게시물은 이 기기에 12시간 기억해 바로 보여 준다 (11/22 아내분 요청: "준비 중" 없이 바로)
+       - 불러오는 동안은 글씨 없는 옅은 회색 칸, 끝내 못 불러오면(열쇠 없음 등) 그때만 "게시물 준비 중" */
     (function () {
         var grid = document.getElementById('ig-grid');
         if (!grid || !window.fetch) return;
-        var loaded = false;
-        function load() {
-            if (loaded) return; loaded = true;
-            fetch('/api/instagram?limit=24').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
-                if (!j || !j.posts || !j.posts.length) return;
-                var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
-                grid.innerHTML = j.posts.slice(0, 24).map(function (p) {
-                    var alt = esc((p.caption || '스트레토 인스타그램 게시물').split(String.fromCharCode(10))[0].slice(0, 80));
-                    return '<a class="ig-tile" href="' + esc(p.url) + '" target="_blank" rel="noopener"><img src="' + esc(p.img) + '" alt="' + alt + '" loading="lazy"></a>';
-                }).join('');
-            }).catch(function () {});
+        var KEY = 'stretto_ig_v1', MAX_AGE = 12 * 60 * 60 * 1000;
+        var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+        function draw(posts) {
+            grid.innerHTML = posts.slice(0, 24).map(function (p) {
+                var alt = esc((p.caption || '스트레토 인스타그램 게시물').split(String.fromCharCode(10))[0].slice(0, 80));
+                return '<a class="ig-tile" href="' + esc(p.url) + '" target="_blank" rel="noopener"><img src="' + esc(p.img) + '" alt="' + alt + '"></a>';
+            }).join('');
         }
-        // 인스타그램 페이지를 열 때 불러온다
+        var shown = false;
+        try {
+            var c = JSON.parse(localStorage.getItem(KEY) || 'null');
+            if (c && c.posts && c.posts.length && Date.now() - c.at < MAX_AGE) { draw(c.posts); shown = true; }
+        } catch (e) {}
+        var started = false;
+        function load() {
+            if (started) return; started = true;
+            fetch('/api/instagram?limit=24').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+                if (!j || !j.posts || !j.posts.length) throw 0;
+                draw(j.posts); shown = true;
+                try { localStorage.setItem(KEY, JSON.stringify({ at: Date.now(), posts: j.posts })); } catch (e) {}
+            }).catch(function () {
+                if (shown) return;
+                Array.prototype.forEach.call(grid.querySelectorAll('.ig-tile--wait'), function (t) {
+                    t.className = 'ig-tile ig-tile--todo'; t.innerHTML = '<span>게시물 준비 중</span>';
+                });
+            });
+        }
+        // 인스타그램 페이지를 바로 열면 즉시, 다른 페이지라면 화면이 다 뜬 뒤 조용히 미리 불러 둔다
         if (document.body.dataset.route === 'instagram') load();
         new MutationObserver(function () { if (document.body.dataset.route === 'instagram') load(); })
             .observe(document.body, { attributes: true, attributeFilter: ['data-route'] });
+        window.addEventListener('load', function () { setTimeout(load, 1500); });
     })();
     </script>
     <!-- ===================== [원두 리뷰] =====================
