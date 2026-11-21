@@ -993,8 +993,8 @@ html .vd--1 .vd-icon + .vd-head { padding-top: 22px; border-top: 1px solid #E6E6
 @media (max-width: 900px) { html .vd-icon { width: 76px; height: 76px; } }
 /* 시안 1-G: 물방울 ↔ 커피콩이 천천히 바뀌고 화살표가 도는 움직임 */
 html .vd-spin { transform-box: view-box; transform-origin: 50px 50px; animation: vdSpin 14s linear infinite; }
-html .vd-m1 { animation: vdFadeA 6s ease-in-out infinite; }
-html .vd-m2 { animation: vdFadeB 6s ease-in-out infinite; }
+html .vd-m1 { animation: vdFadeA 3.6s ease-in-out infinite; }
+html .vd-m2 { animation: vdFadeB 3.6s ease-in-out infinite; }
 @keyframes vdSpin { to { transform: rotate(360deg); } }
 @keyframes vdFadeA { 0%, 40% { opacity: 1; } 50%, 90% { opacity: 0; } 100% { opacity: 1; } }
 @keyframes vdFadeB { 0%, 40% { opacity: 0; } 50%, 90% { opacity: 1; } 100% { opacity: 0; } }
