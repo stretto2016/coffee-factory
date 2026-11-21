@@ -148,7 +148,8 @@
       return beanSvg(done ? cols[i] : (cur ? '#fff' : '#f2f2f2'), cur ? INK : (done ? 'rgba(0,0,0,.2)' : '#ddd')).replace('<svg', `<svg class="${cur ? 'cur' : ''}"`);
     }).join('');
   }
-  $('#cg-hud-home').addEventListener('click', () => { reset(); go(0); });
+  // '처음으로'는 개인 고객 / 카페 · 사업자를 고르는 첫 화면으로 (11/22 아내분 요청)
+  $('#cg-hud-home').addEventListener('click', () => { reset(); if (window.FG) window.FG.home(); else go(0); });
   function go(r, noScroll) {
     KEY.down = null; S.round = r; hud();
     [intro, r1, r2, r3, r4, r5, result][r]();
