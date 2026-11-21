@@ -1119,3 +1119,6 @@ html .gm6--d .gm-menu--num { border-color: rgba(255,255,255,.5); }
 html .gm6--d .gm-menu li + li { border-top-color: rgba(255,255,255,.14); }
 @keyframes gm6Drift { from { background-position: 0 0; } to { background-position: 260px -260px; } }
 @media (prefers-reduced-motion: reduce) { html .gm6--d { animation: none; } }
+html .gm-menu button { grid-template-columns: 44px 110px 1fr auto; }
+html .gm-cur { font-size: 36px; line-height: 1; }  /* 플레이어 고르는 ▸ 표시를 예전의 2배로 (11/22) */
+@media (max-width: 760px) { html .gm-menu button { grid-template-columns: 34px 80px 1fr; } html .gm-cur { font-size: 28px; } }
