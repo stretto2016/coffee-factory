@@ -121,8 +121,8 @@
   /* ================= 시작 ================= */
   function entry() {
     const el = screen(`<div class="entry">
-      <button type="button" class="entry-card" data-m="b2c"><svg class="entry-ico" viewBox="0 0 64 64" aria-hidden="true"><path d="M14 26h30v12a13 13 0 0 1-13 13h-4A13 13 0 0 1 14 38z"/><path d="M44 30h4a6 6 0 0 1 0 12h-5"/><path d="M10 57h40"/><path d="M24 11c-2 3 2 5 0 8M32 11c-2 3 2 5 0 8"/></svg><div class="in"><small>FOR YOU</small><b>개인 고객</b><span>네 번의 게임으로<br>내 취향의 원두를 찾아요.</span><div class="meta"><span>4 ROUNDS + 뽑기</span><span>약 1분</span></div></div><span class="go">게임 시작</span></button>
-      <button type="button" class="entry-card" data-m="b2b"><svg class="entry-ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="9" width="44" height="31" rx="3"/><path d="M10 19h44"/><circle cx="46" cy="14" r="1.5"/><path d="M24 40v5h16v-5"/><path d="M40 43h10"/><path d="M26 50h12v3a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4z"/><path d="M8 60h48"/></svg><div class="in"><small>FOR CAFÉ</small><b>카페 · 사업자</b><span>다섯 번의 게임으로<br>매장 맞춤 처방전을 받아요.</span><div class="meta"><span>5 ROUNDS</span><span>약 2분</span></div></div><span class="go">게임 시작</span></button>
+      <button type="button" class="entry-card" data-m="b2c"><div class="in"><small>FOR YOU</small><b>개인 고객</b><span>네 번의 게임으로<br>내 취향의 원두를 찾아요.</span><div class="meta"><span>4 ROUNDS + 뽑기</span><span>약 1분</span></div><span class="go">게임 시작</span></div><span class="entry-pic entry-pic--todo"><em>사진 자리</em></span></button>
+      <button type="button" class="entry-card" data-m="b2b"><div class="in"><small>FOR CAFÉ</small><b>카페 · 사업자</b><span>다섯 번의 게임으로<br>매장 맞춤 처방전을 받아요.</span><div class="meta"><span>5 ROUNDS</span><span>약 2분</span></div><span class="go">게임 시작</span></div><span class="entry-pic"><img src="/img/game-entry-cafe.jpg" alt="에스프레소 머신에서 스트레토 잔으로 내려지는 에스프레소"></span></button>
     </div>`);
     el.querySelector('[data-m="b2c"]').onclick = () => go(1);
     el.querySelector('[data-m="b2b"]').onclick = toCafe;

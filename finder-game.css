@@ -424,12 +424,26 @@
 #fg .foot {justify-content: center; gap: 14px;}
 #fg .foot > span:empty {display: none;}
 #fg .lock-row {justify-content: center;}
-/* 게임 첫 화면 카드: 사진 대신 옅은 회색 판 + 회색 선 그림, 글씨는 검정 (11/22 아내분 요청 — 사진 위 흰 글씨가 잘 안 보여서) */
-#fg .entry-card {background: var(--panel); color: var(--text); transition: background .2s;}
+/* 게임 첫 화면 카드: 옅은 회색 판, 높이는 예전의 절반쯤, 오른쪽에 동그란 사진 (11/22 아내분 요청) */
+#fg .board:has(.entry) {min-height: 0;}
+#fg .entry {flex: none;}
+#fg .entry-card {background: var(--panel); color: var(--text); min-height: 210px; display: flex; align-items: center; gap: 24px; padding: 0 36px 0 0; transition: background .2s;}
 #fg .entry-card + .entry-card {border-left: 1px solid var(--line);}
 #fg .entry-card:hover {background: #EFEFEF;}
-#fg .entry-card .entry-ico {position: absolute; left: 40px; top: 40px; width: 88px; height: 88px; fill: none; stroke: #BDBDBD; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;}
+#fg .entry-card .in {flex: 1; height: auto; padding: 28px 0 28px 36px; justify-content: center;}
+#fg .entry-card b {font-size: 26px; margin: 6px 0 4px;}
 #fg .entry-card small, #fg .entry-card .meta {color: var(--muted); opacity: 1;}
 #fg .entry-card span {opacity: 1;}
-#fg .entry-card .go {border-bottom-color: var(--text);}
-@media (max-width: 760px) { #fg .entry-card .entry-ico {left: 22px; top: 24px; width: 64px; height: 64px;} #fg .entry-card + .entry-card {border-left: 0; border-top: 1px solid var(--line);} }
+#fg .entry-card .meta {margin-top: 12px;}
+#fg .entry-card .go {position: static; align-self: flex-start; margin-top: 14px; border-bottom-color: var(--text);}
+#fg .entry-card .entry-pic {flex: 0 0 auto; width: 150px; height: 150px; border-radius: 50%; overflow: hidden; background: #E6E6E6; display: flex; align-items: center; justify-content: center;}
+#fg .entry-card .entry-pic img {position: static; width: 100%; height: 100%; object-fit: cover; object-position: 45% 62%; opacity: 1; transform: none;}
+#fg .entry-card:hover .entry-pic img {transform: none; opacity: 1;}
+#fg .entry-card .entry-pic--todo em {font-style: normal; font-size: 12px; color: var(--muted);}
+@media (max-width: 760px) {
+  #fg .entry-card {min-height: 0; padding-right: 20px; gap: 14px;}
+  #fg .entry-card .in {padding: 22px 0 22px 22px;}
+  #fg .entry-card b {font-size: 22px;}
+  #fg .entry-card .entry-pic {width: 96px; height: 96px;}
+  #fg .entry-card + .entry-card {border-left: 0; border-top: 1px solid var(--line);}
+}
