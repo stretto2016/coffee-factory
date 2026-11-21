@@ -1063,3 +1063,43 @@ html .gs-pick { display: inline-block; margin-top: 22px; font-size: 14px; font-w
     html .gs-sel { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) { html .gs-start, html .gs-cap, html .gs-knob, html .gs-path li:first-child .gs-node { animation: none; } }
+
+/* 원두 찾기 첫 화면 시안 4~6: 클래식 · 고급스러운 "Start game / Player 1 · 2" 메뉴 (11/22, 고르면 지우기) */
+html .gm { position: relative; padding: 64px 40px; text-align: center; }
+html .gm-kick { display: block; font-family: "Ciutadella", sans-serif; font-size: 12px; letter-spacing: .32em; color: var(--og-muted); }
+html .gm .gm-title { color: inherit; text-transform: none; }
+html .gm-title { font-family: "Ciutadella", sans-serif; font-weight: 400; font-size: 54px; letter-spacing: .06em; line-height: 1.1; margin: 14px 0 0; }
+html .gm-rule { display: block; width: 40px; height: 1px; background: currentColor; opacity: .35; margin: 26px auto 30px; }
+html .gm-menu { list-style: none; margin: 0 auto; padding: 0; max-width: 560px; }
+html .gm-menu li + li { border-top: 1px solid rgba(0,0,0,.08); }
+html .gm-menu button { width: 100%; display: grid; grid-template-columns: 26px 110px 1fr auto; align-items: center; gap: 10px; background: none; border: 0; padding: 20px 6px; color: inherit; text-align: left; cursor: pointer; font-size: 16px; }
+html .gm-cur { color: #AAD5DB; font-size: 18px; opacity: 0; transition: opacity .15s; }
+html .gm-menu:not(:hover) li:first-child .gm-cur, html .gm-menu li:hover .gm-cur { opacity: 1; animation: gmBlink 1s steps(2, start) infinite; }
+@keyframes gmBlink { to { visibility: hidden; } }
+html .gm-p { font-family: "Ciutadella", sans-serif; font-size: 18px; letter-spacing: .08em; }
+html .gm-who { font-size: 17px; font-weight: 500; }
+html .gm-info { font-size: 13px; color: var(--og-muted); }
+html .gm-menu li:hover .gm-who { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
+html .gm-foot { margin: 28px 0 0; font-size: 13px; color: var(--og-muted); }
+/* 시안 4: 밝은 바탕 */
+html .gm--light { background: #F6F6F6; border-top: 1px solid #202020; border-bottom: 1px solid #202020; }
+/* 시안 5: 짙은 바탕 + 이중 테두리 */
+html .gm--dark { background: #1C1C1C; color: #fff; padding: 22px; }
+html .gm--dark .gm-frame { border: 1px solid rgba(170,213,219,.55); outline: 1px solid rgba(170,213,219,.25); outline-offset: 6px; padding: 56px 32px; }
+html .gm--dark .gm-kick, html .gm--dark .gm-info, html .gm--dark .gm-foot { color: #9A9A9A; }
+html .gm--dark .gm-menu li + li { border-top-color: rgba(255,255,255,.12); }
+/* 시안 6: 왼쪽 큰 제목 + 오른쪽 메뉴 */
+html .gm--split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; text-align: left; background: #fff; border: 1px solid #E6E6E6; }
+html .gm--split .gm-title { font-size: 72px; }
+html .gm-lead { font-size: 15px; line-height: 1.7; color: var(--og-text); margin: 22px 0 0; }
+html .gm-menu--num { max-width: none; border-top: 1px solid #202020; border-bottom: 1px solid #202020; }
+html .gm-menu--num button { padding: 26px 6px; }
+@media (max-width: 760px) {
+    html .gm { padding: 44px 18px; }
+    html .gm-title { font-size: 40px; }
+    html .gm--split { grid-template-columns: 1fr; gap: 28px; }
+    html .gm--split .gm-title { font-size: 48px; }
+    html .gm-menu button { grid-template-columns: 20px 80px 1fr; }
+    html .gm-info { grid-column: 3; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { html .gm-cur { animation: none !important; } }
