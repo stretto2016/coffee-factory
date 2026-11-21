@@ -934,3 +934,35 @@ html .box-label { display: block; margin: 96px 0 12px; }
 html #story .box-label + .vision-box { margin-top: 0 !important; }
 html .brand-film-wrap .box-label { margin-top: 0; }
 @media (max-width: 900px) { html .box-label { margin-top: 64px; } html .brand-film-wrap .box-label { margin-top: 0; } }
+
+/* 대표 인사말 quote 디자인 시안 3종 (11/22, 고르면 하나만 남기기) */
+html .qd-label { font-size: 12px; color: var(--og-muted); margin: 72px 0 14px; }
+html .qd { margin: 0; position: relative; }
+html .qd-text { margin: 0; quotes: none; }
+html .qd-text p { font-size: 0.9rem; line-height: 1.8; color: var(--og-text); margin: 0 0 18px; word-break: keep-all; }
+html .qd-mark { display: block; font-family: Georgia, "Times New Roman", serif; font-size: 96px; line-height: 0.8; color: #D3D3D3; }
+html .qd-sign { font-size: 0.9rem; font-weight: 500; color: var(--og-text); margin-top: 8px; }
+html .qd-career { font-size: 12.5px; line-height: 1.6; color: var(--og-muted); margin: 22px 0 0; padding-top: 18px; border-top: 1px solid #E6E6E6; text-transform: none !important; }
+/* 시안 1 */
+html .qd--1 { padding: 8px 0 0; }
+html .qd--1 .qd-mark { margin-bottom: 6px; }
+html .qd--1 .qd-sign { text-align: right; }
+/* 시안 2 */
+html .qd--2 .qd-text { border-left: 2px solid #D6D6D6; padding: 4px 0 4px 32px; }
+html .qd--2 .qd-text p:last-child { margin-bottom: 0; }
+html .qd--2 .qd-sign { padding-left: 34px; margin-top: 18px; }
+html .qd--2 .qd-career { margin-left: 34px; }
+/* 시안 3 */
+html .qd--3 { text-align: center; max-width: 920px; margin: 0 auto; background: var(--og-panel); padding: 48px 56px; }
+html .qd--3 .qd-mark { margin-bottom: 10px; }
+html .qd--3 .qd-mark--end { margin: 4px 0 14px; line-height: 0.4; height: 34px; }
+html .qd--3 .qd-career { text-align: center; border-top: 0; padding-top: 0; }
+html .qd--3 .qd-career::before { content: ""; display: block; width: 28px; height: 1px; background: #CFCFCF; margin: 0 auto 16px; }
+@media (max-width: 900px) {
+    html .qd-label { margin-top: 48px; }
+    html .qd-text br { display: none; }
+    html .qd-mark { font-size: 72px; }
+    html .qd--2 .qd-text { padding-left: 20px; }
+    html .qd--2 .qd-sign, html .qd--2 .qd-career { padding-left: 0; margin-left: 22px; }
+    html .qd--3 { padding: 32px 22px; }
+}
