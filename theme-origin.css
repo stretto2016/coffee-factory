@@ -353,15 +353,10 @@ html .section-header > p.partner-cond-note { font-size: 14px; }
 /* 브랜드: 슬로건 아래 작은 제목 */
 html .brand-identity-label { display: block; margin: 48px 0 0; }
 
-/* 브랜드: 세 가지 기준 영어 단어를 동그라미 안에, 동그라미 사이에 + (11/22 아내분 요청) */
-html #story .spirit-card { position: relative; overflow: visible; }
-html #story .spirit-title { display: flex; align-items: center; justify-content: center; width: 170px; height: 170px; margin: 0 auto 26px; border: 1px solid currentColor; border-radius: 50%; text-align: center; line-height: 1.2; }
-html #story .spirit-card:not(:last-child)::after { content: "+"; position: absolute; top: 117px; right: -15px; transform: translate(50%, -50%); font-size: 26px; font-weight: 300; line-height: 1; color: var(--text-primary); pointer-events: none; }
-@media (max-width: 768px) {
-    html #story .spirit-grid { gap: 40px; }
-    html #story .spirit-title { width: 140px; height: 140px; margin-bottom: 20px; }
-    html #story .spirit-card:not(:last-child)::after { top: auto; right: 50%; bottom: -20px; transform: translate(50%, 50%); }
-}
+/* 브랜드: 세 가지 기준을 서로 맞물린 동그라미 세 개로 (11/22 아내분 참고 그림) */
+html .identity-rings { display: block; width: 100%; max-width: 380px; height: auto; margin: 8px auto 56px; }
+html .identity-rings text { font-family: "Ciutadella", sans-serif; font-weight: 700; font-size: 16px; fill: var(--text-primary); text-anchor: middle; }
+@media (max-width: 768px) { html .identity-rings { max-width: 290px; margin-bottom: 36px; } }
 
 /* 푸터: 가로형 로고 */
 html .sf-logo--wide { white-space: nowrap; font-size: 26px; line-height: 1; }
