@@ -420,3 +420,7 @@
 #fg .gx-card button { margin-top: 14px; width: 100%; }
 #fg .gx-card .gx-pct { display: block; margin-top: 4px; }
 #fg .gx-card .gx-two { display: block; font-size: 14px; color: #000; margin-top: 6px; }
+/* 원두 찾기 게임: "다시 하기 · 다음 라운드" 버튼을 양 끝이 아니라 가운데에 나란히 (11/22 아내분 요청) */
+#fg .foot {justify-content: center; gap: 14px;}
+#fg .foot > span:empty {display: none;}
+#fg .lock-row {justify-content: center;}
