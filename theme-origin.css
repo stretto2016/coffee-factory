@@ -939,7 +939,7 @@ html .brand-film-wrap .box-label { margin-top: 0; }
 html .qd { margin: 0; position: relative; padding: 8px 0 0; }
 html .qd-text { margin: 0; quotes: none; }
 html .qd-text p { font-size: 0.9rem; line-height: 1.8; color: var(--og-text); margin: 0 0 18px; word-break: keep-all; }
-html .qd-mark { display: block; font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; font-weight: 900; font-size: 96px; line-height: 1; height: 42px; margin-bottom: 0; color: #D3D3D3; }  /* 첫 문장과 간격 줄임 (11/22) */
+html .qd-mark { display: block; font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; font-weight: 900; font-size: 96px; line-height: 1; height: 42px; margin-bottom: 0; color: #D3D3D3; -webkit-text-stroke: 3.5px #D3D3D3; paint-order: stroke fill; }  /* 글꼴의 가장 굵은 두께에 테두리를 더해 한 단계 더 두껍게 (11/22) */  /* 첫 문장과 간격 줄임 (11/22) */
 html .qd-sign { font-size: 0.9rem; font-weight: 500; color: var(--og-text); margin-top: 8px; text-align: right; }
 html .qd-career { font-size: 12.5px; line-height: 1.6; color: var(--og-muted); margin: 22px 0 0; padding-top: 18px; border-top: 1px solid #E6E6E6; text-transform: none !important; }
 @media (max-width: 900px) {
