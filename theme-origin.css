@@ -756,7 +756,7 @@ html .brv-arrow:disabled { opacity: .25; cursor: default; }
 @media (max-width: 900px) { html .brv-page { grid-template-columns: minmax(0, 1fr); } }
 
 /* 컨설팅 머리말: '실전형 카페 컨설팅'은 다른 큰 제목과 같은 크기 · 굵기 */
-html .cs-head-title { display: inline-block; font-size: 1.4rem; font-weight: 700; line-height: 1.35; letter-spacing: normal; color: var(--og-text); margin-bottom: 6px; }
+html .cs-head-title { display: inline-block; font-size: 20px; font-weight: 700; line-height: 1.35; letter-spacing: normal; color: var(--og-text); margin-bottom: 6px; }
 /* 컨설팅 제목들은 모두 '스트레토 컨설팅의 핵심'(1.4rem)과 같은 크기 */
 
 /* 컨설팅 핵심 다섯 칸 목록: 체크 대신 가운데 점 */
@@ -870,12 +870,12 @@ html #cs-services .svc-check li::before { margin-top: calc((1lh - 4px) / 2 - 0.5
 /* 모든 페이지 제목 통일 (11/21 아내분 요청): 위 회색 영어 소제목 12px · 아래 검정 제목은 모두 '스트레토 컨설팅의 핵심'과 같은 1.4rem 굵게.
    제외: 메인 화면 따옴표 문장(home-title), 브랜드 슬로건(carefully crafted coffee 손글씨 제목) */
 html .section-subtitle { font-size: 12px !important; }
-html .section-subtitle ~ :is(h2, h3, h4):not(.home-title):not(:has(.title-nowrap)) { font-size: 1.4rem !important; font-weight: 700 !important; line-height: 1.35 !important; }
+html .section-subtitle ~ :is(h2, h3, h4):not(.home-title):not(:has(.title-nowrap)) { font-size: 20px !important; font-weight: 700 !important; line-height: 1.35 !important; }
 
 /* ================================================================
    홈페이지 전체 글자 원칙 (11/21 아내분 요청 — 머신 케어 페이지 기준으로 이름을 정함)
    1. 회색 영문 타이틀 : Total Care Solution · Certified Engineer · Step 01 …   12px · 500 · 회색 · 단어 첫 글자 대문자
-   2. 한글 메인 타이틀 : 엔지니어의 눈으로~ · 인증 엔지니어가 직접~ · 증상 상담 및 접수 …   1.4rem(22.4px) · 700
+   2. 한글 메인 타이틀 : 엔지니어의 눈으로~ · 인증 엔지니어가 직접~ · 증상 상담 및 접수 …   20px · 700 (11/23 22.4 → 20, 회색 타이틀 바로 밑 제목 전부)
    3. 서브 한글 제목   : 머신이 멈추면~ · 각 단계 굵은 한 줄 · 혜택 칸 검정 제목 …   17px · 600
    4. 메인 문장        : 제목 아래 설명 글   16px · 400 · 줄간격 1.7
    5. 서브 문장        : 체크 목록   14px (원래 크기) · 체크 네모 15px
@@ -887,8 +887,8 @@ html :is(.section-subtitle, .svc-num, .home-service-label, .manual-doc-tag, .pb-
     color: var(--og-muted) !important; text-transform: capitalize !important;
 }
 /* 2. 한글 메인 타이틀 */
-html :is(.section-subtitle ~ :is(h2, h3, h4):not(.home-title):not(:has(.title-nowrap)), .svc-body > h3, .home-service h3, .care-benefit > h3, .faq-group-title, .cs-head-title) {
-    font-size: 1.4rem !important; font-weight: 700 !important; line-height: 1.35 !important;
+html :is(.section-subtitle ~ :is(h2, h3, h4):not(.home-title):not(:has(.title-nowrap)), .svc-body > h3, .home-service h3, .care-benefit > h3, .faq-group-title, .cs-head-title, .manual-badge ~ h3, .manual-rail-title) {
+    font-size: 20px !important; font-weight: 700 !important; line-height: 1.35 !important;
 }
 /* 3. 서브 한글 제목 */
 html :is(.svc-body > p.svc-lead, .care-benefit-grid strong, .promise-card h4, .manual-doc-body > h4) {
