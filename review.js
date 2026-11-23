@@ -1475,31 +1475,100 @@ function renderChat() {
   else box.scrollTop = prevTop;   // 보던 위치 그대로
 }
 
+/* 대화 · 도우미 상태를 화면에 반영 (실시간 연결과 아래 '직접 읽기'가 같이 쓴다) */
+function applyChat(list) {
+  const before = new Map(chatMsgs.map((m) => [m.id, m]));
+  chatMsgs = list.filter((m) => m.site === SITE);
+  if (chatReady && chatMsgs.some((m) => m.role === 'assistant' && !before.has(m.id))) {
+    // 화면 아래 'Claude가 답했어요' 알림은 띄우지 않는다 (11/21 아내분 요청)
+    if ($('#rv-panel').classList.contains('rv-collapsed')) $('#rv-handle').classList.add('rv-new');
+  }
+  // '바뀐 화면이 준비됐어요' 알림도 띄우지 않는다 (11/21 아내분 요청)
+  chatReady = true;
+  renderChat();
+}
+function applyAgent(data, fresh) {
+  const prevBeat = agent && agent.lastSeen && agent.lastSeen.toMillis ? agent.lastSeen.toMillis() : 0;
+  agent = data;
+  const beatNow = agent && agent.lastSeen && agent.lastSeen.toMillis ? agent.lastSeen.toMillis() : 0;
+  // 도우미가 새 신호(lastSeen)를 보냈을 때만 "방금 살아 있음"으로 본다.
+  // (처음 받은 값이나, 재연결로 같은 값이 다시 온 것은 세지 않는다 — 꺼진 도우미를 '연결됨'으로 보이게 하던 문제)
+  if (fresh && prevBeat && beatNow > prevBeat) agentSeenAt = Date.now();
+  renderAgent();
+}
+
 function listenChat() {
   onSnapshot(query(collection(db, CHAT_COL), orderBy('createdAt', 'asc'), limitToLast(300)), (snap) => {
-    const before = new Map(chatMsgs.map((m) => [m.id, m]));
-    chatMsgs = snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((m) => m.site === SITE);
-    if (chatReady && chatMsgs.some((m) => m.role === 'assistant' && !before.has(m.id))) {
-      // 화면 아래 'Claude가 답했어요' 알림은 띄우지 않는다 (11/21 아내분 요청)
-      if ($('#rv-panel').classList.contains('rv-collapsed')) $('#rv-handle').classList.add('rv-new');
-    }
-    if (chatReady && chatMsgs.some((m) => m.deployed && before.has(m.id) && !before.get(m.id).deployed)) {
-      // '바뀐 화면이 준비됐어요' 알림도 띄우지 않는다 (11/21 아내분 요청)
-    }
-    chatReady = true;
-    renderChat();
+    if (!snap.metadata.fromCache) liveAt = Date.now();
+    applyChat(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
   }, (err) => { console.error(err); toast('대화를 불러오지 못했어요.'); });
 
   onSnapshot(doc(db, AGENT_COL, SITE), { includeMetadataChanges: true }, (d) => {
-    const prevBeat = agent && agent.lastSeen && agent.lastSeen.toMillis ? agent.lastSeen.toMillis() : 0;
-    agent = d.exists() ? d.data() : null;
-    const beatNow = agent && agent.lastSeen && agent.lastSeen.toMillis ? agent.lastSeen.toMillis() : 0;
-    // 도우미가 새 신호(lastSeen)를 보냈을 때만 "방금 살아 있음"으로 본다.
-    // (처음 받은 값이나, 재연결로 같은 값이 다시 온 것은 세지 않는다 — 꺼진 도우미를 '연결됨'으로 보이게 하던 문제)
-    if (!d.metadata.fromCache && prevBeat && beatNow > prevBeat) agentSeenAt = Date.now();
-    renderAgent();
+    if (!d.metadata.fromCache) liveAt = Date.now();
+    applyAgent(d.exists() ? d.data() : null, !d.metadata.fromCache);
   },
     (err) => console.error(err));
+
+  restFallback();
+}
+
+/* 실시간 연결이 조용할 때는 직접 읽기 (11/23)
+   - 휴대폰 · 일부 인터넷 환경에서 Firebase 실시간 연결이 30~40초 동안 아무 소식도 못 받는 일이 있었다
+     (그동안 "사장님 컴퓨터와 연결이 안 돼요"가 뜨고 도우미 답도 안 보였다).
+   - 같은 때에도 한 번씩 직접 읽는 길(REST)은 1초 안에 됐다. 그래서 실시간 소식이 40초 넘게 없으면
+     6초마다 도우미 상태와 최근 대화를 직접 읽어 온다. 실시간 연결이 살아나면 저절로 멈춘다. */
+let rvUser = null, liveAt = 0, restBusy = false;
+const REST_BASE = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents`;
+function fsVal(v) {
+  if (!v) return null;
+  if ('stringValue' in v) return v.stringValue;
+  if ('booleanValue' in v) return v.booleanValue;
+  if ('integerValue' in v) return Number(v.integerValue);
+  if ('doubleValue' in v) return v.doubleValue;
+  if ('timestampValue' in v) {
+    const ms = Date.parse(v.timestampValue);
+    return { toMillis: () => ms, toDate: () => new Date(ms), seconds: Math.floor(ms / 1000) };
+  }
+  if ('arrayValue' in v) return (v.arrayValue.values || []).map(fsVal);
+  if ('mapValue' in v) return fsFields(v.mapValue.fields);
+  if ('referenceValue' in v) return v.referenceValue;
+  if ('geoPointValue' in v) return v.geoPointValue;
+  return null;
+}
+function fsFields(f) { const o = {}; for (const k in (f || {})) o[k] = fsVal(f[k]); return o; }
+async function restRead() {
+  if (restBusy || !rvUser) return;
+  restBusy = true;
+  try {
+    const h = { Authorization: 'Bearer ' + await rvUser.getIdToken() };
+    const [a, c] = await Promise.all([
+      fetch(`${REST_BASE}/${AGENT_COL}/${SITE}`, { headers: h }),
+      fetch(`${REST_BASE}:runQuery`, {
+        method: 'POST', headers: { ...h, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ structuredQuery: {
+          from: [{ collectionId: CHAT_COL }],
+          orderBy: [{ field: { fieldPath: 'createdAt' }, direction: 'DESCENDING' }],
+          limit: 300 } })
+      })
+    ]);
+    if (Date.now() - liveAt < 40 * 1000) return;   // 그 사이 실시간 연결이 살아났으면 그쪽을 믿는다
+    if (a.ok) applyAgent(fsFields((await a.json()).fields), true);
+    else if (a.status === 404) applyAgent(null, true);
+    if (c.ok) {
+      const rows = (await c.json()).filter((r) => r.document).reverse();
+      applyChat(rows.map((r) => ({ id: r.document.name.split('/').pop(), ...fsFields(r.document.fields) })));
+    }
+  } catch (_) { /* 인터넷이 끊긴 때 등 — 다음 차례에 다시 */ }
+  finally { restBusy = false; }
+}
+function restFallback() {
+  if (window.__rvRest) return;
+  window.__rvRest = true;
+  setTimeout(() => { if (!liveAt) restRead(); }, 2500);   // 처음 열 때 2.5초 안에 소식이 없으면 바로 한 번
+  setInterval(() => {
+    if (document.hidden || navigator.onLine === false) return;
+    if (Date.now() - liveAt > 40 * 1000) restRead();
+  }, 6000);
 }
 
 /* ---------- 12. 시작 ---------- */
@@ -1580,7 +1649,8 @@ function start() {
   renderList();
 
   signInAnonymously(auth)
-    .then(() => {
+    .then((cred) => {
+      rvUser = cred.user;
       onSnapshot(query(collection(db, COL), orderBy('createdAt', 'asc')), (snap) => {
         comments = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
           .filter((c) => (c.site || 'live') === SITE);
