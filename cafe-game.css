@@ -165,7 +165,7 @@
 @media (max-width: 900px) { #cg .cg-store { grid-template-columns: 1fr; gap: 22px; } }
 @media (max-width: 760px) { #cg .cg-sacks { min-height: 150px; } #cg .cg-sacks i { width: 30px; height: 33px; margin-top: -6px; } }
 
-/* 결과 · 처방전 */
+/* 결과 · 원두 제안서 */
 #cg .cg-rx { border: 1px solid var(--ink); background: #FCFBF8; position: relative; padding: 0; overflow: hidden; }
 #cg .cg-rx-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; padding: 22px 28px 18px; border-bottom: 1.5px solid var(--ink); }
 #cg .cg-rx-head small { font-size: 11.5px; letter-spacing: .2em; color: var(--muted); }
@@ -187,7 +187,7 @@
 #cg .cg-ratio-list li b { font-weight: 500; }
 #cg .cg-rx-main { padding: 22px 28px 26px; position: relative; display: flex; flex-direction: column; }
 #cg .cg-rx-big { position: absolute; right: 26px; top: 14px; font-size: 54px; font-family: Georgia, 'Times New Roman', serif; font-style: italic; color: var(--mint); line-height: 1; }
-#cg .cg-rx-main .res-name { padding-right: 70px; }
+#cg .cg-rx-main .res-name { padding-right: 0; }
 #cg .cg-rx-prod { display: flex; gap: 14px; align-items: center; }
 #cg .cg-rx-prod img { width: 72px; height: 72px; object-fit: cover; }
 #cg .cg-rx-main .cg-ratio-bar { margin-top: 16px; }
@@ -230,7 +230,7 @@
 #cg .cg-split-row span { font-size: 12px; color: var(--muted); }
 @media (max-width: 760px) { #cg .cg-split-row { grid-template-columns: 1fr; } }
 
-/* 엇갈린 신호 → 처방 A · B */
+/* 엇갈린 신호 → 제안 A · B */
 #cg .cg-two { margin: 4px 0 18px; padding-bottom: 16px; border-bottom: 1px dashed #bdbdbd; }
 #cg .cg-two-t { font-size: 13.5px; color: #3a3a3a; line-height: 1.7; margin: 0 0 12px; padding-right: 84px; }
 #cg .cg-two-t em { font-style: normal; color: #000; font-weight: 500; }

@@ -1,7 +1,7 @@
 /* 원두 찾기 게임 · 카페 사업자용 — index.html 원두 페이지 #cg (시안 원본: .review-inbox/cafe-game.html)
    - 개인 고객 게임(#fg) 시작 화면의 "카페 · 사업자"에서 window.CG.start() 로 들어온다. '개인 고객으로' 는 window.FG.home()
    - 납품 상담 버튼은 사이트의 1:1 상담창(window.__finderConsult)을 연다
-   ROUND 1 가게 차리기 · 2 판매 TOP 3 · 3 듣고 싶은 리뷰 · 4 블렌딩 랩 · 5 창고 채우기 → 매장 맞춤 처방전
+   ROUND 1 가게 차리기 · 2 판매 TOP 3 · 3 듣고 싶은 리뷰 · 4 블렌딩 랩 · 5 창고 채우기 → 매장 맞춤 원두 제안서
    - 점수 계산은 사이트 기존 카페용 질문(targetB2B · scoreOf)과 같은 표를 쓴다.
    - 모양은 개인 고객 게임(finder-game.css)의 #fg 스타일 + 아래 cafe-game.css(#fg .cg-*) */
 (function () {
@@ -160,7 +160,7 @@
     const el = screen(`<div class="cg-intro">
       <small>STRETTO · FOR CAFÉ</small>
       <h3>다섯 번의 선택으로<br>우리 매장 원두를 찾을 수 있어요!</h3>
-      <p>가게를 오픈하고, 메뉴를 고르고, 원두를 직접 섞어 보세요.<br>마지막에 로스터가 <b>매장 맞춤 처방전</b>을 써 드려요.</p>
+      <p>가게를 오픈하고, 메뉴를 고르고, 원두를 직접 섞어 보세요.<br>마지막에 로스터가 <b>매장 맞춤 원두 제안서</b>를 써 드려요.</p>
       <button type="button" class="btn-ink" id="cg-start">start!</button>
       <small class="cg-time">약 30초 · 답한 내용은 상담할 때만 쓰여요</small>
       <button type="button" class="btn-text cg-back" id="cg-back">← 개인 고객용 게임으로</button>
@@ -417,7 +417,7 @@
         </div>
         <div class="cg-tags">${Object.entries(PRICE).map(([k, p], i) => `<button type="button" class="cg-tag" data-p="${k}" style="--r:${[-1.5, 1.2, -0.8][i]}deg"><i></i><small>${['DAILY', 'BALANCE', 'PREMIUM'][i]}</small><b>${p.n}</b><span>${p.d}</span></button>`).join('')}</div>
       </div>
-      <div class="foot"><span></span><button type="button" class="btn-ink" id="cg-nx" disabled>처방전 받기 →</button></div>`);
+      <div class="foot"><span></span><button type="button" class="btn-ink" id="cg-nx" disabled>제안서 받기 →</button></div>`);
     const nx = el.querySelector('#cg-nx'), kr = el.querySelector('#cg-kgr');
     kr.value = S.kg;
     const sack = `<svg viewBox="0 0 40 44"><path d="M8 8c4-3 20-3 24 0l3 30c-6 4-24 4-30 0z" fill="#E9DCC6" stroke="${INK}" stroke-width="1.2"/><path d="M12 9c3 2 13 2 16 0" fill="none" stroke="${INK}" stroke-width="1"/><circle cx="20" cy="25" r="5" fill="none" stroke="${INK}" stroke-width="1"/><path d="M20 21c-2 3 2 5 0 8" fill="none" stroke="${INK}" stroke-width=".9"/></svg>`;
@@ -487,7 +487,7 @@
     return out;
   }
 
-  /* ================= 결과 · 매장 맞춤 처방전 ================= */
+  /* ================= 결과 · 매장 맞춤 원두 제안서 ================= */
   function result() {
     S.round = 6; hud();
     const J = jars(), a = answers(), t = target(J);
@@ -521,7 +521,7 @@
     const no = String(Date.now()).slice(-5);
     const today = new Date(); const ymd = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
 
-    screen(`<div class="loading"><small>WRITING YOUR PRESCRIPTION</small><div style="width:70px;margin:22px auto 0">${beanSvg(ROAST_COL[roastRx])}</div><div class="bar"><i></i></div><p class="q-hint" style="margin-top:16px">로스터가 처방전을 쓰는 중이에요</p></div>`);
+    screen(`<div class="loading"><small>WRITING YOUR PROPOSAL</small><div style="width:70px;margin:22px auto 0">${beanSvg(ROAST_COL[roastRx])}</div><div class="bar"><i></i></div><p class="q-hint" style="margin-top:16px">로스터가 제안서를 쓰는 중이에요</p></div>`);
     setTimeout(() => {
       const pos = (v) => ((v - 1) / 4 * 100).toFixed(1) + '%';
       const row = (lbl, you, bean) => `<div class="cmp-row"><span>${lbl}</span><div class="cmp-track"><span class="you" style="left:${pos(you)}"></span>${bean != null ? `<span class="bean" style="left:${pos(bean)}"></span>` : ''}</div></div>`;
@@ -535,13 +535,13 @@
         <ul class="cg-ratio-list">${list.map((x) => `<li><i style="background:${x.c}"></i>${esc(x.n)}<b>${x.pct}%</b></li>`).join('')}</ul>`;
       const midTag = split && !custom ? (best.p === bR.p ? 'A' : best.p === bL.p ? 'B' : '') : '';
       const main = custom ? `
-          <small class="cg-rx-k">처방 · 매장 전용 블렌드 시안</small>
+          <small class="cg-rx-k">제안 · 매장 전용 블렌드 시안</small>
           <div class="res-name">우리 매장 하우스 블렌드</div>
           <div class="res-sub">권장 로스팅 ${ROAST_KO[roastRx]} · 사장님 배합을 로스터가 다듬었어요</div>
           ${ratio(partsFix)}
           <p class="cg-rx-note"><b>${movedTxt}</b> 기존 블렌드 중 딱 맞는 게 없어, 이 향미 구성에 맞는 원두로 매장 전용 블렌드를 짜 드려요. 실제 원두와 비율은 샘플 테이스팅 후 로스터와 함께 확정해요.</p>`
         : `
-          <small class="cg-rx-k">${midTag ? `처방 ${midTag} · 자세히` : '처방 · 스트레토 추천 블렌드'}</small>
+          <small class="cg-rx-k">${midTag ? `제안 ${midTag} · 자세히` : '제안 · 스트레토 추천 블렌드'}</small>
           <div class="cg-rx-prod">${best.p.img ? `<img src="${esc(best.p.img)}" alt="">` : ''}<div><div class="res-name">${esc(best.p.name)}</div><div class="res-sub">${esc(best.p.roast)}</div></div></div>
           <div class="chips">${best.p.notes.split(/[·,]/).map((n) => n.trim()).filter(Boolean).slice(0, 4).map((n) => `<span>${esc(n)}</span>`).join('')}</div>
           <div class="match"><span>매장 일치</span><div><i id="cg-mt"></i></div><b>${clamp(Math.round(best.s), 60, 98)}%</b></div>`;
@@ -549,7 +549,7 @@
       const el = screen(`<div class="flip"><div class="flip-in">
         <div class="cg-rx">
           <div class="cg-rx-head">
-            <div><small>STRETTO COFFEE FACTORY</small><h3>매장 맞춤 처방전</h3></div>
+            <div><small>STRETTO COFFEE FACTORY</small><h3>매장 맞춤 원두 제안서</h3></div>
             <div class="cg-rx-no">No. ${no}<br>${ymd}</div>
           </div>
           <div class="cg-rx-grid">
@@ -561,12 +561,11 @@
               <p class="cg-rx-mini">로스팅 포인트 · ${ROAST_KO[S.roast]}</p>
             </div>
             <div class="cg-rx-main">
-              <span class="cg-rx-big">Rx</span>
-              ${split ? `<div class="cg-two"><p class="cg-two-t">💡 리뷰와 메뉴로는 <em>${dirW(tR)}</em>, 직접 섞은 배합은 <em>${dirW(tL)}</em>이었어요. 서로 반대 방향이라 <b>각각에 어울리는 블렌드</b>를 하나씩 처방해 드려요.</p>
-                <div class="cg-two-row">${[[bR, 'A', '리뷰 · 메뉴를 살리면'], [bL, 'B', '직접 섞은 배합을 살리면']].map(([x, l, k]) => `<div class="cg-two-c"><small><span>처방 ${l}</span>${k}</small>
+              ${split ? `<div class="cg-two"><p class="cg-two-t">💡 리뷰와 메뉴로는 <em>${dirW(tR)}</em>, 직접 섞은 배합은 <em>${dirW(tL)}</em>이었어요. 서로 반대 방향이라 <b>각각에 어울리는 블렌드</b>를 하나씩 제안해 드려요.</p>
+                <div class="cg-two-row">${[[bR, 'A', '리뷰 · 메뉴를 살리면'], [bL, 'B', '직접 섞은 배합을 살리면']].map(([x, l, k]) => `<div class="cg-two-c"><small><span>제안 ${l}</span>${k}</small>
                   <div class="cg-rx-prod">${x.p.img ? `<img src="${esc(x.p.img)}" alt="">` : ''}<div><b>${esc(x.p.name)}</b><em>${esc(x.p.roast)}</em></div></div>
                   <p>${esc(x.p.notes)}</p></div>`).join('')}</div>
-                <p class="cg-two-mid">${midTag ? `처방 ${midTag}를 자세히 보면 ↓` : '둘의 중간으로 가고 싶다면 ↓'}</p></div>` : ''}
+                <p class="cg-two-mid">${midTag ? `제안 ${midTag}를 자세히 보면 ↓` : '둘의 중간으로 가고 싶다면 ↓'}</p></div>` : ''}
               ${main}
               <div class="cmp">${row('산미', t.acidity, bean && bean.acidity)}${row('바디', t.body, bean && bean.body)}${row('단맛', t.sweetness, bean && bean.sweetness)}${row('배전', t.roast, bean && bean.roastScore)}
                 <div class="cmp-legend"><span><i style="border:1.5px solid ${INK}"></i>매장에 맞는 맛</span>${bean ? `<span><i style="background:${INK}"></i>이 블렌드</span>` : ''}</div></div>

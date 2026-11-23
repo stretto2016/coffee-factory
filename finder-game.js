@@ -122,7 +122,7 @@
   function entry() {
     const el = screen(`<div class="entry">
       <button type="button" class="entry-card" data-m="b2c"><div class="in"><small>FOR YOU</small><b>개인 고객</b><span>네 번의 게임으로 내 취향의 원두를 찾아요.</span><div class="meta"><span>약 30초</span></div><span class="go">start!</span></div><span class="entry-pic"><img src="/img/game-entry-home.jpg" alt="핸드드립 드리퍼와 서버로 내려지는 커피" style="object-position:50% 50%"></span></button>
-      <button type="button" class="entry-card" data-m="b2b"><div class="in"><small>FOR CAFÉ</small><b>카페 · 사업자</b><span>다섯 번의 선택으로 매장 맞춤 처방전을 받아요.</span><div class="meta"><span>약 30초</span></div><span class="go">start!</span></div><span class="entry-pic"><img src="/img/game-entry-cafe.jpg" alt="에스프레소 머신에서 스트레토 잔으로 내려지는 에스프레소"></span></button>
+      <button type="button" class="entry-card" data-m="b2b"><div class="in"><small>FOR CAFÉ</small><b>카페 · 사업자</b><span>다섯 번의 선택으로 매장 맞춤 원두 제안서를 받아요.</span><div class="meta"><span>약 30초</span></div><span class="go">start!</span></div><span class="entry-pic"><img src="/img/game-entry-cafe.jpg" alt="에스프레소 머신에서 스트레토 잔으로 내려지는 에스프레소"></span></button>
     </div>`);
     el.querySelector('[data-m="b2c"]').onclick = () => go(1);
     el.querySelector('[data-m="b2b"]').onclick = toCafe;
@@ -242,94 +242,147 @@
   const PMAX = 1.08;
   const speedAt = (p) => p < 0.17 ? 0.17 / 2 : 0.83 / 11;
   const tempAt = (p) => 120 + 126 * (1 - Math.pow(1 - Math.min(p, 1.25) / 1.3, 1.7));
+  // 반대 방향으로 볶았을 때 추천할 단계 (향마다 가장 잘 살아나는 단계)
+  const BEST_STAGE = { berry: 2, citrus: 1, floral: 1, choco: 4, nutty: 3, smoky: 5 };
+  const MID = [0, 0.255, 0.415, 0.565, 0.72, 0.9]; // 단계 칸을 눌렀을 때 옮겨 갈 자리 (각 단계 한가운데)
   function r3() {
     S.roast = null; S.roastClash = '';
     const W = 320, H = 150, X = (p) => (Math.min(p, PMAX) / PMAX) * W, Y = (t) => H - ((t - 110) / 140) * H;
     const bands = STAGES.slice(1, 6).map((st, i) => { const x0 = X(STAGES[i].to), x1 = X(st.to); return `<rect class="rb" data-i="${i}" x="${x0}" y="0" width="${x1 - x0}" height="${H}" fill="${STAGE_COL[i]}"/>`; }).join('');
-    const zone = `<rect class="rz" x="${X(0.34)}" y="0" width="${X(0.80) - X(0.34)}" height="${H}"/>`;
-    const el = screen(`<h3 class="q-title">원하는 만큼 직접 볶아 보세요</h3><p class="q-hint">버튼을 꾹 누르는 동안 볶아지고, 손을 떼는 순간 로스팅이 끝나요</p>
+    const zone = `<rect class="rz" id="fg-zone" x="${X(0.34)}" y="0" width="${X(0.80) - X(0.34)}" height="${H}" style="display:none"/>`;
+    const el = screen(`<h3 class="q-title">원하는 만큼 직접 볶아 보세요</h3><p class="q-hint">버튼을 꾹 누르는 동안 볶아지고, 손을 떼면 멈춰요</p>
       <div class="roast">
         <div><div class="drum" id="fg-drum"><div class="smoke" id="fg-smoke"></div><div class="bean" id="fg-bean">${beanSvg(beanColor(0))}</div><div class="crack" id="fg-crack"></div><div class="temp" id="fg-temp">120°C</div></div></div>
         <div>
           <div class="note" id="fg-note"><small>GREEN BEAN</small><b>아직 생두예요. 꾹 눌러 볶아 보세요</b><em>볶을수록 맛이 어떻게 바뀌는지 아래에 보여 드려요</em></div>
           <div class="rc"><svg viewBox="0 0 ${W} ${H + 18}">
-            <g class="rbs">${bands}</g>${S.fails >= 2 ? zone : ''}
+            <g class="rbs">${bands}</g>${zone}
             <line class="rk" x1="${X(CRACK1)}" x2="${X(CRACK1)}" y1="0" y2="${H}"/><line class="rk" x1="${X(CRACK2)}" x2="${X(CRACK2)}" y1="0" y2="${H}"/>
             <text class="rkt" x="${X(CRACK1) + 4}" y="13">1차 팝</text><text class="rkt" x="${X(CRACK2) + 4}" y="13">2차 팝</text>
             <path class="rl" id="fg-curve" d="M0 ${Y(120)}"/><circle class="rd" id="fg-dot" cx="0" cy="${Y(120)}" r="4"/>
             <text class="rax" x="0" y="${H + 14}">시간 →</text><text class="rax" x="${W}" y="${H + 14}" text-anchor="end">원두 온도 그래프</text>
           </svg></div>
-          <div class="ladder">${STAGES.slice(1, 6).map((st, i) => `<div data-i="${i}" style="flex:${(st.to - STAGES[i].to).toFixed(2)}"><i style="background:${STAGE_COL[i]}"></i><b>${st.k.replace('MEDIUM ', 'M.')}</b><span>${st.w}</span></div>`).join('')}</div>
-          <div id="fg-ctrl"><button type="button" class="hold" id="fg-hold">꾹 눌러서 볶기</button><div class="hold-sub" id="fg-hsub">PC는 스페이스바를 눌러도 돼요</div></div>
+          <div class="tap-tip" id="fg-tip" hidden>아래 칸을 누르면 그 단계로 바로 바뀌어요</div>
+          <div class="ladder pick wait" id="fg-lad">${STAGES.slice(1, 6).map((st, i) => `<div data-i="${i}" role="button" tabindex="0" aria-label="${st.k}로 바꾸기"><i style="background:${STAGE_COL[i]}"></i><b>${st.k.replace('MEDIUM ', 'M.')}</b><span>${st.w}</span></div>`).join('')}</div>
+          <div id="fg-ctrl"></div>
         </div>
       </div>`);
     const q = (id) => el.querySelector('#fg-' + id);
     const bean = q('bean'), note = q('note'), temp = q('temp'), crack = q('crack'), curve = q('curve'), dot = q('dot');
-    const drum = q('drum'), smoke = q('smoke'), hold = q('hold');
-    let p = 0, holding = false, raf = 0, last = 0, stageKey = 'GREEN', c1 = false, c2 = false, smoked = false;
-    const pts = [[0, Y(120)]];
+    const drum = q('drum'), smoke = q('smoke'), lad = q('lad'), ctrl = q('ctrl');
+    let p = 0, lastP = 0, holding = false, iv = 0, anim = 0, last = 0, stageKey = 'GREEN', locked = false;
     const stageOf = (v) => STAGES.find((s) => v <= s.to);
+    // 그래프는 진행도만으로 다시 그린다 (단계를 눌러 되돌려도 그래프가 따라간다)
+    function path(to) {
+      let d = `M0 ${Y(120).toFixed(1)}`;
+      for (let v = 0.01; v < to; v += 0.01) d += ` L${X(v).toFixed(1)} ${Y(tempAt(v)).toFixed(1)}`;
+      return d + ` L${X(to).toFixed(1)} ${Y(tempAt(to)).toFixed(1)}`;
+    }
     function paint() {
       bean.innerHTML = beanSvg(beanColor(Math.min(p, PMAX)));
       const tc = tempAt(p);
       temp.textContent = Math.round(tc) + '°C';
-      const x = X(p), y = Y(tc);
-      if (x - pts[pts.length - 1][0] > 1.5) pts.push([x, y]);
-      curve.setAttribute('d', 'M' + pts.map((pt) => pt[0].toFixed(1) + ' ' + pt[1].toFixed(1)).join(' L') + ` L${x.toFixed(1)} ${y.toFixed(1)}`);
-      dot.setAttribute('cx', x); dot.setAttribute('cy', y);
+      curve.setAttribute('d', path(p));
+      dot.setAttribute('cx', X(p)); dot.setAttribute('cy', Y(tc));
       const s = stageOf(p), si = STAGES.indexOf(s) - 1;
-      el.querySelectorAll('.ladder > div').forEach((d) => d.classList.toggle('on', +d.dataset.i === si));
+      lad.querySelectorAll('div[data-i]').forEach((d) => d.classList.toggle('on', +d.dataset.i === si));
       el.querySelectorAll('.rb').forEach((r) => r.classList.toggle('on', +r.dataset.i === si));
       if (p > 0.02 && s.k !== stageKey) {
         stageKey = s.k; note.classList.add('fade');
         setTimeout(() => { note.innerHTML = `<small>${s.k}</small><b>${s.like}</b><em>${s.n}</em>`; note.classList.remove('fade'); }, 160);
       }
-      if (!c1 && p >= CRACK1) { c1 = true; pop('1차 팝 · 타닥'); }
-      if (!c2 && p >= CRACK2) { c2 = true; pop('2차 팝 · 타닥타닥'); }
-      if (!smoked && p > 1.0) { smoked = true; smoke.innerHTML = [-30, 10, 34, -8].map((dx, k) => `<i style="--dx:${dx}px;animation-delay:${k * .45}s"></i>`).join(''); }
+      if (lastP < CRACK1 && p >= CRACK1) pop('1차 팝 · 타닥');
+      if (lastP < CRACK2 && p >= CRACK2) pop('2차 팝 · 타닥타닥');
+      if (p > 1.0) { if (!smoke.innerHTML) smoke.innerHTML = [-30, 10, 34, -8].map((dx, k) => `<i style="--dx:${dx}px;animation-delay:${k * .45}s"></i>`).join(''); }
+      else smoke.innerHTML = '';
+      lastP = p;
     }
     function pop(t) { crack.textContent = t; crack.classList.remove('show'); void crack.offsetWidth; crack.classList.add('show'); bean.classList.remove('shake'); void bean.offsetWidth; bean.classList.add('shake'); }
-    // 시간 기준으로 진행 (화면이 잠깐 가려져도 누른 시간만큼 정확히 볶인다)
+    // 꾹 눌러 볶기 — 시간 기준으로 진행 (화면이 잠깐 가려져도 누른 시간만큼 정확히 볶인다)
+    function holdBtn(label, sub) {
+      ctrl.innerHTML = `<button type="button" class="hold" id="fg-hold">${label}</button><div class="hold-sub">${sub}</div>`;
+      const h = q('hold');
+      h.addEventListener('pointerdown', start);
+      ['pointerup', 'pointerleave', 'pointercancel'].forEach((t) => h.addEventListener(t, stop));
+      h.addEventListener('contextmenu', (e) => e.preventDefault());
+    }
     function tick() {
       if (!holding) return;
       const now = performance.now(); let dt = Math.min(1.5, (now - last) / 1000); last = now;
       while (dt > 0 && p < 1.25) { const step = Math.min(dt, 0.02); p = Math.min(1.25, p + step * speedAt(p)); dt -= step; }
       paint();
     }
-    function start(e) { if (e && e.cancelable) e.preventDefault(); if (holding || S.roast) return; holding = true; last = performance.now(); hold.classList.add('on'); hold.textContent = '볶는 중… 손을 떼면 끝나요'; drum.classList.add('spin'); q('hsub').textContent = ''; raf = setInterval(tick, 16); }
+    function start(e) {
+      if (e && e.cancelable) e.preventDefault();
+      const h = q('hold'); if (holding || locked || !h) return;
+      holding = true; last = performance.now(); h.classList.add('on'); h.textContent = '볶는 중… 손을 떼면 멈춰요'; drum.classList.add('spin');
+      const sub = ctrl.querySelector('.hold-sub'); if (sub) sub.textContent = '';
+      iv = setInterval(tick, 16);
+    }
     function stop() {
-      if (!holding) return; tick(); holding = false; clearInterval(raf); hold.classList.remove('on'); drum.classList.remove('spin');
+      if (!holding) return; tick(); holding = false; clearInterval(iv); drum.classList.remove('spin');
+      if (p < 0.02) { holdBtn('꾹 눌러서 볶기', 'PC는 스페이스바를 눌러도 돼요'); return; }
+      decide();
+    }
+    // 단계 칸 · 덜/더 볶기 · 추천 단계: 지금 자리에서 그 단계까지 빠르게 볶거나 되돌린다
+    function animTo(target) {
+      cancelAnimationFrame(anim); ctrl.innerHTML = '';
+      const from = p, dur = Math.max(450, Math.abs(target - from) * 2200), t0 = performance.now();
+      drum.classList.add('spin');
+      const step = (now) => {
+        if (!el.isConnected) return;
+        const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+        p = from + (target - from) * e; paint();
+        if (k < 1) anim = requestAnimationFrame(step); else { drum.classList.remove('spin'); decide(); }
+      };
+      anim = requestAnimationFrame(step);
+    }
+    function decide() {
       const s = stageOf(p);
-      if (p < 0.02) { hold.textContent = '꾹 눌러서 볶기'; return; }
       if (s.rs === 0) {
+        // 덜 볶였으면 처음부터가 아니라 이어서 볶는다
         S.fails++;
-        q('ctrl').innerHTML = `<div class="lock"><small>UNDER ROASTED</small><div class="lock-row"><button type="button" class="btn-ink" id="fg-re">조금 더 볶아 볼까요?</button></div>${S.fails >= 2 ? '<div class="tip">로스터는 원래 타이밍 싸움이에요. 그래프의 민트색 구간에서 손을 떼 보세요.</div>' : ''}</div>`;
-        q('re').onclick = () => r3();
+        if (S.fails >= 2) q('zone').style.display = '';
+        holdBtn('이어서 꾹 눌러 볶기', S.fails >= 2 ? '그래프의 민트색 구간에서 손을 떼 보세요' : '조금 더 볶아야 커피 맛이 나요');
         return;
       }
+      const first = !locked;
+      locked = true; lad.classList.remove('wait'); lad.classList.add('tap'); q('tip').hidden = false;
+      // 처음 손을 뗐을 때 단계 칸이 한 번씩 톡톡 튀어 "눌러도 된다"는 걸 보여 준다
+      if (first) { lad.classList.remove('wave'); void lad.offsetWidth; lad.classList.add('wave'); }
       if (s.k === 'BEYOND DARK') S.fails++;
       const key = s.k === 'BEYOND DARK' ? 'DARK' : s.k;
       const clash = roastClash(S.champ, s.rs);
-      const done = (keep) => {
-        S.roast = s.rs; S.roastKey = key; S.roastClash = keep ? clash : '';
-        q('ctrl').innerHTML = `<div class="lock"><small>YOUR ROAST</small><b class="lock-k">${key}</b>
-          ${s.k === 'BEYOND DARK' ? '<div class="tip">살짝 태웠지만 괜찮아요. 가장 진한 맛을 좋아하시는 걸로 기억할게요.</div>' : ''}
-          ${keep ? `<div class="tip">좋아요, ${AN(S.champ)} 향과 ${key} 로스팅 사이에서 균형을 찾아 추천할게요.</div>` : ''}
-          <div class="lock-row"><button type="button" class="btn-line" id="fg-re">다시 볶기</button><button type="button" class="btn-ink" id="fg-nx">다음 라운드 →</button></div></div>`;
-        q('re').onclick = () => r3();
-        q('nx').onclick = () => go(4);
-      };
-      if (!clash) return done(false);
-      q('ctrl').innerHTML = `<div class="lock warn"><small>잠깐만요</small><b class="lock-k">${key}로 볶으셨네요</b><p>${clash}</p>
-        <div class="lock-row"><button type="button" class="btn-ink" id="fg-re">다시 볶아 볼게요</button><button type="button" class="btn-line" id="fg-keep">이대로 갈게요</button></div></div>`;
-      q('re').onclick = () => r3();
-      q('keep').onclick = () => done(true);
+      if (!clash) return finish(s, key, false);
+      const rec = BEST_STAGE[S.champ] || 3;
+      ctrl.innerHTML = `<div class="lock warn"><small>잠깐만요</small><b class="lock-k">${key}로 볶으셨네요</b><p>${clash}</p>
+        <div class="lock-row"><button type="button" class="btn-ink" id="fg-fix">${STAGES[rec].k}로 바꾸기</button><button type="button" class="btn-line" id="fg-keep">이대로 갈게요</button></div></div>`;
+      q('fix').onclick = () => animTo(MID[rec]);
+      q('keep').onclick = () => finish(s, key, true);
     }
-    hold.addEventListener('pointerdown', start);
-    ['pointerup', 'pointerleave', 'pointercancel'].forEach((t) => hold.addEventListener(t, stop));
-    hold.addEventListener('contextmenu', (e) => e.preventDefault());
-    KEY.down = (e) => { if (e.code === 'Space') { e.preventDefault(); if (!e.repeat) start(); } };
-    KEY.up = (e) => { if (e.code === 'Space') { e.preventDefault(); stop(); } };
+    function finish(s, key, keep) {
+      S.roast = s.rs; S.roastKey = key; S.roastClash = keep ? roastClash(S.champ, s.rs) : '';
+      const si = Math.min(5, STAGES.indexOf(s));
+      ctrl.innerHTML = `<div class="lock"><small>YOUR ROAST</small><b class="lock-k">${key}</b>
+        ${s.k === 'BEYOND DARK' ? '<div class="tip">살짝 태웠지만 괜찮아요. 가장 진한 맛을 좋아하시는 걸로 기억할게요.</div>' : ''}
+        ${keep ? `<div class="tip">좋아요, ${AN(S.champ)} 향과 ${key} 로스팅 사이에서 균형을 찾아 추천할게요.</div>` : ''}
+        <div class="step-row">
+          <button type="button" id="fg-less" ${si <= 1 ? 'disabled' : ''}>← 덜 볶기<span>${si > 1 ? STAGES[si - 1].k : '가장 연해요'}</span></button>
+          <button type="button" id="fg-more" ${si >= 5 ? 'disabled' : ''}>더 볶기 →<span>${si < 5 ? STAGES[si + 1].k : '가장 진해요'}</span></button>
+        </div>
+        <div class="lock-row"><button type="button" class="btn-ink" id="fg-nx">이걸로 정하고 다음 라운드 →</button></div></div>`;
+      if (si > 1) q('less').onclick = () => animTo(MID[si - 1]);
+      if (si < 5) q('more').onclick = () => animTo(MID[si + 1]);
+      q('nx').onclick = () => go(4);
+    }
+    lad.querySelectorAll('div[data-i]').forEach((d) => {
+      const pick = () => { if (!locked) return; animTo(MID[+d.dataset.i + 1]); };
+      d.addEventListener('click', pick);
+      d.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+    });
+    holdBtn('꾹 눌러서 볶기', 'PC는 스페이스바를 눌러도 돼요');
+    KEY.down = (e) => { if (e.code === 'Space' && !locked) { e.preventDefault(); if (!e.repeat) start(); } };
+    KEY.up = (e) => { if (e.code === 'Space' && holding) { e.preventDefault(); stop(); } };
   }
 
   /* ================= ROUND 4 장비 진열장 ================= */

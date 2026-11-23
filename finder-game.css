@@ -449,3 +449,24 @@
 }
 /* start! : 네모 칸 · 재생 표시 없이 글씨만, 조금 더 크게 (11/23 아내분 요청) */
 #fg .entry-card .go {margin-top: 16px; padding: 0; border: 0; font-size: 18px; font-weight: 700; letter-spacing: .04em; line-height: 1.2;}
+
+/* 로스팅 · 볶은 뒤 단계 칸을 눌러 고치기 (처음 하는 사람도 알 수 있게 말풍선 · 톡톡 튀기 · 덜/더 볶기) */
+:is(#fg, #cg) .ladder.pick > div {flex: 1; cursor: pointer;}
+:is(#fg, #cg) .ladder.pick.wait > div {cursor: default;}
+:is(#fg, #cg) .ladder.tap > div {box-shadow: inset 0 0 0 1px #dcdcdc; opacity: 1; background: #fff;}
+:is(#fg, #cg) .ladder.tap > div:hover {background: #fafafa;}
+:is(#fg, #cg) .ladder.tap > div.on {box-shadow: inset 0 0 0 1.5px var(--ink); background: var(--panel);}
+:is(#fg, #cg) .ladder.tap.wave > div {animation: fg-tap-wave .5s ease-in-out both;}
+:is(#fg, #cg) .ladder.tap.wave > div:nth-child(2) {animation-delay: .1s;}
+:is(#fg, #cg) .ladder.tap.wave > div:nth-child(3) {animation-delay: .2s;}
+:is(#fg, #cg) .ladder.tap.wave > div:nth-child(4) {animation-delay: .3s;}
+:is(#fg, #cg) .ladder.tap.wave > div:nth-child(5) {animation-delay: .4s;}
+@keyframes fg-tap-wave {50% {transform: translateY(-5px);}}
+:is(#fg, #cg) .tap-tip {display: table; margin: 14px auto 8px; background: var(--mint); color: #000; font-size: 13px; padding: 7px 14px; position: relative; animation: fg-in .35s;}
+:is(#fg, #cg) .tap-tip::after {content: ''; position: absolute; left: 50%; bottom: -6px; margin-left: -6px; border: 6px solid transparent; border-bottom: 0; border-top-color: var(--mint);}
+:is(#fg, #cg) .tap-tip[hidden] {display: none;}
+:is(#fg, #cg) .step-row {display: flex; gap: 8px; margin-top: 14px;}
+:is(#fg, #cg) .step-row button {flex: 1; padding: 12px 0; border: 1px solid #cfcfcf; background: #fff; font: inherit; font-size: 14px; color: #000; cursor: pointer;}
+:is(#fg, #cg) .step-row button:hover:not(:disabled) {border-color: #000;}
+:is(#fg, #cg) .step-row button:disabled {color: #c8c8c8; border-color: #ececec; cursor: default;}
+:is(#fg, #cg) .step-row button span {display: block; font-size: 11px; color: var(--muted); margin-top: 2px;}
