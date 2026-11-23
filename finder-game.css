@@ -450,6 +450,8 @@
 }
 /* start! : 네모 칸 · 재생 표시 없이 글씨만, 조금 더 크게 (11/23 아내분 요청) */
 #fg .entry-card .go {margin-top: 16px; padding: 0; border: 0; font-size: 18px; font-weight: 700; letter-spacing: .04em; line-height: 1.2;}
+/* 회장님: start! 옆 블루(민트) 삼각형 세 개 ▶▶▶ — 개인 · 카페 두 칸 같이 */
+#fg .entry-card .go::after {content: '\25B6\FE0E\25B6\FE0E\25B6\FE0E'; margin-left: 8px; color: var(--mint); font-size: .7em; letter-spacing: .08em; vertical-align: .12em;}
 
 /* 로스팅 · 볶은 뒤 단계 칸을 눌러 고치기 (처음 하는 사람도 알 수 있게 말풍선 · 톡톡 튀기 · 덜/더 볶기) */
 :is(#fg, #cg) .ladder.pick > div {flex: 1; cursor: pointer;}
