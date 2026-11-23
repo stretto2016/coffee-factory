@@ -1166,3 +1166,7 @@ html .vd-c--br { bottom: 4px; right: 4px; background: linear-gradient(315deg, #2
     html .vd-frame { width: 72%; padding: 8px; }
     html .vd-c { width: 22px; height: 22px; }
 }
+/* 칸 안 굵은 첫 문장(svc-lead): 검정 · 굵지 않게, 모든 페이지 (11/23 아내분 요청). 크기는 그대로 */
+html .svc-body > p.svc-lead, html #wholesale .svc-list--steps .svc-body > p.svc-lead { font-weight: 400 !important; color: var(--og-text) !important; }
+/* 컨설팅 핵심 6칸 제목(하드웨어 세팅 등): 묶음 제목 '스트레토 컨설팅의 핵심'(20)보다 작게 17 (11/23 아내분 요청) */
+html #cs-services .svc-body > h3 { font-size: 17px !important; font-weight: 700 !important; line-height: 1.5 !important; }
