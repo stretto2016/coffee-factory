@@ -289,6 +289,8 @@ html #stChatFab { background: var(--og-brand); color: var(--og-brand-ink); borde
     html .nav-links a[href="partner.html"] { margin: 16px 0 0; padding: 12px 22px; color: #fff !important; }
     html .page-hero-text h1 { font-size: 30px; }
     html .hero-title { font-size: 32px; }
+    html .hero-desc { font-size: 16px; }  /* 휴대폰: 조금 작게, '변수로' 뒤에서 줄바꿈해 두 줄 */
+    html .hero-desc br { display: inline; }
     html .section-title { font-size: 24px; }
     html .home-split, html .home-service, html .svc-item { grid-template-columns: minmax(0, 1fr); }
     html .home-photo, html .svc-photo { min-height: 0; height: auto; aspect-ratio: 4 / 3; order: 0 !important; }
