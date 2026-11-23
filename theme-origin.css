@@ -1170,3 +1170,5 @@ html .vd-c--br { bottom: 4px; right: 4px; background: linear-gradient(315deg, #2
 html .svc-body > p.svc-lead, html #wholesale .svc-list--steps .svc-body > p.svc-lead { font-weight: 400 !important; color: var(--og-text) !important; }
 /* 컨설팅 핵심 6칸 제목(하드웨어 세팅 등): 묶음 제목 '스트레토 컨설팅의 핵심'(20)보다 작게 17 (11/23 아내분 요청) */
 html #cs-services .svc-body > h3 { font-size: 17px !important; font-weight: 700 !important; line-height: 1.5 !important; }
+/* 원두 찾기 머리: 설명을 제목 '나에게 맞는 원두 찾기'에 더 붙게 (간격 40 → 16, 11/23 아내분 요청) */
+html #finder .section-header { column-gap: 16px; }
