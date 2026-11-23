@@ -1172,3 +1172,5 @@ html .svc-body > p.svc-lead, html #wholesale .svc-list--steps .svc-body > p.svc-
 html #cs-services .svc-body > h3 { font-size: 17px !important; font-weight: 700 !important; line-height: 1.5 !important; }
 /* 원두 찾기 머리: 설명을 제목 '나에게 맞는 원두 찾기'에 더 붙게 (간격 40 → 16, 11/23 아내분 요청) */
 html #finder .section-header { column-gap: 16px; }
+/* 메인 브랜드 판(사진 위 흰 글씨) 문장: 17 → 16 (11/23 아내분 요청) */
+html #home-brand .home-text p.home-lead { font-size: 16px; }
