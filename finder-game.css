@@ -433,7 +433,7 @@
 #fg .entry-card .in {flex: 1; height: auto; padding: 28px 0 28px 36px; justify-content: center;}
 #fg .entry-card b {font-size: 26px; margin: 6px 0 4px;}
 #fg .entry-card small, #fg .entry-card .meta {color: var(--muted); opacity: 1;}
-#fg .entry-card small {color: #000;}  /* 회장님: For you · For café 라벨은 진한 검정 */
+#fg .entry-card small {color: #000; font-weight: 700;}  /* 회장님: For You · For Café 라벨은 진한 검정, start! 와 같은 굵기(700) · 크기는 그대로 */
 #fg .entry-card span {opacity: 1;}
 #fg .entry-card .meta {margin-top: 12px;}
 #fg .entry-card .go {position: static; align-self: flex-start; margin-top: 14px; border-bottom-color: var(--text);}
