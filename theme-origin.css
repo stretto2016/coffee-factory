@@ -1150,3 +1150,19 @@ html .sf-cta-kakao { width: 22px; height: 22px; flex: none; }
 html #story .section-header .section-title > span.story-slogan-ko { font-size: 20px !important; font-weight: 700 !important; line-height: 1.35 !important; color: var(--og-text) !important; }
 /* 대표 인사말 서명 "대표 박순형": 오른쪽 → 왼쪽 아래 (11/23 아내분 요청) */
 html .qd-sign { text-align: left; }
+/* 비전 사진: 세계 지도(점) 배경 위에 앨범 액자처럼 (11/23 아내분 요청)
+   흰 테두리 + 그림자 + 살짝 기울임, 네 귀퉁이에 앨범 사진 꽂이 */
+html .vd-album { position: relative; display: flex; align-items: center; justify-content: center; min-height: 440px; padding: 56px 48px; box-sizing: border-box;
+    background: url(img/world-dots.svg) center / 96% auto no-repeat, #F6F6F4; }
+html .vd-frame { position: relative; margin: 0; width: 62%; background: #ffffff; padding: 12px; box-shadow: 0 14px 34px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.08); transform: rotate(-2deg); }
+html .vd-frame .vd-photo { min-height: 0; height: auto; aspect-ratio: 2160 / 1100; }
+html .vd-c { position: absolute; width: 30px; height: 30px; }
+html .vd-c--tl { top: 4px; left: 4px; background: linear-gradient(135deg, #2E2E2E 50%, transparent 50%); }
+html .vd-c--tr { top: 4px; right: 4px; background: linear-gradient(225deg, #2E2E2E 50%, transparent 50%); }
+html .vd-c--bl { bottom: 4px; left: 4px; background: linear-gradient(45deg, #2E2E2E 50%, transparent 50%); }
+html .vd-c--br { bottom: 4px; right: 4px; background: linear-gradient(315deg, #2E2E2E 50%, transparent 50%); }
+@media (max-width: 900px) {
+    html .vd-album { min-height: 0; padding: 36px 20px; }
+    html .vd-frame { width: 72%; padding: 8px; }
+    html .vd-c { width: 22px; height: 22px; }
+}
