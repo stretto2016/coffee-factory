@@ -563,7 +563,7 @@ html .faq-group .section-subtitle { display: block; }
 html .faq-group-title { font-size: 24px; margin: 0 0 18px; color: var(--og-text); }
 html .faq-item { border-top: 1px solid #DDDDDD; }
 html .faq-group .faq-item:last-of-type { border-bottom: 1px solid #DDDDDD; }
-html .faq-item summary { list-style: none; cursor: pointer; position: relative; padding: 22px 44px 22px 0; font-size: 17px; font-weight: 600; color: var(--og-text); word-break: keep-all; }
+html .faq-item summary { list-style: none; cursor: pointer; position: relative; padding: 22px 44px 22px 0; font-size: 17px; font-weight: 400; color: var(--og-text); word-break: keep-all; }
 html .faq-item summary::-webkit-details-marker { display: none; }
 html .faq-item summary::after { content: "+"; position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 24px; font-weight: 300; color: var(--og-muted); }
 html .faq-item[open] summary::after { content: "−"; }
