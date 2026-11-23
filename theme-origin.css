@@ -1176,6 +1176,9 @@ html .svc-body > p.svc-lead, html #wholesale .svc-list--steps .svc-body > p.svc-
 html #cs-services .svc-body > h3 { font-size: 17px !important; font-weight: 700 !important; line-height: 1.5 !important; }
 /* 원두 찾기 머리: 설명을 제목 '나에게 맞는 원두 찾기'에 더 붙게 (간격 40 → 16, 11/23 아내분 요청) */
 html #finder .section-header { column-gap: 16px; }
+/* 원두 찾기 머리: 설명 "스트레토가 취향에 맞는~"을 제목 오른쪽이 아니라 제목 밑 줄로 (컴퓨터도 휴대폰처럼, 11/23 회장님 요청) */
+html #finder .section-header { grid-template-columns: minmax(0, 1fr); grid-template-areas: "label" "title" "sub"; row-gap: 0; }
+html #finder .section-header > p { margin-top: 10px; }
 /* 메인 브랜드 판(사진 위 흰 글씨) 문장: 17 → 16 (11/23 아내분 요청) */
 html #home-brand .home-text p.home-lead { font-size: 16px; }
 /* 오른쪽 위 화살표 ↗ 는 모두 브랜드 블루(민트) (11/23 아내분 요청) */
