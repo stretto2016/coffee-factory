@@ -362,7 +362,7 @@ html .idc-options { margin: 24px 0 72px; }
 html .idc-row { display: flex; justify-content: center; align-items: center; }
 html .idc-circle { flex: 0 0 auto; width: 340px; height: 340px; border-radius: 50%; background: #F2F2F2; display: flex; align-items: center; justify-content: center; }
 html .idc-inner { width: 250px; text-align: center; }
-html .idc-title { font-family: "Ciutadella", sans-serif; font-weight: 700; font-size: 22px; line-height: 1.2; margin: 0 0 14px; color: var(--text-primary); }
+html .idc-title { font-family: "Ciutadella", sans-serif; font-weight: 700; font-size: 22px; line-height: 1.2; margin: 0 0 14px; color: var(--text-primary); letter-spacing: 0.01em; } /* 11/24 회장님: 글자 사이 좁아 메인 Carefully Crafted Coffee처럼 (-0.03em → 0.01em), PC·휴대폰 공통 */
 html .idc-title::after { content: ""; display: block; width: 28px; height: 1px; background: #BDBDBD; margin: 14px auto 0; }
 html .idc-sub { display: block; font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px; }
 html .idc-desc { font-size: 13px; line-height: 1.65; color: var(--text-secondary); margin: 0; word-break: keep-all; }
