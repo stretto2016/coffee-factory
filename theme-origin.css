@@ -1240,3 +1240,7 @@ html #home-brand .home-text p.home-lead { line-height: 1.55; }
     html #home-beans .home-title--quote, html #home-business .home-title--quote { font-size: 18px; }
     html #home-beans .home-title--quote > a.home-more { margin: 11px 0 0 0 !important; }
 }
+/* 휴대폰: "나에게 맞는 원두 찾기" 제목도 위 두 제목처럼 20 → 18 (11/24 회장님 요청), 컴퓨터는 그대로 */
+@media (max-width: 768px) {
+    html #finder .section-header > h2.section-title { font-size: 18px !important; }
+}
