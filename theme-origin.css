@@ -1188,3 +1188,7 @@ html .home-service h3, html .svc-body > h3, html #cs-services .svc-body > h3, ht
 /* 링크 글씨 밑 선 모두 없앰 (자세히 보기 ↗ · 바로가기 ↗ 등, 11/23 아내분 요청 "선 다 없애자") */
 html .home-more, html #home-brand .home-more { border-bottom: 0 !important; padding-bottom: 0 !important; }
 html .faq-more, html .shop-dripbag-empty a, html .shop-load-fail a { text-decoration: none !important; }
+/* 번호(Step 01 · 01) 아래 글: 모든 페이지를 원두 납품 단계 칸과 똑같이 (11/23 아내분 요청)
+   제목 15 · 600 / 첫 문장 16 · 보통 · 줄간격 1.7 / 설명 15 (그대로) / 체크 목록 14 (그대로) */
+html .svc-body > h3, html #cs-services .svc-body > h3 { font-size: 15px !important; font-weight: 600 !important; line-height: 1.5 !important; }
+html .svc-body > p.svc-lead { font-size: 16px !important; font-weight: 400 !important; line-height: 1.7 !important; }
