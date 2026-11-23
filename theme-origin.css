@@ -306,6 +306,8 @@ html .home-split.container { width: calc(100% - 2 * var(--og-pad)); max-width: c
 /* 푸터 상담 버튼도 브랜드 민트 */
 html .sf-cta-btn { background: var(--og-brand); color: var(--og-brand-ink); font-weight: 600; }
 html .sf-cta:hover .sf-cta-btn { background: var(--og-brand-hover); }
+/* 푸터 카카오톡 상담: 바깥 테두리 상자 없이, 민트 "채팅 시작" 버튼만 (11/23 아내분 요청) */
+html .sf-cta { border: 0; border-radius: 0; padding: 0; }
 
 /* ---------- 11/17 아내분 요청 ---------- */
 /* 메인 비즈니스: 01 · 02 · 03 을 가로 세 칸으로 (사진 위 · 글 아래) */
