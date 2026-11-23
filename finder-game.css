@@ -447,7 +447,5 @@
   #fg .entry-card .entry-pic {width: 96px; height: 96px;}
   #fg .entry-card + .entry-card {border-left: 0; border-top: 1px solid var(--line);}
 }
-/* start! : 밑줄 글씨 → 네모 칸 게임 시작 버튼 (11/23 아내분 요청). 카드에 마우스를 올리면 검정으로 채워짐 */
-#fg .entry-card .go {display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; padding: 9px 22px; border: 2px solid var(--text); border-radius: 0; font-size: 14px; font-weight: 700; letter-spacing: .08em; line-height: 1; background: #fff; color: var(--text); transition: background .15s, color .15s;}
-#fg .entry-card .go::before {content: "B6"; font-size: 10px;}
-#fg .entry-card:hover .go {background: var(--text); color: #fff;}
+/* start! : 네모 칸 · 재생 표시 없이 글씨만, 조금 더 크게 (11/23 아내분 요청) */
+#fg .entry-card .go {margin-top: 16px; padding: 0; border: 0; font-size: 18px; font-weight: 700; letter-spacing: .04em; line-height: 1.2;}
