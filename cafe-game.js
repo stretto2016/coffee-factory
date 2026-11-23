@@ -528,7 +528,7 @@
         ['매장', STORES[S.store].n], ['머신', MACHINES[S.machine].n],
         ['판매 TOP 3', S.top.map((k) => MENU[k].n).join(' · ')], ['우유 메뉴', `약 ${S.latte}%`],
         ['듣고 싶은 리뷰', TONE_TXT[a.tone][0]], ['산미 반응', ACID_TXT[a.acidTol]],
-        ['월 사용량', S.kg >= 150 ? '150kg 이상' : `${S.kg}kg`],  // '희망 단가' 줄은 처방전에서 뺌 (11/23 아내분 요청)
+        ['월 사용량', S.kg >= 150 ? '150kg 이상' : `${S.kg}kg`], ['희망 단가', PRICE[S.price].n],
       ];
       const ratio = (list) => `<div class="cg-ratio-bar">${list.map((x) => `<i style="width:${x.pct}%;background:${x.c}"></i>`).join('')}</div>
         <ul class="cg-ratio-list">${list.map((x) => `<li><i style="background:${x.c}"></i>${esc(x.n)}<b>${x.pct}%</b></li>`).join('')}</ul>`;
