@@ -1132,3 +1132,9 @@ html .gm-cur { font-size: 36px; line-height: 1; }  /* 플레이어 고르는 ▸
 /* 휴대폰 메뉴: 바로 가는 메뉴(FAQ · Instagram)도 다른 카테고리 제목과 같은 크기 · 간격 (11/22 아내분 요청) */
 @media (max-width: 768px) { html .nav-links a.nav-group-title { font-size: 15px !important; margin: 0 !important; padding: 18px 0 !important; line-height: normal; } }
 html .qd-sign .qd-role { font-weight: 400; color: var(--og-muted); margin-right: 2px; }  /* 서명의 "대표"는 이름보다 가늘고 연하게 (11/22) */
+/* 원두 납품 페이지: 품질 4칸 · 단계 4칸 글자 크기를 '초기 세팅 방문 지원' 칸 기준으로 통일 (11/23 아내분 요청)
+   제목 17 / 굵기 600, 설명 16. 단계 칸의 굵은 첫 문장도 16. 맨 아래 체크 목록(14)은 그대로 */
+html #wh-quality .why-text h3,
+html #wholesale .svc-list--steps .svc-body > h3 { font-size: 17px !important; font-weight: 600 !important; line-height: 1.55 !important; }
+html #wh-quality .why-text p,
+html #wholesale .svc-list--steps .svc-body > p.svc-lead { font-size: 16px !important; line-height: 1.7 !important; }
