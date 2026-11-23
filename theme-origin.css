@@ -877,7 +877,7 @@ html .section-subtitle ~ :is(h2, h3, h4):not(.home-title):not(:has(.title-nowrap
    1. 회색 영문 타이틀 : Total Care Solution · Certified Engineer · Step 01 …   12px · 500 · 회색 · 단어 첫 글자 대문자
    2. 한글 메인 타이틀 : 엔지니어의 눈으로~ · 인증 엔지니어가 직접~ · 증상 상담 및 접수 …   20px · 700 (11/23 22.4 → 20, 회색 타이틀 바로 밑 제목 전부)
    3. 서브 한글 제목   : 머신이 멈추면~ · 각 단계 굵은 한 줄 · 혜택 칸 검정 제목 …   17px · 600
-   4. 메인 문장        : 제목 아래 설명 글   16px · 400 · 줄간격 1.7
+   4. 메인 문장        : 제목 아래 설명 글   15px · 400 · 줄간격 1.7 (11/23 16 → 15, 모든 페이지)
    5. 서브 문장        : 체크 목록   14px (원래 크기) · 체크 네모 15px
    제외: 메인 화면 따옴표 문장 · 메인 브랜드 판(사진 위 흰 글씨) · 브랜드 슬로건 · 브랜드 인사말/history/비전 글(따로 맞춘 크기)
    ================================================================ */
@@ -896,7 +896,7 @@ html :is(.svc-body > p.svc-lead, .care-benefit-grid strong, .promise-card h4, .m
 }
 /* 4. 메인 문장 */
 html :is(.section-header > p:not(.partner-cond-note):not(:has(.cs-head-title)), .wholesale-intro p, .svc-body > p:not(.svc-lead), .home-service .home-text > p, .care-benefit-grid p, .promise-card p, .manual-doc-body > p, .faq-answer p, .faq-answer .faq-list li) {
-    font-size: 16px !important; font-weight: 400 !important; line-height: 1.7 !important;
+    font-size: 15px !important; font-weight: 400 !important; line-height: 1.7 !important;
 }
 /* 5. 서브 문장 — 체크 목록 (원래 크기로) */
 html :is(.svc-check li, .manual-doc-list li, .home-benefits li) { font-size: 14px !important; line-height: 1.6 !important; }
@@ -1136,8 +1136,8 @@ html .qd-sign .qd-role { font-weight: 400; color: var(--og-muted); margin-right:
    제목 17 / 굵기 600, 설명 16. 단계 칸의 굵은 첫 문장도 16. 맨 아래 체크 목록(14)은 그대로 */
 html #wh-quality .why-text h3,
 html #wholesale .svc-list--steps .svc-body > h3 { font-size: 17px !important; font-weight: 600 !important; line-height: 1.55 !important; }
-html #wh-quality .why-text p,
 html #wholesale .svc-list--steps .svc-body > p.svc-lead { font-size: 16px !important; line-height: 1.7 !important; }
+html #wh-quality .why-text p { font-size: 15px !important; line-height: 1.7 !important; }  /* 설명 글은 전 페이지 공통 15 (11/23) */
 /* 바리스타 교육 '교육은 이렇게 진행됩니다': 회색 판 없이 페이지 위에 바로 (11/23 아내분 요청: 전부 박스 밖으로)
    좌우 안쪽 여백도 없애 위 칸들과 같은 왼쪽 선에서 시작 */
 html #edu-process { background: transparent !important; padding-left: 0 !important; padding-right: 0 !important; }
