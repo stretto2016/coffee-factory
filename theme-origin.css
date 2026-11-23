@@ -1209,3 +1209,16 @@ html .vd-iconrow .vd-icon { margin: 0 0 0 -6px; flex: none; }
 html .vd-mini { display: block; width: 200px; height: auto; aspect-ratio: 2160 / 1100; object-fit: cover; }
 @media (max-width: 900px) { html .vd-mini { width: 160px; } html .vd-album { min-height: 220px; } }
 html .vd--1 .vd-iconrow + .vd-head { padding-top: 22px; border-top: 1px solid #E6E6E6; }
+
+/* 창업 매뉴얼 네 칸 이름: 16으로, 노트 아이콘은 글자 높이에 맞춰 같은 줄 가운데 (11/23 회장님 요청) */
+html .manual-docs--rows .manual-doc-body > h4 { font-size: 16px !important; }
+@media (min-width: 901px) {
+    html .manual-docs--rows .manual-doc-body > h4 { margin-top: 0; line-height: 25.5px !important; }
+    html .manual-docs--rows .manual-doc-body::before { top: 32.75px; width: 20px; height: 20px; }
+    html .manual-docs--rows .manual-doc-body > .manual-doc-tag,
+    html .manual-docs--rows .manual-doc-body > h4 { padding-left: 30px !important; }
+}
+@media (max-width: 900px) {
+    html .manual-docs--rows .manual-doc-body { padding-left: 32px; }
+    html .manual-docs--rows .manual-doc-body::before { top: 8.4px; width: 20px; height: 20px; }
+}
