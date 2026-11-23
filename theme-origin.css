@@ -1146,3 +1146,5 @@ html #education .section-header > p.edu-lead { font-size: 20px !important; line-
 /* 푸터 카카오톡 상담: 민트 배경 없이 카카오톡 아이콘 + 글자만 (11/23 아내분 요청) */
 html .sf-cta .sf-cta-btn, html .sf-cta:hover .sf-cta-btn { background: none !important; padding: 0; display: inline-flex; align-items: center; gap: 8px; color: var(--og-text); }
 html .sf-cta-kakao { width: 22px; height: 22px; flex: none; }
+/* 브랜드 슬로건 한글 세 줄: 다른 페이지 '회색 소제목 밑 검정 제목'과 같은 모양 20 · 700 · 검정 (11/23 아내분 요청) */
+html #story .section-header .section-title > span.story-slogan-ko { font-size: 20px !important; font-weight: 700 !important; line-height: 1.35 !important; color: var(--og-text) !important; }
