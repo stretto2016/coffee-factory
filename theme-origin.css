@@ -230,7 +230,7 @@ html .home-steps li { background: #ffffff; border-radius: 40px; font-size: 13.7p
 html .home-facts li { border-top-color: var(--og-text); }
 /* 메인 브랜드 판 (11/10 아내분 요청): 문장 먼저, 제목은 작게 · 아래 여백 넉넉히, 세 단어는 작게 */
 html .home-text p.home-lead { font-size: 17px; line-height: 1.75; color: var(--og-text); margin: 6px 0 18px; word-break: keep-all; }
-html .home-title--brand { font-size: 20px; margin: 30px 0 30px; }
+html .home-title--brand { font-size: 20px; margin: 30px 0 30px; letter-spacing: 0.01em; } /* 11/23 회장님: 따닥따닥 붙어 보여 아주 조금만 넓게 (-0.03em → 0.01em, 위 라벨 0.06em보다는 좁게) */
 html .home-facts--words { margin-top: 0; }
 html .home-facts--words strong { font-size: 17px; letter-spacing: 0.01em; }
 html .home-facts--words span { font-size: 13px; }
