@@ -1141,3 +1141,5 @@ html #wh-quality .why-text p { font-size: 15px !important; line-height: 1.7 !imp
 /* 바리스타 교육 '교육은 이렇게 진행됩니다': 회색 판 없이 페이지 위에 바로 (11/23 아내분 요청: 전부 박스 밖으로)
    좌우 안쪽 여백도 없애 위 칸들과 같은 왼쪽 선에서 시작 */
 html #edu-process { background: transparent !important; padding-left: 0 !important; padding-right: 0 !important; }
+/* 바리스타 교육 첫머리 "스트레토는 / 맛있는 커피 원두만~": 회색 타이틀 바로 밑 제목이라 20 (11/23 아내분 요청). 굵은 단어 강조는 그대로 */
+html #education .section-header > p.edu-lead { font-size: 20px !important; line-height: 1.5 !important; }
