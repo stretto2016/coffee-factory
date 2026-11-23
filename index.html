@@ -5416,9 +5416,10 @@ a.manual-page:hover { transform: translateY(-3px); }
 </script>
 
 <!-- 리뷰 모드: 주소 뒤에 ?review 를 붙였을 때만 코멘트 도구를 불러온다.
-     일반 방문자에게는 아래 두 파일이 아예 로드되지 않는다. -->
+     일반 방문자에게는 아래 두 파일이 아예 로드되지 않는다.
+     실제 사이트(stretto.co.kr)에서는 ?review 를 붙여도 열리지 않는다 — 회장님 수정은 미리보기 주소에서만 (2026-11-23 사장님 지시) -->
 <script>
-if (/(^|[?&])review(=|&|$)/.test(location.search)) {
+if (/(^|[?&])review(=|&|$)/.test(location.search) && !/(^|\.)stretto\.co\.kr$/i.test(location.hostname)) {
     document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="/review.css?v=20261119">');
     var rv = document.createElement('script');
     rv.type = 'module';
