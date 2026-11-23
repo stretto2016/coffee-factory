@@ -122,7 +122,7 @@
   function entry() {
     const el = screen(`<div class="entry">
       <button type="button" class="entry-card" data-m="b2c"><div class="in"><small>FOR YOU</small><b>개인 고객</b><span>네 번의 게임으로<br>내 취향의 원두를 찾아요.</span><div class="meta"><span>4 ROUNDS + 뽑기</span><span>약 1분</span></div><span class="go">게임 시작</span></div><span class="entry-pic entry-pic--todo"><em>사진 자리</em></span></button>
-      <button type="button" class="entry-card" data-m="b2b"><div class="in"><small>FOR CAFÉ</small><b>카페 · 사업자</b><span>다섯 번의 게임으로<br>매장 맞춤 처방전을 받아요.</span><div class="meta"><span>5 ROUNDS</span><span>약 2분</span></div><span class="go">게임 시작</span></div><span class="entry-pic"><img src="/img/game-entry-cafe.jpg" alt="에스프레소 머신에서 스트레토 잔으로 내려지는 에스프레소"></span></button>
+      <button type="button" class="entry-card" data-m="b2b"><div class="in"><small>FOR CAFÉ</small><b>카페 · 사업자</b><span>다섯 번의 선택으로<br>매장 맞춤 처방전을 받아요.</span><div class="meta"><span>5 ROUNDS</span><span>약 2분</span></div><span class="go">게임 시작</span></div><span class="entry-pic"><img src="/img/game-entry-cafe.jpg" alt="에스프레소 머신에서 스트레토 잔으로 내려지는 에스프레소"></span></button>
     </div>`);
     el.querySelector('[data-m="b2c"]').onclick = () => go(1);
     el.querySelector('[data-m="b2b"]').onclick = toCafe;
