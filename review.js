@@ -20,7 +20,8 @@
 
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
-  getFirestore, collection, addDoc, deleteDoc, doc,
+  getFirestore, initializeFirestore, disableNetwork, enableNetwork,
+  collection, addDoc, deleteDoc, doc,
   onSnapshot, query, orderBy, serverTimestamp, limitToLast
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -1536,9 +1537,40 @@ new MutationObserver(() => {
   else if (c && kindOf(c) === 'draw' && c.scrollY != null) setTimeout(() => window.scrollTo({ top: c.scrollY, behavior: 'instant' }), 50);
 }).observe(document.body, { attributes: true, attributeFilter: ['data-route'] });
 
+/* 연결이 멈춰 있으면 다시 잇기
+   - 휴대폰 화면이 꺼졌다 켜지거나 다른 앱에 다녀오면 연결이 끊긴 채 남을 때가 있다
+   - 도우미는 30초마다 신호를 보내므로, 화면을 보고 있는데 75초 넘게 아무 소식이 없으면 끊긴 것으로 보고 다시 잇는다 */
+let hiddenAt = 0, lastKick = 0;
+function reconnect() {
+  if (!db || Date.now() - lastKick < 30 * 1000) return;
+  lastKick = Date.now();
+  disableNetwork(db).then(() => enableNetwork(db)).catch(() => {});
+}
+function keepAlive() {
+  if (window.__rvKeepAlive) return;
+  window.__rvKeepAlive = true;
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { hiddenAt = Date.now(); return; }
+    if (hiddenAt && Date.now() - hiddenAt > 15 * 1000) reconnect();
+    hiddenAt = 0;
+  });
+  window.addEventListener('online', reconnect);
+  setInterval(() => {
+    if (!CHAT_ON || document.hidden || navigator.onLine === false) return;
+    if (agent && agent.state === 'off') return;   // 도우미를 일부러 끈 때는 그대로 둔다
+    const last = Math.max(agentSeenAt || 0, LOADED_AT);
+    if (Date.now() - last > 75 * 1000) reconnect();
+  }, 15 * 1000);
+}
+
 function start() {
-  const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-  db = getFirestore(app);
+  // 리뷰 화면은 홈페이지 본문과 따로, 자기만의 Firebase 연결을 쓴다 (11/23)
+  // 본문(원두 목록 · 상담 채팅)과 한 연결을 같이 쓰면 페이지를 열 때 연결이 끊겼다가 30~40초 뒤에야 붙어서
+  // 그동안 "사장님 컴퓨터와 연결이 안 돼요"가 뜨고 대화도 안 보였다. 따로 만들면 1초 안에 붙는다.
+  const app = getApps().find((a) => a.name === 'review') || initializeApp(firebaseConfig, 'review');
+  try { db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true }); }
+  catch (_) { db = getFirestore(app); }
+  keepAlive();
   storage = getStorage(app);
   const auth = getAuth(app);
 
