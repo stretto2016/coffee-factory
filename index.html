@@ -2019,7 +2019,7 @@ a.manual-page:hover { transform: translateY(-3px); }
     <!-- Origin 풍 테마 (미리보기 검토 중). 아래 한 줄을 지우면 예전 모습으로, theme-lacabra.css 로 바꾸면 La Cabra 시안으로 -->
     <link rel="stylesheet" href="finder-game.css?v=11">
     <link rel="stylesheet" href="cafe-game.css?v=4">
-    <link rel="stylesheet" href="theme-origin.css?v=20261123w"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
+    <link rel="stylesheet" href="theme-origin.css?v=20261123x"><!-- 테마를 고치면 v= 뒤를 바꿔 옛 파일 캐시를 막는다 -->
     <!-- 미리보기 화면에 Vercel 도구(INP Issue 같은 알림 상자)가 뜨지 않게 숨김 — 실제 사이트에는 원래 없는 것 (11/21 아내분 요청) -->
     <style>vercel-live-feedback, #vercel-live-feedback, [data-vercel-toolbar], vercel-toolbar { display: none !important; }</style>
 </head>
@@ -5453,6 +5453,33 @@ if (/(^|[?&])review(=|&|$)/.test(location.search)) {
                 if (!part) return;
                 if (i % 2) { const sp = document.createElement('span'); sp.className = 'keep-case'; sp.textContent = part; frag.appendChild(sp); }
                 else frag.appendChild(document.createTextNode(part));
+            });
+            n.parentNode.replaceChild(frag, n);
+        });
+    }
+    wrap(document.body);
+    new MutationObserver(list => list.forEach(m => m.addedNodes.forEach(n => {
+        if (n.nodeType === 1) wrap(n); else if (n.nodeType === 3 && n.parentElement) wrap(n.parentElement);
+    }))).observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+<script>
+/* 오른쪽 위 화살표(↗)는 모두 브랜드 블루(민트)로 (11/23 아내분 요청).
+   글 속의 ↗ 를 <span class="arr-blue"> 로 감싼다. 앱에서 나중에 그려지는 "구매하기 ↗" 도 자동으로.
+   민트로 꽉 찬 버튼 안의 화살표는 바탕과 같은 색이 되어 안 보이므로 제외 */
+(function () {
+    const SKIP = 'script, style, textarea, input, select, .arr-blue, .home-btn, .btn-primary, .btn-repair-action, .home-finder-go, #stChat, [id^="rv-"]';
+    function wrap(root) {
+        if (!root || root.nodeType !== 1 || root.closest(SKIP)) return;
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+            acceptNode: n => (n.nodeValue.indexOf('↗') >= 0 && !n.parentElement.closest(SKIP)) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+        });
+        const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach(n => {
+            const frag = document.createDocumentFragment();
+            n.nodeValue.split('↗').forEach((part, i) => {
+                if (i) { const sp = document.createElement('span'); sp.className = 'arr-blue'; sp.textContent = '↗'; frag.appendChild(sp); }
+                if (part) frag.appendChild(document.createTextNode(part));
             });
             n.parentNode.replaceChild(frag, n);
         });

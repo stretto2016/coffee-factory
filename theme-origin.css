@@ -1174,3 +1174,5 @@ html #cs-services .svc-body > h3 { font-size: 17px !important; font-weight: 700 
 html #finder .section-header { column-gap: 16px; }
 /* 메인 브랜드 판(사진 위 흰 글씨) 문장: 17 → 16 (11/23 아내분 요청) */
 html #home-brand .home-text p.home-lead { font-size: 16px; }
+/* 오른쪽 위 화살표 ↗ 는 모두 브랜드 블루(민트) (11/23 아내분 요청) */
+html .arr-blue { color: var(--og-brand) !important; }
