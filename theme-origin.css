@@ -1235,3 +1235,8 @@ html #home-brand .home-text p.home-lead { line-height: 1.55; }
 @media (max-width: 768px) { html #home-brand .home-text p.home-lead { line-height: 1.35; } }
 /* 메인 원두 칸 "원두 구매 ↗": 휴대폰에서는 다음 줄 맨 앞에 위 문장과 같은 줄로 맞춤(앞 띄움 없앰), 컴퓨터는 그대로 (11/23 아내분 요청) */
 @media (max-width: 768px) { html #home-beans .home-title--quote > a.home-more { display: flex; width: max-content; margin: 6px 0 0 0 !important; } }
+/* 휴대폰: 메인 원두 칸 "큐그레이더가~" · 비즈니스 칸 "스트레토는 원두 납품을 넘어~" 20 → 18 (투박해 보여 조금 작게), "원두 구매 ↗"는 위 Our Beans~제목 간격만큼 띄움 6 → 11 (11/24 회장님 요청), 컴퓨터는 그대로 */
+@media (max-width: 768px) {
+    html #home-beans .home-title--quote, html #home-business .home-title--quote { font-size: 18px; }
+    html #home-beans .home-title--quote > a.home-more { margin: 11px 0 0 0 !important; }
+}
