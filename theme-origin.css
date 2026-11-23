@@ -1229,6 +1229,8 @@ html .manual-docs--rows .manual-doc-body > h4 { font-size: 16px !important; }
 @media (max-width: 900px) {
     html .manual-docs--rows .manual-doc-body { padding-left: 32px; }
     html .manual-docs--rows .manual-doc-body::before { top: 8.4px; width: 20px; height: 20px; }
+    /* 휴대폰: 노트 아이콘이 이름보다 아래로 처져 보여서, PC처럼 이름 글자 가운데 높이에 맞춤 (11/24 회장님 요청) */
+    html .manual-docs--rows .manual-doc-body::before { top: 2px; }
 }
 /* 메인 브랜드 판(사진 위 흰 글씨) 문장 줄간격: 컴퓨터 1.75 → 1.65 → 1.55 조금만, 휴대폰 1.75 → 1.55 (11/23 아내분 요청) */
 html #home-brand .home-text p.home-lead { line-height: 1.55; }
