@@ -5420,11 +5420,11 @@ a.manual-page:hover { transform: translateY(-3px); }
      실제 사이트(stretto.co.kr)에서는 ?review 를 붙여도 열리지 않는다 — 회장님 수정은 미리보기 주소에서만 (2026-11-23 사장님 지시) -->
 <script>
 if (/(^|[?&])review(=|&|$)/.test(location.search) && !/(^|\.)stretto\.co\.kr$/i.test(location.hostname)) {
-    document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="/review.css?v=20261119">');
+    document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="/review.css?v=20261123">');
     var rv = document.createElement('script');
     rv.type = 'module';
     // 미리보기 화면의 Vercel 도구 알림(INP Issue 등)은 Vercel 미리보기 설정 VERCEL_PREVIEW_FEEDBACK_ENABLED=0 으로 끔 (11/21)
-    rv.src = '/review.js?v=20261131'; // 파일을 고치면 v= 뒤 숫자를 바꿔 옛 파일 캐시를 막는다
+    rv.src = '/review.js?v=20261132'; // 파일을 고치면 v= 뒤 숫자를 바꿔 옛 파일 캐시를 막는다
     document.body.appendChild(rv);
 }
 </script>

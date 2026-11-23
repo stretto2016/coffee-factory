@@ -100,6 +100,11 @@
   right: 0;
   width: var(--rv-panel-w);
   height: 100vh;
+  /* 휴대폰: 100vh 는 주소창 · 아래 도구 막대까지 포함해 실제 보이는 화면보다 길어서 맨 아래(보내기 버튼)가 가려진다.
+     보이는 높이(dvh)로 맞추고, 키보드가 올라오면 review.js 가 visualViewport 높이로 다시 맞춘다. */
+  height: 100dvh;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-sizing: border-box;
   z-index: 2147482900;
   background: var(--rv-bg);
   border-left: 1px solid var(--rv-line);

@@ -1157,6 +1157,22 @@ function bindChat() {
   p.querySelectorAll('.rv-tab').forEach((b) => b.addEventListener('click', () => showTab(b.dataset.tab)));
   showTab(tab);
 
+  // 휴대폰: 보이는 화면 높이에 패널을 맞춘다 (주소창 · 도구 막대 · 키보드에 보내기 버튼이 가려지지 않게)
+  const vv = window.visualViewport;
+  if (vv && !window.__rvFit) {
+    window.__rvFit = true;
+    const fit = () => {
+      const panel = $('#rv-panel');
+      if (!panel) return;
+      if (window.innerWidth >= 760) { panel.style.height = ''; panel.style.top = ''; return; }
+      panel.style.height = Math.round(vv.height) + 'px';
+      panel.style.top = Math.round(vv.offsetTop) + 'px';
+    };
+    vv.addEventListener('resize', fit);
+    vv.addEventListener('scroll', fit);
+    fit();
+  }
+
   const input = $('#rv-input');
   $('#rv-send').addEventListener('click', sendChat);
   input.addEventListener('keydown', (e) => {
