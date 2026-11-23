@@ -1201,3 +1201,9 @@ html #edu-process .care-benefit-grid > div:not(:last-child)::after { top: 22px; 
 /* 위 15 · 600 규칙이 글자 원칙(20)에 밀려 머신 케어 · 바리스타 교육 단계 칸과 메인 비즈니스 세 칸에 안 먹던 것 바로잡음 (11/23) */
 html :is(#wholesale, #maintenance, #education, #consulting) .svc-list--steps .svc-body > h3 { font-size: 15px !important; font-weight: 600 !important; line-height: 1.5 !important; }
 html #home-business .home-service h3 { font-size: 15px !important; line-height: 1.5 !important; }
+/* 비전: 사진은 액자 없이 물방울 그림 옆에 작게 (11/23 아내분 요청). 왼쪽 칸에는 세계 지도만 */
+html .vd-iconrow { display: flex; align-items: center; gap: 22px; margin: 0 0 22px; }
+html .vd-iconrow .vd-icon { margin: 0 0 0 -6px; flex: none; }
+html .vd-mini { display: block; width: 200px; height: auto; aspect-ratio: 2160 / 1100; object-fit: cover; }
+@media (max-width: 900px) { html .vd-mini { width: 160px; } html .vd-album { min-height: 220px; } }
+html .vd--1 .vd-iconrow + .vd-head { padding-top: 22px; border-top: 1px solid #E6E6E6; }
