@@ -1152,7 +1152,7 @@ html .sf-cta-kakao { width: 22px; height: 22px; flex: none; }
 /* 브랜드 슬로건 한글 세 줄: 다른 페이지 '회색 소제목 밑 검정 제목'과 같은 모양 20 · 700 · 검정 (11/23 아내분 요청) */
 html #story .section-header .section-title > span.story-slogan-ko { font-size: 17px !important; font-weight: 700 !important; line-height: 1.5 !important; color: var(--og-text) !important; }
 /* 브랜드 슬로건 영문 "carefully crafted coffee" 30에서 26으로 (11/23 회장님 요청) */
-html #story .section-header .section-title > .title-nowrap { font-size: 26px !important; font-family: 'Ciutadella', 'Archivo', sans-serif !important; letter-spacing: 0.01em; } /* 11/24 회장님: 글꼴·글자 사이를 메인 Carefully Crafted Coffee와 같게 (Archivo → Ciutadella, -0.03em → 0.01em) */
+html #story .section-header .section-title > .title-nowrap { font-size: 26px !important; font-family: 'Ciutadella', 'Archivo', sans-serif !important; letter-spacing: 0; font-weight: 700; -webkit-text-stroke: 0.6px currentColor; } /* 11/24 회장님: 더 굵게(테두리 0.6px 덧칠) · 글자 사이 아주 조금 줄임 0.01em → 0, PC·휴대폰 공통 */ /* 11/24 회장님: 글꼴·글자 사이를 메인 Carefully Crafted Coffee와 같게 (Archivo → Ciutadella, -0.03em → 0.01em) */
 /* 대표 인사말 서명 "대표 박순형": 오른쪽 → 왼쪽 아래 (11/23 아내분 요청) */
 html .qd-sign { text-align: left; }
 /* 비전 사진: 세계 지도(점) 배경 위에 앨범 액자처럼 (11/23 아내분 요청)
