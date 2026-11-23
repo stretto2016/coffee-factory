@@ -1183,3 +1183,5 @@ html #home-beans .home-head > div { max-width: none; }
 @media (min-width: 1100px) { html #home-beans .home-title--quote { white-space: nowrap; } }
 /* 메인 비즈니스 칸 문장 "스트레토는 원두 납품을 넘어~": 위 검정 제목들과 같은 글자 (20 · 700 · 줄간격 1.35) (11/23 아내분 요청) */
 html #home-business .home-title--quote { font-size: 20px; font-weight: 700; line-height: 1.35; }
+/* 칸 제목(01. 원두 납품 · Step 아래 제목 · 하드웨어 세팅 등): 20 → 15, 모든 페이지 (11/23 아내분 요청 "해봐") */
+html .home-service h3, html .svc-body > h3, html #cs-services .svc-body > h3, html #wholesale .svc-list--steps .svc-body > h3 { font-size: 15px !important; line-height: 1.5 !important; }
