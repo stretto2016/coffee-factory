@@ -1176,3 +1176,5 @@ html #finder .section-header { column-gap: 16px; }
 html #home-brand .home-text p.home-lead { font-size: 16px; }
 /* 오른쪽 위 화살표 ↗ 는 모두 브랜드 블루(민트) (11/23 아내분 요청) */
 html .arr-blue { color: var(--og-brand) !important; }
+/* 메인 원두 칸 문장 "큐그레이더가 직접~": 위 '나에게 맞는 원두 찾기'와 같은 글자 (20 · 700 · 줄간격 1.35) (11/23 아내분 요청) */
+html #home-beans .home-title--quote { font-size: 20px; font-weight: 700; line-height: 1.35; }
