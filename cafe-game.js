@@ -164,8 +164,8 @@
       <h3>다섯 번의 선택으로<br>우리 매장 원두를 찾을 수 있어요!</h3>
       <p>가게를 오픈하고, 메뉴를 고르고, 원두를 직접 섞어 보세요.<br>마지막에 로스터가 <b>매장 맞춤 처방전</b>을 써 드려요.</p>
       <ol class="cg-steps">${ROUNDS.map((n, i) => `<li><span>${i + 1}</span>${n}</li>`).join('')}</ol>
-      <button type="button" class="btn-ink" id="cg-start">게임 시작 →</button>
-      <small class="cg-time">약 2분 · 답한 내용은 상담할 때만 쓰여요</small>
+      <button type="button" class="btn-ink" id="cg-start">start!</button>
+      <small class="cg-time">약 30초 · 답한 내용은 상담할 때만 쓰여요</small>
       <button type="button" class="btn-text cg-back" id="cg-back">← 개인 고객용 게임으로</button>
     </div>`);
     el.querySelector('#cg-start').onclick = () => go(1);
