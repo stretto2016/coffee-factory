@@ -1185,3 +1185,6 @@ html #home-beans .home-head > div { max-width: none; }
 html #home-business .home-title--quote { font-size: 20px; font-weight: 700; line-height: 1.35; }
 /* 칸 제목(01. 원두 납품 · Step 아래 제목 · 하드웨어 세팅 등): 20 → 15, 모든 페이지 (11/23 아내분 요청 "해봐") */
 html .home-service h3, html .svc-body > h3, html #cs-services .svc-body > h3, html #wholesale .svc-list--steps .svc-body > h3 { font-size: 15px !important; line-height: 1.5 !important; }
+/* 링크 글씨 밑 선 모두 없앰 (자세히 보기 ↗ · 바로가기 ↗ 등, 11/23 아내분 요청 "선 다 없애자") */
+html .home-more, html #home-brand .home-more { border-bottom: 0 !important; padding-bottom: 0 !important; }
+html .faq-more, html .shop-dripbag-empty a, html .shop-load-fail a { text-decoration: none !important; }
