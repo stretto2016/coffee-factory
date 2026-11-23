@@ -3761,9 +3761,9 @@ a.manual-page:hover { transform: translateY(-3px); }
         var data = (window.STRETTO_REVIEWS || []).slice();
         var todo = !data.length;
         if (todo) for (var i = 0; i < 18; i++) data.push({ stars: 5, text: '리뷰 준비 중', product: '원두 이름', who: '작성자 · 날짜' });
-        // 아이디는 앞 2글자만 보이고 나머지는 빈 동그라미(○)로: puli*** → pu○○○○○
+        // 아이디는 앞 2글자만 보이고 뒤는 빈 동그라미 두 개(○○)로: puli*** → pu○○ (11/23 아내분 요청)
         function maskWho(w) { w = String(w || ''); var i = w.indexOf(' · '); var id = i < 0 ? w : w.slice(0, i), rest = i < 0 ? '' : w.slice(i);
-            if (todo) return w; return id.slice(0, 2) + id.slice(2).replace(/./g, '○') + rest; }
+            if (todo) return w; return id.slice(0, 2) + (id.length > 2 ? '○○' : '') + rest; }
         function card(r) {
             var n = Math.max(0, Math.min(5, Math.round(r.stars || 5)));
             return '<article class="brv-card' + (todo ? ' brv-card--todo' : '') + '"><div class="brv-stars" aria-label="별점 ' + n + '점">' + '★★★★★'.slice(0, n) + '<span class="brv-star-off">' + '★★★★★'.slice(0, 5 - n) + '</span></div>'
