@@ -1192,3 +1192,12 @@ html .faq-more, html .shop-dripbag-empty a, html .shop-load-fail a { text-decora
    제목 15 · 600 / 첫 문장 16 · 보통 · 줄간격 1.7 / 설명 15 (그대로) / 체크 목록 14 (그대로) */
 html .svc-body > h3, html #cs-services .svc-body > h3 { font-size: 15px !important; font-weight: 600 !important; line-height: 1.5 !important; }
 html .svc-body > p.svc-lead { font-size: 16px !important; font-weight: 400 !important; line-height: 1.7 !important; }
+/* 바리스타 교육 '교육은 이렇게 진행됩니다' 01~04: 원두 납품 단계 칸과 같은 모양 (11/23 아내분 요청)
+   번호는 위 작은 회색 글씨(Step 01 과 같음), 제목 15 · 600, 설명은 단계 칸 첫 문장처럼 16 · 검정 · 줄간격 1.7 */
+html #edu-process .care-benefit-grid .svc-num { display: block; margin-bottom: 6px; }
+html #edu-process .care-benefit-grid strong { font-size: 15px !important; font-weight: 600 !important; line-height: 1.5 !important; margin-bottom: 10px; }
+html #edu-process .care-benefit-grid p { font-size: 16px !important; line-height: 1.7 !important; color: var(--og-text) !important; }
+html #edu-process .care-benefit-grid > div:not(:last-child)::after { top: 22px; }
+/* 위 15 · 600 규칙이 글자 원칙(20)에 밀려 머신 케어 · 바리스타 교육 단계 칸과 메인 비즈니스 세 칸에 안 먹던 것 바로잡음 (11/23) */
+html :is(#wholesale, #maintenance, #education, #consulting) .svc-list--steps .svc-body > h3 { font-size: 15px !important; font-weight: 600 !important; line-height: 1.5 !important; }
+html #home-business .home-service h3 { font-size: 15px !important; line-height: 1.5 !important; }
