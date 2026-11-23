@@ -360,7 +360,7 @@ html .idc-options { margin: 24px 0 72px; }
 html .idc-row { display: flex; justify-content: center; align-items: center; }
 html .idc-circle { flex: 0 0 auto; width: 340px; height: 340px; border-radius: 50%; background: #F2F2F2; display: flex; align-items: center; justify-content: center; }
 html .idc-inner { width: 250px; text-align: center; }
-html .idc-title { font-family: "Ciutadella", sans-serif; font-weight: 700; font-size: 25px; line-height: 1.2; margin: 0 0 14px; color: var(--text-primary); }
+html .idc-title { font-family: "Ciutadella", sans-serif; font-weight: 700; font-size: 22px; line-height: 1.2; margin: 0 0 14px; color: var(--text-primary); }
 html .idc-title::after { content: ""; display: block; width: 28px; height: 1px; background: #BDBDBD; margin: 14px auto 0; }
 html .idc-sub { display: block; font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px; }
 html .idc-desc { font-size: 13px; line-height: 1.65; color: var(--text-secondary); margin: 0; word-break: keep-all; }
@@ -369,7 +369,7 @@ html .idc-plus { font-size: 28px; font-weight: 300; color: #BDBDBD; margin: 0 14
     html .idc-row { flex-direction: column; }
     html .idc-circle { width: 320px; height: 320px; }
     html .idc-inner { width: 230px; }
-    html .idc-title { font-size: 22px; }
+    html .idc-title { font-size: 20px; }
     html .idc-plus { margin: 10px 0; }
     html .idc-desc { font-size: 12.5px; }
 }
@@ -1147,7 +1147,9 @@ html #education .section-header > p.edu-lead { font-size: 17px !important; line-
 html .sf-cta .sf-cta-btn, html .sf-cta:hover .sf-cta-btn { background: none !important; padding: 0; display: inline-flex; align-items: center; gap: 8px; color: var(--og-text); }
 html .sf-cta-kakao { width: 22px; height: 22px; flex: none; }
 /* 브랜드 슬로건 한글 세 줄: 다른 페이지 '회색 소제목 밑 검정 제목'과 같은 모양 20 · 700 · 검정 (11/23 아내분 요청) */
-html #story .section-header .section-title > span.story-slogan-ko { font-size: 20px !important; font-weight: 700 !important; line-height: 1.5 !important; color: var(--og-text) !important; }
+html #story .section-header .section-title > span.story-slogan-ko { font-size: 17px !important; font-weight: 700 !important; line-height: 1.5 !important; color: var(--og-text) !important; }
+/* 브랜드 슬로건 영문 "carefully crafted coffee" 30에서 26으로 (11/23 회장님 요청) */
+html #story .section-header .section-title > .title-nowrap { font-size: 26px !important; }
 /* 대표 인사말 서명 "대표 박순형": 오른쪽 → 왼쪽 아래 (11/23 아내분 요청) */
 html .qd-sign { text-align: left; }
 /* 비전 사진: 세계 지도(점) 배경 위에 앨범 액자처럼 (11/23 아내분 요청)
