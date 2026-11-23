@@ -1220,6 +1220,8 @@ html .manual-docs--rows .manual-doc-body > h4 { font-size: 16px !important; }
 @media (min-width: 901px) {
     html .manual-docs--rows .manual-doc-body > h4 { margin-top: 0; line-height: 25.5px !important; }
     html .manual-docs--rows .manual-doc-body::before { top: 32.75px; width: 20px; height: 20px; }
+    /* 노트 아이콘이 이름보다 왼쪽 아래로 처져 보여서 이름 글자 가운데로 조금 올리고 오른쪽으로 (11/24 회장님 요청) */
+    html .manual-docs--rows .manual-doc-body::before { top: 30.25px; left: 2px; }
     html .manual-docs--rows .manual-doc-body > .manual-doc-tag,
     html .manual-docs--rows .manual-doc-body > h4 { padding-left: 30px !important; }
 }
