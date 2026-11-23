@@ -926,6 +926,11 @@ html .home-more span { transition: transform .2s ease; }
 html .home-more:hover span { transform: translate(2px, -2px); }
 /* 테두리 버튼은 원래 모양 그대로, 화살표(↗)만 브랜드 블루(민트) (11/21 아내분 요청: 칸 채우기 말고 화살표만) */
 html .home-more span, html #home-brand .home-more span { color: var(--og-brand); }
+/* 테두리 버튼(자세히 보기 ↗ 등) → 테두리 없이 밑줄만 (11/23 아내분 요청: 박스 모양 싫음, 홈페이지 전체) */
+html .home-more { border: 0; border-bottom: 1px solid currentColor; border-radius: 0; padding: 0 0 4px; background: none; }
+html #home-brand .home-more { border: 0; border-bottom: 1px solid #ffffff; }
+html .home-more:hover { background: none; color: var(--og-text); }
+html #home-brand .home-more:hover { background: none; color: #ffffff; }
 /* 메인 비즈니스 칸 목록 앞 점: 글자 줄 정가운데로 (줄간격이 바뀌어 바닥에 붙어 보였음, 11/21 아내분 요청) */
 html .home-benefits li::before { top: calc(0.5lh - 3px); }
 
