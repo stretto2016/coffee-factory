@@ -109,12 +109,29 @@
       return beanSvg(done ? cols[i] : (cur ? '#fff' : '#f2f2f2'), cur ? '#202020' : (done ? 'rgba(0,0,0,.2)' : '#ddd')).replace('<svg', `<svg class="${cur ? 'cur' : ''}"`);
     }).join('');
   }
-  $('#fg-hud-home').addEventListener('click', () => { reset(); go(0); });
+  $('#fg-hud-home').addEventListener('click', () => { if (window.GameLog) GameLog.quit(); reset(); go(0); });
   function go(r, noScroll) {
     KEY.down = KEY.up = null;
     ROOT.querySelectorAll('.gx-open').forEach((x) => x.remove()); // 뽑기 캡슐 화면이 떠 있으면 닫기
-    S.round = r; hud(); [entry, r1, r2, r3, r4, r5, result][r]();
+    S.round = r; hud();
+    // 플레이 기록 (game-log.js → 구글 시트): 1라운드에서 시작, 처음 화면으로 돌아가면 '중간에 나감'
+    if (window.GameLog) { if (r === 1) GameLog.start('개인', b2cPicks); else if (r >= 2 && r <= 5) GameLog.round(r); else if (r === 0) GameLog.quit(); }
+    [entry, r1, r2, r3, r4, r5, result][r]();
     if (!noScroll) { const y = ROOT.getBoundingClientRect().top + window.scrollY - 84; if (Math.abs(window.scrollY - y) > 40) window.scrollTo({ top: y, behavior: 'smooth' }); }
+  }
+  // 기록용: 지금까지 고른 내용을 시트 칸 이름으로
+  function b2cPicks() {
+    const p = {};
+    const w = (v, lo, hi) => v > 0.4 ? hi : v < -0.4 ? lo : '보통';
+    if (S.champ) p['향미 1위'] = AN(S.champ);
+    if (S.runner) p['향미 2위'] = AN(S.runner);
+    if (S.round >= 3) {
+      p['좋아요 카드'] = S.likes.join(', ') || '없음';
+      p['맛'] = `산미 ${w(S.taste.a, '적게', '많이')} · 바디 ${w(S.taste.b, '가볍게', '묵직하게')} · 단맛 ${w(S.taste.s, '적게', '많이')}`;
+    }
+    if (S.roastKey) p['로스팅'] = (ROAST_NAME[S.roast] || S.roastKey) + (S.roastClash ? ' (향과 반대)' : '');
+    if (S.round >= 5) p['장비'] = S.none ? '없음' : (S.gears.map((k) => GEARS[k].n).join(', ') || '없음');
+    return p;
   }
   function screen(html) { stage.innerHTML = `<div class="screen">${html}</div>`; return stage.firstElementChild; }
 
@@ -591,6 +608,7 @@
     const { t, all, ranked, split, tasteClash } = R;
     const top = ranked[0].b, pct = clamp(Math.round(ranked[0].s), 58, 98);
     const decaf = all.find((b) => b.cat === 'decaf');
+    if (window.GameLog) GameLog.done(split ? `두 갈래 · A ${split[0].b.name} / B ${split[1].b.name}` : `${top.name} (취향 일치 ${pct}%)`);
     (() => {
       const pos = (v) => ((v - 1) / 4 * 100).toFixed(1) + '%';
       const row = (lbl, you, bean) => `<div class="cmp-row"><span>${lbl}</span><div class="cmp-track"><span class="you" style="left:${pos(you)}"></span><span class="bean" style="left:${pos(bean)}"></span></div></div>`;
@@ -655,7 +673,7 @@
 
   /* ================= 시작 ================= */
   window.FG = {
-    home() { if (SHELL) SHELL.style.display = 'none'; if (window.CG) window.CG.hide(); ROOT.style.display = ''; reset(); go(0, true); },
+    home() { if (window.GameLog) GameLog.quit(); if (SHELL) SHELL.style.display = 'none'; if (window.CG) window.CG.hide(); ROOT.style.display = ''; reset(); go(0, true); },
   };
   if (SHELL) SHELL.style.display = 'none';
   reset(); go(0, true);

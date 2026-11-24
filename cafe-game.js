@@ -147,13 +147,31 @@
     }).join('');
   }
   // '처음으로'는 개인 고객 / 카페 · 사업자를 고르는 첫 화면으로 (11/22 아내분 요청)
-  $('#cg-hud-home').addEventListener('click', () => { reset(); if (window.FG) window.FG.home(); else go(0); });
+  $('#cg-hud-home').addEventListener('click', () => { if (window.GameLog) GameLog.quit(); reset(); if (window.FG) window.FG.home(); else go(0); });
   function go(r, noScroll) {
     KEY.down = null; S.round = r; hud();
+    // 플레이 기록 (game-log.js → 구글 시트): 1라운드에서 시작, 첫 화면으로 돌아가면 '중간에 나감'
+    if (window.GameLog) { if (r === 1) GameLog.start('카페', cafePicks); else if (r >= 2 && r <= 5) GameLog.round(r); else if (r === 0) GameLog.quit(); }
     [intro, r1, r2, r3, r4, r5, result][r]();
     if (!noScroll) { const y = ROOT.getBoundingClientRect().top + window.scrollY - 84; if (Math.abs(window.scrollY - y) > 40) window.scrollTo({ top: y, behavior: 'smooth' }); }
   }
   function screen(html) { stage.innerHTML = `<div class="screen">${html}</div>`; return stage.firstElementChild; }
+  // 기록용: 지금까지 고른 내용을 시트 칸 이름으로
+  function cafePicks() {
+    const p = {};
+    if (S.store) p['매장'] = STORES[S.store].n;
+    if (S.machine) p['머신'] = MACHINES[S.machine].n;
+    if (S.top.length) p['판매 TOP 3'] = S.top.map((k) => MENU[k].n).join(', ');
+    if (S.round >= 3) p['우유 메뉴'] = `${S.latte}%`;
+    if (S.round >= 4) { p['듣고 싶은 리뷰'] = TONE_TXT[tone()][0]; p['산미 반응'] = ACID_TXT[acidTol()]; }
+    const tot = labTotal();
+    if (tot) {
+      p['직접 짠 배합'] = Object.keys(JARS).filter((k) => S.lab[k]).map((k) => `${JARS[k].k} ${Math.round(S.lab[k] / tot * 100)}%`).join(', ');
+      p['로스팅'] = ROAST_KO[S.roast];
+    }
+    if (S.round >= 6 || S.price) { p['월 사용량'] = S.kg >= 150 ? '150kg 이상' : `${S.kg}kg`; if (S.price) p['희망 단가'] = PRICE[S.price].n; }
+    return p;
+  }
 
   /* ================= 시작 ================= */
   function intro() {
@@ -519,6 +537,9 @@
     const partsFix = Object.keys(J).filter((k) => fix[k]).map((k) => ({ k, n: J[k].k, c: J[k].c, pct: fix[k] * 10 })).sort((x, y) => y.pct - x.pct);
     const movedTxt = moved.length ? `${J[moved[0][0]].k} ${moved.length * 10}%를 ${J[moved[0][1]].k} 쪽으로 옮겼어요.` : '사장님 배합이 매장에 잘 맞아 비율은 그대로 두었어요.';
     const no = String(Date.now()).slice(-5);
+    if (window.GameLog) GameLog.done(
+      (split ? `두 갈래 · A ${bR.p.name} / B ${bL.p.name} · 자세히 본 제안: ` : '')
+      + (custom ? `매장 전용 블렌드 (${partsFix.map((x) => `${x.n} ${x.pct}%`).join(', ')} · ${ROAST_KO[roastRx]})` : `${best.p.name} (매장 일치 ${clamp(Math.round(best.s), 60, 98)}%)`));
     const today = new Date(); const ymd = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
 
     screen(`<div class="loading"><small>WRITING YOUR PROPOSAL</small><div style="width:70px;margin:22px auto 0">${beanSvg(ROAST_COL[roastRx])}</div><div class="bar"><i></i></div><p class="q-hint" style="margin-top:16px">로스터가 제안서를 쓰는 중이에요</p></div>`);
