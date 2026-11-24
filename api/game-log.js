@@ -72,7 +72,10 @@ export default async function handler(req, res) {
       body: JSON.stringify({ secret, sheet: game === '카페' ? '카페 · 사업자' : '개인 고객', row }),
       redirect: 'follow',
     });
-    return res.status(r.ok ? 200 : 502).json({ ok: r.ok });
+    // 시트 코드는 비밀값이 틀리면 {ok:false} 로 답한다 → 실제로 한 줄이 들어갔는지까지 확인
+    let ok = false;
+    try { ok = r.ok && (await r.json()).ok === true; } catch (_) {}
+    return res.status(ok ? 200 : 502).json({ ok });
   } catch (e) {
     return res.status(502).json({ ok: false });
   }
