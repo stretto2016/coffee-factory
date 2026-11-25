@@ -693,15 +693,17 @@ async function run() {
     try { syncClone(); } catch (_) {}
   }
 
-  const b2 = db.batch();
-  pc.forEach((c) => b2.update(db.collection(CHAT).doc(c.id), { status: finalChat }));
+  // 하나씩 정리한다: 회장님이 그 사이 지운 요청이 하나 있어도 나머지(특히 대화 상태)는 정리되게
+  // (예전엔 한 묶음이라 지워진 요청 하나 때문에 대화가 "처리 중"으로 남아, 다시 켤 때 또 처리됐다)
+  const ups = [];
+  pc.forEach((c) => ups.push(db.collection(CHAT).doc(c.id).update({ status: finalChat })));
   pm.forEach((c) => {
     const r = db.collection(COMMENTS).doc(c.id);
-    if (finalCmt === "done") b2.update(r, { status: "done", doneAt: TS(), agent: DEL() });
-    else if (finalCmt === "retry") b2.update(r, { agent: DEL() });
-    else if (finalCmt) b2.update(r, { agent: finalCmt });
+    if (finalCmt === "done") ups.push(r.update({ status: "done", doneAt: TS(), agent: DEL() }));
+    else if (finalCmt === "retry") ups.push(r.update({ agent: DEL() }));
+    else if (finalCmt) ups.push(r.update({ agent: finalCmt }));
   });
-  await b2.commit().catch((e) => log("상태 정리 실패", e.message));
+  for (const x of await Promise.allSettled(ups)) if (x.status === "rejected") log("상태 정리 실패", x.reason && x.reason.message);
 
   running = false;
   clearTimeout(progTimer); progText = "";
