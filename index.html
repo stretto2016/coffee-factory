@@ -4236,6 +4236,8 @@ a.manual-page:hover { transform: translateY(-3px); }
                     const txt = p.badgeTextColor || 'white';
                     const badgeStyle = `background: ${bg}; color: ${txt};`;
                     
+                    // 원두 이름 속 SHB · AA 같은 등급 약자는 대문자 그대로 (11/27 회장님)
+                    const nameShown = (p.name || '').replace(/\b(shb|aa)\b/gi, w => `<span class="keep-case">${w.toUpperCase()}</span>`);
                     const html = `
                     <div class="product-card">
                         <a href="${p.shopLink || '#'}" target="_blank">
@@ -4244,7 +4246,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                                 <img src="${safeImageUrl}" alt="${p.name}">
                             </div>
                             <div class="product-info">
-                                <h3>${p.name}</h3>
+                                <h3>${nameShown}</h3>
                                 ${p.cupNote ? `<div class="cup-note" style="color: #a87b50; font-size: 0.85rem; margin-bottom: 5px; font-weight: 600;">${p.cupNote}</div>` : ''}
                                 <p class="product-desc">${p.description || ''}</p>
                                 <div class="product-meta">
@@ -4260,7 +4262,7 @@ a.manual-page:hover { transform: translateY(-3px); }
                         const homeName = /블렌드/.test(p.name)
                             ? p.name.replace(/\(([A-Za-z]+)\)\s*$/, (m, w) => `(${w.toLowerCase()} blend)`)
                             : p.name;
-                        const homeHtml = html.replace(`<h3>${p.name}</h3>`, `<h3>${homeName}</h3>`);
+                        const homeHtml = html.replace(`<h3>${nameShown}</h3>`, `<h3>${homeName}</h3>`);
                         if (homeCount < 4) { homeFirst4.push(homeHtml); homeCount++; }
                         const pc = (p.category || '').toLowerCase();
                         if (pc !== 'dripbag' && !/드립백/.test(p.name)) {
