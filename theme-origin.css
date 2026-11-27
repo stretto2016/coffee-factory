@@ -1247,3 +1247,5 @@ html #home-brand .home-text p.home-lead { line-height: 1.55; }
 @media (max-width: 768px) {
     html #finder .section-header > h2.section-title { font-size: 18px !important; }
 }
+/* 컨설팅 핵심 다섯 칸 목록의 가운데 점: 한글 글자 높이의 정가운데로 2.25px 올리고, 조금 연한 회색으로 (11/27 회장님 요청) */
+html #cs-services .svc-check li::before { margin-top: calc((1lh - 4px) / 2 - 2.75px); background: #ABABAB; }
