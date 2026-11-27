@@ -1249,3 +1249,10 @@ html #home-brand .home-text p.home-lead { line-height: 1.55; }
 }
 /* 컨설팅 핵심 다섯 칸 목록의 가운데 점: 한글 글자 높이의 정가운데로 2.25px 올리고, 조금 연한 회색으로 (11/27 회장님 요청) */
 html #cs-services .svc-check li::before { margin-top: calc((1lh - 4px) / 2 - 2.75px); background: #ABABAB; }
+/* 창업 매뉴얼 네 칸 목록 — 휴대폰의 가운데 점도 '컨설팅 내용' 점처럼 한글 글자 높이의 정가운데 · 조금 연한 회색으로 (11/27 회장님 요청) */
+@media (max-width: 900px) {
+    html .manual-docs--rows .manual-doc-list li::before,
+    html .manual-docs--rows .manual-doc-list li + li::before { top: calc((1.6em - 3px) / 2 - 3px); background: #ABABAB; }
+    /* '컨설팅 내용' 점도 휴대폰에서는 글자 정가운데보다 살짝 높아 보여서 조금 내림 (PC는 그대로) */
+    html #cs-services .svc-check li::before { margin-top: calc((1.6em - 4px) / 2 - 2.25px); }
+}
